@@ -1,0 +1,33 @@
+Robot controlled through WiFi. Could be controlled through the internet 
+as well. In the last case WiFi access point (most probably laptop) is 
+used as intermediate retranslator. 
+
+Robot's software is designed to work in LAN, Internet and through I2P 
+network (www.i2p2.de). In the last case there is relatively large ping 
+(up to two seconds) but one doesn't need port forwarding or external IP.
+
+Tested in IPV6 with Teredo and Mitedo (on Linux).
+
+Software is tested in Windows XP and XUbuntu Linux.
+
+Software is designed to be multiclient. One person can control robot while 
+others may observe it's motion. When one releases robot control another 
+person may get it and drive robot. Also simple chat is implementer for 
+people be able to talk to each other while driving the robot through the 
+internet.
+
+Hardware is based on D-Link Dir-320 router. It is equiped with Dagu 
+RP5 chassis. It has two tracks for moving and turning and two servos 
+for yawing and pitching a camera. Motors controller is attached to the 
+router through USB.
+
+Motors control board is based on two AVR microcontrollers. One for USB 
+communication and the other one for handling DC track motors and camera 
+servos.
+
+There are some photos in "./gallery" subfolder.
+
+A few videos are available:
+http://www.youtube.com/watch?v=xMlxWSZMv9M&context=C4a527eeADvjVQa1PpcFPMPOLt8ACAZKdKqZ2D2c7oFT2Cxf_viqI=
+http://www.youtube.com/watch?v=lLfl04L1vBg&feature=context&context=C4a527eeADvjVQa1PpcFPMPOLt8ACAZKdKqZ2D2c7oFT2Cxf_viqI=
+http://www.youtube.com/watch?v=XsvCEgXckAE&feature=context&context=C4a527eeADvjVQa1PpcFPMPOLt8ACAZKdKqZ2D2c7oFT2Cxf_viqI=
