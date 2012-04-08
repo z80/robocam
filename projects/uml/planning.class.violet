@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.6.0_22" class="java.beans.XMLDecoder">
+ <object class="com.horstmann.violet.ClassDiagramGraph">
+  <void method="addNode">
+   <object id="ClassNode0" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>m_dev
+
+m_dir1
+m_dir2
+m_servo1
+m_servo2
+m_motoEn
+m_servoEn</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>bool open();
+bool isOpen() const;
+void close();
+
+void setMotoEn( bool en )
+bool motoEn() const
+void serServoEn( bool en )
+bool servoEn() const
+void setMoto( int dir1, int dir2 )
+void setServo( int servo1, int servo2 )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>MotoHdw</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>24.192917419391307</double>
+     <double>739.4164392496034</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode1" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>m_dev
+m_szX
+m_szY
+</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>bool open()
+bool isOpen()
+void close()
+void setResolution( int width, int height )
+void resolution( int &amp; width, int &amp; height ) const
+bool setEnabled( bool en )
+bool enabled() const
+void image()
+int part( std::vector&lt;uchar&gt; &amp; portion )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>CameraHdw</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>306.274343149892</double>
+     <double>729.4458765011262</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode2" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>MotoHdw * m_moto</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>MotoIce( MotoHdw * moto )
+~MotoIce()
+
+bool open()
+bool isOpen()
+void close()
+void setMotoEn( bool en )
+bool motoEn() const
+void setServoEn( bool en )
+bool servoEn() const
+void setMoto( int dir1, int dir2 )
+void setServo( int servo1, int servo2 )</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>MotorsIce
+</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>100.59983268776406</double>
+     <double>221.9150151624209</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode3" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>CameraHdw * m_cam</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>CameraIce( CameraHdw * cam )
+~CameraIce()
+
+bool open()
+bool isOpen()
+void close()
+void setResolution( int width, int height )
+void resolution( int &amp; width, int &amp; height ) const
+bool setEnabled( bool en )
+bool enabled() const
+void image()
+int part( std::vector&lt;uchar&gt; &amp; portion )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>CameraIce</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>313.56737284773294</double>
+     <double>476.65655931855093</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode4" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>MotoHdw      * m_moto
+CameraHdw * m_cam
+</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>bool listen( const std::string &amp; host, int port )
+void shutdown()</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>IceThread</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>389.3436627840841</double>
+     <double>108.35069627362262</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode5" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>lua_State * m_L
+std::string m_fileName
+std::string m_lastError
+IceUtil::Mutex m_mut</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>int write( const std::string &amp; fileName, const std::string &amp; stri )
+int read( const std::string &amp; fileName, std::string &amp; stri, int maxLen )
+void setFileName( const std::string &amp; fileName )
+
+void run()
+bool isRun() const;
+void stop()
+const std::string &amp; lastError() const
+
+int setTimer( lua_State * L )
+int exit( lua_State * L )
+int motors( lua_State * L )
+int camera( lua_State * L )
+int lineHook( lua_State * L )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>LuaThread</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>638.7286267743387</double>
+     <double>732.329731385045</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object id="ClassNode6" class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>Ice::ObjectPrx&lt;LuaThread&gt; luaThread</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>int write( const std::string &amp; fileName, const::std::string &amp; stri )
+int read( const std::string &amp; fileName, std::string &amp; stri, int maxLen )
+void run( const std::fileName )
+bool isRun() const
+void stop()
+const std::string &amp; lastError() const
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>LuaIce</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>545.3634703364094</double>
+     <double>218.5953783472944</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="methods">
+     <void property="text">
+      <string>void registerClient( const ClientIcePrx &amp; client, const std::string &amp; name  )
+// Попросить интерфейс устройства
+bool queryControl( DeviceViewIcePrx &amp; device )
+// Освободить управление устройством
+void releaseControl()
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>Host</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1601.9999999999995</double>
+     <double>231.99999999999994</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="methods">
+     <void property="text">
+      <string>void image( const std::vector&lt;char&gt; &amp; img )
+void dir( int &amp; dir1, int &amp; dir2 )
+void servo( qreal &amp; servo1, qreal &amp; servo2 )
+void device( DeviceViewIcePrx &amp; device )</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>Client</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1240.0</double>
+     <double>54.0</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="name">
+     <void property="text">
+      <string>DeviceState</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1836.4067332371906</double>
+     <double>648.4526694575496</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="methods">
+     <void property="text">
+      <string>void setMotoEn( bool en )
+void setServoEn( bool en )</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>DeviceSuperIce: DeviceCtrlIce</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1804.8605181524133</double>
+     <double>389.3635856610147</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="methods">
+     <void property="text">
+      <string>void setMoto( int dir1, int dir2, int timeout )
+void setServo( qreal servo1, qreal servo2 )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>DeviceCtrlIce: DeviceViewIce
+</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1481.3624702033417</double>
+     <double>393.9999999999999</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="methods">
+     <void property="text">
+      <string>bool motoEn() const
+bool servoEn() const
+void moto( int &amp; dir1, int &amp; dir2 ) const
+void servo( qreal &amp; servo1, qreal &amp; servo2 ) const
+void image( std::vector&lt;char&gt; &amp; image )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>DeviceViewIce</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1133.045378491522</double>
+     <double>393.9999999999999</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>MotoIcePrx m_moto
+CameraPrx m_camera
+QList&lt;ClientPrx&gt; m_clients</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>DeviceIce( MotoIcePrx moto, CameraIcePrx cam, LuaIcePrx lua )
+~DeviceIce()
+
+bool connect( const std::string &amp; host, int port )
+bool isConnected() const
+void disconnect()
+
+// Кому отсылать картинки и текущие настройки.
+void addClient( const ClientIcePrx &amp; client  )
+
+void setCameraDir( qreal dir1, qreal dir2 )
+void cameraDir( qreal &amp; dir1, qreal &amp; dir2 )
+void setMoto( int dir1, int dir2 )
+void moto( int &amp; dir1, int &amp; dir2 )
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>Device</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1343.9999999999993</double>
+     <double>725.9999999999998</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="name">
+     <void property="text">
+      <string>IceDeviceThread
+</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1835.8129087455447</double>
+     <double>583.6369720678216</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="name">
+     <void property="text">
+      <string>IceHdwThread</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double">
+    <void method="setLocation">
+     <double>1844.3630279321778</double>
+     <double>721.8644222542696</double>
+    </void>
+   </object>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="endArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="V"/>
+    </void>
+    <void property="lineStyle">
+     <object class="com.horstmann.violet.LineStyle" field="DOTTED"/>
+    </void>
+   </object>
+   <object idref="ClassNode3"/>
+   <object idref="ClassNode1"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="endArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="V"/>
+    </void>
+    <void property="lineStyle">
+     <object class="com.horstmann.violet.LineStyle" field="DOTTED"/>
+    </void>
+   </object>
+   <object idref="ClassNode2"/>
+   <object idref="ClassNode0"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="bentStyle">
+     <object class="com.horstmann.violet.BentStyle" field="HVH"/>
+    </void>
+    <void property="startArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="BLACK_DIAMOND"/>
+    </void>
+   </object>
+   <object idref="ClassNode4"/>
+   <object idref="ClassNode2"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="bentStyle">
+     <object class="com.horstmann.violet.BentStyle" field="HVH"/>
+    </void>
+    <void property="startArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="BLACK_DIAMOND"/>
+    </void>
+   </object>
+   <object idref="ClassNode4"/>
+   <object idref="ClassNode3"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="endArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="V"/>
+    </void>
+    <void property="lineStyle">
+     <object class="com.horstmann.violet.LineStyle" field="DOTTED"/>
+    </void>
+   </object>
+   <object idref="ClassNode6"/>
+   <object idref="ClassNode5"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="bentStyle">
+     <object class="com.horstmann.violet.BentStyle" field="HVH"/>
+    </void>
+    <void property="startArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="BLACK_DIAMOND"/>
+    </void>
+   </object>
+   <object idref="ClassNode4"/>
+   <object idref="ClassNode6"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.NoteEdge"/>
+   <object idref="ClassNode1"/>
+   <object idref="ClassNode1"/>
+  </void>
+ </object>
+</java>

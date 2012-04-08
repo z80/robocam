@@ -1,0 +1,362 @@
+# depslib dependency file v1.0
+1314103664 source:c:\projects\avr\chasis\projects\usb\src\main.c
+	<avr/io.h>
+	<avr/wdt.h>
+	<avr/interrupt.h>
+	"usbdrv.h"
+	<util/delay.h>
+	"io_ctrl.h"
+
+1313437872 "
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrv.h
+	"usbconfig.h"
+	"usbportability.h"
+
+1309498048 ility.h"
+
+1309777936 c:\projects\avr\chasis\projects\usb\v-usb\usbconfig.h
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbportability.h
+	<ioavr.h>
+	<inavr.h>
+	<io.h>
+	<delay.h>
+	<avr/io.h>
+	<avr/pgmspace.h>
+
+1309498048 ace.h>
+
+1314094914 c:\projects\avr\chasis\projects\usb\src\io_ctrl.h
+
+1314094914 source:c:\projects\avr\chasis\projects\usb\src\uart.c
+	"uart.h"
+	<avr/io.h>
+
+1309498048 
+
+1314094914 c:\projects\avr\chasis\projects\usb\src\uart.h
+
+1314094916 source:c:\projects\avr\chasis\projects\usb\v-usb\usbdrv.c
+	"usbportability.h"
+	"usbdrv.h"
+	"oddebug.h"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\oddebug.h
+	"usbportability.h"
+
+1314094916 source:c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm.s
+	"usbportability.h"
+	"usbdrv.h"
+	"usbdrvasm18-crc.inc"
+	"usbdrvasm12.inc"
+	"usbdrvasm128.inc"
+	"usbdrvasm15.inc"
+	"usbdrvasm16.inc"
+	"usbdrvasm165.inc"
+	"usbdrvasm20.inc"
+
+1309498048 20.inc"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm18-crc.inc
+	"asmcommon.inc"
+	<stdio.h>
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\asmcommon.inc
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm12.inc
+	"asmcommon.inc"
+
+1309498048 .inc"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm128.inc
+	"asmcommon.inc"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm15.inc
+	"asmcommon.inc"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm16.inc
+	"asmcommon.inc"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm165.inc
+	"asmcommon.inc"
+
+1314094916 c:\projects\avr\chasis\projects\usb\v-usb\usbdrvasm20.inc
+	"asmcommon.inc"
+
+1314103759 source:c:\projects\avr\chasis\projects\usb\src\io_ctrl.c
+	"io_ctrl.h"
+	"uart.h"
+
+1309800694 source:/home/z80/projects/pcb/chasis/projects/usb/src/io_ctrl.c
+	"io_ctrl.h"
+	"uart.h"
+
+1309713527 /home/z80/projects/pcb/chasis/projects/usb/src/io_ctrl.h
+
+1309627649 /home/z80/projects/pcb/chasis/projects/usb/src/uart.h
+
+1309800694 source:/home/z80/projects/pcb/chasis/projects/usb/src/uart.c
+	"uart.h"
+	<avr/io.h>
+
+1309498048 source:/home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrv.c
+	"usbportability.h"
+	"usbdrv.h"
+	"oddebug.h"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbportability.h
+	<ioavr.h>
+	<inavr.h>
+	<io.h>
+	<delay.h>
+	<avr/io.h>
+	<avr/pgmspace.h>
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrv.h
+	"usbconfig.h"
+	"usbportability.h"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbconfig.h
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/oddebug.h
+	"usbportability.h"
+
+1309498048 source:/home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm.S
+	"usbportability.h"
+	"usbdrv.h"
+	"usbdrvasm18-crc.inc"
+	"usbdrvasm12.inc"
+	"usbdrvasm128.inc"
+	"usbdrvasm15.inc"
+	"usbdrvasm16.inc"
+	"usbdrvasm165.inc"
+	"usbdrvasm20.inc"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm18-crc.inc
+	"asmcommon.inc"
+	<stdio.h>
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/asmcommon.inc
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm12.inc
+	"asmcommon.inc"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm128.inc
+	"asmcommon.inc"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm15.inc
+	"asmcommon.inc"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm16.inc
+	"asmcommon.inc"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm165.inc
+	"asmcommon.inc"
+
+1309498048 /home/z80/projects/pcb/chasis/projects/usb/v-usb/usbdrvasm20.inc
+	"asmcommon.inc"
+
+1313437872 source:/home/z80/projects/pcb/chasis/projects/usb/src/main.c
+	<avr/io.h>
+	<avr/wdt.h>
+	<avr/interrupt.h>
+	"usbdrv.h"
+	<util/delay.h>
+	"io_ctrl.h"
+
+1313438320 /home/z80/projects/pcb/chasis/projects/usb/src/usbconfig.h
+
+1314094914 c:\projects\avr\chasis\projects\usb\src\usbconfig.h
+
+1314299407 source:/home/z80/projects/pcb/chassis/projects/usb/src/io_ctrl.c
+	"io_ctrl.h"
+	"uart.h"
+	<avr/io.h>
+
+1313602739 /home/z80/projects/pcb/chassis/projects/usb/src/io_ctrl.h
+
+1313602739 /home/z80/projects/pcb/chassis/projects/usb/src/uart.h
+
+1313602739 source:/home/z80/projects/pcb/chassis/projects/usb/src/uart.c
+	"uart.h"
+	<avr/io.h>
+
+1313602740 source:/home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrv.c
+	"usbportability.h"
+	"usbdrv.h"
+	"oddebug.h"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbportability.h
+	<ioavr.h>
+	<inavr.h>
+	<io.h>
+	<delay.h>
+	<avr/io.h>
+	<avr/pgmspace.h>
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrv.h
+	"usbconfig.h"
+	"usbportability.h"
+
+1313602739 /home/z80/projects/pcb/chassis/projects/usb/src/usbconfig.h
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/oddebug.h
+	"usbportability.h"
+
+1313602740 source:/home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm.S
+	"usbportability.h"
+	"usbdrv.h"
+	"usbdrvasm18-crc.inc"
+	"usbdrvasm12.inc"
+	"usbdrvasm128.inc"
+	"usbdrvasm15.inc"
+	"usbdrvasm16.inc"
+	"usbdrvasm165.inc"
+	"usbdrvasm20.inc"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm18-crc.inc
+	"asmcommon.inc"
+	<stdio.h>
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/asmcommon.inc
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm12.inc
+	"asmcommon.inc"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm128.inc
+	"asmcommon.inc"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm15.inc
+	"asmcommon.inc"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm16.inc
+	"asmcommon.inc"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm165.inc
+	"asmcommon.inc"
+
+1313602740 /home/z80/projects/pcb/chassis/projects/usb/v-usb/usbdrvasm20.inc
+	"asmcommon.inc"
+
+1314467278 source:/home/z80/projects/pcb/chassis/projects/usb/src/main.c
+	<avr/io.h>
+	<avr/wdt.h>
+	<avr/interrupt.h>
+	"usbdrv.h"
+	<util/delay.h>
+	"io_ctrl.h"
+
+1319216386 source:/home/z80/projects/pcb/chassis/projects/firmware/usb/src/io_ctrl.c
+	"io_ctrl.h"
+	"uart.h"
+	<avr/io.h>
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/src/io_ctrl.h
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/src/uart.h
+
+1319216386 source:/home/z80/projects/pcb/chassis/projects/firmware/usb/src/main.c
+	<avr/io.h>
+	<avr/wdt.h>
+	<avr/interrupt.h>
+	"usbdrv.h"
+	<util/delay.h>
+	"io_ctrl.h"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrv.h
+	"usbconfig.h"
+	"usbportability.h"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/src/usbconfig.h
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbportability.h
+	<ioavr.h>
+	<inavr.h>
+	<io.h>
+	<delay.h>
+	<avr/io.h>
+	<avr/pgmspace.h>
+
+1319216386 source:/home/z80/projects/pcb/chassis/projects/firmware/usb/src/uart.c
+	"uart.h"
+	<avr/io.h>
+
+1319216386 source:/home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrv.c
+	"usbportability.h"
+	"usbdrv.h"
+	"oddebug.h"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/oddebug.h
+	"usbportability.h"
+
+1319216386 source:/home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm.S
+	"usbportability.h"
+	"usbdrv.h"
+	"usbdrvasm18-crc.inc"
+	"usbdrvasm12.inc"
+	"usbdrvasm128.inc"
+	"usbdrvasm15.inc"
+	"usbdrvasm16.inc"
+	"usbdrvasm165.inc"
+	"usbdrvasm20.inc"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm18-crc.inc
+	"asmcommon.inc"
+	<stdio.h>
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/asmcommon.inc
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm12.inc
+	"asmcommon.inc"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm128.inc
+	"asmcommon.inc"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm15.inc
+	"asmcommon.inc"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm16.inc
+	"asmcommon.inc"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm165.inc
+	"asmcommon.inc"
+
+1319216386 /home/z80/projects/pcb/chassis/projects/firmware/usb/v-usb/usbdrvasm20.inc
+	"asmcommon.inc"
+
+1319444425 source:c:\projects\avr\chassis\projects\firmware\usb\src\main.c
+	<avr/io.h>
+	<avr/wdt.h>
+	<avr/interrupt.h>
+	"usbdrv.h"
+	<util/delay.h>
+	"io_ctrl.h"
+
+1319444426 c:\projects\avr\chassis\projects\firmware\usb\v-usb\usbdrv.h
+	"usbconfig.h"
+	"usbportability.h"
+
+1319444425 c:\projects\avr\chassis\projects\firmware\usb\src\usbconfig.h
+
+1319444426 c:\projects\avr\chassis\projects\firmware\usb\v-usb\usbportability.h
+	<ioavr.h>
+	<inavr.h>
+	<io.h>
+	<delay.h>
+	<avr/io.h>
+	<avr/pgmspace.h>
+
+1319444425 c:\projects\avr\chassis\projects\firmware\usb\src\io_ctrl.h
+
+1319444425 source:c:\projects\avr\chassis\projects\firmware\usb\src\uart.c
+	"uart.h"
+	<avr/io.h>
+
+1319444425 c:\projects\avr\chassis\projects\firmware\usb\src\uart.h
+
+1319444425 source:c:\projects\avr\chassis\projects\firmware\usb\src\io_ctrl.c
+	"io_ctrl.h"
+	"uart.h"
+	<avr/io.h>
+

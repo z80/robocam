@@ -1,0 +1,164 @@
+Cmp-Mod V01 Created by CvPCB (2011-07-08 BZR 3044)-stable date = Mon 25 Jul 2011 10:46:52 PM MSD
+
+BeginCmp
+TimeStamp = /4E1210DE;
+Reference = C1;
+ValeurCmp = 100n;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E12110B;
+Reference = C2;
+ValeurCmp = 220u;
+IdModule  = C2V10;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E13649F;
+Reference = C3;
+ValeurCmp = 2.2n;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136588;
+Reference = C4;
+ValeurCmp = 100n;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136596;
+Reference = C5;
+ValeurCmp = 470u;
+IdModule  = my_c_1x1_cm_smd;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E121190;
+Reference = D1;
+ValeurCmp = 1n5819;
+IdModule  = D3;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E1210EC;
+Reference = L1;
+ValeurCmp = 100u;
+IdModule  = my_inductance;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136FFC;
+Reference = P1;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E13700D;
+Reference = P2;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E137008;
+Reference = P3;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AC7;
+Reference = R1;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AC3;
+Reference = R2;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136ABD;
+Reference = R3;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E12113F;
+Reference = R4;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AB7;
+Reference = R5;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AE3;
+Reference = R6;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AE4;
+Reference = R7;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AE5;
+Reference = R8;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AE7;
+Reference = R9;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136AE6;
+Reference = R10;
+ValeurCmp = 1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E13650F;
+Reference = R11;
+ValeurCmp = 10k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E136A11;
+Reference = R12;
+ValeurCmp = 30k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E1368E7;
+Reference = U1;
+ValeurCmp = NCP3063;
+IdModule  = SO8E;
+EndCmp
+
+EndListe

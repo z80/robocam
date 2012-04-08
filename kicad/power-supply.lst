@@ -1,0 +1,55 @@
+eeschema (2011-07-05 BZR 3040)-stable  >> Creation date: Wed 06 Jul 2011 12:18:14 AM MSD
+
+#Cmp ( order = Reference )
+| C1         100n        
+| C2         220u        
+| C3         2.2n        
+| C4         100n        
+| C5         470u        
+| D1         1n5819      
+| L1         47u         
+| P1         CONN_1      
+| P2         CONN_1      
+| P3         CONN_1      
+| R1         1           
+| R2         1           
+| R3         1           
+| R4         1           
+| R5         1           
+| R6         1           
+| R7         1           
+| R8         1           
+| R9         1           
+| R10        1           
+| R11        10k         
+| R12        30k         
+| U1         NCP3063     
+#End Cmp
+
+#Cmp ( order = Value )
+| 1            R1        
+| 1            R2        
+| 1            R3        
+| 1            R4        
+| 1            R5        
+| 1            R6        
+| 1            R7        
+| 1            R8        
+| 1            R9        
+| 1            R10       
+| 100n         C1        
+| 100n         C4        
+| 10k          R11       
+| 1n5819       D1        
+| 2.2n         C3        
+| 220u         C2        
+| 30k          R12       
+| 470u         C5        
+| 47u          L1        
+| CONN_1       P1        
+| CONN_1       P2        
+| CONN_1       P3        
+| NCP3063      U1        
+#End Cmp
+
+#End List

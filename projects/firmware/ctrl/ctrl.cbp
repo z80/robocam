@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ctrl" />
+		<Option pch_mode="2" />
+		<Option compiler="avrgcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/ctrl.elf" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="avrgcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="src" />
+					<Add directory="freertos" />
+					<Add directory="freertos/mem_manager" />
+					<Add directory="freertos/avr" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="obj/Release/ctrl.elf" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="avrgcc" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add directory="src" />
+					<Add directory="freertos" />
+					<Add directory="freertos/mem_manager" />
+					<Add directory="freertos/avr" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-mmcu=atmega16" />
+			<Add option="-Wall" />
+			<Add option="-DF_CPU=16000000UL" />
+			<Add directory="src" />
+			<Add directory="freertos" />
+			<Add directory="freertos/mem_manager" />
+			<Add directory="freertos/avr" />
+		</Compiler>
+		<Linker>
+			<Add option="-mmcu=atmega16" />
+			<Add option="-Wl,-Map=$(TARGET_OUTPUT_FILE).map,--cref" />
+		</Linker>
+		<ExtraCommands>
+			<Add after="avr-size $(TARGET_OUTPUT_FILE)" />
+			<Add after="avr-objcopy -O ihex -R .eeprom -R .eesafe $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_FILE).hex" />
+			<Add after="avr-objcopy --no-change-warnings -j .eeprom --change-section-lma .eeprom=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_FILE).eep.hex" />
+			<Add after="avr-objdump -h -S $(TARGET_OUTPUT_FILE) &gt; $(TARGET_OUTPUT_FILE).lss" />
+		</ExtraCommands>
+		<Unit filename="freertos/FreeRTOS.h" />
+		<Unit filename="freertos/StackMacros.h" />
+		<Unit filename="freertos/avr/port.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="freertos/avr/portmacro.h" />
+		<Unit filename="freertos/croutine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="freertos/croutine.h" />
+		<Unit filename="freertos/list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="freertos/list.h" />
+		<Unit filename="freertos/mem_manager/heap_1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="freertos/mpu_wrappers.h" />
+		<Unit filename="freertos/portable.h" />
+		<Unit filename="freertos/projdefs.h" />
+		<Unit filename="freertos/queue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="freertos/queue.h" />
+		<Unit filename="freertos/semphr.h" />
+		<Unit filename="freertos/task.h" />
+		<Unit filename="freertos/tasks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/FreeRTOSConfig.h" />
+		<Unit filename="src/io_struct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/io_struct.h" />
+		<Unit filename="src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/task_dbg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/task_dbg.h" />
+		<Unit filename="src/task_pwm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/task_pwm.h" />
+		<Unit filename="src/task_watchdog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/task_watchdog.h" />
+		<Unit filename="src/uart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/uart.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

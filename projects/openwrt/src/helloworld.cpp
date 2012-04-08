@@ -1,0 +1,1 @@
+/***************** Helloworld.cpp*****************/#include <iostream>#include <string>using namespace std;int main(){	string s = "Hell! O' world, why won't my c++ code run?\n\n";	cout << s;	return 0;}

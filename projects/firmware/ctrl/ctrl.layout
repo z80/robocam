@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="freertos\avr\port.c" open="0" top="0" tabpos="0">
+		<Cursor position="3385" topLine="57" />
+	</File>
+	<File name="freertos\avr\portmacro.h" open="0" top="0" tabpos="12">
+		<Cursor position="3948" topLine="68" />
+	</File>
+	<File name="freertos\croutine.h" open="0" top="0" tabpos="10">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="freertos\task.h" open="0" top="0" tabpos="11">
+		<Cursor position="5966" topLine="159" />
+	</File>
+	<File name="freertos\tasks.c" open="0" top="0" tabpos="0">
+		<Cursor position="18318" topLine="398" />
+	</File>
+	<File name="src\FreeRTOSConfig.h" open="0" top="0" tabpos="4">
+		<Cursor position="4822" topLine="65" />
+	</File>
+	<File name="src\io_struct.c" open="1" top="0" tabpos="7">
+		<Cursor position="2806" topLine="0" />
+	</File>
+	<File name="src\io_struct.h" open="1" top="0" tabpos="2">
+		<Cursor position="444" topLine="0" />
+	</File>
+	<File name="src\main.c" open="1" top="1" tabpos="8">
+		<Cursor position="364" topLine="0" />
+	</File>
+	<File name="src\task_dbg.c" open="1" top="0" tabpos="1">
+		<Cursor position="976" topLine="1" />
+	</File>
+	<File name="src\task_dbg.h" open="1" top="0" tabpos="5">
+		<Cursor position="154" topLine="0" />
+	</File>
+	<File name="src\task_pwm.c" open="1" top="0" tabpos="6">
+		<Cursor position="2062" topLine="26" />
+	</File>
+	<File name="src\task_pwm.h" open="0" top="0" tabpos="8">
+		<Cursor position="108" topLine="0" />
+	</File>
+	<File name="src\task_watchdog.c" open="1" top="0" tabpos="4">
+		<Cursor position="467" topLine="0" />
+	</File>
+	<File name="src\task_watchdog.h" open="1" top="0" tabpos="3">
+		<Cursor position="165" topLine="0" />
+	</File>
+	<File name="src\uart.c" open="0" top="0" tabpos="1">
+		<Cursor position="639" topLine="0" />
+	</File>
+	<File name="src\uart.h" open="0" top="0" tabpos="5">
+		<Cursor position="109" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

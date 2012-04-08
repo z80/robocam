@@ -1,0 +1,22 @@
+<!DOCTYPE RCC><RCC version="1.0">
+
+<qresource>
+    <file>images/arrow.png</file>
+    <file>images/network.png</file>
+    <file>images/chat.png</file>
+    <file>images/camera.png</file>
+    <file>images/motor.png</file>
+    <file>images/left.png</file>
+    <file>images/right.png</file>
+    <file>images/up.png</file>
+    <file>images/down.png</file>
+    <file>images/ctrl.png</file>
+    <file>images/sudoctrl.png</file>
+    <file>images/send.png</file>
+    <file>images/userlist.png</file>
+    <file>images/userlistbig.png</file>
+</qresource>
+
+</RCC>
+
+

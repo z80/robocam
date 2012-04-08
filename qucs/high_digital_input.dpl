@@ -1,0 +1,29 @@
+<Qucs Schematic 0.0.15>
+<Properties>
+  <View=0,-153,1197,840,0.700989,0,22>
+  <Grid=10,10,0>
+  <DataSet=high_digital_input.dat>
+  <DataDisplay=high_digital_input.sch>
+  <OpenDisplay=1>
+  <showFrame=0>
+  <FrameText0=Title>
+  <FrameText1=Drawn By:>
+  <FrameText2=Date:>
+  <FrameText3=Revision:>
+</Properties>
+<Symbol>
+</Symbol>
+<Components>
+</Components>
+<Wires>
+</Wires>
+<Diagrams>
+  <Rect 129 532 552 485 3 #c0c0c0 1 00 1 -1 0.2 1 1 -1 0.2 1 1 -1 0.2 1 315 0 225 "" "" "">
+	<"in.Vt" #0000ff 0 3 0 0 0>
+  </Rect>
+  <Rect 702 530 448 483 3 #c0c0c0 1 00 1 0 0.2 1 1 -0.1 0.5 1.1 1 -0.1 0.5 1.1 315 0 225 "" "" "">
+	<"out.Vt" #0000ff 0 3 0 0 0>
+  </Rect>
+</Diagrams>
+<Paintings>
+</Paintings>

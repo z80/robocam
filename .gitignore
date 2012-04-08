@@ -1,0 +1,11 @@
+projects/software/build
+projects/software_build
+projects/software_app
+projects/software/app
+projects/software/app/client
+projects/software/app/host
+projects/software/app/hdw
+projetcs/software/build
+*.swp
+*.o
+

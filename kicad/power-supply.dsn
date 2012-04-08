@@ -1,0 +1,230 @@
+(pcb "/home/z80/projects/pcb/chasis/kicad/power-supply.dsn"
+  (parser
+    (string_quote ")
+    (space_in_quoted_tokens on)
+    (host_cad "Kicad's PCBNEW")
+    (host_version "(2011-07-05 BZR 3040)-stable")
+  )
+  (resolution mil 10)
+  (unit mil)
+  (structure
+    (layer Front
+      (type signal)
+      (property
+        (index 0)
+      )
+    )
+    (layer Back
+      (type signal)
+      (property
+        (index 1)
+      )
+    )
+    (boundary
+      (path pcb 0  5653.5 -3787.4  5645.7 -3787.4  5645.7 -4598.4  6952.8 -4598.4
+            6952.8 -3787.4  5653.5 -3787.4)
+    )
+    (via "Via[0-1]_78.7:27.6_mil" "Via[0-1]_78.7:0_mil")
+    (rule
+      (width 30)
+      (clearance 10.1)
+      (clearance 10.1 (type default_smd))
+      (clearance 2.5 (type smd_smd))
+    )
+  )
+  (placement
+    (component SO8E
+      (place U1 6100 -4300 front 90 (PN NCP3063))
+    )
+    (component SM0805
+      (place R12 6393.7 -4527.6 front 180 (PN 30k))
+      (place R11 6100 -4100 front 0 (PN 10k))
+      (place R10 6196.9 -4527.6 front 0 (PN 1))
+      (place R9 5771.7 -4165.4 front 180 (PN 1))
+      (place R8 6078.7 -4496.1 front 270 (PN 1))
+      (place R7 5771.7 -4338.6 front 180 (PN 1))
+      (place R6 5771.7 -4425.2 front 180 (PN 1))
+      (place R5 5771.7 -4511.8 front 180 (PN 1))
+      (place R4 5992.1 -4496.1 front 270 (PN 1))
+      (place R3 5905.5 -4496.1 front 270 (PN 1))
+      (place R2 5771.7 -4078.7 front 180 (PN 1))
+      (place R1 5771.7 -4252 front 180 (PN 1))
+      (place C4 6315 -4126 front 270 (PN 100n))
+      (place C3 6315 -4283.5 front 90 (PN 2.2n))
+      (place C1 5921.3 -4102.4 front 90 (PN 100n))
+    )
+    (component D4
+      (place D1 6417.3 -4212.6 front 270 (PN 1n5819))
+    )
+    (component 1pin
+      (place P3 6795.3 -3913.4 front 0 (PN CONN_1))
+      (place P2 6000 -3913.4 front 0 (PN CONN_1))
+      (place P1 5771.7 -3913.4 front 0 (PN CONN_1))
+    )
+    (component C1V7
+      (place C2 6228.3 -3913.4 front 270 (PN 220u))
+      (place C5 6566.9 -3913.4 front 270 (PN 470u))
+    )
+    (component my_inductance
+      (place L1 6716.5 -4259.8 front 180 (PN 100u))
+    )
+  )
+  (library
+    (image SO8E
+      (outline (path signal 5  -105 -70  -105 -75))
+      (outline (path signal 5  -105 -75  105 -75))
+      (outline (path signal 5  105 75  -105 75))
+      (outline (path signal 5  -105 75  -105 -70))
+      (outline (path signal 5  -105 20  -85 20))
+      (outline (path signal 5  -85 20  -85 -20))
+      (outline (path signal 5  -85 -20  -105 -20))
+      (outline (path signal 5  105 75  105 -75))
+      (pin Rect[T]Pad_20x45_mil 8 -75 105)
+      (pin Rect[T]Pad_20x45_mil 1 -75 -105)
+      (pin Rect[T]Pad_20x45_mil 7 -25 105)
+      (pin Rect[T]Pad_20x45_mil 6 25 105)
+      (pin Rect[T]Pad_20x45_mil 5 75 105)
+      (pin Rect[T]Pad_20x45_mil 2 -25 -105)
+      (pin Rect[T]Pad_20x45_mil 3 25 -105)
+      (pin Rect[T]Pad_20x45_mil 4 75 -105)
+    )
+    (image SM0805
+      (outline (path signal 5  -60 -30  -60.3 -31.5  -61 -32.9  -62.1 -34  -63.5 -34.7
+            -65 -35  -66.5 -34.7  -67.9 -34  -69 -32.9  -69.7 -31.5  -70 -30
+            -69.7 -28.5  -69 -27.1  -67.9 -26  -66.5 -25.3  -65 -25  -63.5 -25.3
+            -62.1 -26  -61 -27.1  -60.3 -28.5))
+      (outline (path signal 5  -20 -30  -60 -30))
+      (outline (path signal 5  -60 -30  -60 30))
+      (outline (path signal 5  -60 30  -20 30))
+      (outline (path signal 5  20 30  60 30))
+      (outline (path signal 5  60 30  60 -30))
+      (outline (path signal 5  60 -30  20 -30))
+      (pin Rect[T]Pad_35x55_mil 1 -37.5 0)
+      (pin Rect[T]Pad_35x55_mil 2 37.5 0)
+    )
+    (image D4
+      (outline (path signal 12  -150 50  150 50))
+      (outline (path signal 12  150 50  150 -50))
+      (outline (path signal 12  150 -50  -150 -50))
+      (outline (path signal 12  -150 -50  -150 50))
+      (outline (path signal 12  125 50  125 -50))
+      (outline (path signal 12  100 -50  100 50))
+      (outline (path signal 12  -150 0  -200 0))
+      (outline (path signal 12  150 0  200 0))
+      (pin Round[A]Pad_70_mil 1 -200 0)
+      (pin Rect[A]Pad_70x70_mil 2 200 0)
+    )
+    (image 1pin
+      (outline (path signal 15  90 0  85.5 -27.8  72.8 -52.9  52.9 -72.8  27.8 -85.5  0 -90
+            -27.8 -85.5  -52.9 -72.8  -72.8 -52.9  -85.5 -27.8  -90 0  -85.5 27.8
+            -72.8 52.9  -52.9 72.8  -27.8 85.5  0 90  27.8 85.5  52.9 72.8
+            72.8 52.9  85.5 27.8))
+      (pin Round[A]Pad_160_mil 1 0 0)
+    )
+    (image C1V7
+      (outline (path signal 5  125 0  118.8 -38.6  101.1 -73.4  73.4 -101.1  38.6 -118.8
+            0 -125  -38.6 -118.8  -73.4 -101.1  -101.1 -73.4  -118.8 -38.6
+            -125 0  -118.8 38.6  -101.1 73.4  -73.4 101.1  -38.6 118.8  0 125
+            38.6 118.8  73.4 101.1  101.1 73.4  118.8 38.6))
+      (pin Rect[A]Pad_60x60_mil 1 -50 0)
+      (pin Round[A]Pad_60_mil 2 50 0)
+    )
+    (image my_inductance
+      (outline (path signal 15  19.7 -157.5  19.7 -206.7))
+      (outline (path signal 15  -19.7 -157.5  -19.7 -206.7))
+      (outline (path signal 15  -19.7 -157.5  0 -137.8))
+      (outline (path signal 15  0 -137.8  19.7 -157.5))
+      (outline (path signal 15  -19.7 206.7  -19.7 167.3))
+      (outline (path signal 15  -19.7 167.3  0 147.6))
+      (outline (path signal 15  0 147.6  19.7 167.3))
+      (outline (path signal 15  19.7 167.3  19.7 206.7))
+      (outline (path signal 15  206.7 0  196.5 -63.8  167.2 -121.4  121.4 -167.2  63.8 -196.5
+            0 -206.7  -63.8 -196.5  -121.4 -167.2  -167.2 -121.4  -196.5 -63.8
+            -206.7 0  -196.5 63.8  -167.2 121.4  -121.4 167.2  -63.8 196.5
+            0 206.7  63.8 196.5  121.4 167.2  167.2 121.4  196.5 63.8))
+      (pin Round[A]Pad_60_mil 1 -78.7 98.4)
+      (pin Round[A]Pad_60_mil 2 -78.7 -98.4)
+      (pin Round[A]Pad_60_mil 3 78.7 -98.4)
+      (pin Round[A]Pad_60_mil 4 78.7 98.4)
+    )
+    (padstack Round[A]Pad_160_mil
+      (shape (circle Front 160))
+      (shape (circle Back 160))
+      (attach off)
+    )
+    (padstack Round[A]Pad_60_mil
+      (shape (circle Front 60))
+      (shape (circle Back 60))
+      (attach off)
+    )
+    (padstack Round[A]Pad_70_mil
+      (shape (circle Front 70))
+      (shape (circle Back 70))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_20x45_mil
+      (shape (rect Front -10 -22.5 10 22.5))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_35x55_mil
+      (shape (rect Front -17.5 -27.5 17.5 27.5))
+      (attach off)
+    )
+    (padstack Rect[A]Pad_60x60_mil
+      (shape (rect Front -30 -30 30 30))
+      (shape (rect Back -30 -30 30 30))
+      (attach off)
+    )
+    (padstack Rect[A]Pad_70x70_mil
+      (shape (rect Front -35 -35 35 35))
+      (shape (rect Back -35 -35 35 35))
+      (attach off)
+    )
+    (padstack "Via[0-1]_78.7:27.6_mil"
+      (shape (circle Front 78.7))
+      (shape (circle Back 78.7))
+      (attach off)
+    )
+    (padstack "Via[0-1]_78.7:0_mil"
+      (shape (circle Front 78.7))
+      (shape (circle Back 78.7))
+      (attach off)
+    )
+  )
+  (network
+    (net /out
+      (pins R12-1 C4-1 P3-1 C5-1 L1-2)
+    )
+    (net GND
+      (pins U1-4 R11-2 C4-2 C3-2 D1-1 P2-1 C2-2 C1-2 C5-2)
+    )
+    (net "N-000001"
+      (pins U1-1 U1-7 R10-1 R9-1 R8-1 R7-1 R6-1 R5-1 R4-1 R3-1 R2-1 R1-1)
+    )
+    (net "N-000004"
+      (pins U1-3 C3-1)
+    )
+    (net "N-000007"
+      (pins U1-5 R12-2 R11-1)
+    )
+    (net "N-000008"
+      (pins U1-2 D1-2 L1-1)
+    )
+    (net VCC
+      (pins U1-6 R10-2 R9-2 R8-2 R7-2 R6-2 R5-2 R4-2 R3-2 R2-2 R1-2 P1-1 C2-1 C1-1)
+    )
+    (class kicad_default "" /out GND "N-000001" "N-000004" "N-000007" "N-000008"
+      VCC
+      (circuit
+        (use_via Via[0-1]_78.7:27.6_mil)
+      )
+      (rule
+        (width 30)
+        (clearance 10.1)
+      )
+    )
+  )
+  (wiring
+    (wire (path Front 30  5995 -4225  5995 -4167.5  6062.5 -4100)(net "N-000007")(type protect))
+  )
+)

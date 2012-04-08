@@ -1,0 +1,7 @@
+$ cd /path/to/firmware.bin/directory
+$ tftp
+tftp> binary
+tftp> trace
+tftp> rexmt 1
+tftp> connect 192.168.0.1
+tftp> put firmware.bin

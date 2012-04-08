@@ -1,0 +1,19 @@
+
+ROOT_DIR=$(pwd)
+BUILD_DIR=./build
+
+mkdir $BUILD_DIR
+cd ./3dparty
+echo $(ls)
+./build_ice
+
+#echo ##############################################
+#exit 0
+
+./ice/unix/generate.sh
+
+cd $ROOT_DIR
+cd $BUILD_DIR
+cmake ../ -DCROSS=false
+make
+make install
