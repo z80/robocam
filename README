@@ -16,10 +16,12 @@ person may get it and drive robot. Also simple chat is implementer for
 people be able to talk to each other while driving the robot through the 
 internet.
 
-Hardware is based on D-Link Dir-320 router. It is equiped with Dagu 
-RP5 chassis. It has two tracks for moving and turning and two servos 
-for yawing and pitching a camera. Motors controller is attached to the 
-router through USB.
+Hardware is based on D-Link Dir-320 router reprogrammed with Linux 
+OpenWrt 10.03 "Back Fire" for embedded platforms. File system is moved 
+from internal 4MB flash to external USB 1GB memory stick.
+Hardware is equiped with Dagu RP5 chassis. It has two tracks for moving 
+and turning and two servos for yawing and pitching a camera. Motors 
+controller is attached to the router through USB.
 
 Motors control board is based on two AVR microcontrollers. One for USB 
 communication and the other one for handling DC track motors and camera 
