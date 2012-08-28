@@ -1,4 +1,4 @@
-update=Mon 27 Aug 2012 09:17:31 PM MSK
+update=Wed 29 Aug 2012 01:28:06 AM MSK
 version=1
 last_client=eeschema
 [cvpcb]
@@ -146,3 +146,4 @@ LibName32=sdc
 LibName33=stm
 LibName34=usb
 LibName35=l293
+LibName36=my_comps
