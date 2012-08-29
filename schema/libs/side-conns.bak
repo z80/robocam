@@ -1,6 +1,7 @@
-PCBNEW-LibModule-V1  Fri 01 Jun 2012 10:13:15 AM MSK
+PCBNEW-LibModule-V1  Fri 01 Jun 2012 10:18:01 AM MSK
 # encoding utf-8
 $INDEX
+side-conn-02
 side-conn-03
 side-conn-04
 side-conn-12
@@ -100,7 +101,7 @@ $MODULE side-conn-12
 Po 0 0 0 15 4FC85D66 00000000 ~~
 Li side-conn-12
 Sc 00000000
-AR 
+AR
 Op 0 0 0
 T0 0 -3000 600 600 0 120 N V 21 N "side-conn-12"
 T1 0 -2000 600 600 0 120 N V 21 N "VAL**"
@@ -189,4 +190,27 @@ Ne 0 ""
 Po -5500 -700
 $EndPAD
 $EndMODULE  side-conn-12
+$MODULE side-conn-02
+Po 0 0 0 15 4FC85E91 00000000 ~~
+Li side-conn-02
+Sc 00000000
+AR 
+Op 0 0 0
+T0 0 -2800 600 600 0 120 N V 21 N "side-conn-02"
+T1 0 -1900 600 600 0 120 N V 21 N "VAL**"
+$PAD
+Sh "1" R 472 1181 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -500 -700
+$EndPAD
+$PAD
+Sh "2" R 472 1181 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 500 -700
+$EndPAD
+$EndMODULE  side-conn-02
 $EndLIBRARY
