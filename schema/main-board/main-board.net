@@ -1,7 +1,7 @@
-# EESchema Netlist Version 1.1 created  Thu 30 Aug 2012 02:28:55 PM MSK
+# EESchema Netlist Version 1.1 created  Thu 30 Aug 2012 03:00:23 PM MSK
 (
  ( /503E73F0 $noname  C8 2n2 {Lib=C}
-  (    1 N-000042 )
+  (    1 N-000040 )
   (    2 GND )
  )
  ( /503E7063 $noname  R8 10k {Lib=R}
@@ -10,21 +10,21 @@
  )
  ( /503E7040 $noname  Q1 bc847 {Lib=NPN}
   (    1 GND )
-  (    2 N-000034 )
-  (    3 N-000023 )
+  (    2 N-000032 )
+  (    3 N-000020 )
  )
  ( /503E6FF6 $noname  Q2 si2301 {Lib=MOS_P}
-  (    D N-000044 )
-  (    G N-000023 )
+  (    D N-000042 )
+  (    G N-000020 )
   (    S boost-output )
  )
  ( /503E6FCB $noname  Q3 si2301 {Lib=MOS_P}
-  (    D N-000044 )
-  (    G N-000023 )
+  (    D N-000042 )
+  (    G N-000020 )
   (    S boost-output )
  )
  ( /503E09BD $noname  C7 2n2 {Lib=C}
-  (    1 N-000042 )
+  (    1 N-000040 )
   (    2 GND )
  )
  ( /503E0904 $noname  R1 10k {Lib=R}
@@ -32,7 +32,7 @@
   (    2 /moto-en )
  )
  ( /503D3F93 $noname  R10 10k {Lib=R}
-  (    1 N-000023 )
+  (    1 N-000020 )
   (    2 boost-output )
  )
  ( /503D3F74 $noname  R17 10k {Lib=R}
@@ -76,32 +76,32 @@
   (    4 boost-input )
   (    5 3v3 )
   (    6 GND )
-  (    7 /solar-tst )
-  (    8 /battery-tst )
+  (    7 led-en )
+  (    8 buck-en )
   (    9 /moto-en )
-  (   10 led-en )
-  (   11 buck-en )
-  (   12 /moto-in1 )
-  (   13 /moto-in2 )
-  (   14 /moto-in4 )
-  (   15 /moto-in3 )
+  (   10 /moto-in1 )
+  (   11 /moto-in2 )
+  (   12 GND )
+  (   13 /moto-in4 )
+  (   14 /moto-in3 )
+  (   15 ? )
   (   16 ? )
-  (   17 ? )
-  (   18 ? )
-  (   19 ? )
+  (   17 GND )
+  (   18 /solar-tst )
+  (   19 /battery-tst )
   (   20 ? )
  )
  ( /503CFCD9 $noname  Q4 irll2703 {Lib=MOS_N}
   (    D /led-gnd )
-  (    G N-000020 )
+  (    G N-000017 )
   (    S GND )
  )
  ( /503CFCD7 $noname  R19 1k {Lib=R}
   (    1 led-en )
-  (    2 N-000020 )
+  (    2 N-000017 )
  )
  ( /503CFC54 $noname  R30 10k {Lib=R}
-  (    1 N-000021 )
+  (    1 N-000018 )
   (    2 led )
  )
  ( /503CFBE8 $noname  C12 100n {Lib=C}
@@ -114,43 +114,43 @@
  )
  ( /503CF9C6 $noname  D2 1N5819 {Lib=DIODESCH}
   (    1 /led-gnd )
-  (    2 N-000041 )
+  (    2 N-000038 )
  )
  ( /503CF9B3 $noname  L3 10u {Lib=INDUCTOR}
-  (    1 N-000041 )
+  (    1 N-000038 )
   (    2 led )
  )
  ( /503CF999 $noname  C9 2n2 {Lib=C}
-  (    1 N-000035 )
+  (    1 N-000034 )
   (    2 /led-gnd )
  )
  ( /503CF8DA $noname  R29 10k {Lib=R}
-  (    1 N-000021 )
+  (    1 N-000018 )
   (    2 /led-gnd )
  )
  ( /503CF8BF $noname  R28 1R5 {Lib=R}
   (    1 boost-output )
-  (    2 N-000019 )
+  (    2 N-000033 )
  )
  ( /503CF8BE $noname  R26 1R5 {Lib=R}
   (    1 boost-output )
-  (    2 N-000019 )
+  (    2 N-000033 )
  )
  ( /503CF8BD $noname  R27 1R5 {Lib=R}
   (    1 boost-output )
-  (    2 N-000019 )
+  (    2 N-000033 )
  )
  ( /503CF8BC $noname  R25 1R5 {Lib=R}
   (    1 boost-output )
-  (    2 N-000019 )
+  (    2 N-000033 )
  )
  ( /503CF8BB $noname  R24 1R5 {Lib=R}
   (    1 boost-output )
-  (    2 N-000019 )
+  (    2 N-000033 )
  )
  ( /503CF8BA $noname  R23 1R5 {Lib=R}
   (    1 boost-output )
-  (    2 N-000019 )
+  (    2 N-000033 )
  )
  ( /503CF88E $noname  C3 220u {Lib=C}
   (    1 boost-output )
@@ -161,19 +161,19 @@
   (    2 /led-gnd )
  )
  ( /503CF870 $noname  U3 NCP3063 {Lib=NCP3063}
-  (    1 N-000019 )
-  (    2 N-000041 )
-  (    3 N-000035 )
+  (    1 N-000033 )
+  (    2 N-000038 )
+  (    3 N-000034 )
   (    4 /led-gnd )
-  (    5 N-000021 )
+  (    5 N-000018 )
   (    6 boost-output )
-  (    7 N-000019 )
+  (    7 N-000033 )
   (    8 ? )
  )
  ( /503CE133 $noname  Q8 si2301 {Lib=MOS_P}
-  (    D N-000046 )
-  (    G N-000037 )
-  (    S N-000038 )
+  (    D N-000044 )
+  (    G N-000031 )
+  (    S N-000036 )
  )
  ( /503CDC77 $noname  P9 TST {Lib=TST}
   (    1 /moto-out3 )
@@ -189,10 +189,10 @@
  )
  ( /503CD9E4 $noname  R9 1k {Lib=R}
   (    1 buck-en )
-  (    2 N-000034 )
+  (    2 N-000032 )
  )
  ( /503CD493 $noname  L1 10u {Lib=INDUCTOR}
-  (    1 N-000046 )
+  (    1 N-000044 )
   (    2 5v )
  )
  ( /503C7F2D $noname  C11 220u {Lib=C}
@@ -204,82 +204,82 @@
   (    2 GND )
  )
  ( /503C7EA0 $noname  C6 2n2 {Lib=C}
-  (    1 N-000042 )
+  (    1 N-000040 )
   (    2 GND )
  )
  ( /503C7E90 $noname  R22 470 {Lib=R}
-  (    1 N-000042 )
+  (    1 N-000040 )
   (    2 GND )
  )
  ( /503C7D83 $noname  D1 1N5819 {Lib=DIODESCH}
   (    1 GND )
-  (    2 N-000046 )
+  (    2 N-000044 )
  )
  ( /503C7D40 $noname  L2 10u {Lib=INDUCTOR}
-  (    1 N-000046 )
+  (    1 N-000044 )
   (    2 5v )
  )
  ( /503C7CDC $noname  R31 22k {Lib=R}
-  (    1 N-000046 )
-  (    2 N-000040 )
+  (    1 N-000044 )
+  (    2 N-000039 )
  )
  ( /503C7A6D $noname  Q7 si2301 {Lib=MOS_P}
-  (    D N-000046 )
-  (    G N-000037 )
-  (    S N-000038 )
+  (    D N-000044 )
+  (    G N-000031 )
+  (    S N-000036 )
  )
  ( /503C799C $noname  Q6 bc857 {Lib=PNP}
-  (    1 N-000037 )
-  (    2 N-000045 )
-  (    3 N-000045 )
+  (    1 N-000031 )
+  (    2 N-000043 )
+  (    3 N-000043 )
  )
  ( /503C798F $noname  Q5 bc847 {Lib=NPN}
-  (    1 N-000037 )
-  (    2 N-000045 )
-  (    3 N-000038 )
+  (    1 N-000031 )
+  (    2 N-000043 )
+  (    3 N-000036 )
  )
  ( /503C792F $noname  R11 1R5 {Lib=R}
-  (    1 N-000044 )
-  (    2 N-000038 )
+  (    1 N-000042 )
+  (    2 N-000036 )
  )
  ( /503C7929 $noname  R12 1R5 {Lib=R}
-  (    1 N-000044 )
-  (    2 N-000038 )
+  (    1 N-000042 )
+  (    2 N-000036 )
  )
  ( /503C7926 $noname  R13 1R5 {Lib=R}
-  (    1 N-000044 )
-  (    2 N-000038 )
+  (    1 N-000042 )
+  (    2 N-000036 )
  )
  ( /503C7819 $noname  R15 1R5 {Lib=R}
-  (    1 N-000044 )
-  (    2 N-000038 )
+  (    1 N-000042 )
+  (    2 N-000036 )
  )
  ( /503C7803 $noname  R14 1R5 {Lib=R}
-  (    1 N-000044 )
-  (    2 N-000038 )
+  (    1 N-000042 )
+  (    2 N-000036 )
  )
  ( /503C77EC $noname  R16 1R5 {Lib=R}
-  (    1 N-000044 )
-  (    2 N-000038 )
+  (    1 N-000042 )
+  (    2 N-000036 )
  )
  ( /503C77A3 $noname  R21 1k {Lib=R}
-  (    1 N-000045 )
-  (    2 N-000038 )
+  (    1 N-000043 )
+  (    2 N-000036 )
  )
  ( /503C7739 $noname  C4 2n2 {Lib=C}
-  (    1 N-000040 )
+  (    1 N-000039 )
   (    2 GND )
  )
  ( /503C76E4 $noname  R20 30k {Lib=R}
-  (    1 N-000039 )
+  (    1 N-000037 )
   (    2 5v )
  )
  ( /503C76B2 $noname  R18 10k {Lib=R}
-  (    1 N-000039 )
+  (    1 N-000037 )
   (    2 GND )
  )
  ( /503C766D $noname  C2 100n {Lib=C}
-  (    1 N-000044 )
+  (    1 N-000042 )
   (    2 GND )
  )
  ( /503C7651 $noname  C1 220u {Lib=C}
@@ -287,13 +287,13 @@
   (    2 GND )
  )
  ( /503BB09B $noname  U2 NCP3063 {Lib=NCP3063}
-  (    1 N-000045 )
-  (    2 N-000042 )
-  (    3 N-000040 )
+  (    1 N-000043 )
+  (    2 N-000040 )
+  (    3 N-000039 )
   (    4 GND )
-  (    5 N-000039 )
-  (    6 N-000044 )
-  (    7 N-000038 )
+  (    5 N-000037 )
+  (    6 N-000042 )
+  (    7 N-000036 )
   (    8 ? )
  )
  ( /503BABB8 $noname  U1 L293 {Lib=L293}
@@ -326,10 +326,10 @@
  )
  ( /503B90E8 $noname  R2 10k {Lib=R}
   (    1 boost-input )
-  (    2 N-000033 )
+  (    2 N-000030 )
  )
  ( /503B90E7 $noname  R3 10k {Lib=R}
-  (    1 N-000033 )
+  (    1 N-000030 )
   (    2 /solar-tst )
  )
  ( /503B90E5 $noname  R4 10k {Lib=R}
@@ -341,12 +341,12 @@
   (    2 GND )
  )
  ( /503B9029 $noname  R6 10k {Lib=R}
-  (    1 N-000030 )
+  (    1 N-000027 )
   (    2 /battery-tst )
  )
  ( /503B9021 $noname  R5 10k {Lib=R}
   (    1 boost-output )
-  (    2 N-000030 )
+  (    2 N-000027 )
  )
  ( /503B8FEB $noname  BT1 BATTERY {Lib=BATTERY}
   (    1 boost-output )
@@ -648,239 +648,241 @@ $endlist
 $endfootprintlist
 }
 { Pin List by Nets
-Net 6 "/moto-in4" "moto-in4"
- U1 19
- P11 14
-Net 7 "/moto-in3" "moto-in3"
- P11 15
- U1 12
-Net 8 "/moto-in2" "moto-in2"
+Net 4 "/moto-in4" "moto-in4"
  P11 13
+ U1 19
+Net 5 "/moto-in3" "moto-in3"
+ P11 14
+ U1 12
+Net 6 "/moto-in2" "moto-in2"
  U1 9
-Net 9 "/moto-in1" "moto-in1"
- P11 12
+ P11 11
+Net 7 "/moto-in1" "moto-in1"
  U1 2
-Net 10 "buck-en" "buck-en"
+ P11 10
+Net 8 "buck-en" "buck-en"
  R9 1
  R8 2
- P11 11
-Net 11 "boost-output" "boost-output"
- BT1 1
+ P11 8
+Net 9 "boost-output" "boost-output"
+ R23 1
+ R24 1
  R25 1
+ R27 1
+ C3 1
+ U1 20
+ BT1 1
  R5 1
  C1 1
- U1 20
  R10 2
- Q3 S
  Q2 S
  U3 6
  C5 1
- C3 1
- R23 1
- R24 1
- R28 1
- P11 2
- R27 1
  P11 1
+ Q3 S
+ P11 2
  R26 1
-Net 12 "3v3" "3v3"
- P12 3
- U1 10
+ R28 1
+Net 10 "3v3" "3v3"
  P5 1
+ P12 3
  P11 5
-Net 13 "GND" "GND"
- U1 17
- U1 16
- U1 15
- U1 14
- C4 2
+ U1 10
+Net 11 "GND" "GND"
  BT1 2
- R18 2
+ U1 14
+ U1 15
+ U1 16
+ U1 17
+ P2 1
+ C11 2
+ Q4 S
+ C3 2
+ C4 2
  C10 2
  C6 2
  R22 2
  D1 1
- P11 6
- C3 2
- C11 2
- P2 1
- Q4 S
- C8 2
- Q1 1
- P6 1
- U1 7
- U1 6
- U1 5
- C2 2
- U1 4
- C1 2
- U2 4
- C7 2
- P12 4
- R1 1
- R7 2
- R4 2
  P14 4
  P14 3
- R17 1
+ P11 17
+ P11 12
+ P11 6
+ C7 2
+ C8 2
+ R4 2
+ U1 7
+ P6 1
+ P12 4
+ R18 2
+ C2 2
+ C1 2
+ U1 6
+ U2 4
+ U1 5
+ U1 4
+ Q1 1
  R8 1
-Net 14 "/solar-tst" "solar-tst"
- R4 1
- P11 7
- R3 2
-Net 15 "/battery-tst" "battery-tst"
- R6 2
- R7 1
- P11 8
-Net 16 "/moto-en" "moto-en"
- P11 9
- R1 2
- U1 1
- U1 11
-Net 17 "led-en" "led-en"
- R19 1
- P11 10
+ R1 1
+ R7 2
+ R17 1
+Net 12 "led-en" "led-en"
  R17 2
-Net 18 "/led-gnd" "led-gnd"
- Q4 D
- R29 2
- U3 4
- D2 1
- C5 2
- P13 3
- P13 4
+ R19 1
+ P11 7
+Net 13 "/led-gnd" "led-gnd"
  C13 2
- C9 2
+ P13 4
+ R29 2
  C12 2
-Net 19 "" ""
- R28 2
- R26 2
- R27 2
- R25 2
- R24 2
- U3 7
- R23 2
- U3 1
-Net 20 "" ""
- R19 2
+ C9 2
+ P13 3
+ D2 1
+ Q4 D
+ C5 2
+ U3 4
+Net 14 "/moto-en" "moto-en"
+ R1 2
+ P11 9
+ U1 11
+ U1 1
+Net 15 "/battery-tst" "battery-tst"
+ P11 19
+ R7 1
+ R6 2
+Net 16 "/solar-tst" "solar-tst"
+ R4 1
+ P11 18
+ R3 2
+Net 17 "" ""
  Q4 G
-Net 21 "" ""
- U3 5
- R29 1
+ R19 2
+Net 18 "" ""
  R30 1
-Net 22 "led" "led"
- P13 1
- P13 2
+ R29 1
+ U3 5
+Net 19 "led" "led"
  C12 1
  C13 1
  R30 2
+ P13 1
+ P13 2
  L3 2
-Net 23 "" ""
- Q3 G
- Q1 3
- Q2 G
+Net 20 "" ""
  R10 1
-Net 24 "/scl" "scl"
+ Q3 G
+ Q2 G
+ Q1 3
+Net 21 "/scl" "scl"
  P12 1
  P3 1
-Net 25 "/sda" "sda"
+Net 22 "/sda" "sda"
  P12 2
  P4 1
-Net 26 "boost-input" "boost-input"
+Net 23 "boost-input" "boost-input"
  R2 1
  P1 1
- P11 3
  P11 4
-Net 28 "/moto-out2" "moto-out2"
+ P11 3
+Net 25 "/moto-out2" "moto-out2"
  U1 8
  P8 1
-Net 29 "/moto-out1" "moto-out1"
+Net 26 "/moto-out1" "moto-out1"
  P7 1
  U1 3
-Net 30 "" ""
+Net 27 "" ""
  R5 2
  R6 1
-Net 31 "/moto-out3" "moto-out3"
+Net 28 "/moto-out3" "moto-out3"
  P9 1
  U1 13
-Net 32 "/moto-out4" "moto-out4"
- P10 1
+Net 29 "/moto-out4" "moto-out4"
  U1 18
-Net 33 "" ""
+ P10 1
+Net 30 "" ""
  R3 1
  R2 2
-Net 34 "" ""
- Q1 2
- R9 2
-Net 35 "" ""
- U3 3
- C9 1
-Net 37 "" ""
+Net 31 "" ""
  Q5 1
  Q6 1
- Q8 G
  Q7 G
-Net 38 "" ""
- R11 2
- R12 2
- R13 2
- R15 2
- R14 2
- U2 7
+ Q8 G
+Net 32 "" ""
+ R9 2
+ Q1 2
+Net 33 "" ""
+ U3 7
+ U3 1
+ R23 2
+ R24 2
+ R25 2
+ R27 2
+ R26 2
+ R28 2
+Net 34 "" ""
+ U3 3
+ C9 1
+Net 36 "" ""
  R16 2
+ R14 2
+ R15 2
  R21 2
- Q8 S
- Q7 S
+ R13 2
+ R12 2
+ R11 2
  Q5 3
-Net 39 "" ""
- U2 5
+ U2 7
+ Q7 S
+ Q8 S
+Net 37 "" ""
  R18 1
  R20 1
-Net 40 "" ""
- R31 2
+ U2 5
+Net 38 "" ""
+ D2 2
+ L3 1
+ U3 2
+Net 39 "" ""
  C4 1
  U2 3
-Net 41 "" ""
- L3 1
- D2 2
- U3 2
-Net 42 "" ""
- U2 2
- C8 1
+ R31 2
+Net 40 "" ""
  C6 1
  R22 1
+ U2 2
  C7 1
-Net 43 "5v" "5v"
- L1 2
- C11 1
- C10 1
- P14 2
+ C8 1
+Net 41 "5v" "5v"
  P14 1
- L2 2
+ C11 1
  R20 2
-Net 44 "" ""
- C2 1
- Q3 D
- Q2 D
- U2 6
+ P14 2
+ L2 2
+ L1 2
+ C10 1
+Net 42 "" ""
+ R16 1
+ R14 1
+ R15 1
+ R13 1
  R12 1
  R11 1
- R13 1
- R15 1
- R14 1
- R16 1
-Net 45 "" ""
+ Q3 D
+ C2 1
+ U2 6
+ Q2 D
+Net 43 "" ""
  Q5 2
  Q6 3
+ Q6 2
  U2 1
  R21 1
- Q6 2
-Net 46 "" ""
- Q7 D
- L1 1
- R31 1
- L2 1
+Net 44 "" ""
  D1 2
  Q8 D
+ L2 1
+ L1 1
+ R31 1
+ Q7 D
 }
 #End

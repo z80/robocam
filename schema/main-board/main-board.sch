@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Thu 30 Aug 2012 02:28:51 PM MSK
+EESchema Schematic File Version 2  date Thu 30 Aug 2012 03:00:08 PM MSK
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -50,6 +50,13 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+NoConn ~ 4800 7450
+Wire Wire Line
+	3850 7600 3850 7550
+Wire Wire Line
+	3850 7550 4800 7550
+Wire Wire Line
+	4800 6650 4100 6650
 Connection ~ 7100 2250
 Wire Wire Line
 	7100 2250 7100 2050
@@ -162,15 +169,13 @@ Wire Wire Line
 Wire Wire Line
 	4800 6350 4100 6350
 Wire Wire Line
-	4800 7350 4100 7350
-Wire Wire Line
-	4800 7150 4100 7150
+	4800 7250 4100 7250
 Wire Wire Line
 	4800 6950 4100 6950
 Wire Wire Line
 	4800 6750 4100 6750
 Wire Wire Line
-	4800 6550 4100 6550
+	4800 7650 4100 7650
 Wire Wire Line
 	7700 10300 7300 10300
 Wire Wire Line
@@ -497,13 +502,11 @@ Wire Wire Line
 	8650 8300 10300 8300
 Connection ~ 8950 8300
 Wire Wire Line
-	4800 6650 4100 6650
+	4800 7750 4100 7750
 Wire Wire Line
 	4800 6850 4100 6850
 Wire Wire Line
-	4800 7050 4100 7050
-Wire Wire Line
-	4800 7250 4100 7250
+	4800 7150 4100 7150
 Wire Wire Line
 	4800 6450 3850 6450
 Wire Wire Line
@@ -588,6 +591,30 @@ Connection ~ 9500 2950
 Connection ~ 6700 2250
 Wire Wire Line
 	6700 750  6700 2450
+Wire Wire Line
+	4800 6550 4500 6550
+Wire Wire Line
+	4800 7050 3850 7050
+Wire Wire Line
+	3850 7050 3850 7100
+$Comp
+L GND #PWR?
+U 1 1 503F475C
+P 3850 7600
+F 0 "#PWR?" H 3850 7600 30  0001 C CNN
+F 1 "GND" H 3850 7530 30  0001 C CNN
+	1    3850 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 503F472D
+P 3850 7100
+F 0 "#PWR?" H 3850 7100 30  0001 C CNN
+F 1 "GND" H 3850 7030 30  0001 C CNN
+	1    3850 7100
+	1    0    0    -1  
+$EndComp
 $Comp
 L PWR_FLAG #FLG01
 U 1 1 503E7574
@@ -898,10 +925,7 @@ F 1 "TST" H 4100 8750 30  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 NoConn ~ 4800 7850
-NoConn ~ 4800 7750
-NoConn ~ 4800 7650
-NoConn ~ 4800 7550
-NoConn ~ 4800 7450
+NoConn ~ 4800 7350
 $Comp
 L GND #PWR023
 U 1 1 503D3C07
@@ -998,23 +1022,23 @@ F 1 "CONN_20" V 5200 6900 60  0000 C CNN
 	1    5150 6900
 	1    0    0    -1  
 $EndComp
-Text Label 4150 7250 0    60   ~ 0
-moto-in4
-Text Label 4150 7350 0    60   ~ 0
-moto-in3
 Text Label 4150 7150 0    60   ~ 0
+moto-in4
+Text Label 4150 7250 0    60   ~ 0
+moto-in3
+Text Label 4150 6950 0    60   ~ 0
 moto-in2
-Text Label 4150 7050 0    60   ~ 0
+Text Label 4150 6850 0    60   ~ 0
 moto-in1
-Text GLabel 4100 6950 0    60   Input ~ 0
+Text GLabel 4100 6650 0    60   Input ~ 0
 buck-en
-Text GLabel 4100 6850 0    60   Input ~ 0
+Text GLabel 4500 6550 0    60   Input ~ 0
 led-en
 Text Label 4150 6750 0    60   ~ 0
 moto-en
-Text Label 4150 6650 0    60   ~ 0
+Text Label 4150 7750 0    60   ~ 0
 battery-tst
-Text Label 4150 6550 0    60   ~ 0
+Text Label 4150 7650 0    60   ~ 0
 solar-tst
 Text GLabel 8650 8300 0    60   Input ~ 0
 boost-output
