@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Thu 30 Aug 2012 03:00:23 PM MSK
+# EESchema Netlist Version 1.1 created  Thu 30 Aug 2012 03:56:29 PM MSK
 (
  ( /503E73F0 $noname  C8 2n2 {Lib=C}
   (    1 N-000040 )
@@ -82,8 +82,8 @@
   (   10 /moto-in1 )
   (   11 /moto-in2 )
   (   12 GND )
-  (   13 /moto-in4 )
-  (   14 /moto-in3 )
+  (   13 /moto-in3 )
+  (   14 /moto-in4 )
   (   15 ? )
   (   16 ? )
   (   17 GND )
@@ -649,10 +649,10 @@ $endfootprintlist
 }
 { Pin List by Nets
 Net 4 "/moto-in4" "moto-in4"
- P11 13
+ P11 14
  U1 19
 Net 5 "/moto-in3" "moto-in3"
- P11 14
+ P11 13
  U1 12
 Net 6 "/moto-in2" "moto-in2"
  U1 9
