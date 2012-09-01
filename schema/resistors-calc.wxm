@@ -1,0 +1,37 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 11.08.0 ] */
+
+/* [wxMaxima: input   start ] */
+kill( all );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R1: 12;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R2: 53;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+V: 1.25*(1+R2/R1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+I: 2;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+V: 0.07;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R: 1.5;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+n: I * R / V;
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
