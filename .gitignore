@@ -6,6 +6,9 @@ projects/software/app/client
 projects/software/app/host
 projects/software/app/hdw
 projetcs/software/build
+projects/irc_tests/build
+projects/irc_tests/build.eclipse
+projects/irc_tests/app
 *.swp
 *.o
 
