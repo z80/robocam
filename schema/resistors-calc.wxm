@@ -33,5 +33,61 @@ R: 1.5;
 n: I * R / V;
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: comment start ]
+Work time calculation.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+mcuI: 20e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+batt: 4500 * 0.3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+T: batt / mcuI / 24;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Voltages calculation
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+Voff: 3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Von: 4;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+I: 20e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+n: 2^12;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Vref: 3.28;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+VminDig: n * Von / Vref / 3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+VmaxDig: n * Voff / Vref / 3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+C: 6800e-6;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Tcharge = C * (Von - Voff) / I;
+/* [wxMaxima: input   end   ] */
+
 /* Maxima can't load/batch files which end with a comment! */
 "Created with wxMaxima"$
