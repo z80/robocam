@@ -7,6 +7,8 @@
 #include <string.h>
 
 #include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/bind.hpp>
 
 //* Static functions declaration.
 static void event_connect( irc_session_t * session,
@@ -41,11 +43,73 @@ public:
 	int port;
 	std::string nick, realName;
 	std::string userName, password;
+	std::string lastError;
+	// IRC session
+	irc_session_t * ircS;
+	// Thread management.
+	boost::thread thread;
+	boost::mutex mutex;
+	// Separate function which doesn't return.
+	void ircRun();
 };
+
+void IrcPeer::PD::ircRun()
+{
+    this->mutex.lock();
+    ircS = 0;
+	lastError = "";
+	
+	const char * host = this->host.data();
+	int port          = this->port;
+	const char * nick = this->nick.data();
+	const char * realName = ( this->realName.size() > 0 ) ? this->realName.data() : 0;
+	const char * userName = ( this->userName.size() > 0 ) ? this->userName.data() : 0;
+	const char * password = ( this->password.size() > 0 ) ? this->password.data() : 0;
+	this->mutex.unlock();
+
+	irc_callbacks_t	callbacks;
+
+	// Initialize the callbacks
+	memset( &callbacks, 0, sizeof(callbacks) );
+
+	// Set up the callbacks we will use
+	callbacks.event_connect = event_connect;
+	callbacks.event_channel = event_channel;
+	callbacks.event_nick    = event_nick;
+	callbacks.event_numeric = event_numeric;
+
+	// And create the IRC session; 0 means error
+	irc_session_t * s = irc_create_session( &callbacks );
+	
+	this->mutex.lock();
+	this->ircS = s;
+	this->mutex.unlock();
+	
+	irc_set_ctx( s, this );
+	
+	if ( irc_connect( s, host, port, password, nick, userName, realName ) )
+	{
+		lastError = std::string( "Could not connect: %s\n" ) + std::string( irc_strerror(irc_errno(s)) );
+		return;
+	}
+
+	// and run into forever loop, generating events
+	if ( irc_run( s ) )
+	{
+		lastError = std::string( "Could not connect or I/O error: %s\n" ) + std::string( irc_strerror( irc_errno(s) ) );
+		return;
+	}
+	
+	this->mutex.lock();
+	irc_destroy_session( s );
+	ircS = 0;
+	this->mutex.unlock();
+}
 
 IrcPeer::IrcPeer()
 {
 	pd = new PD();
+	pd->ircS = 0;
 }
 
 IrcPeer::~IrcPeer()
@@ -73,38 +137,44 @@ void IrcPeer::setNick( const std::string & nick, const std::string & realName )
 
 void IrcPeer::connect( const std::string address, int port )
 {
-	irc_callbacks_t	callbacks;
+	pd->thread = boost::thread( boost::bind( &IrcPeer::PD::ircRun, pd ) );
+}
 
-	// Initialize the callbacks
-	memset( &callbacks, 0, sizeof(callbacks) );
+bool IrcPeer::isRunning()
+{
+    bool res = pd->thread.joinable();	
+    return res;
+}
 
-	// Set up the callbacks we will use
-	callbacks.event_connect = event_connect;
-	callbacks.event_channel = event_channel;
-	callbacks.event_nick    = event_nick;
-	callbacks.event_numeric = event_numeric;
+bool IrcPeer::isConnected()
+{
+    boost::mutex::scoped_lock lock( pd->mutex );
 
-	// And create the IRC session; 0 means error
-	irc_session_t * s = irc_create_session( &callbacks );
-	irc_set_ctx( s, &pd );
-    /*
-	if ( irc_connect( s, host.data(), port, 0, nick, 0, 0 ) )
-	{
-		printf( "Could not connect: %s\n", irc_strerror(irc_errno(s)) );
-		return 1;
-	}
+    if ( !pd->ircS )
+        return false;
+    bool res = ( irc_is_connected( pd->ircS ) == 1 );
+    return res;
+}
 
-	// and run into forever loop, generating events
-	if ( irc_run( s ) )
-	{
-		printf ( "Could not connect or I/O error: %s\n", irc_strerror( irc_errno(s) ) );
-		return 2;
-	}*/
+void IrcPeer::terminate()
+{
+    boost::mutex::scoped_lock lock( pd->mutex );
 
+    if ( isConnected() )
+        irc_disconnect( pd->ircS );
+}
+
+const std::string & IrcPeer::lastError()
+{
+    boost::mutex::scoped_lock lock( pd->mutex );
+    return pd->lastError;
 }
 
 void IrcPeer::send( const std::string & stri )
 {
 
 }
+
+
+
 

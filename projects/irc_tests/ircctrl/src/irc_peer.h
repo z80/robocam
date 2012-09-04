@@ -16,6 +16,10 @@ public:
 	void setLogin( const std::string & userName, const std::string & password );
 	void setNick( const std::string & nick, const std::string & realName );
 	void connect( const std::string address = std::string(), int port = 6667 );
+	bool isRunning();
+	bool isConnected();
+	void terminate();
+	const std::string & lastError();
 protected:
 	void send( const std::string & stri );
 private:
