@@ -16,6 +16,7 @@ file( GLOB ui      "./src/*.ui" )
 file( GLOB qrc     "./src/*.qrc" )
 message( STATUS "SRC = ${src}" )
 message( STATUS "HEADERS = ${headers}" )
+message( STATUS ${Boost_LIBRARIES} )
 
 add_library( ircctrl STATIC ${src} )
 find_library( libircclient NAMES libircclient.a PATHS ${ROOT}/3dparty/libircclient-1.6/src )
