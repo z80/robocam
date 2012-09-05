@@ -17,7 +17,7 @@ public:
 private slots:
     void connectHost();
     void join();
-    void channeList();
+    void channelList();
     void clientList();
     void isConnected();
     void isJoined();

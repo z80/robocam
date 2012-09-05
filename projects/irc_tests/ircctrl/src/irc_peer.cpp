@@ -146,7 +146,7 @@ void IrcPeer::PD::ircRun()
 	// Set up the callbacks we will use
 	callbacks.event_connect = event_connect;
 	callbacks.event_channel = event_channel;
-   	callbacks.event_channel = event_channel;
+   	callbacks.event_privmsg = event_privmsg;
    	callbacks.event_notice  = event_notice;
    	callbacks.event_join    = event_join;
 	callbacks.event_nick    = event_nick;

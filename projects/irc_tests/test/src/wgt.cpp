@@ -33,6 +33,7 @@ void Wgt::connectHost()
 	std::string nick = ui.nick->text().toStdString();
 	irc.setHost( host, port );
 	irc.setNick( nick );
+	irc.connect();
 }
 
 void Wgt::join()
@@ -41,7 +42,7 @@ void Wgt::join()
 	irc.join( channel );
 }
 
-void Wgt::channeList()
+void Wgt::channelList()
 {
     irc.enumChannels();
 }
