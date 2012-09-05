@@ -20,4 +20,4 @@ message( STATUS ${Boost_LIBRARIES} )
 
 add_library( ircctrl STATIC ${src} )
 find_library( libircclient NAMES libircclient.a PATHS ${ROOT}/3dparty/libircclient-1.6/src )
-target_link_libraries( ircctrl liblia-5.1.5 ${libircclient} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )
+target_link_libraries( ircctrl liblua-5.1.5 ${libircclient} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )

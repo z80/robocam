@@ -280,7 +280,7 @@ const std::string & IrcPeer::lastError()
     return pd->lastError;
 }
 
-void IrcPeer::joinChannel( const std::string & stri, const std::string & password )
+void IrcPeer::join( const std::string & stri, const std::string & password )
 {
 	const char * key = ( password.size() > 0 ) ? password.c_str() : 0;
     boost::mutex::scoped_lock lock( pd->mutex );
@@ -288,7 +288,7 @@ void IrcPeer::joinChannel( const std::string & stri, const std::string & passwor
 	pd->joined = false;	
 }
 
-bool IrcPeer::joined() const
+bool IrcPeer::isJoined() const
 {
     boost::mutex::scoped_lock lock( pd->mutex );
 	return pd->joined;

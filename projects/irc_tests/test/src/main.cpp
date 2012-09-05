@@ -1,11 +1,12 @@
 
 #include <QtGui>
-#include "irc_peer.h"
+#include "wgt.h"
 
-int main( int argc char * argv[] )
+int main( int argc, char * argv[] )
 {
     QApplication app( argc, argv );
-    QWidget * w = new QWidget();
+    Wgt * w = new Wgt();
+    w->show();
     int res = app.exec();
     return res;
 }

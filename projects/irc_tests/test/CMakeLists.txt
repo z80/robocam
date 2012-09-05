@@ -5,6 +5,7 @@ set( QT_USE_QTGUI      True )
 include( ${QT_USE_FILE} )
 
 include_directories( "./src" 
+                     ${ROOT}/ircctrl/src 
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 file( GLOB src     "./src/*.cpp" )
@@ -24,7 +25,7 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( test ${src} )
-target_link_libraries( test ircctrl )
+target_link_libraries( test ircctrl ${QT_LIBRARIES} )
 
 
 
