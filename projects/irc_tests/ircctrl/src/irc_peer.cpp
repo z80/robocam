@@ -200,6 +200,8 @@ IrcPeer::IrcPeer()
 
 IrcPeer::~IrcPeer()
 {
+	terminate();
+	pd->thread.join();
 	delete pd;
 }
 
@@ -385,6 +387,12 @@ const std::list<std::string> & IrcPeer::clients() const
 {
     boost::mutex::scoped_lock lock( pd->mutex );
     return pd->clients;
+}
+
+void IrcPeer::ircRawCmd( const std::string & stri )
+{
+    boost::mutex::scoped_lock lock( pd->mutex );
+    irc_send_raw( pd->ircS, stri.c_str() );
 }
 
 

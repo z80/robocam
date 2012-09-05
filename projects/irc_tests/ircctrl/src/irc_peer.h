@@ -51,6 +51,8 @@ public:
 	void enumClients( const std::string channel = std::string() );
 	bool isEnumClientsFinished() const;
 	const std::list<std::string> & clients() const;
+
+	void ircRawCmd( const std::string & stri );
 protected:
 public:
     class PD;

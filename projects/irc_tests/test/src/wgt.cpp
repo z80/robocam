@@ -56,6 +56,11 @@ void Wgt::isConnected()
 {
     bool res = irc.isConnected();
     log( QString( "%1" ).arg( res ? "yes" : "no" ) );
+    if ( res )
+    {
+    	irc.ircRawCmd( "CJOIN chan1" );
+    	irc.ircRawCmd( "CJOIN chan2" );
+    }
 }
 
 void Wgt::isJoined()
