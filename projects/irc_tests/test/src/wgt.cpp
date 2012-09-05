@@ -58,8 +58,8 @@ void Wgt::isConnected()
     log( QString( "%1" ).arg( res ? "yes" : "no" ) );
     if ( res )
     {
-    	irc.ircRawCmd( "CJOIN chan1" );
-    	irc.ircRawCmd( "CJOIN chan2" );
+    	irc.ircRawCmd( "/CJOIN #chan1" );
+    	irc.ircRawCmd( "/CJOIN #chan2" );
     }
 }
 
