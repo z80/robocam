@@ -71,20 +71,16 @@ void Wgt::isJoined()
 
 void Wgt::listChannels()
 {
-    const std::list<std::string> & l = irc.channels();
+    std::list<std::string> l = irc.channels();
     for ( std::list<std::string>::const_iterator i=l.begin(); i!=l.end(); i++ )
-    {
     	log( QString::fromStdString( *i ) );
-	}
 }
 
 void Wgt::listClients()
 {
-    const std::list<std::string> & l = irc.clients();
+    std::list<std::string> l = irc.clients();
     for ( std::list<std::string>::const_iterator i=l.begin(); i!=l.end(); i++ )
-    {
     	log( QString::fromStdString( *i ) );
-	}
 }
 
 void Wgt::status()

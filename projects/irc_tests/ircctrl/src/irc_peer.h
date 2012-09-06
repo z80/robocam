@@ -19,6 +19,7 @@ public:
 
 	IrcPeer();
 	~IrcPeer();
+	void setTimeout( int ms = 10000 );
 	void setMessageHandler( const TMessageHandler & handler );
 	void setJoinHandler( const TJoinHandler & handler );
 	void setDccHandler( const TDccHandler & handler );
@@ -26,16 +27,16 @@ public:
 	void setHost( const std::string & host, int port = 6667 );
 	void setLogin( const std::string & userName, const std::string & password = std::string() );
 	void setNick( const std::string & nick, const std::string & realName = std::string() );
-	void connect( const std::string address = std::string(), int port = 6667 );
+	bool connect( const std::string address = std::string(), int port = 6667 );
 	bool isRunning();
 	bool isConnected();
-	void terminate();
+	void terminate( const std::string & reason = std::string() );
 	const std::string & lastError();
-	void join( const std::string & stri, const std::string & password = std::string() );
+	bool join( const std::string & stri, const std::string & password = std::string() );
 	bool isJoined() const;
 	void send( const std::string & stri );
 	void send( const std::string & nick, const std::string & stri );
-	void requestDcc( const std::string nick );
+	bool requestDcc( const std::string nick );
 	bool isDccAccepted() const;
 	void sendDcc( const std::basic_string<char> & data );
 	void sendDccFile( const std::string & fileName );
@@ -43,15 +44,10 @@ public:
 	bool isDccFileSent() const;
 	
 	// List channels.
-	void enumChannels();
-	bool isEnumChannelsFinished() const;
-	const std::list<std::string> & channels() const;
-	
+	bool enumChannels( std::list<std::string> & l );
 	// List users.
 	void enumClients( const std::string channel = std::string() );
-	bool isEnumClientsFinished() const;
-	const std::list<std::string> & clients() const;
-
+	// Raw command.
 	void ircRawCmd( const std::string & stri );
 protected:
 public:

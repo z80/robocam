@@ -5,6 +5,7 @@
 
 #include <sstream>
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -12,6 +13,52 @@
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/bind.hpp>
+
+void addlog (const char * fmt, ...)
+{
+	FILE * fp;
+	char buf[1024];
+	va_list va_alist;
+
+	va_start (va_alist, fmt);
+#if defined (WIN32)
+	_vsnprintf (buf, sizeof(buf), fmt, va_alist);
+#else
+	vsnprintf (buf, sizeof(buf), fmt, va_alist);
+#endif
+	va_end (va_alist);
+
+	printf ("%s\n", buf);
+
+	if ( (fp = fopen ("irctest.log", "ab")) != 0 )
+	{
+		fprintf (fp, "%s\n", buf);
+		fclose (fp);
+	}
+}
+
+
+void dump_event (irc_session_t * session, int event, const char * origin, const char ** params, unsigned int count)
+{
+	char buf[512];
+	int cnt;
+
+	buf[0] = '\0';
+
+	for ( cnt = 0; cnt < count; cnt++ )
+	{
+		if ( cnt )
+			strcat (buf, "|");
+
+		strcat (buf, params[cnt]);
+	}
+
+
+	addlog ("Event \"%d\", origin: \"%s\", params: %d [%s]", event, origin ? origin : "NULL", cnt, buf);
+}
+
+
+
 
 //* Static functions declaration.
 static void event_connect( irc_session_t * session,
@@ -79,6 +126,7 @@ class IrcPeer::PD
 public:
 	PD() {}
 	~PD() {}
+	int timeout;
 	std::string host;
 	int port;
 	std::string nick, realName;
@@ -109,6 +157,9 @@ public:
 	// Thread management.
 	boost::thread thread;
 	boost::mutex mutex;
+	// Blocking functions management
+	boost::timed_mutex waitMutex;
+	boost::mutex       waitMutexExclusive;
 	// Message handler.
 	TMessageHandler messageHandler;
 	TJoinHandler    joinHandler;
@@ -188,7 +239,8 @@ void IrcPeer::PD::ircRun()
 IrcPeer::IrcPeer()
 {
 	pd = new PD();
-	pd->ircS = 0;
+	pd->timeout         = 10000;
+	pd->ircS            = 0;
 	pd->connected       = false;
 	pd->joined          = false;
 	pd->dccAccepted     = false;
@@ -201,8 +253,12 @@ IrcPeer::IrcPeer()
 IrcPeer::~IrcPeer()
 {
 	terminate();
-	pd->thread.join();
 	delete pd;
+}
+
+void IrcPeer::setTimeout( int ms )
+{
+	pd->timeout = ms;
 }
 
 void IrcPeer::setMessageHandler( const TMessageHandler & handler )
@@ -231,25 +287,44 @@ void IrcPeer::setDccFileHandler( const TDccFileHandler & handler )
 
 void IrcPeer::setHost( const std::string & host, int port )
 {
+	boost::mutex::scoped_lock lock( pd->mutex );
 	pd->host = host;
 	pd->port = port;
 }
 
 void IrcPeer::setLogin( const std::string & userName, const std::string & password )
 {
+	boost::mutex::scoped_lock lock( pd->mutex );
 	pd->userName = userName;
 	pd->password = password;
 }
 
 void IrcPeer::setNick( const std::string & nick, const std::string & realName )
 {
+	boost::mutex::scoped_lock lock( pd->mutex );
 	pd->nick     = nick;
 	pd->realName = realName;
 }
 
-void IrcPeer::connect( const std::string address, int port )
+bool IrcPeer::connect( const std::string address, int port )
 {
+	terminate();
+	// Reset lastError.
+	pd->mutex.lock();
+	pd->lastError = std::string();
+	pd->mutex.unlock();
 	pd->thread = boost::thread( boost::bind( &IrcPeer::PD::ircRun, pd ) );
+	// Lock.
+	pd->timedMutex.lock();
+	// Wait till unlocked or timeout.
+	pd->timedMutexExclusive.lock();
+	bool res = pd->timedMutex.timed_lock( boost::posix_time::milliseconds( pd->timeout ) );
+	pd->timedMutex.unlock();
+	pd->timedMutexExclusive.unlock();
+	pd->mutex.lock();
+	res = res && (pd->lastError.size() < 1) && ( pd->connected );
+	pd->mutex.unlock();
+	return res;
 }
 
 bool IrcPeer::isRunning()
@@ -268,12 +343,17 @@ bool IrcPeer::isConnected()
     return res;
 }
 
-void IrcPeer::terminate()
+void IrcPeer::terminate( const std::string & reason )
 {
-    boost::mutex::scoped_lock lock( pd->mutex );
 
     if ( isConnected() )
+    {
+        boost::mutex::scoped_lock lock( pd->mutex );
+        const char * rsn = ( reason.size() > 0 ) ? reason.c_str() : 0;
+        irc_cmd_quit( pd->ircS, rsn );
         irc_disconnect( pd->ircS );
+    }
+    pd->thread.join();
 }
 
 const std::string & IrcPeer::lastError()
@@ -282,12 +362,25 @@ const std::string & IrcPeer::lastError()
     return pd->lastError;
 }
 
-void IrcPeer::join( const std::string & stri, const std::string & password )
+bool IrcPeer::join( const std::string & stri, const std::string & password )
 {
 	const char * key = ( password.size() > 0 ) ? password.c_str() : 0;
-    boost::mutex::scoped_lock lock( pd->mutex );
+    pd->mutex.lock();
+    pd->lastError = std::string()
+	pd->joined = false;
 	int res = irc_cmd_join( pd->ircS, stri.c_str(), key );
-	pd->joined = false;	
+	pd->mutex.unlock();
+	// Lock.
+	pd->timedMutex.lock();
+	// Wait till unlocked or timeout.
+	pd->timedMutexExclusive.lock();
+	bool res = pd->timedMutex.timed_lock( boost::posix_time::milliseconds( pd->timeout ) );
+	pd->timedMutex.unlock();
+	pd->timedMutexExclusive.unlock();
+	pd->mutex.lock();
+	res = res && (pd->lastError.size() < 1) && ( pd->joined );
+	pd->mutex.unlock();
+	return res;
 }
 
 bool IrcPeer::isJoined() const
@@ -308,12 +401,24 @@ void IrcPeer::send( const std::string & nick, const std::string & stri )
 	irc_cmd_msg( pd->ircS, nick.c_str(), stri.c_str() );
 }
 
-void IrcPeer::requestDcc( const std::string nick )
+bool IrcPeer::requestDcc( const std::string nick )
 {
-    boost::mutex::scoped_lock lock( pd->mutex );
+    pd->mutex.lock();
     pd->dccId       = -1;
     pd->dccAccepted = false;
     irc_dcc_chat( pd->ircS, pd, nick.c_str(), dcc_recv_callback, &pd->dccId );
+    pd->mutex.unlock();
+	// Lock.
+	pd->timedMutex.lock();
+	// Wait till unlocked or timeout.
+	pd->timedMutexExclusive.lock();
+	bool res = pd->timedMutex.timed_lock( boost::posix_time::milliseconds( pd->timeout ) );
+	pd->timedMutex.unlock();
+	pd->timedMutexExclusive.unlock();
+	pd->mutex.lock();
+	res = res && (pd->lastError.size() < 1) && ( pd->dccAccepted );
+	pd->mutex.unlock();
+	return res;
 }
 
 bool IrcPeer::isDccAccepted() const
@@ -324,6 +429,7 @@ bool IrcPeer::isDccAccepted() const
 
 void IrcPeer::sendDcc( const std::string & data )
 {
+    boost::mutex::scoped_lock lock( pd->mutex );
 	irc_dcc_msg( pd->ircS, pd->dccId, data.c_str() );
 }
 
@@ -346,47 +452,45 @@ bool IrcPeer::isDccFileSent() const
     return pd->dccFileSent;
 }
 
-void IrcPeer::enumChannels()
+bool IrcPeer::enumChannels( std::list<std::string> & l )
 {
-    boost::mutex::scoped_lock lock( pd->mutex );
+    pd->mutex.lock();
     pd->enumChannelsFinished = false;
     pd->channels.clear();
     irc_cmd_list( pd->ircS, 0 );
+    pd->mutex.unlock();
+	// Wait till unlocked or timeout.
+	pd->timedMutexExclusive.lock();
+	bool res = pd->timedMutex.timed_lock( boost::posix_time::milliseconds( pd->timeout ) );
+	pd->timedMutex.unlock();
+	pd->timedMutexExclusive.unlock();
+	pd->mutex.lock();
+	res = res && (pd->lastError.size() < 1) && ( pd->enumChannelsFinished );
+	l = pd->channels;
+	pd->mutex.unlock();
+	return res;
 }
 
-bool IrcPeer::isEnumChannelsFinished() const
+void IrcPeer::enumClients( const std::string channel, std::list<std::string> & l )
 {
-    boost::mutex::scoped_lock lock( pd->mutex );
-    return pd->enumChannelsFinished;
-}
-
-const std::list<std::string> & IrcPeer::channels() const
-{
-    boost::mutex::scoped_lock lock( pd->mutex );
-    return pd->channels;
-}
-
-void IrcPeer::enumClients( const std::string channel )
-{
-    boost::mutex::scoped_lock lock( pd->mutex );
+    pd->mutex.lock();
     pd->enumClientsFinished = false;
     pd->clients.clear();
     if ( channel.size() > 0 )
 	    irc_cmd_names( pd->ircS, channel.c_str() );
 	else
 		irc_cmd_names( pd->ircS, pd->channel.c_str() );
-}
-
-bool IrcPeer::isEnumClientsFinished() const
-{
-    boost::mutex::scoped_lock lock( pd->mutex );
-    return pd->enumClientsFinished;
-}
-
-const std::list<std::string> & IrcPeer::clients() const
-{
-    boost::mutex::scoped_lock lock( pd->mutex );
-    return pd->clients;
+    pd->mutex.unlock();
+	// Wait till unlocked or timeout.
+	pd->timedMutexExclusive.lock();
+	bool res = pd->timedMutex.timed_lock( boost::posix_time::milliseconds( pd->timeout ) );
+	pd->timedMutex.unlock();
+	pd->timedMutexExclusive.unlock();
+	pd->mutex.lock();
+	res = res && (pd->lastError.size() < 1) && ( pd->enumClientsFinished );
+	l = pd->clients;
+	pd->mutex.unlock();
+	return res;
 }
 
 void IrcPeer::ircRawCmd( const std::string & stri )
@@ -412,7 +516,12 @@ static void event_connect( irc_session_t * session,
 {
     IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
     boost::mutex::scoped_lock lock( pd->mutex );
-	pd->connected = true;    
+	pd->connected = true;
+	// Unlock timedMutex.
+	pd->timedMutexExclusive.lock();
+	pd->timedMutex.try_lock();
+	pd->timedMutex.unlock();
+	pd->timedMutexExclusive.unlock();
 }
 
 static void event_nick( irc_session_t * session,
@@ -479,7 +588,11 @@ static void event_join( irc_session_t * session,
 	{
 		pd->joined = true;
 		pd->channel = params[0];
-	}
+		// Unlock timedMutex.
+		pd->timedMutexExclusive.lock();
+		pd->timedMutex.try_lock();
+		pd->timedMutex.unlock();
+		pd->timedMutexExclusive.unlock();	}
 	else
 	{
 		if ( !pd->joinHandler.empty() )
@@ -493,13 +606,24 @@ static void event_numeric( irc_session_t * session,
 		                      const char ** params,
 		                      unsigned int count )
 {
+	dump_event( session, event, origin, params, count );
 	switch ( event )
 	{
 	case  LIBIRC_RFC_RPL_NAMREPLY:
 		{
-			IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
-			boost::mutex::scoped_lock lock( pd->mutex );
-			pd->clients.push_back( origin );
+			if ( count > 3 )
+			{
+				IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
+				boost::mutex::scoped_lock lock( pd->mutex );
+				std::string s( params[3] );
+				std::istringstream iss(s);
+				std::string sub;
+				do
+				{
+				    iss >> sub;
+					pd->clients.push_back( sub );
+				} while (iss);
+			}
 		}
 		break;
     case  LIBIRC_RFC_RPL_ENDOFNAMES:
@@ -507,13 +631,19 @@ static void event_numeric( irc_session_t * session,
 			IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
 			boost::mutex::scoped_lock lock( pd->mutex );
 			pd->enumClientsFinished = true;
+			// Unlock timedMutex.
+			pd->timedMutexExclusive.lock();
+			pd->timedMutex.try_lock();
+			pd->timedMutex.unlock();
+			pd->timedMutexExclusive.unlock();
 		}
 		break;		
 	case LIBIRC_RFC_RPL_LIST:
 		{
 			IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
 			boost::mutex::scoped_lock lock( pd->mutex );
-			pd->channels.push_back( origin );
+			if ( count > 1 )
+				pd->channels.push_back( params[1] );
 		}
 		break;
 	case LIBIRC_RFC_ERR_NOSUCHSERVER:
@@ -522,6 +652,11 @@ static void event_numeric( irc_session_t * session,
 			IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
 			boost::mutex::scoped_lock lock( pd->mutex );
 			pd->enumChannelsFinished = true;
+			// Unlock timedMutex.
+			pd->timedMutexExclusive.lock();
+			pd->timedMutex.try_lock();
+			pd->timedMutex.unlock();
+			pd->timedMutexExclusive.unlock();
 		}
 		break;
 	}
@@ -546,6 +681,11 @@ static void event_numeric( irc_session_t * session,
 		IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
 		boost::mutex::scoped_lock lock( pd->mutex );
 		pd->lastError =  out.str();
+		// Unlock timedMutex.
+		pd->timedMutexExclusive.lock();
+		pd->timedMutex.try_lock();
+		pd->timedMutex.unlock();
+		pd->timedMutexExclusive.unlock();
 	}
 }
 
@@ -599,6 +739,11 @@ static void dcc_recv_callback( irc_session_t * session,
 				IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( ctx );
 				boost::mutex::scoped_lock lock( pd->mutex );
 				pd->dccAccepted = true;
+				// Unlock timedMutex.
+				pd->timedMutexExclusive.lock();
+				pd->timedMutex.try_lock();
+				pd->timedMutex.unlock();
+				pd->timedMutexExclusive.unlock();
 			}
 			else 
 			{
