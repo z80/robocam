@@ -443,11 +443,14 @@ void IrcPeer::sendDcc( const std::string & data )
 	irc_dcc_msg( pd->ircS, pd->dccId, data.c_str() );
 }
 
-void IrcPeer::sendDccFile( const std::string & fileName )
+bool IrcPeer::sendDccFile( const std::string & nick, const std::string & fileName )
 {
     boost::mutex::scoped_lock lock( pd->mutex );
     pd->dccFileFinished = false;
     pd->dccFileSent     = false;
+    irc_dcc_t dccid;
+    int result = irc_dcc_sendfile( pd->ircS, pd, nick.c_str(), fileName.c_str(), dcc_file_recv_callback, &dccid );
+    return ( result == 0 );
 }
 
 bool IrcPeer::isDccFileFinished() const
@@ -616,6 +619,15 @@ static void event_notice( irc_session_t * session,
 		                      const char ** params,
 		                      unsigned int count )
 {
+	// Check for DCC chat request.
+	if ( count > 1 )
+	{
+		std::string stri = params[1];
+		if ( stri.find( "DCC Chat" ) != std::string::npos )
+		{
+
+		}
+	}
     messageHandler( session, event, origin, params, count );
 }
 
@@ -763,7 +775,10 @@ static void irc_event_dcc_chat( irc_session_t * session,
                                 const char * addr, 
                                 irc_dcc_t dccid )
 {
-	irc_dcc_accept( session, dccid, 0, dcc_recv_callback );
+	IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
+	boost::mutex::scoped_lock lock( pd->mutex );
+	memcpy( &pd->dccId, &dccid, sizeof( pd->dccId ) );
+	irc_dcc_accept( session, dccid, pd, dcc_recv_callback );
 }
 
 static void irc_event_dcc_send( irc_session_t * session, 
@@ -778,6 +793,7 @@ static void irc_event_dcc_send( irc_session_t * session,
 	pd->fileName = filename;
 	pd->fileData.resize( size );
 	pd->filePointer = 0;
+	memcpy( &pd->dccId, &dccid, sizeof( pd->dccId ) );
 	irc_dcc_accept( session, dccid, pd, dcc_file_recv_callback );
 }
 

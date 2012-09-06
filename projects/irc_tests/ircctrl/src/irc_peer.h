@@ -15,7 +15,7 @@ public:
 	typedef boost::function<void ( const std::string &, const std::string & )> TMessageHandler;
 	typedef boost::function<void ( const std::string & )> TJoinHandler;
 	typedef boost::function<void ( const std::string & )> TDccHandler;
-	typedef boost::function<void ( const std::string & fileName, const std::basic_string<char> & )> TDccFileHandler;
+	typedef boost::function<void ( const std::string &, const std::basic_string<char> & )> TDccFileHandler;
 
 	IrcPeer();
 	~IrcPeer();
@@ -39,7 +39,7 @@ public:
 	bool requestDcc( const std::string nick );
 	bool isDccAccepted() const;
 	void sendDcc( const std::basic_string<char> & data );
-	void sendDccFile( const std::string & fileName );
+	bool sendDccFile( const std::string & nick, const std::string & fileName );
 	bool isDccFileFinished() const;
 	bool isDccFileSent() const;
 	

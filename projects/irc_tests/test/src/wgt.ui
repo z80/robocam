@@ -107,7 +107,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>aaaaa</string>
+    <string>#chan</string>
    </property>
   </widget>
   <widget class="QPushButton" name="join">
@@ -146,7 +146,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>zzzzz</string>
+    <string>z80</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
@@ -300,6 +300,45 @@
    </property>
    <property name="text">
     <string>Send</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="dccRequest">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>220</y>
+     <width>93</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>DCC request</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="dccSend">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>340</y>
+     <width>93</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>DCC send</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="dccFile">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>340</y>
+     <width>93</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>DCC file</string>
    </property>
   </widget>
  </widget>

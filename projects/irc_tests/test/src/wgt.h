@@ -24,12 +24,17 @@ private slots:
     void isConnected();
     void isJoined();
     void send();
+    void dccRequest();
+    void dccSend();
+    void dccFile();
     void status();
     void clear();
     void slotLog( const QString & stri );
 public:
     // Message and event handlers...
     void messageHandler( const std::string & client, const std::string & stri );
+    void dccHandler( const std::string & stri );
+    void dccFileHandler( const std::string & fileName, const std::basic_string<char> & fileData );
 private:
     Ui_Wgt ui;
     IrcPeer irc;
