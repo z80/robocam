@@ -33,33 +33,54 @@ void Wgt::connectHost()
 	std::string nick = ui.nick->text().toStdString();
 	irc.setHost( host, port );
 	irc.setNick( nick );
-	irc.connect();
+	bool res = irc.connect();
+	log( QString( "%1" ).arg( res ? "succeeded" : "failed" ) );
+    if ( !res )
+    	log( QString::fromStdString( irc.lastError() ) );
 }
 
 void Wgt::join()
 {
 	std::string channel = ui.channel->text().toStdString();
-	irc.join( channel );
+	bool res = irc.join( channel );
+	log( QString( "%1" ).arg( res ? "succeeded" : "failed" ) );
+    if ( !res )
+    	log( QString::fromStdString( irc.lastError() ) );
 }
 
 void Wgt::channelList()
 {
-    irc.enumChannels();
+    std::list<std::string> l;
+    bool res = irc.channels( l );
+    log( QString( "%1" ).arg( res ? "succeeded" : "failed" ) );
+    if ( !res )
+    	log( QString::fromStdString( irc.lastError() ) );
+    for ( std::list<std::string>::const_iterator i=l.begin(); i!=l.end(); i++ )
+    	log( QString::fromStdString( *i ) );
 }
 
 void Wgt::clientList()
 {
-    irc.enumClients();
+	std::string channel = ui.channel->text().toStdString();
+    std::list<std::string> l;
+    bool res = irc.clients( channel, l );
+    log( QString( "%1" ).arg( res ? "succeeded" : "failed" ) );
+    if ( !res )
+    	log( QString::fromStdString( irc.lastError() ) );
+    for ( std::list<std::string>::const_iterator i=l.begin(); i!=l.end(); i++ )
+    	log( QString::fromStdString( *i ) );
 }
 
 void Wgt::isConnected()
 {
     bool res = irc.isConnected();
     log( QString( "%1" ).arg( res ? "yes" : "no" ) );
+    if ( !res )
+    	log( QString::fromStdString( irc.lastError() ) );
     if ( res )
     {
-    	irc.ircRawCmd( "/CJOIN #chan1" );
-    	irc.ircRawCmd( "/CJOIN #chan2" );
+    	irc.ircRawCmd( "CJOIN #chan1" );
+    	irc.ircRawCmd( "CJOIN #chan2" );
     }
 }
 
@@ -67,26 +88,24 @@ void Wgt::isJoined()
 {
     bool res = irc.isJoined();
     log( QString( "%1" ).arg( res ? "yes" : "no" ) );
+    if ( !res )
+    	log( QString::fromStdString( irc.lastError() ) );
 }
 
 void Wgt::listChannels()
 {
-    std::list<std::string> l = irc.channels();
-    for ( std::list<std::string>::const_iterator i=l.begin(); i!=l.end(); i++ )
-    	log( QString::fromStdString( *i ) );
 }
 
 void Wgt::listClients()
 {
-    std::list<std::string> l = irc.clients();
-    for ( std::list<std::string>::const_iterator i=l.begin(); i!=l.end(); i++ )
-    	log( QString::fromStdString( *i ) );
 }
 
 void Wgt::status()
 {
     bool conn   = irc.isConnected();
     bool joined = irc.isJoined();
+    log( QString( "%1" ).arg( conn ?   "connected" : "NOT connected" ) );
+    log( QString( "%1" ).arg( joined ? "joined"    : "NOT joined" ) );
 }
 
 void Wgt::clear()

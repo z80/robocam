@@ -19,7 +19,7 @@ public:
 
 	IrcPeer();
 	~IrcPeer();
-	void setTimeout( int ms = 10000 );
+	void setTimeout( int ms = 30000 );
 	void setMessageHandler( const TMessageHandler & handler );
 	void setJoinHandler( const TJoinHandler & handler );
 	void setDccHandler( const TDccHandler & handler );
@@ -44,9 +44,11 @@ public:
 	bool isDccFileSent() const;
 	
 	// List channels.
-	bool enumChannels( std::list<std::string> & l );
-	// List users.
-	void enumClients( const std::string channel = std::string() );
+	bool channels( std::list<std::string> & l );
+	// List clients.
+	bool clients( const std::string channel, std::list<std::string> & l );
+	// Client info.
+	bool clientInfo( const std::string & nick );
 	// Raw command.
 	void ircRawCmd( const std::string & stri );
 protected:
