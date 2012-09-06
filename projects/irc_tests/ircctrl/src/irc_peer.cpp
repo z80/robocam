@@ -625,9 +625,12 @@ static void event_join( irc_session_t * session,
 		                      const char ** params,
 		                      unsigned int count )
 {
+    const int SZ = 90;
+    char nick[ SZ ];
+	irc_target_get_nick( origin, nick, SZ );
     IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
     boost::mutex::scoped_lock lock( pd->mutex );
-	if ( pd->nick == origin )
+	if ( pd->nick == nick )
 	{
 		pd->joined = true;
 		pd->channel = params[0];
@@ -710,6 +713,24 @@ static void event_numeric( irc_session_t * session,
 			pd->timedMutex.unlock();
 		}
 		break;
+	// Join event doesn't happen.
+	// So I use this one to indicate join channel request completion.
+	/*case 333:
+		{
+			if ( count > 1 )
+			{
+				IrcPeer::PD * pd = reinterpret_cast<IrcPeer::PD *>( irc_get_ctx( session ) );
+				boost::mutex::scoped_lock lock( pd->mutex );
+				if ( pd->nick == params[0] )
+				{
+					pd->joined = true;
+					pd->channel = params[1];
+					// Unlock timedMutex.
+					pd->timedMutex.unlock();
+				}
+			}
+		}
+		break;*/
 	}
 	
 	if ( event > 400 )
