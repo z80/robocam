@@ -1,6 +1,9 @@
 
 #include "wgt.h"
 
+#include <boost/bind.hpp>
+#include <boost/bind/placeholders.hpp>
+
 Wgt::Wgt( QWidget * parent )
 : QWidget( parent )
 {
@@ -9,12 +12,15 @@ Wgt::Wgt( QWidget * parent )
     connect( ui.join,         SIGNAL(clicked()), this, SLOT(join()) );
     connect( ui.channelList,  SIGNAL(clicked()), this, SLOT(channelList()) );
     connect( ui.clientList,   SIGNAL(clicked()), this, SLOT(clientList()) );
+    connect( ui.send,         SIGNAL(clicked()), this, SLOT(send()) );
     connect( ui.isConnected,  SIGNAL(clicked()), this, SLOT(isConnected()) );
     connect( ui.isJoined,     SIGNAL(clicked()), this, SLOT(isJoined()) );
-    connect( ui.listChannels, SIGNAL(clicked()), this, SLOT(listChannels()) );
-    connect( ui.listClients,  SIGNAL(clicked()), this, SLOT(listClients()) );
     connect( ui.status,       SIGNAL(clicked()), this, SLOT(status()) );
     connect( ui.clear,        SIGNAL(clicked()), this, SLOT(clear()) );
+
+    connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)) );
+
+    irc.setMessageHandler( boost::bind( &Wgt::messageHandler, this, _1, _2 ) );
 }
 
 Wgt::~Wgt()
@@ -92,12 +98,11 @@ void Wgt::isJoined()
     	log( QString::fromStdString( irc.lastError() ) );
 }
 
-void Wgt::listChannels()
+void Wgt::send()
 {
-}
-
-void Wgt::listClients()
-{
+	std::string to   = ui.to->text().toStdString();
+	std::string stri = ui.msg->text().toStdString();
+	irc.send( to, stri );
 }
 
 void Wgt::status()
@@ -113,6 +118,16 @@ void Wgt::clear()
     ui.log->clear();
 }
 
+void Wgt::slotLog( const QString & stri )
+{
+	log( stri );
+}
+
+void Wgt::messageHandler( const std::string & client, const std::string & stri )
+{
+	QString msg = QString( "%1: \"%2\"" ).arg( client.c_str() ).arg( stri.c_str() );
+	emit sigLog( msg );
+}
 
 
 

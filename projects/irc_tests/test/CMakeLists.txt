@@ -4,8 +4,11 @@ set( QT_USE_QTCORE     True )
 set( QT_USE_QTGUI      True )
 include( ${QT_USE_FILE} )
 
+find_package( Boost )
+
 include_directories( "./src" 
                      ${ROOT}/ircctrl/src 
+                     ${Boost_INCLUDE_DIRS} 
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 file( GLOB src     "./src/*.cpp" )

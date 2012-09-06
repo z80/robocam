@@ -14,6 +14,8 @@ public:
    ~Wgt();
    
    void log( const QString & stri );
+signals:
+    void sigLog( const QString & stri );
 private slots:
     void connectHost();
     void join();
@@ -21,12 +23,13 @@ private slots:
     void clientList();
     void isConnected();
     void isJoined();
-    void listChannels();
-    void listClients();
+    void send();
     void status();
     void clear();
+    void slotLog( const QString & stri );
 public:
     // Message and event handlers...
+    void messageHandler( const std::string & client, const std::string & stri );
 private:
     Ui_Wgt ui;
     IrcPeer irc;
