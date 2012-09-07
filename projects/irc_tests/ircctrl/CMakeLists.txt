@@ -6,8 +6,9 @@ find_package( Threads )
 
 include_directories( "./src" 
                      ${ROOT}/3dparty/libircclient-1.6/include 
-                     ${ROOT}/lua-5.1.5/src
-                     ${Boost_INCLUDE_DIRS}
+                     ${ROOT}/lua-5.1.5/src 
+                     ${ROOT}/lua-5.1.5/etc 
+                     ${Boost_INCLUDE_DIRS} 
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 file( GLOB src     "./src/*.cpp" )
