@@ -8,6 +8,10 @@
 #include <boost/thread/condition.hpp>
 
 static void luaHook( lua_State * L, lua_Debug * ar );
+static int msleep( lua_State * L );
+static int isConnected( lua_State * L );
+static int send( lua_State * L );
+static int stop( lua_State * L );
 
 class PeerAbst::PD
 {
@@ -15,7 +19,7 @@ public:
 	PD( PeerAbst * owner, TInit init );
 	~PD();
 
-private:
+public:
 	PeerAbst * peer;
 	lua_State * L;
 	boost::thread luaThread;
@@ -25,7 +29,7 @@ private:
 	bool do_terminate;
 
 	void luaLoop( TInit init );
-protected:
+public:
 	//static const std::string LUA_INITIAL_SETUP;
 	static const std::string LUA_PD_NAME;
 
@@ -93,7 +97,18 @@ void PeerAbst::PD::luaLoop( TInit init )
 	lua_pushlightuserdata( L, this );
 	lua_settable( L, LUA_REGISTRYINDEX );
 	lua_sethook( L, luaHook, LUA_MASKLINE, 0 );
-	//luaL_dofile( L, LUA_INITIAL_SETUP.c_str() );
+
+	// Registering C functions.
+	luaL_Reg reg[] =
+	{
+		{ "msleep",      ::msleep },
+		{ "isConnected", ::isConnected },
+		{ "send",        ::send },
+		{ "stop",        ::stop },
+		{ 0,             0 }
+	};
+	luaL_register( L, 0, reg );
+
 	if ( !init.empty() )
 		init( L );
 
@@ -151,12 +166,10 @@ void PeerAbst::PD::terminate()
 PeerAbst::PeerAbst( TInit init )
 {
 	pd = new PD( this, init );
-	connect();
 }
 
 PeerAbst::~PeerAbst()
 {
-	terminate();
 	delete pd;
 }
 
@@ -165,6 +178,50 @@ void PeerAbst::invokeCmd( const std::string & cmd )
 	pd->invokeCmd( cmd );
 }
 
+
+
+
+
+
+static int msleep( lua_State * L )
+{
+	int ms;
+	if ( lua_gettop( L ) > 0 )
+	    ms = static_cast<int>( lua_tonumber( L, 1 ) );
+	else
+		ms = 1;
+	boost::this_thread::sleep( boost::posix_time::milliseconds( ms ) );
+	return 0;
+}
+
+static int isConnected( lua_State * L )
+{
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	bool res = pd->peer->isConnected();
+	lua_pushboolean( L, res ? 1 : 0 );
+	return 1;
+}
+
+static int send( lua_State * L )
+{
+	std::string stri = lua_tostring( L, 1 );
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
+	bool res = pd->peer->send( stri );
+	lua_pushboolean( L, res ? 1 : 0 );
+	return 1;
+}
+
+static int stop( lua_State * L )
+{
+	lua_pushstring( L, "Execution stopped" );
+    lua_error( L );
+    return 1;
+}
 
 
 

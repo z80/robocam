@@ -20,9 +20,6 @@ public:
 	// It is also should be called by remote peer.
 	void invokeCmd( const std::string & cmd );
 
-protected:
-	virtual bool connect() = 0;
-	virtual void terminate() = 0;
 public:
 	virtual bool isConnected() = 0;
 	// Send cmd to another peer.

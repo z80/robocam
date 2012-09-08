@@ -74,10 +74,12 @@ PeerIrc::PeerIrc( const std::string & iniFile, PeerAbst::TInit init )
 			<< error.line() << std::endl;
 	}
 
+	connect();
 }
 
 PeerIrc::~PeerIrc()
 {
+	terminate();
 	delete pd;
 }
 

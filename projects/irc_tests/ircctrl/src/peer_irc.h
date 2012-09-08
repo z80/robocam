@@ -9,7 +9,7 @@ class PeerIrc: public PeerAbst
 public:
 	PeerIrc( const std::string & iniFile, PeerAbst::TInit init );
 	~PeerIrc();
-protected:
+private:
 	bool connect();
 	void terminate();
 public:

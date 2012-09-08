@@ -27,8 +27,8 @@ set( src ${src} ${uiSrc} )
 QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
-add_executable( test ${src} )
-target_link_libraries( test ircctrl ${QT_LIBRARIES} )
+add_executable( irc_test ${src} )
+target_link_libraries( irc_test ircctrl ${QT_LIBRARIES} )
 
 
 
