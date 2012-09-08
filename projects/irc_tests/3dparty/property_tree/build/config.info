@@ -1,0 +1,22 @@
+; Комментарий
+server
+{
+	name	"alpha server"
+	port	9010
+	channels
+	{
+		channel
+		{
+			name	"first"
+			id		1
+			comment	"Необязательный комментарий"
+			enabled	true
+		}
+		channel
+		{
+			name	"second"
+			id		2
+			enabled	false
+		}
+	}
+}

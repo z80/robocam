@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Комментарий -->
+<server>
+	<name>alpha server</name>
+	<port>9010</port>
+	<channels>
+		<channel>
+			<name>first</name>
+			<id>1</id>
+			<comment>Необязательный комментарий</comment>
+			<enabled>true</enabled>
+		</channel>
+		<channel>
+			<name>second</name>
+			<id>2</id>
+			<enabled>false</enabled>
+		</channel>
+	</channels>
+</server>

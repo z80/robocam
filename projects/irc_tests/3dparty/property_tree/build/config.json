@@ -1,0 +1,22 @@
+{
+	/* Комментарий */
+	"server":
+	{
+		"name":	"alpha server",
+		"port":	9010,
+		"channels":
+		[
+			{
+				"name":		"first",
+				"id":		1,
+				"comment":	"Необязательный комментарий",
+				"enabled":	true
+			},
+			{
+				"name":		"second",
+				"id":		2,
+				"enabled":	false
+			}
+		]
+	}
+}
