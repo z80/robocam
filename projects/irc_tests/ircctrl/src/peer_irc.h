@@ -15,6 +15,7 @@ private:
 public:
 	bool isConnected();
 	bool send( const std::string & cmd );
+	std::string lastError() const;
 private:
 	class PD;
 	PD * pd;

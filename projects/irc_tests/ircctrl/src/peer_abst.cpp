@@ -47,10 +47,10 @@ const std::string PeerAbst::PD::LUA_PD_NAME = "PD";
 
 static void luaHook( lua_State * L, lua_Debug * ar )
 {
-	int n = lua_gettop( L );
+	//int n = lua_gettop( L );
 	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
 	lua_gettable( L, LUA_REGISTRYINDEX );
-	int n1 = lua_gettop( L );
+	//int n1 = lua_gettop( L );
 	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
 	pd->luaTaskMutex.lock();
 	int cnt = pd->luaCommands.size();
@@ -62,17 +62,29 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 	pd->luaTaskMutex.unlock();
 	if ( cnt )
 	{
-		lua_pushstring( L, pd->pendingCmd.c_str() );
 		lua_pushstring( L, "loadstring" );
 		lua_gettable( L, LUA_GLOBALSINDEX );
-		int res = lua_pcall( L, 1, 0, 0 );
-		if ( res )
+		lua_pushstring( L, pd->pendingCmd.c_str() );
+		int res = lua_pcall( L, 1, 2, 0 );
+		if ( lua_isnil( L, -2 ) != 0 )
 		{
 			pd->pendingCmd = lua_tostring( L, -1 );
 			// Send back an error message.
 			pd->peer->send( pd->pendingCmd );
 			// And pop that message.
-			lua_pop( L, 1 );
+			lua_pop( L, 2 );
+		}
+		else
+		{
+			res = lua_pcall( L, 1, 0, 0 );
+			if ( res )
+			{
+				pd->pendingCmd = lua_tostring( L, -1 );
+				// Send back an error message.
+				pd->peer->send( pd->pendingCmd );
+				// And pop that message.
+				lua_pop( L, 1 );
+			}
 		}
 	}
 }
@@ -99,7 +111,7 @@ void PeerAbst::PD::luaLoop( TInit init )
 	lua_sethook( L, luaHook, LUA_MASKLINE, 0 );
 
 	// Registering C functions.
-	luaL_Reg reg[] =
+	/*luaL_Reg reg[] =
 	{
 		{ "msleep",      ::msleep },
 		{ "isConnected", ::isConnected },
@@ -107,7 +119,11 @@ void PeerAbst::PD::luaLoop( TInit init )
 		{ "stop",        ::stop },
 		{ 0,             0 }
 	};
-	luaL_register( L, 0, reg );
+	luaL_register( L, 0, reg );*/
+	lua_register( L, "msleep", ::msleep );
+	lua_register( L, "isConnected", ::isConnected );
+	lua_register( L, "send", ::send );
+	lua_register( L, "stop", ::stop );
 
 	if ( !init.empty() )
 		init( L );

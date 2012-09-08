@@ -54,7 +54,7 @@ PeerIrc::PeerIrc( const std::string & iniFile, PeerAbst::TInit init )
 	pd->port         = 80;
 	pd->chan         = "#solar_cam_rpi";
 	pd->self         = "identity";
-	pd->target       = "target_identity";
+	pd->target       = "#solar_cam_rpi";
 	pd->updateTarget = true;
 	boost::property_tree::ptree config;
 	try
@@ -65,7 +65,7 @@ PeerIrc::PeerIrc( const std::string & iniFile, PeerAbst::TInit init )
 		pd->port = sect.get( "port", 80 );
 		pd->chan = sect.get<std::string>( "chan", "#solar_cam_rpi" );
 		pd->self = sect.get<std::string>( "self", "identity" );
-		pd->target = sect.get<std::string>( "target", "target_identity" );
+		pd->target = sect.get<std::string>( "target", "#solar_cam_rpi" );
 		pd->updateTarget = sect.get<bool>( "update_target", true );
 	}
 	catch ( boost::property_tree::ini_parser_error & error )
@@ -86,6 +86,8 @@ PeerIrc::~PeerIrc()
 bool PeerIrc::connect()
 {
 	pd->irc.setMessageHandler( boost::bind( &PeerIrc::PD::messageHandler, pd, _1, _2 ) );
+	pd->irc.setNick( pd->self );
+	pd->irc.setHost( pd->host, pd->port );
 	bool res = pd->irc.connect( pd->host, pd->port );
 	if ( res )
 		res = pd->irc.join( pd->chan );
@@ -109,6 +111,11 @@ bool PeerIrc::send( const std::string & cmd )
 {
 	bool res = pd->irc.send( pd->target, cmd );
 	return res;
+}
+
+std::string PeerIrc::lastError() const
+{
+	return pd->irc.lastError();
 }
 
 

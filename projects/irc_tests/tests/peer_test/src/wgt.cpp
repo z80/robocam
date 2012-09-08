@@ -41,18 +41,13 @@ void Wgt::init( lua_State * L )
 	lua_pushlightuserdata( L, this );
 	lua_settable( L, LUA_REGISTRYINDEX );
 
-	luaL_Reg reg[] =
-	{
-		{ "print", ::print },
-		{ 0,       0 }
-	};
-	luaL_register( L, 0, reg );
+	lua_register( L, "print", ::print );
 }
 
 int Wgt::print( lua_State * L )
 {
 	int n = lua_gettop( L );
-	for ( int i=0; i<n; i++ )
+	for ( int i=1; i<=n; i++ )
 	{
 		QString stri = lua_tostring( L, i );
 		log( stri );
@@ -69,6 +64,8 @@ void Wgt::isConnected()
 {
     bool res = irc->isConnected();
     log( QString( "%1" ).arg( res ? "yes" : "no" ) );
+    if ( !res )
+    	log( QString( "%1" ).arg( irc->lastError().c_str() ) );
 }
 
 void Wgt::send()
