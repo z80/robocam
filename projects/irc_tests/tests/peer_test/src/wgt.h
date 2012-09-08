@@ -14,6 +14,9 @@ public:
    ~Wgt();
    
    void init( lua_State * L );
+   int  print( lua_State * L );
+
+
    void log( const QString & stri );
 signals:
     void sigLog( const QString & stri );
@@ -27,6 +30,8 @@ public:
 private:
     Ui_Wgt ui;
     PeerIrc * irc;
+public:
+    static const std::string WGT_ID;
 };
 
 

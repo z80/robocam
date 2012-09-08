@@ -5,6 +5,8 @@
 #include <boost/bind.hpp>
 #include <boost/bind/placeholders.hpp>
 
+const std::string Wgt::WGT_ID = "WGT";
+
 Wgt::Wgt( QWidget * parent )
 : QWidget( parent )
 {
@@ -24,9 +26,37 @@ Wgt::~Wgt()
 	delete irc;
 }
 
+static int print( lua_State * L )
+{
+	lua_pushstring( L, Wgt::WGT_ID.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	Wgt * w = reinterpret_cast<Wgt *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
+	w->print( L );
+}
+
 void Wgt::init( lua_State * L )
 {
+	lua_pushstring( L, Wgt::WGT_ID.c_str() );
+	lua_pushlightuserdata( L, this );
+	lua_settable( L, LUA_REGISTRYINDEX );
 
+	luaL_Reg reg[] =
+	{
+		{ "print", ::print },
+		{ 0,       0 }
+	};
+	luaL_register( L, 0, reg );
+}
+
+int Wgt::print( lua_State * L )
+{
+	int n = lua_gettop( L );
+	for ( int i=0; i<n; i++ )
+	{
+		QString stri = lua_tostring( L, i );
+		log( stri );
+	}
 }
 
 void Wgt::log( const QString & stri )
