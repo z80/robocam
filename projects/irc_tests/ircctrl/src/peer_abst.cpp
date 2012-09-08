@@ -26,9 +26,10 @@ public:
 	boost::mutex  luaTaskMutex;
 	boost::condition luaCond;
 	std::queue<std::string> luaCommands;
-	bool do_terminate;
+	bool do_stop, do_terminate;
 
 	void luaLoop( TInit init );
+	void stop();
 public:
 	//static const std::string LUA_INITIAL_SETUP;
 	static const std::string LUA_PD_NAME;
@@ -59,7 +60,13 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 		pd->pendingCmd = pd->luaCommands.front();
 		pd->luaCommands.pop();
 	}
+	bool stop = pd->do_stop;
 	pd->luaTaskMutex.unlock();
+	if ( stop )
+	{
+		lua_pushstring( L, "print( \"Execution stopped\" )" );
+	    lua_error( L );
+	}
 	if ( cnt )
 	{
 		lua_pushstring( L, "loadstring" );
@@ -91,6 +98,7 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 
 PeerAbst::PD::PD( PeerAbst * owner, TInit init )
 	: peer( owner ),
+	  do_stop( false ),
 	  do_terminate( false )
 {
 	luaThread = boost::thread( boost::bind( &PeerAbst::PD::luaLoop, this, init ) );
@@ -148,9 +156,16 @@ void PeerAbst::PD::luaLoop( TInit init )
 	lua_close( L );
 }
 
+void PeerAbst::PD::stop()
+{
+	boost::mutex::scoped_lock lock( luaTaskMutex );
+	do_stop = true;
+}
+
 void PeerAbst::PD::invokeCmd( const std::string & cmd )
 {
 	boost::mutex::scoped_lock lock( luaTaskMutex );
+	do_stop = false;
 	luaCommands.push( cmd );
 	luaCond.notify_one();
 }
@@ -215,6 +230,7 @@ static int isConnected( lua_State * L )
 	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
 	lua_gettable( L, LUA_REGISTRYINDEX );
 	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
 	bool res = pd->peer->isConnected();
 	lua_pushboolean( L, res ? 1 : 0 );
 	return 1;
@@ -234,9 +250,12 @@ static int send( lua_State * L )
 
 static int stop( lua_State * L )
 {
-	lua_pushstring( L, "Execution stopped" );
-    lua_error( L );
-    return 1;
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
+	pd->stop();
+	return 0;
 }
 
 
