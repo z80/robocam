@@ -1,38 +1,33 @@
 
 #include "peer_abst.h"
 
+#include <queue>
 #include "lua.hpp"
-#include "boost/thread.hpp"
-#include "boost/thread/mutex.hpp"
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
 
-static int luaHook( lua_State * L, lua_Debug * ar );
+static void luaHook( lua_State * L, lua_Debug * ar );
 
 class PeerAbst::PD
 {
 public:
-	PD( PeerAbst * owner )
-	: peer( owner ),
-	  terminate( false )
-	{
-	}
+	PD( PeerAbst * owner, TInit init );
+	~PD();
 
-	~PD()
-	{
-		terminate();
-	}
 private:
 	PeerAbst * peer;
 	lua_State * L;
 	boost::thread luaThread;
-	boost::mutex  luaTaskMutex,
-	              yieldMutex;
-	std::list<std::string> luaCommands;
-	bool terminate;
+	boost::mutex  luaTaskMutex;
+	boost::condition luaCond;
+	std::queue<std::string> luaCommands;
+	bool do_terminate;
 
-	void luaLoop();
+	void luaLoop( TInit init );
 protected:
-	const std::string LUA_INITIAL_SETUP;
-	const std::string LUA_PD_NAME;
+	//static const std::string LUA_INITIAL_SETUP;
+	static const std::string LUA_PD_NAME;
 
 	std::string pendingCmd;
 public:
@@ -40,79 +35,82 @@ public:
 	bool isIdle();
 	void terminate();
 
-	friend static int luaHook( lua_State * L, lua_Debug * ar );
+	friend void luaHook( lua_State * L, lua_Debug * ar );
 };
 
-const std::string PeerAbst::PD::LUA_INITIAL_SETUP = "./init.lua";
+//const std::string PeerAbst::PD::LUA_INITIAL_SETUP = "./init.lua";
 const std::string PeerAbst::PD::LUA_PD_NAME = "PD";
 
-static int luaHook( lua_State * L, lua_Debug * ar );
+static void luaHook( lua_State * L, lua_Debug * ar )
 {
 	int n = lua_gettop( L );
-	lua_pushstring( L, PD::LUA_PD_NAME );
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
 	lua_gettable( L, LUA_REGISTRYINDEX );
 	int n1 = lua_gettop( L );
-	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( lua_topointer( L, -1 ) );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
 	pd->luaTaskMutex.lock();
 	int cnt = pd->luaCommands.size();
 	if ( cnt )
 	{
-		pd->pendingCommand = pd->luaCommands.front();
-		pd->luaCommands.pop_front();
+		pd->pendingCmd = pd->luaCommands.front();
+		pd->luaCommands.pop();
 	}
 	pd->luaTaskMutex.unlock();
 	if ( cnt )
 	{
-		lua_pushstring( L, pd->luapendingCommand.c_str() );
+		lua_pushstring( L, pd->pendingCmd.c_str() );
 		lua_pushstring( L, "loadstring" );
 		lua_gettable( L, LUA_GLOBALSINDEX );
 		int res = lua_pcall( L, 1, 0, 0 );
 		if ( res )
 		{
-			pd->pendingCommand = lua_tostring( L, -1 );
+			pd->pendingCmd = lua_tostring( L, -1 );
 			// Send back an error message.
-			peer->send( pd->pendingCommand );
+			pd->peer->send( pd->pendingCmd );
 			// And pop that message.
 			lua_pop( L, 1 );
 		}
 	}
 }
 
-PeerAbst::PD( PeerAbst * owner )
+PeerAbst::PD::PD( PeerAbst * owner, TInit init )
 	: peer( owner ),
-	  terminate( false )
+	  do_terminate( false )
 {
+	luaThread = boost::thread( boost::bind( &PeerAbst::PD::luaLoop, this, init ) );
 }
 
-PeerAbst::~PD()
+PeerAbst::PD::~PD()
 {
 	terminate();
 }
 
-void PeerAbst::PD::luaLoop()
+void PeerAbst::PD::luaLoop( TInit init )
 {
 	L = luaL_newstate();
 	luaL_openlibs( L );
-	lua_pushstring( L, LUA_PD_NAME );
+	lua_pushstring( L, LUA_PD_NAME.c_str() );
 	lua_pushlightuserdata( L, this );
 	lua_settable( L, LUA_REGISTRYINDEX );
-	lua_sethook( L, lua_hook, LUA_MASKLINE, 0 );
-	luaL_dofile( L, LUA_INITIAL_SETUP.c_str() );
+	lua_sethook( L, luaHook, LUA_MASKLINE, 0 );
+	//luaL_dofile( L, LUA_INITIAL_SETUP.c_str() );
+	if ( !init.empty() )
+		init( L );
 
+	boost::mutex::scoped_lock lock( luaTaskMutex );
 	while ( 1 )
 	{
-		luaMutex.lock();
-		int cnt = pd->luaCommands.size();
-		luaMutex.unlock();
+		int cnt = luaCommands.size();
 		if ( cnt )
-			lua_hook( L, 0 );
+		{
+			luaTaskMutex.unlock();
+			luaHook( L, 0 );
+			luaTaskMutex.lock();
+		}
 		else
 		{
-			yieldMutex.lock();
-			luaMutex.lock();
-			bool term = terminate;
-			luaMutex.unlock();
-			if ( term )
+			luaCond.wait( lock );
+			if ( do_terminate )
 				break;
 		}
 	}
@@ -121,25 +119,25 @@ void PeerAbst::PD::luaLoop()
 
 void PeerAbst::PD::invokeCmd( const std::string & cmd )
 {
-	luaTaskMutex.lock();
-	luaCommands.push_back( cmd );
-	yieldMutex.unlock();
-	pd->luaTaskMutex.unlock();
+	boost::mutex::scoped_lock lock( luaTaskMutex );
+	luaCommands.push( cmd );
+	luaCond.notify_one();
 }
 
 bool PeerAbst::PD::isIdle()
 {
-	bool managedToLock = yieldMutex.try_lock();
-	if ( managedToLock )
-		yieldMutex.unlock();
-	return !managedToLock;
+	boost::mutex::scoped_lock lock( luaTaskMutex );
+	unsigned int cnt = luaCommands.size();
+	return (cnt == 0);
 }
 
 void PeerAbst::PD::terminate()
 {
-	luaTaskMutex.lock();
-	terminate = true;
-	yieldMutex.unlock();
+	{
+		boost::mutex::scoped_lock lock( luaTaskMutex );
+		do_terminate = true;
+		luaCond.notify_one();
+	}
 	luaThread.join();
 }
 
@@ -150,14 +148,15 @@ void PeerAbst::PD::terminate()
 
 
 
-PeerAbst::PeerAbst()
+PeerAbst::PeerAbst( TInit init )
 {
-	pd = new PD( this );
-
+	pd = new PD( this, init );
+	connect();
 }
 
 PeerAbst::~PeerAbst()
 {
+	terminate();
 	delete pd;
 }
 

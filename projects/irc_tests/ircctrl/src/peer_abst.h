@@ -2,15 +2,22 @@
 #ifndef __PEER_ABST_H_
 #define __PEER_ABST_H_
 
+#include <boost/function.hpp>
+#include <string>
 // Command sender and executor.
+
+struct lua_State;
 
 class PeerAbst
 {
 public:
-	PeerAbst();
+	typedef boost::function<void (lua_State *)> TInit;
+
+	PeerAbst( TInit init );
 	virtual ~PeerAbst();
 
-	// Local or remote commands invocation.
+	// Local command invocation.
+	// It is also should be called by remote peer.
 	void invokeCmd( const std::string & cmd );
 
 protected:
@@ -21,7 +28,7 @@ public:
 	// Send cmd to another peer.
 	virtual bool send( const std::string & cmd ) = 0;
 	//virtual bool sendBinary( const std::string & desc, const std::basic_string<char> & data ) = 0;
-private:
+public:
 	class PD;
 	PD * pd;
 };

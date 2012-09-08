@@ -7,7 +7,7 @@
 class PeerIrc: public PeerAbst
 {
 public:
-	PeerIrc( const std::string & iniFile );
+	PeerIrc( const std::string & iniFile, PeerAbst::TInit init );
 	~PeerIrc();
 protected:
 	bool connect();
@@ -15,6 +15,9 @@ protected:
 public:
 	bool isConnected();
 	bool send( const std::string & cmd );
+private:
+	class PD;
+	PD * pd;
 };
 
 

@@ -395,16 +395,18 @@ bool IrcPeer::isJoined() const
 	return pd->joined;
 }
 
-void IrcPeer::send( const std::string & stri )
+bool IrcPeer::send( const std::string & stri )
 {
     boost::mutex::scoped_lock lock( pd->mutex );
-	irc_cmd_msg( pd->ircS, pd->channel.c_str(), stri.c_str() );
+	int res = irc_cmd_msg( pd->ircS, pd->channel.c_str(), stri.c_str() );
+	return (res == 0);
 }
 
-void IrcPeer::send( const std::string & nick, const std::string & stri )
+bool IrcPeer::send( const std::string & nick, const std::string & stri )
 {
     boost::mutex::scoped_lock lock( pd->mutex );
-	irc_cmd_msg( pd->ircS, nick.c_str(), stri.c_str() );
+	int res = irc_cmd_msg( pd->ircS, nick.c_str(), stri.c_str() );
+	return (res == 0);
 }
 
 bool IrcPeer::requestDcc( const std::string nick )

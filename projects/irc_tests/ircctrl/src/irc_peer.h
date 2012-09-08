@@ -34,8 +34,8 @@ public:
 	const std::string & lastError();
 	bool join( const std::string & stri, const std::string & password = std::string() );
 	bool isJoined() const;
-	void send( const std::string & stri );
-	void send( const std::string & nick, const std::string & stri );
+	bool send( const std::string & stri );
+	bool send( const std::string & nick, const std::string & stri );
 	bool requestDcc( const std::string nick );
 	bool isDccAccepted() const;
 	void sendDcc( const std::basic_string<char> & data );
