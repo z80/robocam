@@ -11,4 +11,7 @@ projects/irc_tests/build.eclipse
 projects/irc_tests/app
 *.swp
 *.o
+.libs
+.deps
+
 
