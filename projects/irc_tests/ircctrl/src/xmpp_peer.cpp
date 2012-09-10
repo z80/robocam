@@ -51,9 +51,9 @@ void XmppPeer::setRegistering( bool reg )
 bool XmppPeer::connect()
 {
     //terminate();
-    boost::mutex::scoped_lock lock( m_mutex );
+    //boost::mutex::scoped_lock lock( m_mutex );
     m_thread = boost::thread( boost::bind( &XmppPeer::run, this ) );
-    m_cond.wait( lock );
+    //m_cond.wait( lock );
     return m_connected;
 }
 
@@ -126,8 +126,6 @@ void XmppPeer::onDisconnect( gloox::ConnectionError e )
 bool XmppPeer::onTLSConnect( const gloox::CertInfo & info )
 {
     boost::mutex::scoped_lock lock( m_mutex );
-    m_connected = true;
-    m_cond.notify_one();
     if ( !m_logHandler.empty() )
         m_logHandler( "TLS Connected" );
     return true;
@@ -251,32 +249,28 @@ void XmppPeer::handleLog( gloox::LogLevel level,gloox:: LogArea area, const std:
 
 void XmppPeer::run()
 {
+	boost::mutex::scoped_lock lock( m_mutex );
+	if ( !m_doRegister )
 	{
-		boost::mutex::scoped_lock lock( m_mutex );
-		if ( !m_doRegister )
-		{
-			std::ostringstream out;
-			out << m_jid << "@" << m_host;
-			gloox::JID jid( out.str() );
-			m_client = new gloox::Client( jid, m_password );
-		}
-		else
-			m_client = new gloox::Client( m_host );
-		if ( m_port > 0 )
-			m_client->setPort( m_port );
-		m_client->registerConnectionListener( this );
-		m_client->registerMessageSessionHandler( this, 0 );
-
-		if ( m_doRegister )
-		{
-			m_reg = new gloox::Registration( m_client );
-			m_reg->registerRegistrationHandler( this );
-		}
-
-		m_client->logInstance().registerLogHandler( gloox::LogLevelDebug, gloox::LogAreaAll, this );
+		std::ostringstream out;
+		out << m_jid << "@" << m_host;
+		gloox::JID jid( out.str() );
+		m_client = new gloox::Client( jid, m_password );
 	}
-    m_client->connect();
+	else
+		m_client = new gloox::Client( m_host );
+	if ( m_port > 0 )
+		m_client->setPort( m_port );
+	m_client->registerConnectionListener( this );
+	m_client->registerMessageSessionHandler( this, 0 );
+	if ( m_doRegister )
+	{
+		m_reg = new gloox::Registration( m_client );
+		m_reg->registerRegistrationHandler( this );
+	}
+	m_client->logInstance().registerLogHandler( gloox::LogLevelDebug, gloox::LogAreaAll, this );
 
+	m_client->connect();
     if ( m_session )
     {
         m_client->disposeMessageSession( m_session );
