@@ -4,25 +4,30 @@
 
 #include <string>
 #include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
 #include <boost/function.hpp>
+#include "client.h"
 #include "messagesessionhandler.h"
 #include "messageeventhandler.h"
+#include "messagehandler.h"
+#include "message.h"
 #include "connectionlistener.h"
 #include "registrationhandler.h"
+#include "registration.h"
 #include "siprofileft.h"
 #include "siprofilefthandler.h"
 #include "bytestreamdatahandler.h"
 #include "socks5bytestreamserver.h"
-#include "message.h"
 
-class XmppPeer: public MessageSessionHandler,
-                public MessageEventHandler,
-                public MessageHandler,
-                public ConnectionListener,
-                public LogHandler, 
-                public RegistrationHandler, 
-                public SIProfileFTHandler/*, 
-                public BytestreamDataHandler*/
+class XmppPeer: public gloox::MessageSessionHandler,
+                public gloox::MessageEventHandler,
+                public gloox::MessageHandler,
+                public gloox::ConnectionListener,
+                public gloox::LogHandler,
+                public gloox::RegistrationHandler,
+                public gloox::SIProfileFTHandler/*,
+                public gloox::BytestreamDataHandler*/
 
 {
 public:
@@ -46,18 +51,18 @@ public:
 
     // Reimplementing virtual methods...
     virtual void onConnect();
-    virtual void onDisconnect( ConnectionError e );
-    virtual bool onTLSConnect( const CertInfo & info );
-    virtual void handleMessage( const Message & msg, MessageSession * s );
-    virtual void handleMessageEvent( const & JID & from, MessageEventType type );
-    virtual void handlerChatState( const JID & from, ChatStateType type );
-    virtual void handleMessageSession( MessageSession * s );
-    virtual void handleRegistrationFields( const JID & from, int fields, std::string instructions )
-    virtual void handleRegistrationResult( const JID & from, RegistrationResult result )
-    virtual void handleAlreadyRegistered( const JID & from )
-    virtual void handleDataForm( const JID & from, const DataForm& form )
-    virtual void handleOOB( const JID & from, const OOB & oob )
-    virtual void handleLog( LogLevel level, LogArea area, const std::string & msg );
+    virtual void onDisconnect( gloox::ConnectionError e );
+    virtual bool onTLSConnect( const gloox::CertInfo & info );
+    virtual void handleMessage( const gloox::Message & msg, gloox::MessageSession * s );
+    virtual void handleMessageEvent( const gloox::JID & from, gloox::MessageEventType type );
+    virtual void handlerChatState( const gloox::JID & from, gloox::ChatStateType type );
+    virtual void handleMessageSession( gloox::MessageSession * s );
+    virtual void handleRegistrationFields( const gloox::JID & from, int fields, std::string instructions );
+    virtual void handleRegistrationResult( const gloox::JID & from, gloox::RegistrationResult result );
+    virtual void handleAlreadyRegistered( const gloox::JID & from );
+    virtual void handleDataForm( const gloox::JID & from, const gloox::DataForm& form );
+    virtual void handleOOB( const gloox::JID & from, const gloox::OOB & oob );
+    virtual void handleLog( gloox::LogLevel level, gloox::LogArea area, const std::string & msg );
 
 private:
     void run();
@@ -75,15 +80,15 @@ private:
     TLogHandler     m_logHandler;
 
     boost::thread    m_thread;
-    boost::mutex     m_mutex;
+    mutable boost::mutex     m_mutex;
     boost::condition m_cond;
-    MessageSession * m_session;
-    Client         * m_client;
-    Registration   * m_reg;
+    gloox::MessageSession * m_session;
+    gloox::Client         * m_client;
+    gloox::Registration   * m_reg;
     /*
-    SIProfileFT* f;
-    Bytestream* m_bs;
-    SOCKS5BytestreamServer* m_server;
+    gloox::SIProfileFT* f;
+    gloox::Bytestream* m_bs;
+    gloox::SOCKS5BytestreamServer* m_server;
     */
 };
 

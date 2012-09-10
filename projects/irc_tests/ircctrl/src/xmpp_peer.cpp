@@ -6,7 +6,7 @@ XmppPeer::XmppPeer()
       m_client( 0 ), 
       m_reg( 0 ), 
       m_connected( false ), 
-      m_doRegister( false );
+      m_doRegister( false )
 {
     
 }
@@ -19,7 +19,7 @@ XmppPeer::~XmppPeer()
 void XmppPeer::setMessageHandler( TMessageHandler handler )
 {
     boost::mutex::scoped_lock lock( m_mutex );
-    m_mesageHandler = handler;
+    m_messageHandler = handler;
 }
 
 void XmppPeer::setLogHandler( TLogHandler handler )
@@ -53,7 +53,7 @@ bool XmppPeer::connect()
     terminate();
     boost::mutex::scoped_lock lock( m_mutex );
     m_thread = boost::thread( boost::bind( &XmppPeer::run, this ) );
-    m_cond.wait();
+    m_cond.wait( lock );
     return m_connected;
 }
 
@@ -78,8 +78,8 @@ bool XmppPeer::send( const std::string & to, const std::string & msg )
         if ( m_session->target().bare() != to )
         {
             m_client->disposeMessageSession( m_session );
-            JID jid( to );
-            m_session = new MessageSesion( m_client, jid );
+            gloox::JID jid( to );
+            m_session = new gloox::MessageSession( m_client, jid );
             m_session->registerMessageHandler( this );
         }
     }
@@ -106,7 +106,7 @@ void XmppPeer::onConnect()
         m_logHandler( "Connected" );
 }
 
-void XmppPeer::onDisconnect( ConnectionError e )
+void XmppPeer::onDisconnect( gloox::ConnectionError e )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     m_connected = false;
@@ -115,13 +115,13 @@ void XmppPeer::onDisconnect( ConnectionError e )
     {
         std::ostringstream out;
         out << "Disconnected";
-        if ( e == ConnAuthenticationFailed )
-            out << ", authentication failed";
+        if ( e != gloox::ConnNoError )
+            out << ", error: " << e;
         m_logHandler( out.str() );
     }
 }
 
-bool XmppPeer::onTLSConnect( const CertInfo & info )
+bool XmppPeer::onTLSConnect( const gloox::CertInfo & info )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     m_connected = true;
@@ -131,14 +131,14 @@ bool XmppPeer::onTLSConnect( const CertInfo & info )
     return true;
 }
 
-void XmppPeer::handleMessage( const Message & msg, MessageSession * s )
+void XmppPeer::handleMessage( const gloox::Message & msg, gloox::MessageSession * s )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_messageHandler.empty() )
-        m_messageHandler( s->target(), msg.body() );
+        m_messageHandler( s->target().bare(), msg.body() );
 }
 
-void XmppPeer::handleMessageEvent( const & JID & from, MessageEventType type )
+void XmppPeer::handleMessageEvent( const gloox::JID & from, gloox::MessageEventType type )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -150,7 +150,7 @@ void XmppPeer::handleMessageEvent( const & JID & from, MessageEventType type )
     }
 }
 
-void XmppPeer::handlerChatState( const JID & from, ChatStateType type )
+void XmppPeer::handlerChatState( const gloox::JID & from, gloox::ChatStateType type )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -163,42 +163,43 @@ void XmppPeer::handlerChatState( const JID & from, ChatStateType type )
     }
 }
 
-void XmppPeer::handleMessageSession( MessageSession * s )
+void XmppPeer::handleMessageSession( gloox::MessageSession * s )
 {
     m_client->disposeMessageSession( m_session );
     m_session = s;
     m_session->registerMessageHandler( this );
 }
 
-void XmppPeer::handleRegistrationFields( const JID& from, int fields, std::string instructions )
+void XmppPeer::handleRegistrationFields( const gloox::JID & from, int fields, std::string instructions )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
     {
         std::ostringstream out;
-        out << "fields: " >> fields;
-        out << ", instructions: \"" << instrunctions << "\"";
+        out << "fields: " << fields;
+        out << ", instructions: \"" << instructions << "\"";
         m_logHandler( out.str() );
     }
-    RegistrationFields vals;
+    gloox::RegistrationFields vals;
     vals.username = m_jid;
     vals.password = m_password;
     m_reg->createAccount( fields, vals );
 }
 
-void XmppPeer::handleRegistrationResult( const JID& from, RegistrationResult result )
+void XmppPeer::handleRegistrationResult( const gloox::JID & from, gloox::RegistrationResult result )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
     {
         std::ostringstream out;
-        out << "result: " >> result;
+        out << "result: " << result;
         m_logHandler( out.str() );
     }
-    j->disconnect();
+    if ( result != gloox::RegistrationSuccess )
+    	m_client->disconnect();
 }
 
-void XmppPeer::handleAlreadyRegistered( const JID& from )
+void XmppPeer::handleAlreadyRegistered( const gloox::JID & from )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -209,7 +210,7 @@ void XmppPeer::handleAlreadyRegistered( const JID& from )
     }
 }
 
-void XmppPeer::handleDataForm( const JID & from, const DataForm & form )
+void XmppPeer::handleDataForm( const gloox::JID & from, const gloox::DataForm & form )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -220,7 +221,7 @@ void XmppPeer::handleDataForm( const JID & from, const DataForm & form )
     }
 }
 
-void XmppPeer::handleOOB( const JID& from, const OOB& oob )
+void XmppPeer::handleOOB( const gloox::JID & from, const gloox::OOB & oob )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -233,7 +234,7 @@ void XmppPeer::handleOOB( const JID& from, const OOB& oob )
     }
 }
 
-void XmppPeer::handleLog( LogLevel level, LogArea area, const std::string & msg )
+void XmppPeer::handleLog( gloox::LogLevel level,gloox:: LogArea area, const std::string & msg )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -251,18 +252,18 @@ void XmppPeer::run()
     boost::mutex::scoped_lock lock( m_mutex );
     std::ostringstream out;
     out << m_jid << "@" << m_host;
-    JID jid( out.str() );
-    m_client = new Client( jid, m_password, m_port );
+    gloox::JID jid( out.str() );
+    m_client = new gloox::Client( jid, m_password, m_port );
     m_client->registerConnectionListener( this );
     m_client->registerMessageSessionHandler( this, 0 );
     
     if ( m_doRegister )
     {
-        m_reg = new Registration( j );
+        m_reg = new gloox::Registration( m_client );
         m_reg->registerRegistrationHandler( this );
     }
     
-    m_client->logInstance().registerLogHandler( LogLevelDebug, LogAreaAll, this );
+    m_client->logInstance().registerLogHandler( gloox::LogLevelDebug, gloox::LogAreaAll, this );
     
     m_client->connect();
     if ( m_session )
