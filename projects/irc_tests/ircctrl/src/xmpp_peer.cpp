@@ -51,7 +51,7 @@ void XmppPeer::setRegistering( bool reg )
 bool XmppPeer::connect()
 {
     //terminate();
-    //boost::mutex::scoped_lock lock( m_mutex );
+    boost::mutex::scoped_lock lock( m_mutex );
     m_thread = boost::thread( boost::bind( &XmppPeer::run, this ) );
     //m_cond.wait( lock );
     return m_connected;
@@ -67,8 +67,6 @@ void XmppPeer::terminate()
 {
     m_client->disconnect();
     m_thread.join();
-    boost::mutex::scoped_lock lock( m_mutex );
-    m_connected = false;
 }
 
 bool XmppPeer::send( const std::string & to, const std::string & msg )
@@ -103,7 +101,7 @@ void XmppPeer::onConnect()
     if ( m_doRegister )
     	m_reg->fetchRegistrationFields();
     m_connected = true;
-    m_cond.notify_one();
+    //m_cond.notify_one();
     if ( !m_logHandler.empty() )
         m_logHandler( "Connected" );
 }
@@ -112,7 +110,7 @@ void XmppPeer::onDisconnect( gloox::ConnectionError e )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     m_connected = false;
-    m_cond.notify_one();
+    //m_cond.notify_one();
     if ( !m_logHandler.empty() )
     {
         std::ostringstream out;
@@ -249,18 +247,20 @@ void XmppPeer::handleLog( gloox::LogLevel level,gloox:: LogArea area, const std:
 
 void XmppPeer::run()
 {
-	boost::mutex::scoped_lock lock( m_mutex );
+	//boost::mutex::scoped_lock lock( m_mutex );
 	if ( !m_doRegister )
 	{
 		std::ostringstream out;
 		out << m_jid << "@" << m_host;
 		gloox::JID jid( out.str() );
 		m_client = new gloox::Client( jid, m_password );
+		m_client->setServer( m_host );
 	}
 	else
 		m_client = new gloox::Client( m_host );
 	if ( m_port > 0 )
 		m_client->setPort( m_port );
+	//m_client->disableRoster();
 	m_client->registerConnectionListener( this );
 	m_client->registerMessageSessionHandler( this, 0 );
 	if ( m_doRegister )
