@@ -21,8 +21,8 @@ message( STATUS "HEADERS = ${headers}" )
 message( STATUS ${Boost_LIBRARIES} )
 
 add_library( ircctrl STATIC ${src} )
-find_library( libircclient NAMES libircclient.a PATHS ${ROOT}/3dparty/libircclient-1.6/src )
-find_library( libgloox NAMES libgloox.a PATHS ${ROOT}/3dparty/gloox-1.0/src/.libs )
+find_library( libircclient NAMES libircclient.a libircclient.lib PATHS ${ROOT}/3dparty/libircclient-1.6/src ${ROOT}/3dparty/libircclient-1.6/bin )
+find_library( libgloox NAMES libgloox.a libgloox.lib PATHS ${ROOT}/3dparty/gloox-1.0/src/.libs )
 target_link_libraries( ircctrl liblua-5.1.5 ${libircclient} ${libgloox} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )
 
 
