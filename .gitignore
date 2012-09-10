@@ -13,5 +13,7 @@ projects/irc_tests/app
 *.o
 .libs
 .deps
+Debug
+Release
 
 
