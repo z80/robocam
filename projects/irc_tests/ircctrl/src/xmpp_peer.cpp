@@ -50,7 +50,7 @@ void XmppPeer::setRegistering( bool reg )
 
 bool XmppPeer::connect()
 {
-    terminate();
+    //terminate();
     boost::mutex::scoped_lock lock( m_mutex );
     m_thread = boost::thread( boost::bind( &XmppPeer::run, this ) );
     m_cond.wait( lock );
@@ -100,6 +100,8 @@ const std::string XmppPeer::lastError() const
 void XmppPeer::onConnect()
 {
     boost::mutex::scoped_lock lock( m_mutex );
+    if ( m_doRegister )
+    	m_reg->fetchRegistrationFields();
     m_connected = true;
     m_cond.notify_one();
     if ( !m_logHandler.empty() )
@@ -195,8 +197,8 @@ void XmppPeer::handleRegistrationResult( const gloox::JID & from, gloox::Registr
         out << "result: " << result;
         m_logHandler( out.str() );
     }
-    if ( result != gloox::RegistrationSuccess )
-    	m_client->disconnect();
+//    if ( result != gloox::RegistrationSuccess )
+//    	m_client->disconnect();
 }
 
 void XmppPeer::handleAlreadyRegistered( const gloox::JID & from )
@@ -249,23 +251,32 @@ void XmppPeer::handleLog( gloox::LogLevel level,gloox:: LogArea area, const std:
 
 void XmppPeer::run()
 {
-    boost::mutex::scoped_lock lock( m_mutex );
-    std::ostringstream out;
-    out << m_jid << "@" << m_host;
-    gloox::JID jid( out.str() );
-    m_client = new gloox::Client( jid, m_password, m_port );
-    m_client->registerConnectionListener( this );
-    m_client->registerMessageSessionHandler( this, 0 );
-    
-    if ( m_doRegister )
-    {
-        m_reg = new gloox::Registration( m_client );
-        m_reg->registerRegistrationHandler( this );
-    }
-    
-    m_client->logInstance().registerLogHandler( gloox::LogLevelDebug, gloox::LogAreaAll, this );
-    
+	{
+		boost::mutex::scoped_lock lock( m_mutex );
+		if ( !m_doRegister )
+		{
+			std::ostringstream out;
+			out << m_jid << "@" << m_host;
+			gloox::JID jid( out.str() );
+			m_client = new gloox::Client( jid, m_password );
+		}
+		else
+			m_client = new gloox::Client( m_host );
+		if ( m_port > 0 )
+			m_client->setPort( m_port );
+		m_client->registerConnectionListener( this );
+		m_client->registerMessageSessionHandler( this, 0 );
+
+		if ( m_doRegister )
+		{
+			m_reg = new gloox::Registration( m_client );
+			m_reg->registerRegistrationHandler( this );
+		}
+
+		m_client->logInstance().registerLogHandler( gloox::LogLevelDebug, gloox::LogAreaAll, this );
+	}
     m_client->connect();
+
     if ( m_session )
     {
         m_client->disposeMessageSession( m_session );

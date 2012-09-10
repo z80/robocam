@@ -25,8 +25,8 @@ class XmppPeer: public gloox::MessageSessionHandler,
                 public gloox::MessageHandler,
                 public gloox::ConnectionListener,
                 public gloox::LogHandler,
-                public gloox::RegistrationHandler,
-                public gloox::SIProfileFTHandler/*,
+                public gloox::RegistrationHandler/*,
+                public gloox::SIProfileFTHandler,
                 public gloox::BytestreamDataHandler*/
 
 {
@@ -79,9 +79,9 @@ private:
     TMessageHandler m_messageHandler;
     TLogHandler     m_logHandler;
 
-    boost::thread    m_thread;
-    mutable boost::mutex     m_mutex;
-    boost::condition m_cond;
+    boost::thread         m_thread;
+    mutable boost::mutex m_mutex;
+    boost::condition      m_cond;
     gloox::MessageSession * m_session;
     gloox::Client         * m_client;
     gloox::Registration   * m_reg;
