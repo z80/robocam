@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,6 @@
 #ifndef FLEXOFFHANDLER_H__
 #define FLEXOFFHANDLER_H__
 
-#include "disco.h"
 #include "gloox.h"
 
 namespace gloox
@@ -67,7 +66,7 @@ namespace gloox
        * Call @ref FlexibleOffline::fetchHeaders() to trigger the check.
        * @param headers A map of ID/sender pairs describing the offline messages.
        */
-      virtual void handleFlexibleOfflineMessageHeaders( const Disco::ItemList& headers ) = 0;
+      virtual void handleFlexibleOfflineMessageHeaders( StringMap& headers ) = 0;
 
       /**
        * This function is called to indicate the result of a fetch or delete instruction.

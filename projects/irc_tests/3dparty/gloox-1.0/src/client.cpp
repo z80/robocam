@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -10,123 +10,79 @@
   This software is distributed without any warranty.
 */
 
-#include "config.h"
+#ifdef _WIN32
+# include "../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #include "client.h"
-#include "capabilities.h"
 #include "rostermanager.h"
 #include "disco.h"
-#include "error.h"
 #include "logsink.h"
 #include "nonsaslauth.h"
-#include "prep.h"
+#include "tag.h"
 #include "stanzaextensionfactory.h"
 #include "stanzaextension.h"
-#include "tag.h"
 #include "tlsbase.h"
-#include "util.h"
 
 #if !defined( _WIN32 ) && !defined( _WIN32_WCE )
 # include <unistd.h>
 #endif
 
-#include <cstdio>
+#ifndef _WIN32_WCE
+# include <iostream>
+# include <sstream>
+#else
+# include <stdio.h>
+#endif
 
 namespace gloox
 {
 
-  // ---- Client::ResourceBind ----
-  Client::ResourceBind::ResourceBind( const std::string& resource, bool bind )
-    : StanzaExtension( ExtResourceBind ), m_jid( JID() ), m_bind( bind )
-  {
-    prep::resourceprep( resource, m_resource );
-    m_valid = true;
-  }
-
-  Client::ResourceBind::ResourceBind( const Tag* tag )
-    : StanzaExtension( ExtResourceBind ), m_resource( EmptyString ), m_bind( true )
-  {
-    if( !tag )
-      return;
-
-    if( tag->name() == "unbind" )
-      m_bind = false;
-    else if( tag->name() == "bind" )
-      m_bind = true;
-    else
-      return;
-
-    if( tag->hasChild( "jid" ) )
-      m_jid.setJID( tag->findChild( "jid" )->cdata() );
-    else if( tag->hasChild( "resource" ) )
-      m_resource = tag->findChild( "resource" )->cdata();
-
-    m_valid = true;
-  }
-
-  Client::ResourceBind::~ResourceBind()
-  {
-  }
-
-  const std::string& Client::ResourceBind::filterString() const
-  {
-    static const std::string filter = "/iq/bind[@xmlns='" + XMLNS_STREAM_BIND + "']"
-        "|/iq/unbind[@xmlns='" + XMLNS_STREAM_BIND + "']";
-    return filter;
-  }
-
-  Tag* Client::ResourceBind::tag() const
-  {
-    if( !m_valid )
-      return 0;
-
-    Tag* t = new Tag( m_bind ? "bind" : "unbind" );
-    t->setXmlns( XMLNS_STREAM_BIND );
-
-    if( m_bind && m_resource.empty() && m_jid )
-      new Tag( t, "jid", m_jid.full() );
-    else
-      new Tag( t, "resource", m_resource );
-
-    return t;
-  }
-  // ---- ~Client::ResourceBind ----
-
-  // ---- Client::SessionCreation ----
-  Tag* Client::SessionCreation::tag() const
-  {
-    Tag* t = new Tag( "session" );
-    t->setXmlns( XMLNS_STREAM_SESSION );
-    return t;
-  }
-  // ---- Client::SessionCreation ----
-
-  // ---- Client ----
   Client::Client( const std::string& server )
     : ClientBase( XMLNS_CLIENT, server ),
       m_rosterManager( 0 ), m_auth( 0 ),
-      m_presence( Presence::Available, JID() ), m_resourceBound( false ),
-      m_forceNonSasl( false ), m_manageRoster( true ),
-      m_streamFeatures( 0 )
+      m_presence( PresenceAvailable ), m_resourceBound( false ), m_forceNonSasl( false ),
+      m_manageRoster( true ), m_doAuth( false ),
+      m_streamFeatures( 0 ), m_priority( 0 )
   {
     m_jid.setServer( server );
     init();
   }
 
   Client::Client( const JID& jid, const std::string& password, int port )
-    : ClientBase( XMLNS_CLIENT, password, EmptyString, port ),
+    : ClientBase( XMLNS_CLIENT, password, "", port ),
       m_rosterManager( 0 ), m_auth( 0 ),
-      m_presence( Presence::Available, JID() ), m_resourceBound( false ),
-      m_forceNonSasl( false ), m_manageRoster( true ),
-      m_streamFeatures( 0 )
+      m_presence( PresenceAvailable ), m_resourceBound( false ), m_forceNonSasl( false ),
+      m_manageRoster( true ), m_doAuth( true ),
+      m_streamFeatures( 0 ), m_priority( 0 )
   {
     m_jid = jid;
     m_server = m_jid.serverRaw();
     init();
   }
 
+  Client::Client( const std::string& username, const std::string& password,
+                  const std::string& server, const std::string& resource, int port )
+    : ClientBase( XMLNS_CLIENT, password, server, port ),
+      m_rosterManager( 0 ), m_auth( 0 ),
+      m_presence( PresenceAvailable ), m_resourceBound( false ), m_forceNonSasl( false ),
+      m_manageRoster( true ), m_doAuth( true ),
+      m_streamFeatures( 0 ), m_priority( 0 )
+  {
+    m_jid.setUsername( username );
+    m_jid.setServer( server );
+    m_jid.setResource( resource );
+
+    init();
+  }
+
   Client::~Client()
   {
+    removePresenceExtensions();
     delete m_rosterManager;
     delete m_auth;
   }
@@ -135,28 +91,26 @@ namespace gloox
   {
     m_rosterManager = new RosterManager( this );
     m_disco->setIdentity( "client", "bot" );
-    registerStanzaExtension( new ResourceBind( 0 ) );
-    registerStanzaExtension( new Capabilities() );
-    m_presenceExtensions.push_back( new Capabilities( m_disco ) );
   }
 
   void Client::setUsername( const std::string &username )
   {
     m_jid.setUsername( username );
+    m_doAuth = true;
   }
 
-  bool Client::handleNormalNode( Tag* tag )
+  bool Client::handleNormalNode( Stanza *stanza )
   {
-    if( tag->name() == "features" && tag->xmlns() == XMLNS_STREAM )
+    if( stanza->name() == "stream:features" )
     {
-      m_streamFeatures = getStreamFeatures( tag );
+      m_streamFeatures = getStreamFeatures( stanza );
 
       if( m_tls == TLSRequired && !m_encryptionActive
           && ( !m_encryption || !( m_streamFeatures & StreamFeatureStartTls ) ) )
       {
-        logInstance().err( LogAreaClassClient, "Client is configured to require"
-                                " TLS but either the server didn't offer TLS or"
-                                " TLS support is not compiled in." );
+        logInstance().log( LogLevelError, LogAreaClassClient,
+                    "Client is configured to require TLS but either the server didn't offer TLS or "
+                    "TLS support is not compiled in." );
         disconnect( ConnTlsNotAvailable );
       }
       else if( m_tls > TLSDisabled && m_encryption && !m_encryptionActive
@@ -165,13 +119,6 @@ namespace gloox
         notifyStreamEvent( StreamEventEncryption );
         startTls();
       }
-      else if( m_compress && m_compression && !m_compressionActive
-          && ( m_streamFeatures & StreamFeatureCompressZlib ) )
-      {
-        notifyStreamEvent( StreamEventCompression );
-        logInstance().warn( LogAreaClassClient, "The server offers compression, but negotiating Compression at this stage is not recommended. See XEP-0170 for details. We'll continue anyway." );
-        negotiateCompression( StreamFeatureCompressZlib );
-      }
       else if( m_sasl )
       {
         if( m_authed )
@@ -179,37 +126,32 @@ namespace gloox
           if( m_streamFeatures & StreamFeatureBind )
           {
             notifyStreamEvent( StreamEventResourceBinding );
-            bindResource( resource() );
+            bindResource();
           }
         }
-        else if( !username().empty() && !password().empty() )
+        else if( m_doAuth && !username().empty() && !password().empty() )
         {
           if( !login() )
           {
-            logInstance().err( LogAreaClassClient, "The server doesn't support"
-                                           " any auth mechanisms we know about" );
+            logInstance().log( LogLevelError, LogAreaClassClient,
+                                     "the server doesn't support any auth mechanisms we know about" );
             disconnect( ConnNoSupportedAuth );
           }
         }
-        else if( !m_clientCerts.empty() && !m_clientKey.empty()
+        else if( m_doAuth && !m_clientCerts.empty() && !m_clientKey.empty()
                  && m_streamFeatures & SaslMechExternal && m_availableSaslMechs & SaslMechExternal )
         {
           notifyStreamEvent( StreamEventAuthentication );
           startSASL( SaslMechExternal );
         }
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-        else if( m_streamFeatures & SaslMechGssapi && m_availableSaslMechs & SaslMechGssapi )
+#ifdef _WIN32
+        else if( m_doAuth && m_streamFeatures & SaslMechGssapi && m_availableSaslMechs & SaslMechGssapi )
         {
           notifyStreamEvent( StreamEventAuthentication );
           startSASL( SaslMechGssapi );
         }
-        else if( m_streamFeatures & SaslMechNTLM && m_availableSaslMechs & SaslMechNTLM )
-        {
-          notifyStreamEvent( StreamEventAuthentication );
-          startSASL( SaslMechNTLM );
-        }
 #endif
-        else if( m_streamFeatures & SaslMechAnonymous
+        else if( m_doAuth && m_streamFeatures & SaslMechAnonymous
                  && m_availableSaslMechs & SaslMechAnonymous )
         {
           notifyStreamEvent( StreamEventAuthentication );
@@ -239,61 +181,63 @@ namespace gloox
       }
       else
       {
-        logInstance().err( LogAreaClassClient, "fallback: the server doesn't "
-                                   "support any auth mechanisms we know about" );
+        logInstance().log( LogLevelError, LogAreaClassClient,
+                           "fallback: the server doesn't support any auth mechanisms we know about" );
         disconnect( ConnNoSupportedAuth );
       }
     }
+    else if( ( stanza->name() == "proceed" ) && stanza->hasAttribute( "xmlns", XMLNS_STREAM_TLS ) )
+    {
+      logInstance().log( LogLevelDebug, LogAreaClassClient, "starting TLS handshake..." );
+
+      if( m_encryption )
+      {
+        m_encryptionActive = true;
+        m_encryption->handshake();
+      }
+    }
+    else if( ( stanza->name() == "failure" ) && stanza->hasAttribute( "xmlns", XMLNS_STREAM_TLS ) )
+    {
+      logInstance().log( LogLevelError, LogAreaClassClient, "TLS handshake failed (server-side)!" );
+      disconnect( ConnTlsFailed );
+    }
+    else if( ( stanza->name() == "failure" ) && stanza->hasAttribute( "xmlns", XMLNS_COMPRESSION ) )
+    {
+      logInstance().log( LogLevelError, LogAreaClassClient, "stream compression init failed!" );
+      disconnect( ConnCompressionFailed );
+    }
+    else if( ( stanza->name() == "compressed" ) && stanza->hasAttribute( "xmlns", XMLNS_COMPRESSION ) )
+    {
+      logInstance().log( LogLevelDebug, LogAreaClassClient, "stream compression inited" );
+      m_compressionActive = true;
+      header();
+    }
+    else if( ( stanza->name() == "challenge" ) && stanza->hasAttribute( "xmlns", XMLNS_STREAM_SASL ) )
+    {
+      logInstance().log( LogLevelDebug, LogAreaClassClient, "processing SASL challenge" );
+      processSASLChallenge( stanza->cdata() );
+    }
+    else if( ( stanza->name() == "failure" ) && stanza->hasAttribute( "xmlns", XMLNS_STREAM_SASL ) )
+    {
+      logInstance().log( LogLevelError, LogAreaClassClient, "SASL authentication failed!" );
+      processSASLError( stanza );
+      disconnect( ConnAuthenticationFailed );
+    }
+    else if( ( stanza->name() == "success" ) && stanza->hasAttribute( "xmlns", XMLNS_STREAM_SASL ) )
+    {
+      logInstance().log( LogLevelDebug, LogAreaClassClient, "SASL authentication successful" );
+      setAuthed( true );
+      header();
+    }
     else
     {
-      const std::string& name  = tag->name(),
-                         xmlns = tag->findAttribute( XMLNS );
-      if( name == "proceed" && xmlns == XMLNS_STREAM_TLS )
+      if( ( stanza->name() == "iq" ) && stanza->hasAttribute( "id", "bind" ) )
       {
-        logInstance().dbg( LogAreaClassClient, "starting TLS handshake..." );
-
-        if( m_encryption )
-        {
-          m_encryptionActive = true;
-          m_encryption->handshake();
-        }
+        processResourceBind( stanza );
       }
-      else if( name == "failure" )
+      else if( ( stanza->name() == "iq" ) && stanza->hasAttribute( "id", "session" ) )
       {
-        if( xmlns == XMLNS_STREAM_TLS )
-        {
-          logInstance().err( LogAreaClassClient, "TLS handshake failed (server-side)!" );
-          disconnect( ConnTlsFailed );
-        }
-        else if( xmlns == XMLNS_COMPRESSION )
-        {
-          logInstance().err( LogAreaClassClient, "Stream compression init failed!" );
-          disconnect( ConnCompressionFailed );
-        }
-        else if( xmlns == XMLNS_STREAM_SASL )
-        {
-          logInstance().err( LogAreaClassClient, "SASL authentication failed!" );
-          processSASLError( tag );
-          disconnect( ConnAuthenticationFailed );
-        }
-      }
-      else if( name == "compressed" && xmlns == XMLNS_COMPRESSION )
-      {
-        logInstance().dbg( LogAreaClassClient, "Stream compression initialized" );
-        m_compressionActive = true;
-        header();
-      }
-      else if( name == "challenge" && xmlns == XMLNS_STREAM_SASL )
-      {
-        logInstance().dbg( LogAreaClassClient, "Processing SASL challenge" );
-        processSASLChallenge( tag->cdata() );
-      }
-      else if( name == "success" && xmlns == XMLNS_STREAM_SASL )
-      {
-        logInstance().dbg( LogAreaClassClient, "SASL authentication successful" );
-        processSASLSuccess();
-        setAuthed( true );
-        header();
+        processCreateSession( stanza );
       }
       else
         return false;
@@ -302,36 +246,33 @@ namespace gloox
     return true;
   }
 
-  int Client::getStreamFeatures( Tag* tag )
+  int Client::getStreamFeatures( Stanza *stanza )
   {
-    if( tag->name() != "features" || tag->xmlns() != XMLNS_STREAM )
+    if( stanza->name() != "stream:features" )
       return 0;
 
     int features = 0;
 
-    if( tag->hasChild( "starttls", XMLNS, XMLNS_STREAM_TLS ) )
+    if( stanza->hasChild( "starttls", "xmlns", XMLNS_STREAM_TLS ) )
       features |= StreamFeatureStartTls;
 
-    if( tag->hasChild( "mechanisms", XMLNS, XMLNS_STREAM_SASL ) )
-      features |= getSaslMechs( tag->findChild( "mechanisms" ) );
+    if( stanza->hasChild( "mechanisms", "xmlns", XMLNS_STREAM_SASL ) )
+      features |= getSaslMechs( stanza->findChild( "mechanisms" ) );
 
-    if( tag->hasChild( "bind", XMLNS, XMLNS_STREAM_BIND ) )
+    if( stanza->hasChild( "bind", "xmlns", XMLNS_STREAM_BIND ) )
       features |= StreamFeatureBind;
 
-    if( tag->hasChild( "unbind", XMLNS, XMLNS_STREAM_BIND ) )
-      features |= StreamFeatureUnbind;
-
-    if( tag->hasChild( "session", XMLNS, XMLNS_STREAM_SESSION ) )
+    if( stanza->hasChild( "session", "xmlns", XMLNS_STREAM_SESSION ) )
       features |= StreamFeatureSession;
 
-    if( tag->hasChild( "auth", XMLNS, XMLNS_STREAM_IQAUTH ) )
+    if( stanza->hasChild( "auth", "xmlns", XMLNS_STREAM_IQAUTH ) )
       features |= StreamFeatureIqAuth;
 
-    if( tag->hasChild( "register", XMLNS, XMLNS_STREAM_IQREGISTER ) )
+    if( stanza->hasChild( "register", "xmlns", XMLNS_STREAM_IQREGISTER ) )
       features |= StreamFeatureIqRegister;
 
-    if( tag->hasChild( "compression", XMLNS, XMLNS_STREAM_COMPRESS ) )
-      features |= getCompressionMethods( tag->findChild( "compression" ) );
+    if( stanza->hasChild( "compression", "xmlns", XMLNS_STREAM_COMPRESS ) )
+      features |= getCompressionMethods( stanza->findChild( "compression" ) );
 
     if( features == 0 )
       features = StreamFeatureIqAuth;
@@ -339,34 +280,29 @@ namespace gloox
     return features;
   }
 
-  int Client::getSaslMechs( Tag* tag )
+  int Client::getSaslMechs( Tag *tag )
   {
     int mechs = SaslMechNone;
 
-    const std::string mech = "mechanism";
-
-    if( tag->hasChildWithCData( mech, "DIGEST-MD5" ) )
+    if( tag->hasChildWithCData( "mechanism", "DIGEST-MD5" ) )
       mechs |= SaslMechDigestMd5;
 
-    if( tag->hasChildWithCData( mech, "PLAIN" ) )
+    if( tag->hasChildWithCData( "mechanism", "PLAIN" ) )
       mechs |= SaslMechPlain;
 
-    if( tag->hasChildWithCData( mech, "ANONYMOUS" ) )
+    if( tag->hasChildWithCData( "mechanism", "ANONYMOUS" ) )
       mechs |= SaslMechAnonymous;
 
-    if( tag->hasChildWithCData( mech, "EXTERNAL" ) )
+    if( tag->hasChildWithCData( "mechanism", "EXTERNAL" ) )
       mechs |= SaslMechExternal;
 
-    if( tag->hasChildWithCData( mech, "GSSAPI" ) )
+    if( tag->hasChildWithCData( "mechanism", "GSSAPI" ) )
       mechs |= SaslMechGssapi;
-
-    if( tag->hasChildWithCData( mech, "NTLM" ) )
-      mechs |= SaslMechNTLM;
 
     return mechs;
   }
 
-  int Client::getCompressionMethods( Tag* tag )
+  int Client::getCompressionMethods( Tag *tag )
   {
     int meths = 0;
 
@@ -406,63 +342,32 @@ namespace gloox
     return retval;
   }
 
-  void Client::handleIqIDForward( const IQ& iq, int context )
+  void Client::bindResource()
   {
-    switch( context )
+    if( !m_resourceBound )
     {
-      case CtxResourceUnbind:
-        // we don't store known resources anyway
-        break;
-      case CtxResourceBind:
-        processResourceBind( iq );
-        break;
-      case CtxSessionEstablishment:
-        processCreateSession( iq );
-        break;
-      default:
-        break;
+      Tag *iq = new Tag( "iq" );
+      iq->addAttribute( "type", "set" );
+      iq->addAttribute( "id", "bind" );
+      Tag *b = new Tag( iq, "bind" );
+      b->addAttribute( "xmlns", XMLNS_STREAM_BIND );
+      if( !resource().empty() )
+        new Tag( b, "resource", resource() );
+
+      send( iq );
     }
   }
 
-  bool Client::bindOperation( const std::string& resource, bool bind )
+  void Client::processResourceBind( Stanza *stanza )
   {
-    if( !( m_streamFeatures & StreamFeatureUnbind ) && m_resourceBound )
-      return false;
-
-    IQ iq( IQ::Set, JID(), getID() );
-    iq.addExtension( new ResourceBind( resource, bind ) );
-
-    send( iq, this, bind ? CtxResourceBind : CtxResourceUnbind );
-    return true;
-  }
-
-  bool Client::selectResource( const std::string& resource )
-  {
-    if( !( m_streamFeatures & StreamFeatureUnbind ) )
-      return false;
-
-    m_selectedResource = resource;
-
-    return true;
-  }
-
-  void Client::processResourceBind( const IQ& iq )
-  {
-    switch( iq.subtype() )
+    switch( stanza->subtype() )
     {
-      case IQ::Result:
+      case StanzaIqResult:
       {
-        const ResourceBind* rb = iq.findExtension<ResourceBind>( ExtResourceBind );
-        if( !rb || !rb->jid() )
-        {
-          notifyOnResourceBindError( 0 );
-          break;
-        }
-
-        m_jid = rb->jid();
+        Tag *bind = stanza->findChild( "bind" );
+        Tag *jid = bind->findChild( "jid" );
+        m_jid.setJID( jid->cdata() );
         m_resourceBound = true;
-        m_selectedResource = m_jid.resource();
-        notifyOnResourceBind( m_jid.resource() );
 
         if( m_streamFeatures & StreamFeatureSession )
           createSession();
@@ -470,9 +375,25 @@ namespace gloox
           connected();
         break;
       }
-      case IQ::Error:
+      case StanzaIqError:
       {
-        notifyOnResourceBindError( iq.error() );
+        Tag *error = stanza->findChild( "error" );
+        if( stanza->hasChild( "error", "type", "modify" )
+            && error->hasChild( "bad-request", "xmlns", XMLNS_XMPP_STANZAS ) )
+        {
+          notifyOnResourceBindError( RbErrorBadRequest );
+        }
+        else if( stanza->hasChild( "error", "type", "cancel" ) )
+        {
+          if( error->hasChild( "not-allowed", "xmlns", XMLNS_XMPP_STANZAS ) )
+            notifyOnResourceBindError( RbErrorNotAllowed );
+          else if( error->hasChild( "conflict", "xmlns", XMLNS_XMPP_STANZAS ) )
+            notifyOnResourceBindError( RbErrorConflict );
+          else
+            notifyOnResourceBindError( RbErrorUnknownError );
+        }
+        else
+          notifyOnResourceBindError( RbErrorUnknownError );
         break;
       }
       default:
@@ -483,21 +404,46 @@ namespace gloox
   void Client::createSession()
   {
     notifyStreamEvent( StreamEventSessionCreation );
-    IQ iq( IQ::Set, JID(), getID() );
-    iq.addExtension( new SessionCreation() );
-    send( iq, this, CtxSessionEstablishment );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "set" );
+    iq->addAttribute( "id", "session" );
+    Tag *s = new Tag( iq, "session" );
+    s->addAttribute( "xmlns", XMLNS_STREAM_SESSION );
+
+    send( iq );
   }
 
-  void Client::processCreateSession( const IQ& iq )
+  void Client::processCreateSession( Stanza *stanza )
   {
-    switch( iq.subtype() )
+    switch( stanza->subtype() )
     {
-      case IQ::Result:
+      case StanzaIqResult:
+      {
         connected();
         break;
-      case IQ::Error:
-        notifyOnSessionCreateError( iq.error() );
+      }
+      case StanzaIqError:
+      {
+        Tag *error = stanza->findChild( "error" );
+        if( stanza->hasChild( "error", "type", "wait" )
+            && error->hasChild( "internal-server-error", "xmlns", XMLNS_XMPP_STANZAS ) )
+        {
+          notifyOnSessionCreateError( ScErrorInternalServerError );
+        }
+        else if( stanza->hasChild( "error", "type", "auth" )
+                 && error->hasChild( "forbidden", "xmlns", XMLNS_XMPP_STANZAS ) )
+        {
+          notifyOnSessionCreateError( ScErrorForbidden );
+        }
+        else if( stanza->hasChild( "error", "type", "cancel" )
+                 && error->hasChild( "conflict", "xmlns", XMLNS_XMPP_STANZAS ) )
+        {
+          notifyOnSessionCreateError( ScErrorConflict );
+        }
+        else
+          notifyOnSessionCreateError( ScErrorUnknownError );
         break;
+      }
       default:
         break;
     }
@@ -505,7 +451,8 @@ namespace gloox
 
   void Client::negotiateCompression( StreamFeature method )
   {
-    Tag* t = new Tag( "compress", XMLNS, XMLNS_COMPRESSION );
+    Tag *t = new Tag( "compress" );
+    t->addAttribute( "xmlns", XMLNS_COMPRESSION );
 
     if( method == StreamFeatureCompressZlib )
       new Tag( t, "method", "zlib" );
@@ -516,28 +463,34 @@ namespace gloox
     send( t );
   }
 
-  void Client::setPresence( Presence::PresenceType pres, int priority,
-                            const std::string& status )
+  void Client::addPresenceExtension( StanzaExtension *se )
   {
-    m_presence.setPresence( pres );
-    m_presence.setPriority( priority );
-    m_presence.addStatus( status );
-    sendPresence( m_presence );
+    m_presenceExtensions.push_back( se );
   }
 
-  void Client::setPresence( const JID& to, Presence::PresenceType pres, int priority,
-                            const std::string& status )
+  void Client::removePresenceExtensions()
   {
-    Presence p( pres, to, status, priority );
-    sendPresence( p );
+    StanzaExtensionList::iterator it = m_presenceExtensions.begin();
+    for( ; it != m_presenceExtensions.end(); ++it )
+    {
+      delete (*it);
+    }
+    m_presenceExtensions.clear();
   }
 
-  void Client::sendPresence( Presence& pres )
+  void Client::setPresence( Presence presence, int priority, const std::string& status )
   {
-    if( state() < StateConnected )
-      return;
+    m_presence = presence;
+    m_status = status;
 
-    send( pres );
+    if( priority < -128 )
+      m_priority = -128;
+    if( priority > 127 )
+      m_priority = 127;
+    else
+      m_priority = priority;
+
+    sendPresence();
   }
 
   void Client::disableRoster()
@@ -552,6 +505,33 @@ namespace gloox
     if( !m_auth )
       m_auth = new NonSaslAuth( this );
     m_auth->doAuth( m_sid );
+  }
+
+  void Client::sendPresence()
+  {
+    if( m_presence != PresenceUnknown &&
+        state() >= StateConnected )
+    {
+      JID jid;
+      Stanza *p = Stanza::createPresenceStanza( jid, m_status, m_presence );
+#ifdef _WIN32_WCE
+      char tmp[5];
+      tmp[4] = '\0';
+      sprintf( tmp, "%s", m_priority );
+      new Tag( p, "priority", tmp );
+#else
+      std::ostringstream oss;
+      oss << m_priority;
+      new Tag( p, "priority", oss.str() );
+#endif
+      StanzaExtensionList::const_iterator it = m_presenceExtensions.begin();
+      for( ; it != m_presenceExtensions.end(); ++it )
+      {
+        p->addChild( (*it)->tag() );
+      }
+
+      send( p );
+    }
   }
 
   void Client::connected()
@@ -575,7 +555,7 @@ namespace gloox
 
   void Client::rosterFilled()
   {
-    sendPresence( m_presence );
+    sendPresence();
     notifyStreamEvent( StreamEventFinished );
     notifyOnConnect();
   }

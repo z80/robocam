@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,7 +17,13 @@
 #include "compressionbase.h"
 #include "mutex.h"
 
-#include "config.h"
+#ifdef _WIN32
+# include "../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #ifdef HAVE_ZLIB
 
@@ -40,7 +46,7 @@ namespace gloox
        * Contructor.
        * @param cdh The CompressionDataHandler to receive de/compressed data.
        */
-      CompressionZlib( CompressionDataHandler* cdh );
+      CompressionZlib( CompressionDataHandler *cdh );
 
       /**
        * Virtual Destructor.
@@ -48,22 +54,16 @@ namespace gloox
       virtual ~CompressionZlib();
 
       // reimplemented from CompressionBase
-      virtual bool init();
-
-      // reimplemented from CompressionBase
       virtual void compress( const std::string& data );
 
       // reimplemented from CompressionBase
       virtual void decompress( const std::string& data );
 
-      // reimplemented from CompressionBase
-      virtual void cleanup();
-
     private:
       z_stream m_zinflate;
       z_stream m_zdeflate;
 
-      util::Mutex m_compressMutex;
+      Mutex m_compressMutex;
 
   };
 

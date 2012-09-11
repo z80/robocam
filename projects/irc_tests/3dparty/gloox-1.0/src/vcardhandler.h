@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -52,11 +52,11 @@ namespace gloox
 
       /**
        * This function is called when a VCard has been successfully fetched.
+       * The VCardHandler becomes owner of the VCard object and is responsible for deleting it.
        * @param jid The JID to which this VCard belongs.
        * @param vcard The fetched VCard. Zero if there is no VCard for this contact.
-       * Do @b not delete the VCard. It will be deleted after this function returned.
        */
-      virtual void handleVCard( const JID& jid, const VCard* vcard ) = 0;
+      virtual void handleVCard( const JID& jid, VCard *vcard ) = 0;
 
       /**
        * This function is called to indicate the result of a VCard store operation

@@ -9,7 +9,6 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 class ClientBaseTest : public ClientBase, /*LogHandler,*/ ConnectionListener
 {
@@ -24,9 +23,8 @@ class ClientBaseTest : public ClientBase, /*LogHandler,*/ ConnectionListener
 //       logInstance().registerLogHandler( LogLevelDebug, LogAreaAll, this );
       registerConnectionListener( this );
     }
-    virtual ~ClientBaseTest() {}
     virtual void handleStartNode() { m_handleStartNodeCalled = true; }
-    virtual bool handleNormalNode(gloox::Tag*) { return true; }
+    virtual bool handleNormalNode(gloox::Stanza*) { return true; }
     virtual void rosterFilled() {}
 /*    virtual void handleLog( LogLevel level, LogArea area, const std::string& message )
     {
@@ -98,10 +96,8 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "disconnected: handleTag(): start node: handleStartNode";
   c = new ClientBaseTest( "a", "b", 1 );
-  t = new Tag( "stream" );
-  t->setXmlns( XMLNS_STREAM );
+  t = new Tag( "stream:stream" );
   t->addAttribute( "id", "testsid" );
-  t->addAttribute( "version", "1.0" );
   c->handleTag( t );
   if( !c->handleStartNodeCalled() )
   {
@@ -116,8 +112,7 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "disconnected: handleTag(): start node: version";
   c = new ClientBaseTest( "a", "b", 1 );
-  t = new Tag( "stream" );
-  t->setXmlns( XMLNS_STREAM );
+  t = new Tag( "stream:stream" );
   t->addAttribute( "version", "1.0" );
   c->handleTag( t );
   if( !c->versionOK() )
@@ -133,8 +128,7 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "disconnected: handleTag(): start node: version (fail 1)";
   c = new ClientBaseTest( "a", "b", 1 );
-  t = new Tag( "stream" );
-  t->setXmlns( XMLNS_STREAM );
+  t = new Tag( "stream:stream" );
   t->addAttribute( "version", "3.0" );
   c->handleTag( t );
   if( c->versionOK() )
@@ -165,8 +159,7 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "disconnected: handleTag(): start node: session id";
   c = new ClientBaseTest( "a", "b", 1 );
-  t = new Tag( "stream" );
-  t->setXmlns( XMLNS_STREAM );
+  t = new Tag( "stream:stream" );
   t->addAttribute( "version", "1.0" );
   t->addAttribute( "id", "testsid" );
   c->handleTag( t );
@@ -192,7 +185,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "ClientBase: OK\n" );
+    printf( "ClientBase: all tests passed\n" );
     return 0;
   }
   else

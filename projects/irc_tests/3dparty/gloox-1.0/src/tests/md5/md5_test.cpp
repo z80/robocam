@@ -4,7 +4,6 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 int main( int /*argc*/, char** /*argv*/ )
 {
@@ -83,7 +82,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "MD5: OK\n" );
+    printf( "MD5: all tests passed\n" );
     return 0;
   }
   else

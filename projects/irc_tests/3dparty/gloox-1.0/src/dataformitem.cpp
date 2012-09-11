@@ -1,5 +1,5 @@
  /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -19,19 +19,21 @@ namespace gloox
 {
 
   DataFormItem::DataFormItem()
+    : DataFormField( FieldTypeItem )
   {
   }
 
-  DataFormItem::DataFormItem( const Tag* tag )
+  DataFormItem::DataFormItem( Tag* tag )
+    : DataFormField( FieldTypeItem )
   {
     if( tag->name() != "item" )
       return;
 
-    const TagList &l = tag->children();
-    TagList::const_iterator it = l.begin();
+    Tag::TagList &l = tag->children();
+    Tag::TagList::const_iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
-      DataFormField* f = new DataFormField( (*it) );
+      DataFormField *f = new DataFormField( (*it) );
       m_fields.push_back( f );
     }
   }
@@ -42,8 +44,8 @@ namespace gloox
 
   Tag* DataFormItem::tag() const
   {
-    Tag* i = new Tag ( "item" );
-    DataFormFieldContainer::FieldList::const_iterator it = m_fields.begin();
+    Tag *i = new Tag ( "item" );
+    DataFormBase::FieldList::const_iterator it = m_fields.begin();
     for( ; it != m_fields.end(); ++it )
     {
       i->addChild( (*it)->tag() );

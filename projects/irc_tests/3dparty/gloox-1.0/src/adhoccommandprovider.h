@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,7 +17,6 @@
 
 #include "tag.h"
 #include "jid.h"
-#include "adhoc.h"
 
 #include <list>
 #include <map>
@@ -45,32 +44,14 @@ namespace gloox
        * This function is called when an Ad-hoc Command needs to be handled.
        * The callee is responsible for the whole command execution, i.e. session
        * handling etc.
-       * @param from The sender of the command request.
        * @param command The name of the command to be executed.
-       * @param sessionID The session ID. Either newly generated or taken from the command.
-       * When responding, its value must be passed to Adhoc::Command's constructor.
+       * @param tag The complete command tag.
+       * @param from The sender of the command request.
+       * @param id The command's id. An opaque string which should be used only as the id of the
+       * iq result or error stanza.
        */
-      virtual void handleAdhocCommand( const JID& from, const Adhoc::Command& command,
-                                       const std::string& sessionID ) = 0;
-
-      /**
-       * This function gets called for each registered command when a remote
-       * entity requests the list of available commands.
-       * @param from The requesting entity.
-       * @param command The command's name.
-       * @return @b True if the remote entity is allowed to see the command, @b false if not.
-       * @note The return value of this function does not influence
-       * the execution of a command. That is, you have to
-       * implement additional access control at the execution
-       * stage.
-       * @note This function should not block.
-       */
-      virtual bool handleAdhocAccessRequest( const JID& from, const std::string& command )
-      {
-        (void)from;
-        (void)command;
-        return true;
-      }
+      virtual void handleAdhocCommand( const std::string& command, Tag *tag, const JID& from,
+                                       const std::string& id ) = 0;
 
   };
 

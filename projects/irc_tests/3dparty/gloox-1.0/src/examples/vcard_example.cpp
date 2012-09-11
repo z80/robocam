@@ -1,4 +1,3 @@
-
 #include "../client.h"
 #include "../connectionlistener.h"
 #include "../disco.h"
@@ -13,8 +12,6 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-
-#include <cstdio> // [s]print[f]
 
 class VCardTest : public ConnectionListener, LogHandler, VCardHandler
 {
@@ -39,8 +36,8 @@ class VCardTest : public ConnectionListener, LogHandler, VCardHandler
 
       j->connect();
 
-      delete( m_vManager );
       delete( j );
+      delete( m_vManager );
     }
 
     virtual void onConnect()
@@ -61,21 +58,34 @@ class VCardTest : public ConnectionListener, LogHandler, VCardHandler
       return true;
     }
 
+    virtual void handleDiscoInfoResult( Stanza */*stanza*/, int /*context*/ )
+    {
+      printf( "handleDiscoInfoResult}\n" );
+    }
+
+    virtual void handleDiscoItemsResult( Stanza */*stanza*/, int /*context*/ )
+    {
+      printf( "handleDiscoItemsResult\n" );
+    }
+
+    virtual void handleDiscoError( Stanza */*stanza*/, int /*context*/ )
+    {
+      printf( "handleDiscoError\n" );
+    }
+
     virtual void handleLog( LogLevel level, LogArea area, const std::string& message )
     {
       printf("log: level: %d, area: %d, %s\n", level, area, message.c_str() );
     }
 
-    virtual void handleVCard( const JID& jid, const VCard *v )
+    virtual void handleVCard( const JID& jid, VCard *vcard )
     {
       ++m_count;
-      if( !v )
+      if( !vcard )
       {
         printf( "empty vcard!\n" );
         return;
       }
-
-      VCard* vcard = new VCard( *v );
       printf( "received vcard for %s: %s, %d\n", jid.full().c_str(), vcard->tag()->xml().c_str(), m_count );
       VCard::AddressList::const_iterator it = vcard->addresses().begin();
       for( ; it != vcard->addresses().end(); ++it )

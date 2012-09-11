@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -31,8 +31,6 @@ namespace gloox
    * It is invoked by @ref Client automatically if supported by the server and if SASL authentication
    * is not supported.
    * You should not need to use this class manually.
-   *
-   * XEP Version: 2.3
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.3
    */
@@ -43,7 +41,7 @@ namespace gloox
        * Constructor.
        * @param parent The @ref ClientBase which is used to authenticate.
        */
-      NonSaslAuth( Client* parent );
+      NonSaslAuth( Client *parent );
 
       /**
        * Virtual Destructor.
@@ -58,86 +56,19 @@ namespace gloox
       void doAuth( const std::string& sid );
 
       // reimplemented from IqHandler
-      virtual bool handleIq( const IQ& iq ) { (void)iq; return false; }
+      virtual bool handleIq( Stanza *stanza );
 
       // reimplemented from IqHandler
-      virtual void handleIqID( const IQ& iq, int context );
+      virtual bool handleIqID( Stanza *stanza, int context );
 
     private:
-#ifdef NONSASLAUTH_TEST
-    public:
-#endif
-      /**
-       * @brief An abstraction of an IQ extension used for Non-SASL authentication (XEP-0078).
-       *
-       * @author Jakob Schroeter <js@camaya.net>
-       * @since 1.0
-       */
-      class Query : public StanzaExtension
-      {
-        public:
-          /**
-           * Creates a new object that can be used to query the server for
-           * authentication filds for the given user.
-           * @param user The user name to fetch authentication fields for.
-           */
-          Query( const std::string& user );
-
-          /**
-           * Creates a now object from the given Tag.
-           * @param tag The Tag to parse.
-           */
-          Query( const Tag* tag = 0 );
-
-          /**
-           * Creates a new object on the heap that can be used to
-           * authenticate, based on the current reply.
-           * @param user The uset o authenticate as.
-           * @param sid The stream's ID.
-           * @param pwd The password to use.
-           * @param resource The desired resource identifier.
-           */
-          Query* newInstance( const std::string& user, const std::string& sid,
-                              const std::string& pwd, const std::string& resource ) const;
-
-          /**
-           * Virtual destructor.
-           */
-          virtual ~Query() {}
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            return new Query( tag );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-          {
-            return new Query( *this );
-          }
-
-        private:
-          std::string m_user;
-          std::string m_pwd;
-          std::string m_resource;
-          bool m_digest;
-
-      };
-
       enum NonSaslAuthTrack
       {
-        TrackRequestAuthFields,
-        TrackSendAuth
+        TRACK_REQUEST_AUTH_FIELDS,
+        TRACK_SEND_AUTH
       };
 
-      Client* m_parent;
+      Client *m_parent;
       std::string m_sid;
 
   };

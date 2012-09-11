@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+ * Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
  * This file is part of the gloox library. http://camaya.net/gloox
  *
  * This software is distributed under a license. The full license
@@ -14,19 +14,22 @@
 
 #include "tlshandler.h"
 
-#include "config.h"
+#ifdef _WIN32
+# include "../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../config.h.win"
+#else
+# include "config.h"
+#endif
 
-#if defined( HAVE_GNUTLS )
+#if defined( HAVE_OPENSSL )
+# define HAVE_TLS
+# include "tlsopenssl.h"
+#elif defined( HAVE_GNUTLS )
 # define HAVE_TLS
 # include "tlsgnutlsclient.h"
 # include "tlsgnutlsclientanon.h"
 # include "tlsgnutlsserveranon.h"
-#elif defined( HAVE_OPENSSL )
-# define HAVE_TLS
-# include "tlsopensslclient.h"
-#ifndef __SYMBIAN32__
-# include "tlsopensslserver.h"
-#endif
 #elif defined( HAVE_WINTLS )
 # define HAVE_TLS
 # include "tlsschannel.h"
@@ -35,7 +38,7 @@
 namespace gloox
 {
 
-  TLSDefault::TLSDefault( TLSHandler* th, const std::string server, Type type )
+  TLSDefault::TLSDefault( TLSHandler *th, const std::string server, Type type )
     : TLSBase( th, server ), m_impl( 0 )
   {
     switch( type )
@@ -44,7 +47,7 @@ namespace gloox
 #ifdef HAVE_GNUTLS
         m_impl = new GnuTLSClient( th, server );
 #elif defined( HAVE_OPENSSL )
-        m_impl = new OpenSSLClient( th, server );
+        m_impl = new OpenSSL( th, server );
 #elif defined( HAVE_WINTLS )
         m_impl = new SChannel( th, server );
 #endif
@@ -60,11 +63,6 @@ namespace gloox
 #endif
         break;
       case VerifyingServer:
-#ifdef HAVE_OPENSSL
-#ifndef __SYMBIAN32__
-        m_impl = new OpenSSLServer( th );
-#endif
-#endif
         break;
       default:
         break;
@@ -76,14 +74,6 @@ namespace gloox
     delete m_impl;
   }
 
-  bool TLSDefault::init( const std::string& clientKey,
-                         const std::string& clientCerts,
-                         const StringList& cacerts )
-  {
-    return m_impl ? m_impl->init( clientKey, clientCerts,
-                                  cacerts ) : false;
-  }
-
   int TLSDefault::types()
   {
     int types = 0;
@@ -93,7 +83,6 @@ namespace gloox
     types |= AnonymousServer;
 #elif defined( HAVE_OPENSSL )
     types |= VerifyingClient;
-    types |= VerifyingServer;
 #elif defined( HAVE_WINTLS )
     types |= VerifyingClient;
 #endif
@@ -102,12 +91,18 @@ namespace gloox
 
   bool TLSDefault::encrypt( const std::string& data )
   {
-    return m_impl ? m_impl->encrypt( data ) : false;
+    if( m_impl )
+      return m_impl->encrypt( data );
+
+    return false;
   }
 
   int TLSDefault::decrypt( const std::string& data )
   {
-    return m_impl ? m_impl->decrypt( data ) : 0;
+    if( m_impl )
+      return m_impl->decrypt( data );
+
+    return 0;
   }
 
   void TLSDefault::cleanup()
@@ -118,12 +113,18 @@ namespace gloox
 
   bool TLSDefault::handshake()
   {
-    return m_impl ? m_impl->handshake() : false;
+    if( m_impl )
+      return m_impl->handshake();
+
+    return false;
   }
 
   bool TLSDefault::isSecure() const
   {
-    return m_impl ? m_impl->isSecure() : false;
+    if( m_impl )
+      return m_impl->isSecure();
+
+    return false;
   }
 
   void TLSDefault::setCACerts( const StringList& cacerts )
@@ -134,7 +135,10 @@ namespace gloox
 
   const CertInfo& TLSDefault::fetchTLSInfo() const
   {
-    return m_impl ? m_impl->fetchTLSInfo() : m_certInfo;
+    if( m_impl )
+      return m_impl->fetchTLSInfo();
+
+    return m_certInfo;
   }
 
   void TLSDefault::setClientCert( const std::string& clientKey, const std::string& clientCerts )

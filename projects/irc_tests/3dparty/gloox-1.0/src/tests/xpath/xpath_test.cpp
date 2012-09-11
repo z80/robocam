@@ -4,15 +4,14 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 int fail = 0;
 
-void printResult( const std::string& name, ConstTagList& result )
+void printResult( const std::string& name, Tag::TagList& result )
 {
   printf( ">-- %s --------------------------------------\n", name.c_str() );
   int i = 0;
-  ConstTagList::const_iterator it = result.begin();
+  Tag::TagList::const_iterator it = result.begin();
   for( ; it != result.end(); ++it, ++i )
   {
     printf( "tag #%d: %s\n", i, (*it)->xml().c_str() );
@@ -39,16 +38,16 @@ int main( int /*argc*/, char** /*argv*/ )
   std::string name;
   Tag *aaa = new Tag( "aaa" );
   Tag *bbb = new Tag( aaa, "bbb" ); bbb->addAttribute( "name", "b1" );
-  Tag *ccc = new Tag( aaa, "ccc" ); ccc->setCData( "abc" );
-  Tag *ddd = new Tag( ccc, "ddd" ); ddd->setCData( "bcd" );
+  Tag *ccc = new Tag( aaa, "ccc" );
+  Tag *ddd = new Tag( ccc, "ddd" );
   Tag *eee = new Tag( ccc, "eee" );
   Tag *fff = new Tag( aaa, "fff" );
   Tag *ggg = new Tag( fff, "ggg" );
   Tag *hhh = new Tag( bbb, "hhh" ); hhh->addAttribute( "name", "h1" );
   Tag *iii = new Tag( bbb, "bbb" ); iii->addAttribute( "name", "b2" );
   Tag *jjj = new Tag( hhh, "bbb" ); jjj->addAttribute( "name", "b3" );
-  ConstTagList result;
-  ConstTagList::const_iterator it;
+  Tag::TagList result;
+  Tag::TagList::const_iterator it;
 //   XPathToken *t = 0;
 
 // <aaa>
@@ -293,7 +292,7 @@ int main( int /*argc*/, char** /*argv*/ )
   }
 
   // -------
-  name = "find ConstTagList: //bbb";
+  name = "find TagList: //bbb";
   result = aaa->findTagList( "//bbb" );
   it = result.begin();
   if( result.size() != 3 || (*it) != bbb || (*++it) != jjj || (*++it) != iii )
@@ -304,7 +303,7 @@ int main( int /*argc*/, char** /*argv*/ )
   }
 
   // -------
-  name = "find ConstTagList: //ggg";
+  name = "find TagList: //ggg";
   result = aaa->findTagList( "//ggg" );
   it = result.begin();
   if( result.size() != 1 || (*it) != ggg )
@@ -593,21 +592,8 @@ int main( int /*argc*/, char** /*argv*/ )
   }
 //   printf( "--------------------------------------------------------------\n" );
 
-
   // -------
-  name = "union + predicates: //bbb[@name='b1']|//hhh[@name='h1']";
-  result = aaa->findTagList( "//bbb[@name='b1']|//hhh[@name='h1']" );
-  it = result.begin();
-  if( result.size() != 2 || (*it) != bbb || (*++it) != hhh )
-  {
-    ++fail;
-    printResult( name, result );
-    printf( "test '%s' failed\n", name.c_str() );
-  }
-//   printf( "--------------------------------------------------------------\n" );
-
-  // -------
-  name = "empty union 1: /cde|/def";
+  name = "empty union 3: /cde|/def";
   result = aaa->findTagList( "/cde|/def" );
   it = result.begin();
   if( result.size() != 0 )
@@ -617,7 +603,6 @@ int main( int /*argc*/, char** /*argv*/ )
     printf( "test '%s' failed\n", name.c_str() );
   }
 //   printf( "--------------------------------------------------------------\n" );
-
 
   // ---- ~union ----
 
@@ -858,25 +843,6 @@ int main( int /*argc*/, char** /*argv*/ )
   // -- predicates --
 
 
-  name = "cdata: //ccc";
-  if( aaa->findCData( "//ccc" ) != "abc" )
-  {
-    ++fail;
-    printResult( name, result );
-    printf( "test '%s' failed\n", name.c_str() );
-  }
-//   printf( "--------------------------------------------------------------\n" );
-
-  name = "cdata: //ddd";
-  if( aaa->findCData( "//ddd" ) != "bcd" )
-  {
-    ++fail;
-    printResult( name, result );
-    printf( "test '%s' failed\n", name.c_str() );
-  }
-//   printf( "--------------------------------------------------------------\n" );
-
-
 
 
 
@@ -930,7 +896,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "XPath: OK\n" );
+    printf( "XPath: all tests passed\n" );
     return 0;
   }
   else

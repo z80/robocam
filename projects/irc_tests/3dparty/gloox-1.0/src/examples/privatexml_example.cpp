@@ -9,8 +9,6 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 class PrivateXMLTest : public PrivateXMLHandler, ConnectionListener
 {
   public:
@@ -51,7 +49,7 @@ class PrivateXMLTest : public PrivateXMLHandler, ConnectionListener
       return true;
     }
 
-    virtual void handlePrivateXML( const Tag* /*xml*/ )
+    virtual void handlePrivateXML( const std::string& /*tag*/, Tag */*xml*/ )
     {
       printf( "received privatexml...\n" );
       Tag *x = new Tag( "test" );

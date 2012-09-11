@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -28,7 +28,7 @@ namespace gloox
   {
   }
 
-  bool PrivacyItem::operator==( const PrivacyItem& item ) const
+  bool PrivacyItem::operator==( PrivacyItem& item ) const
   {
     if( m_type == item.type()
         && m_action == item.action()

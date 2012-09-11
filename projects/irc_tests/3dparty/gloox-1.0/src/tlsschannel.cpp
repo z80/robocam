@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+ * Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
  * This file is part of the gloox library. http://camaya.net/gloox
  *
  * This software is distributed under a license. The full license
@@ -15,6 +15,7 @@
 #ifdef HAVE_WINTLS
 
 #include <stdio.h> // just for debugging output
+#include <iostream>
 
 namespace gloox
 {
@@ -56,14 +57,14 @@ namespace gloox
     PBYTE e_message = e_iobuffer + m_sizes.cbHeader;
     do
     {
-      const size_t size = ( data_copy.size() > m_sizes.cbMaximumMessage )
-                         ? m_sizes.cbMaximumMessage
-                         : data_copy.size();
+      const int size = data_copy.size() > m_sizes.cbMaximumMessage
+                                  ? m_sizes.cbMaximumMessage
+                                  : data_copy.size();
       memcpy( e_message, data_copy.data(), size );
       if( data_copy.size() > m_sizes.cbMaximumMessage )
         data_copy.erase( 0, m_sizes.cbMaximumMessage );
       else
-        data_copy = EmptyString;
+        data_copy = "";
 
       buffer[0].pvBuffer     = e_iobuffer;
       buffer[0].cbBuffer     = m_sizes.cbHeader;
@@ -89,14 +90,14 @@ namespace gloox
         std::string encrypted( reinterpret_cast<const char*>(e_iobuffer),
                                buffer[0].cbBuffer + buffer[1].cbBuffer + buffer[2].cbBuffer );
         m_handler->handleEncryptedData( this, encrypted );
-        //if (data_copy.size() <= m_sizes.cbMaximumMessage) data_copy = EmptyString;
+        //if (data_copy.size() <= m_sizes.cbMaximumMessage) data_copy = "";
       }
       else
       {
         LocalFree( e_iobuffer );
+        cleanup();
         if( !m_secure )
           m_handler->handleHandshakeResult( this, false, m_certInfo );
-        cleanup();
         return false;
       }
     }
@@ -145,9 +146,7 @@ namespace gloox
                cbIoBufferLength ? cbIoBufferLength : m_buffer.size() );
 
         buffer[0].pvBuffer     = e_iobuffer;
-        buffer[0].cbBuffer     = static_cast<unsigned long>( m_buffer.size() > cbIoBufferLength
-                                                               ? cbIoBufferLength
-                                                               : m_buffer.size() );
+        buffer[0].cbBuffer     = m_buffer.size() > cbIoBufferLength ? cbIoBufferLength : m_buffer.size();
         buffer[0].BufferType   = SECBUFFER_DATA;
         buffer[1].cbBuffer = buffer[2].cbBuffer = buffer[3].cbBuffer = 0;
         buffer[1].BufferType = buffer[2].BufferType = buffer[3].BufferType  = SECBUFFER_EMPTY;
@@ -233,9 +232,6 @@ namespace gloox
 
   void SChannel::cleanup()
   {
-    if( !m_mutex.trylock() )
-      return;
-
     m_buffer = "";
     if( !m_cleanedup )
     {
@@ -245,8 +241,6 @@ namespace gloox
       DeleteSecurityContext( &m_context );
       FreeCredentialsHandle( &m_credHandle );
     }
-
-    m_mutex.unlock();
   }
 
   bool SChannel::handshake()
@@ -304,7 +298,7 @@ namespace gloox
       /* negotiate security */
       SEC_CHAR* hname = const_cast<char*>( m_server.c_str() );
 
-      error = InitializeSecurityContextA( &m_credHandle,
+      error = InitializeSecurityContext( &m_credHandle,
                                          0,
                                          hname,
                                          request,
@@ -334,6 +328,7 @@ namespace gloox
         return false;
       }
     }
+    return true;
   }
 
   void SChannel::handshakeStage( const std::string& data )
@@ -360,7 +355,7 @@ namespace gloox
     do
     {
       /* initialize buffers */
-      ibuf[0].cbBuffer = static_cast<unsigned long>( m_buffer.size() );
+      ibuf[0].cbBuffer = m_buffer.size();
       ibuf[0].pvBuffer = static_cast<void*>( const_cast<char*>( m_buffer.c_str() ) );
       //std::cout << "Size: " << m_buffer.size() << "\n";
       ibuf[1].cbBuffer = 0;
@@ -385,7 +380,7 @@ namespace gloox
        */
 
       /* negotiate security */
-      error = InitializeSecurityContextA( &m_credHandle,
+      error = InitializeSecurityContext( &m_credHandle,
                                          &m_context,
                                          hname,
                                          request,
@@ -407,7 +402,7 @@ namespace gloox
         }
         else
         {
-          m_buffer = EmptyString;
+          m_buffer = "";
         }
         setSizes();
         setCertinfos();
@@ -439,17 +434,17 @@ namespace gloox
           // and this function won't get called again to finish the processing).  This is needed for
           // NT4.0 which does not seem to process the entire buffer the first time around
           if( obuf[0].cbBuffer == 0 )
-            handshakeStage( EmptyString );
+            handshakeStage( "" );
         }
         else
         {
-          m_buffer = EmptyString;
+          m_buffer = "";
         }
         return;
       }
       else if( error == SEC_I_INCOMPLETE_CREDENTIALS )
       {
-        handshakeStage( EmptyString );
+        handshakeStage( "" );
       }
       else if( error == SEC_E_INCOMPLETE_MESSAGE )
       {
@@ -465,9 +460,9 @@ namespace gloox
     while( true );
   }
 
-  void SChannel::setCACerts( const StringList& /*cacerts*/ ) {}
+  void SChannel::setCACerts( const StringList& cacerts ) {}
 
-  void SChannel::setClientCert( const std::string& /*clientKey*/, const std::string& /*clientCerts*/ ) {}
+  void SChannel::setClientCert( const std::string& clientKey, const std::string& clientCerts ) {}
 
   void SChannel::setSizes()
   {
@@ -495,10 +490,10 @@ namespace gloox
     ts.tm_min = stUTC.wMinute;
     ts.tm_sec = stUTC.wSecond;
 
-    time_t unixtime;
+    int unixtime;
     if ( (unixtime = mktime(&ts)) == -1 )
       unixtime = 0;
-    return (int)unixtime;
+    return unixtime;
   }
 
   void SChannel::validateCert()
@@ -563,8 +558,8 @@ namespace gloox
       if( !CertGetCertificateChain( NULL, remoteCertContext, NULL, remoteCertContext->hCertStore,
                                     &chainParameter, 0, NULL, &chainContext ) )
       {
-//         DWORD status = GetLastError();
-//         printf("Error 0x%x returned by CertGetCertificateChain!!!\n", status);
+        DWORD status = GetLastError();
+        //printf("Error 0x%x returned by CertGetCertificateChain!!!\n", status);
         break;
       }
 
@@ -585,8 +580,8 @@ namespace gloox
       if( !CertVerifyCertificateChainPolicy( CERT_CHAIN_POLICY_SSL, chainContext, &policyParameter,
                                              &policyStatus ) )
       {
-//         DWORD status = GetLastError();
-//         printf("Error 0x%x returned by CertVerifyCertificateChainPolicy!!!\n", status);
+        DWORD status = GetLastError();
+        //printf("Error 0x%x returned by CertVerifyCertificateChainPolicy!!!\n", status);
         break;
       }
 
@@ -644,7 +639,7 @@ namespace gloox
           m_certInfo.cipher = "RC4";
           break;
         default:
-          m_certInfo.cipher = EmptyString;
+          m_certInfo.cipher = "";
       }
 
       switch( conn_info.aiHash )
@@ -656,7 +651,7 @@ namespace gloox
           m_certInfo.mac = "SHA";
           break;
         default:
-          m_certInfo.mac = EmptyString;
+          m_certInfo.mac = "";
       }
     }
   }
@@ -677,7 +672,7 @@ namespace gloox
     m_certInfo.date_from = filetime2int( remoteCertContext->pCertInfo->NotBefore );
     m_certInfo.date_to = filetime2int( remoteCertContext->pCertInfo->NotAfter );
 
-    if( !CertNameToStrA( remoteCertContext->dwCertEncodingType,
+    if( !CertNameToStr( remoteCertContext->dwCertEncodingType,
                         &remoteCertContext->pCertInfo->Subject,
                         CERT_X500_NAME_STR | CERT_NAME_STR_NO_PLUS_FLAG,
                         certString, sizeof( certString ) ) )
@@ -686,7 +681,7 @@ namespace gloox
     }
     m_certInfo.server = certString;
 
-    if( !CertNameToStrA( remoteCertContext->dwCertEncodingType,
+    if( !CertNameToStr( remoteCertContext->dwCertEncodingType,
                        &remoteCertContext->pCertInfo->Issuer,
                        CERT_X500_NAME_STR | CERT_NAME_STR_NO_PLUS_FLAG,
                        certString, sizeof( certString ) ) )

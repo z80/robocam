@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -18,112 +18,127 @@
 namespace gloox
 {
 
-  // ---- PrivateXML::Query ----
-  PrivateXML::Query::Query( const Tag* tag )
-    : StanzaExtension( ExtPrivateXML ), m_privateXML( 0 )
-  {
-    if( !tag )
-      return;
-
-    if( tag->name() == "query" && tag->xmlns() == XMLNS_PRIVATE_XML )
-    {
-      if( tag->children().size() )
-        m_privateXML = tag->children().front()->clone();
-    }
-    else
-      m_privateXML = tag;
-  }
-
-  const std::string& PrivateXML::Query::filterString() const
-  {
-    static const std::string filter = "/iq/query[@xmlns='" + XMLNS_PRIVATE_XML + "']";
-    return filter;
-  }
-
-  Tag* PrivateXML::Query::tag() const
-  {
-    Tag* t = new Tag( "query" );
-    t->setXmlns( XMLNS_PRIVATE_XML );
-    if( m_privateXML )
-      t->addChild( m_privateXML->clone() );
-    return t;
-  }
-  // ---- ~PrivateXML::Query ----
-
-  // ---- PrivateXML ----
-  PrivateXML::PrivateXML( ClientBase* parent )
+  PrivateXML::PrivateXML( ClientBase *parent )
     : m_parent( parent )
   {
-    if( !m_parent )
-      return;
-
-    m_parent->registerIqHandler( this, ExtPrivateXML );
-    m_parent->registerStanzaExtension( new Query() );
+    if( m_parent )
+      m_parent->registerIqHandler( this, XMLNS_PRIVATE_XML );
   }
 
   PrivateXML::~PrivateXML()
   {
-    if( !m_parent )
-      return;
-
-    m_parent->removeIqHandler( this, ExtPrivateXML );
-    m_parent->removeIDHandler( this );
-    m_parent->removeStanzaExtension( ExtPrivateXML );
+    if( m_parent )
+    {
+      m_parent->removeIqHandler( XMLNS_PRIVATE_XML );
+      m_parent->removeIDHandler( this );
+    }
   }
 
   std::string PrivateXML::requestXML( const std::string& tag, const std::string& xmlns,
-                                      PrivateXMLHandler* pxh )
+                                      PrivateXMLHandler *pxh )
   {
     const std::string& id = m_parent->getID();
 
-    IQ iq( IQ::Get, JID(), id );
-    iq.addExtension( new Query( tag, xmlns ) );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "type", "get" );
+    Tag *query = new Tag( iq, "query" );
+    query->addAttribute( "xmlns", XMLNS_PRIVATE_XML );
+    Tag *x = new Tag( query, tag );
+    x->addAttribute( "xmlns", xmlns );
 
     m_track[id] = pxh;
-    m_parent->send( iq, this, RequestXml );
+    m_parent->trackID( this, id, RequestXml );
+    m_parent->send( iq );
 
     return id;
   }
 
-  std::string PrivateXML::storeXML( const Tag* tag, PrivateXMLHandler* pxh )
+  std::string PrivateXML::storeXML( Tag *tag, PrivateXMLHandler *pxh )
   {
     const std::string& id = m_parent->getID();
 
-    IQ iq( IQ::Set, JID(), id );
-    iq.addExtension( new Query( tag ) );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "type", "set" );
+    Tag *query = new Tag( iq, "query" );
+    query->addAttribute( "xmlns", XMLNS_PRIVATE_XML );
+    query->addChild( tag );
 
     m_track[id] = pxh;
-    m_parent->send( iq, this, StoreXml );
+    m_parent->trackID( this, id, StoreXml );
+    m_parent->send( iq );
 
     return id;
   }
 
-  void PrivateXML::handleIqID( const IQ& iq, int context )
+  bool PrivateXML::handleIqID( Stanza *stanza, int context )
   {
-    TrackMap::iterator t = m_track.find( iq.id() );
-    if( t == m_track.end() )
-      return;
-
-    if( iq.subtype() == IQ::Result )
+    TrackMap::iterator t = m_track.find( stanza->id() );
+    if( t != m_track.end() )
     {
-      if( context == RequestXml )
+      switch( stanza->subtype() )
       {
-        const Query* q = iq.findExtension<Query>( ExtPrivateXML );
-        if( q )
-          (*t).second->handlePrivateXML( q->privateXML() );
+        case StanzaIqResult:
+        {
+          switch( context )
+          {
+            case RequestXml:
+            {
+              Tag *q = stanza->findChild( "query" );
+              if( q )
+              {
+                const Tag::TagList& l = q->children();
+                Tag::TagList::const_iterator it = l.begin();
+                if( it != l.end() )
+                {
+                  (*t).second->handlePrivateXML( (*it)->name(), (*it) );
+                }
+              }
+              break;
+            }
+
+            case StoreXml:
+            {
+              (*t).second->handlePrivateXMLResult( stanza->id(), PrivateXMLHandler::PxmlStoreOk );
+              break;
+            }
+          }
+          m_track.erase( t );
+          return true;
+          break;
+        }
+        case StanzaIqError:
+        {
+          switch( context )
+          {
+            case RequestXml:
+            {
+              (*t).second->handlePrivateXMLResult( stanza->id(), PrivateXMLHandler::PxmlRequestError );
+              break;
+            }
+
+            case StoreXml:
+            {
+              (*t).second->handlePrivateXMLResult( stanza->id(), PrivateXMLHandler::PxmlStoreError );
+              break;
+            }
+          }
+          break;
+        }
+        default:
+          break;
       }
-      else if( context == StoreXml )
-        (*t).second->handlePrivateXMLResult( iq.id(), PrivateXMLHandler::PxmlStoreOk );
-    }
-    else if( iq.subtype() == IQ::Error )
-    {
-      if( context == RequestXml )
-        (*t).second->handlePrivateXMLResult( iq.id(), PrivateXMLHandler::PxmlRequestError );
-      else if( context == StoreXml )
-        (*t).second->handlePrivateXMLResult( iq.id(), PrivateXMLHandler::PxmlStoreError );
+
+      m_track.erase( t );
     }
 
-    m_track.erase( t );
+    return false;
+  }
+
+  bool PrivateXML::handleIq( Stanza * /*stanza*/ )
+  {
+    return false;
   }
 
 }

@@ -9,8 +9,6 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 class PLTest : public PrivacyListHandler, ConnectionListener
 {
   public:
@@ -83,10 +81,10 @@ class PLTest : public PrivacyListHandler, ConnectionListener
       printf( "result for id '%s': %d\n", id.c_str(), plResult );
     }
 
-    virtual void handlePrivacyList( const std::string& name, const PrivacyList& items )
+    virtual void handlePrivacyList( const std::string& name, PrivacyList& items )
     {
       printf( "received list: %s\n", name.c_str() );
-      PrivacyListHandler::PrivacyList::const_iterator it = items.begin();
+      PrivacyListHandler::PrivacyList::iterator it = items.begin();
       for( ; it != items.end(); it++ )
       {
         printf( "item: type: %d, action: %d, packetType: %d, value: %s\n",

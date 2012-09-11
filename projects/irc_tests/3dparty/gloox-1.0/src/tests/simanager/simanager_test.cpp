@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 const std::string& g_dir = "test.dir";
 const std::string& g_inst = "the instructions";
@@ -41,17 +40,16 @@ namespace gloox
       ~ClientBase();
       const std::string getID();
       Disco* disco();
-      void send( IQ& iq, IqHandler* = 0 , int = 0 );
+      void send( Tag *tag );
       void trackID( IqHandler *ih, const std::string& id, int context );
-      void registerIqHandler( IqHandler* ih, int exttype );
-      void removeIqHandler( IqHandler* ih, int exttype );
-      void registerStanzaExtension( StanzaExtension* ext );
-      void removeStanzaExtension( int ext );
+      void registerIqHandler( IqHandler *ih, const std::string& xmlns );
+      void removeIqHandler( const std::string& xmlns );
+      virtual void handleSIRequestResult( const JID& from, const std::string& sid,
+                                          Tag* si, Tag* ptag, Tag* fneg );
+      virtual void handleSIRequestError( Stanza* stanza, const std::string& sid );
+      virtual void handleSIRequest( const JID& from, const std::string& id, const std::string& profile,
+                                    Tag* si, Tag* ptag, Tag* fneg );
       void removeIDHandler( IqHandler* ) {}
-      virtual void handleSIRequestResult( const JID& from, const JID& to, const std::string& sid,
-                                          const SIManager::SI& si );
-      virtual void handleSIRequestError( const IQ& iq, const std::string& /*sid*/ );
-      virtual void handleSIRequest( const JID& from, const JID& to, const std::string& id, const SIManager::SI& si );
       void setTest( int test );
       bool ok();
     private:
@@ -63,9 +61,8 @@ namespace gloox
   ClientBase::~ClientBase() { delete m_disco; }
   const std::string ClientBase::getID() { return "id"; }
   Disco* ClientBase::disco() { return m_disco; }
-  void ClientBase::send( IQ& iq, IqHandler*, int )
+  void ClientBase::send( Tag *tag )
   {
-    Tag* tag = iq.tag();
     switch( m_test )
     {
       case 1:
@@ -81,15 +78,14 @@ namespace gloox
     delete tag;
   }
   void ClientBase::trackID( IqHandler* /*ih*/, const std::string& /*id*/, int /*context*/ ) {}
-  void ClientBase::removeIqHandler( IqHandler*, int ) {}
-  void ClientBase::registerIqHandler( IqHandler*, int ) {}
-  void ClientBase::registerStanzaExtension( StanzaExtension* se ) { delete se; }
-  void ClientBase::removeStanzaExtension( int ) {}
-  void ClientBase::handleSIRequestResult( const JID& /*from*/, const JID& /*to*/, const std::string& /*sid*/,
-                                          const SIManager::SI& /*si*/ ) {}
-  void ClientBase::handleSIRequestError( const IQ& /*iq*/, const std::string& /*sid*/ ) {}
-  void ClientBase::handleSIRequest( const JID& /*from*/, const JID& /*to*/, const std::string& /*id*/,
-                                    const SIManager::SI& /*si*/ ) {}
+  void ClientBase::registerIqHandler( IqHandler* /*ih*/, const std::string& /*xmlns*/ ) {}
+  void ClientBase::removeIqHandler( const std::string& /*xmlns*/ ) {}
+  void ClientBase::handleSIRequestResult( const JID& /*from*/, const std::string& /*sid*/,
+                                          Tag* /*si*/, Tag* /*ptag*/, Tag* /*fneg*/ ) {}
+  void ClientBase::handleSIRequestError( Stanza* /*stanza*/, const std::string& /*sid*/ ) {}
+  void ClientBase::handleSIRequest( const JID& /*from*/, const std::string& /*id*/,
+                                    const std::string& /*profile*/,
+                                    Tag* /*si*/, Tag* /*ptag*/, Tag* /*fneg*/ ) {}
   void ClientBase::setTest( int test ) { m_test = test; }
   bool ClientBase::ok() { bool t = m_ok; m_ok = false; return t; }
 }
@@ -141,7 +137,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "SIManager: OK\n" );
+    printf( "SIManager: all tests passed\n" );
     return 0;
   }
   else

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -28,7 +28,7 @@ namespace gloox
    *
    * You should not need to use this class directly.
    *
-   * @author Jakob Schroeter <js@camaya.net>
+   * @author Jakob Schröter <js@camaya.net>
    * @since 0.9
    */
   class GLOOX_API ConnectionBase
@@ -39,7 +39,7 @@ namespace gloox
        * @param cdh An object derived from @ref ConnectionDataHandler that will receive
        * received data.
        */
-      ConnectionBase( ConnectionDataHandler* cdh )
+      ConnectionBase( ConnectionDataHandler *cdh )
         : m_handler( cdh ), m_state( StateDisconnected ), m_port( -1 )
       {}
 
@@ -55,7 +55,7 @@ namespace gloox
       virtual ConnectionError connect() = 0;
 
       /**
-       * Use this periodically to receive data from the socket.
+       * Use this periodically to receive data from the socket and to feed the parser.
        * @param timeout The timeout to use for select in microseconds. Default of -1 means blocking.
        * @return The state of the connection.
        */
@@ -99,7 +99,7 @@ namespace gloox
        * ConnectionDataHandler at any one time.
        * @param cdh The new ConnectionDataHandler.
        */
-      void registerConnectionDataHandler( ConnectionDataHandler* cdh ) { m_handler = cdh; }
+      void registerConnectionDataHandler( ConnectionDataHandler *cdh ) { m_handler = cdh; }
 
       /**
        * Sets the server to connect to.
@@ -115,29 +115,11 @@ namespace gloox
       const std::string& server() const { return m_server; }
 
       /**
-       * Returns the currently set port.
-       * @return The server port.
-       */
-      int port() const { return m_port; }
-
-      /**
-       * Returns the local port.
-       * @return The local port.
-       */
-      virtual int localPort() const { return -1; }
-
-      /**
-       * Returns the locally bound IP address.
-       * @return The locally bound IP address.
-       */
-      virtual const std::string localInterface() const { return EmptyString; }
-
-      /**
        * Returns current connection statistics.
        * @param totalIn The total number of bytes received.
        * @param totalOut The total number of bytes sent.
        */
-      virtual void getStatistics( long int &totalIn, long int &totalOut ) = 0;
+      virtual void getStatistics( int &totalIn, int &totalOut ) = 0;
 
       /**
        * This function returns a new instance of the current ConnectionBase-derived object.
@@ -148,16 +130,9 @@ namespace gloox
       virtual ConnectionBase* newInstance() const = 0;
 
     protected:
-      /** A handler for incoming data and connect/disconnect events. */
-      ConnectionDataHandler* m_handler;
-
-      /** Holds the current connection state. */
+      ConnectionDataHandler *m_handler;
       ConnectionState m_state;
-
-      /** Holds the server's name/address. */
       std::string m_server;
-
-      /** Holds the port to connect to. */
       int m_port;
 
   };

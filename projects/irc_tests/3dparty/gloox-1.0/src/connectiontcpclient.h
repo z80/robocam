@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -56,7 +56,7 @@ namespace gloox
        * @param port The port to connect to. The default of -1 means that SRV records will be used
        * to find out about the actual host:port.
        */
-      ConnectionTCPClient( ConnectionDataHandler* cdh, const LogSink& logInstance,
+      ConnectionTCPClient( ConnectionDataHandler *cdh, const LogSink& logInstance,
                            const std::string& server, int port = -1 );
 
       /**

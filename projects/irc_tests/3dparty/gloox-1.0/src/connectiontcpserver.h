@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -44,7 +44,7 @@ namespace gloox
        * Leave this empty to listen on all local interfaces.
        * @param port The port to listen on.
        */
-      ConnectionTCPServer( ConnectionHandler* ch, const LogSink& logInstance,
+      ConnectionTCPServer( ConnectionHandler *ch, const LogSink& logInstance,
                            const std::string& ip, int port );
 
       /**

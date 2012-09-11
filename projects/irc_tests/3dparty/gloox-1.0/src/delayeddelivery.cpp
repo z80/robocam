@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -26,14 +26,12 @@ namespace gloox
   }
 
 
-  DelayedDelivery::DelayedDelivery( const Tag* tag )
+  DelayedDelivery::DelayedDelivery( Tag *tag )
     : StanzaExtension( ExtDelay ), m_valid( false )
   {
-    if( !tag || !tag->hasAttribute( "stamp" ) )
+    if( !tag || tag->name() != "delay" || !tag->hasAttribute( "xmlns", XMLNS_DELAY )
+         || !tag->hasAttribute( "stamp" ) )
       return;
-    if( !( tag->name() == "x" && tag->hasAttribute( XMLNS, XMLNS_X_DELAY ) ) )
-      if( !( tag->name() == "delay" && tag->hasAttribute( XMLNS, XMLNS_DELAY ) ) )
-        return;
 
     m_reason = tag->cdata();
     m_stamp = tag->findAttribute( "stamp" );
@@ -45,23 +43,13 @@ namespace gloox
   {
   }
 
-  const std::string& DelayedDelivery::filterString() const
-  {
-    static const std::string filter =
-           "/presence/delay[@xmlns='" + XMLNS_DELAY + "']"
-           "|/message/delay[@xmlns='" + XMLNS_DELAY + "']"
-           "|/presence/x[@xmlns='" + XMLNS_X_DELAY + "']"
-           "|/message/x[@xmlns='" + XMLNS_X_DELAY + "']";
-    return filter;
-  }
-
   Tag* DelayedDelivery::tag() const
   {
     if( !m_valid )
       return 0;
 
-    Tag* t = new Tag( "delay" );
-    t->addAttribute( XMLNS, XMLNS_DELAY );
+    Tag *t = new Tag( "delay" );
+    t->addAttribute( "xmlns", XMLNS_DELAY );
     if( m_from )
       t->addAttribute( "from", m_from.full() );
     if( !m_stamp.empty() )

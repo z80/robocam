@@ -37,7 +37,7 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/config.h.unix.in \
+	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/gloox-config.in $(srcdir)/gloox.pc.in \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
 	TODO config.guess config.sub depcomp install-sh ltmain.sh \
@@ -50,7 +50,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = config.h.unix
+CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = gloox.pc gloox-config
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -173,8 +173,6 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
-MAYBE_EXAMPLES = @MAYBE_EXAMPLES@
-MAYBE_TESTS = @MAYBE_TESTS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -254,11 +252,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
-EXTRA_DIST = LICENSE Doxyfile gloox.pc.in gloox.cbp gloox.dsp gloox.vcproj README README.win32 README.wince README.symbian INSTALL config.h.win config.h.symbian UPGRADING bld.inf gloox.mmp
+EXTRA_DIST = LICENSE Doxyfile gloox.pc.in gloox.cbp gloox.dsp README README.win32 README.wince INSTALL config.h.win
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gloox.pc
 bin_SCRIPTS = gloox-config
-all: config.h.unix
+all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
@@ -297,22 +295,22 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 
-config.h.unix: stamp-h1
+config.h: stamp-h1
 	@if test ! -f $@; then \
 	  rm -f stamp-h1; \
 	  $(MAKE) $(AM_MAKEFLAGS) stamp-h1; \
 	else :; fi
 
-stamp-h1: $(srcdir)/config.h.unix.in $(top_builddir)/config.status
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status config.h.unix
-$(srcdir)/config.h.unix.in:  $(am__configure_deps) 
+	cd $(top_builddir) && $(SHELL) ./config.status config.h
+$(srcdir)/config.h.in:  $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
 
 distclean-hdr:
-	-rm -f config.h.unix stamp-h1
+	-rm -f config.h stamp-h1
 gloox.pc: $(top_builddir)/config.status $(srcdir)/gloox.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 gloox-config: $(top_builddir)/config.status $(srcdir)/gloox-config.in
@@ -461,7 +459,7 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	set x; \
 	here=`pwd`; \
@@ -478,7 +476,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES)
 	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
 	  fi; \
 	done; \
-	list='$(SOURCES) $(HEADERS) config.h.unix.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -496,9 +494,9 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES)
 	  fi; \
 	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
-	list='$(SOURCES) $(HEADERS) config.h.unix.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -692,7 +690,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(SCRIPTS) $(DATA) config.h.unix
+all-am: Makefile $(SCRIPTS) $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgconfigdir)"; do \
@@ -828,8 +826,8 @@ leakcheck: leaktest
 leaktest:
 	make -C src leaktest
 
-includetest:
-	make -C src includetest
+examples:
+	make -C src examples
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

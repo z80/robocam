@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,6 @@
 #ifndef VCARDUPDATE_H__
 #define VCARDUPDATE_H__
 
-#include "gloox.h"
 #include "stanzaextension.h"
 
 #include <string>
@@ -51,7 +50,7 @@ namespace gloox
        * have a name of 'x' in the @c vcard-temp:x:update namespace.
        * @param tag The Tag to parse.
        */
-      VCardUpdate( const Tag* tag );
+      VCardUpdate( Tag *tag );
 
       /**
        * Virtual destructor.
@@ -65,22 +64,7 @@ namespace gloox
       const std::string& hash() const { return m_hash; }
 
       // reimplemented from StanzaExtension
-      virtual const std::string& filterString() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* newInstance( const Tag* tag ) const
-      {
-        return new VCardUpdate( tag );
-      }
-
-      // reimplemented from StanzaExtension
       Tag* tag() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* clone() const
-      {
-        return new VCardUpdate( *this );
-      }
 
     private:
       std::string m_hash;

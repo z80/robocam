@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,6 @@
 #define PRIVACYITEM_H__
 
 #include "macros.h"
-#include "gloox.h"
 
 #include <string>
 
@@ -76,7 +75,7 @@ namespace gloox
        * @param value The value to check for and match.
        */
       PrivacyItem( const ItemType type = TypeUndefined, const ItemAction action = ActionAllow,
-                   const int packetType = 0, const std::string& value = EmptyString );
+                   const int packetType = 0, const std::string& value = "" );
 
       /**
        * Virtual destructor.
@@ -87,19 +86,19 @@ namespace gloox
        * Returns the item type.
        * @return The type of the item.
        */
-      ItemType type() const { return m_type; }
+      const ItemType type() const { return m_type; }
 
       /**
        * Returns the item's action.
        * @return The action of the item.
        */
-      ItemAction action() const { return m_action; }
+      const ItemAction action() const { return m_action; }
 
       /**
        * Returns the packet type the item affects.
        * @return An OR'ed list of affected packet types.
        */
-      int packetType() const { return m_packetType; }
+      const int packetType() const { return m_packetType; }
 
       /**
        * Returns the value of the item's 'value' attribute.
@@ -112,7 +111,7 @@ namespace gloox
        * @param item The item which shall be compared.
        * @return @b True if both items are equal, @b false otherwise.
        */
-      bool operator==( const PrivacyItem& item ) const;
+      bool operator==( PrivacyItem& item ) const;
 
     private:
       ItemType m_type;

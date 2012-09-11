@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -13,69 +13,56 @@
 
 #include "dataform.h"
 #include "dataformfield.h"
-#include "dataformitem.h"
 #include "dataformreported.h"
-#include "util.h"
+#include "dataformitem.h"
 #include "tag.h"
 
 namespace gloox
 {
 
-  DataForm::DataForm( FormType type, const StringList& instructions, const std::string& title )
-    : StanzaExtension( ExtDataForm ),
-      m_type( type ), m_instructions( instructions ), m_title( title ), m_reported( 0 )
+  DataForm::DataForm( DataFormType type, const StringList& instructions, const std::string& title )
+    : m_instructions( instructions ), m_type( type ), m_title( title )
   {
   }
 
-  DataForm::DataForm( FormType type, const std::string& title )
-    : StanzaExtension( ExtDataForm ),
-      m_type( type ), m_title( title ), m_reported( 0 )
+  DataForm::DataForm( DataFormType type, const std::string& title )
+    : m_type( type ), m_title( title )
   {
   }
 
-  DataForm::DataForm( const Tag* tag )
-    : StanzaExtension( ExtDataForm ),
-      m_type( TypeInvalid ), m_reported( 0 )
+  DataForm::DataForm( Tag *tag )
+    : m_type( FormTypeInvalid )
   {
     parse( tag );
   }
 
-  DataForm::DataForm( const DataForm& form )
-    : StanzaExtension( ExtDataForm ), DataFormFieldContainer( form ),
-      m_type( form.m_type ), m_instructions( form.m_instructions ),
-      m_title( form.m_title ), m_reported( form.m_reported ? new DataFormReported( form.m_reported->tag() ) : 0 )
+  DataForm::DataForm()
+  : m_type( FormTypeInvalid )
   {
   }
 
   DataForm::~DataForm()
   {
-    util::clearList( m_items );
-    delete m_reported;
-    m_reported = NULL;
   }
 
-  static const char* dfTypeValues[] =
+  bool DataForm::parse( Tag *tag )
   {
-    "form", "submit", "cancel", "result"
-  };
-
-  bool DataForm::parse( const Tag* tag )
-  {
-    if( !tag || tag->xmlns() != XMLNS_X_DATA || tag->name() != "x" )
+    if( !tag || !tag->hasAttribute( "xmlns", XMLNS_X_DATA ) || tag->name() != "x" )
       return false;
 
-    const std::string& type = tag->findAttribute( TYPE );
-    if( type.empty() )
-      m_type = TypeForm;
+    if( tag->hasAttribute( "type", "form" ) )
+      m_type = FormTypeForm;
+    else if( tag->hasAttribute( "type", "submit" ) )
+      m_type = FormTypeSubmit;
+    else if( tag->hasAttribute( "type", "cancel" ) )
+      m_type = FormTypeCancel;
+    else if( tag->hasAttribute( "type", "result" ) )
+      m_type = FormTypeResult;
     else
-    {
-      m_type = (FormType)util::lookup( type, dfTypeValues );
-      if( m_type == TypeInvalid )
-        return false;
-    }
+      return false;
 
-    const TagList& l = tag->children();
-    TagList::const_iterator it = l.begin();
+    const Tag::TagList& l = tag->children();
+    Tag::TagList::const_iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
       if( (*it)->name() == "title" )
@@ -83,34 +70,32 @@ namespace gloox
       else if( (*it)->name() == "instructions" )
         m_instructions.push_back( (*it)->cdata() );
       else if( (*it)->name() == "field" )
-        m_fields.push_back( new DataFormField( (*it) ) );
+      {
+        DataFormField *f = new DataFormField( (*it) );
+        m_fields.push_back( f );
+      }
       else if( (*it)->name() == "reported" )
       {
-        if( m_reported == NULL )
-          m_reported = new DataFormReported( (*it) );
-        // else - Invalid data form - only one "reported" is allowed
+        DataFormReported *r = new DataFormReported( (*it) );
+        m_fields.push_back( r );
       }
       else if( (*it)->name() == "item" )
-        m_items.push_back( new DataFormItem( (*it) ) );
+      {
+        DataFormItem *i = new DataFormItem( (*it) );
+        m_fields.push_back( i );
+      }
     }
 
     return true;
   }
 
-  const std::string& DataForm::filterString() const
-  {
-    static const std::string filter = "/message/x[@xmlns='" + XMLNS_X_DATA + "']";
-    return filter;
-  }
-
   Tag* DataForm::tag() const
   {
-    if( m_type == TypeInvalid )
+    if( m_type == FormTypeInvalid )
       return 0;
 
-    Tag* x = new Tag( "x" );
-    x->setXmlns( XMLNS_X_DATA );
-    x->addAttribute( TYPE, util::lookup( m_type, dfTypeValues ) );
+    Tag *x = new Tag( "x" );
+    x->addAttribute( "xmlns", XMLNS_X_DATA );
     if( !m_title.empty() )
       new Tag( x, "title", m_title );
 
@@ -120,16 +105,41 @@ namespace gloox
 
     FieldList::const_iterator it = m_fields.begin();
     for( ; it != m_fields.end(); ++it )
-      x->addChild( (*it)->tag() );
-
-    if( m_reported != NULL )
     {
-      x->addChild( m_reported->tag() );
+      DataFormItem *i = dynamic_cast<DataFormItem*>( (*it) );
+      if( i )
+      {
+        x->addChild( i->tag() );
+        continue;
+      }
+
+      DataFormReported *r = dynamic_cast<DataFormReported*>( (*it) );
+      if( r )
+      {
+        x->addChild( r->tag() );
+        continue;
+      }
+
+      x->addChild( (*it)->tag() );
     }
 
-    ItemList::const_iterator iti = m_items.begin();
-    for( ; iti != m_items.end(); ++iti )
-      x->addChild( (*iti)->tag() );
+    switch( m_type )
+    {
+      case FormTypeForm:
+        x->addAttribute( "type", "form" );
+        break;
+      case FormTypeSubmit:
+        x->addAttribute( "type", "submit" );
+        break;
+      case FormTypeCancel:
+        x->addAttribute( "type", "cancel" );
+        break;
+      case FormTypeResult:
+        x->addAttribute( "type", "result" );
+        break;
+      default:
+        break;
+    }
 
     return x;
   }

@@ -2,14 +2,11 @@
 ## Process this file with automake to produce Makefile.in
 ##
 
-AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare \
-              -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef \
-              -Wcast-qual -Wno-long-long -DGLOOX_IMPORTS
+AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual -ansi -DGLOOX_IMPORTS
 
 noinst_PROGRAMS = register_example disco_example adhoc_example roster_example privatexml_example component_example \
                   bookmarkstorage_example annotations_example privacylist_example message_example flexoff_example \
-                  vcard_example reset_example muc_example e2ee_client e2ee_server ft_recv ft_send \
-                  pubsub_example bosh_example
+                  ibb_example vcard_example reset_example muc_example e2ee_client e2ee_server ft_recv ft_send
 
 register_example_SOURCES = register_example.cpp
 register_example_LDADD = ../libgloox.la $(LDFLAGS)
@@ -55,6 +52,10 @@ flexoff_example_SOURCES = flexoff_example.cpp
 flexoff_example_LDADD = ../libgloox.la $(LDFLAGS)
 flexoff_example_CFLAGS = $(CPPFLAGS)
 
+ibb_example_SOURCES = ibb_example.cpp
+ibb_example_LDADD = ../libgloox.la $(LDFLAGS)
+ibb_example_CFLAGS = $(CPPFLAGS)
+
 vcard_example_SOURCES = vcard_example.cpp
 vcard_example_LDADD = ../libgloox.la $(LDFLAGS)
 vcard_example_CFLAGS = $(CPPFLAGS)
@@ -83,10 +84,3 @@ ft_send_SOURCES = ft_send.cpp
 ft_send_LDADD = ../libgloox.la $(LDFLAGS)
 ft_send_CFLAGS = $(CPPFLAGS)
 
-pubsub_example_SOURCES = pubsub_example.cpp
-pubsub_example_LDADD = ../libgloox.la $(LDFLAGS)
-pubsub_example_CFLAGS = $(CPPFLAGS)
-
-bosh_example_SOURCES = bosh_example.cpp
-bosh_example_LDADD = ../libgloox.la $(LDFLAGS)
-bosh_example_CFLAGS = $(CPPFLAGS)

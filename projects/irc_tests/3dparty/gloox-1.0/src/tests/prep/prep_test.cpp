@@ -4,125 +4,111 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 int main( int /*argc*/, char** /*argv*/ )
 {
   int fail = 0;
   std::string name;
-  std::string result;
 
   // -------
   name = "nodeprep oversized";
   const std::string t( 1200, 'x' );
-  if( prep::nodeprep( t, result ) || !result.empty() )
+  if( prep::nodeprep( t ) != "" )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "resourceprep oversized";
-  if( prep::resourceprep( t, result ) || !result.empty() )
+  if( prep::resourceprep( t ) != "" )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "nameprep oversized";
-  if( prep::nameprep( t, result ) || !result.empty() )
+  if( prep::nameprep( t ) != "" )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "idna oversized";
-  if( prep::idna( t, result ) || !result.empty() )
+  if( prep::idna( t ) != "" )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "nodeprep unchanged";
   const std::string t1( 10, 'x' );
-  if( !( prep::nodeprep( t1, result ) && result == t1 ) )
+  if( prep::nodeprep( t1 ) != t1 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "resourceprep unchanged";
-  if( !( prep::resourceprep( t1, result ) && result == t1 ) )
+  if( prep::resourceprep( t1 ) != t1 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "nameprep unchanged";
-  if( !( prep::nameprep( t1, result ) && result == t1 ) )
+  if( prep::nameprep( t1 ) != t1 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "idna unchanged";
-  if( !( prep::idna( t1, result ) && result == t1 ) )
+  if( prep::idna( t1 ) != t1 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "nodeprep simple casefolding";
   const std::string t2( "aBcDeFgH" );
   const std::string t3( "abcdefgh" );
-  if( !( prep::nodeprep( t2, result ) && result == t3 ) )
+  if( prep::nodeprep( t2 ) != t3 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "resourceprep simple casefolding (none)";
-  if( !( prep::resourceprep( t2, result ) && result == t2 ) )
+  if( prep::resourceprep( t2 ) != t2 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "nameprep simple casefolding";
-  if( !( prep::nameprep( t2, result ) && result == t3 ) )
+  if( prep::nameprep( t2 ) != t3 )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
   // -------
   name = "idna example";
-  if( !( prep::idna( "www.dömäin.de", result ) && result == "www.xn--dmin-moa0i.de" ) )
+  if( prep::idna( "www.dömäin.de" ) != "www.xn--dmin-moa0i.de" )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
   }
-  result = "";
 
 
 
@@ -137,7 +123,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "Prep: OK\n" );
+    printf( "Prep: all tests passed\n" );
     return 0;
   }
   else

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,72 +14,43 @@
 #include "stanzaextensionfactory.h"
 
 #include "gloox.h"
-#include "util.h"
-#include "stanza.h"
-#include "stanzaextension.h"
 #include "tag.h"
+#include "oob.h"
+#include "vcardupdate.h"
+#include "delayeddelivery.h"
+#include "xdelayeddelivery.h"
+#include "gpgsigned.h"
+#include "gpgencrypted.h"
 
 namespace gloox
 {
 
-  StanzaExtensionFactory::StanzaExtensionFactory()
+  StanzaExtension* StanzaExtensionFactory::create( Tag* tag )
   {
-  }
-
-  StanzaExtensionFactory::~StanzaExtensionFactory()
-  {
-    util::clearList( m_extensions );
-  }
-
-  void StanzaExtensionFactory::registerExtension( StanzaExtension* ext )
-  {
-    if( !ext )
-      return;
-
-    SEList::iterator it = m_extensions.begin();
-    SEList::iterator it2;
-    while( it != m_extensions.end() )
+    const std::string& name = tag->name();
+    const std::string& xmlns = tag->findAttribute( "xmlns" );
+    if( name == "x" )
     {
-      it2 = it++;
-      if( ext->extensionType() == (*it2)->extensionType() )
-      {
-        delete (*it2);
-        m_extensions.erase( it2 );
-      }
+      if( xmlns == XMLNS_X_DELAY )
+        return new XDelayedDelivery( tag );
+      else if( xmlns == XMLNS_X_OOB )
+        return new OOB( tag );
+      else if( xmlns == XMLNS_X_VCARD_UPDATE )
+        return new VCardUpdate( tag );
+      else if( xmlns == XMLNS_X_GPGSIGNED )
+        return new GPGSigned( tag );
+      else if( xmlns == XMLNS_X_GPGENCRYPTED )
+        return new GPGEncrypted( tag );
     }
-    m_extensions.push_back( ext );
-  }
-
-  bool StanzaExtensionFactory::removeExtension( int ext )
-  {
-    SEList::iterator it = m_extensions.begin();
-    for( ; it != m_extensions.end(); ++it )
+    else if( name == "iq" )
     {
-      if( (*it)->extensionType() == ext )
-      {
-        delete (*it);
-        m_extensions.erase( it );
-        return true;
-      }
+      if( xmlns == XMLNS_IQ_OOB )
+        return new OOB( tag );
     }
-    return false;
-  }
+    else if( name == "delay" && xmlns == XMLNS_DELAY )
+      return new DelayedDelivery( tag );
 
-  void StanzaExtensionFactory::addExtensions( Stanza& stanza, Tag* tag )
-  {
-    ConstTagList::const_iterator it;
-    SEList::const_iterator ite = m_extensions.begin();
-    for( ; ite != m_extensions.end(); ++ite )
-    {
-      const ConstTagList& match = tag->findTagList( (*ite)->filterString() );
-      it = match.begin();
-      for( ; it != match.end(); ++it )
-      {
-        StanzaExtension* se = (*ite)->newInstance( (*it) );
-        if( se )
-          stanza.addExtension( se );
-      }
-    }
+    return 0;
   }
 
 }

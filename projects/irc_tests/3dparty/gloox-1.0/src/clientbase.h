@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,41 +17,28 @@
 
 #include "macros.h"
 #include "gloox.h"
-#include "eventdispatcher.h"
-#include "iqhandler.h"
 #include "jid.h"
 #include "logsink.h"
-#include "mutex.h"
 #include "taghandler.h"
 #include "statisticshandler.h"
 #include "tlshandler.h"
 #include "compressiondatahandler.h"
 #include "connectiondatahandler.h"
-#include "parser.h"
 
 #include <string>
 #include <list>
 #include <map>
 
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-#include <windows.h>
-#define SECURITY_WIN32
-#include <security.h>
-#endif
-
 namespace gloox
 {
 
   class Disco;
-  class EventHandler;
-  class Event;
   class Tag;
-  class IQ;
-  class Message;
-  class Presence;
-  class Subscription;
+  class Stanza;
+  class Parser;
   class MessageSessionHandler;
   class ConnectionListener;
+  class IqHandler;
   class MessageHandler;
   class MessageSession;
   class PresenceHandler;
@@ -61,20 +48,17 @@ namespace gloox
   class TLSBase;
   class ConnectionBase;
   class CompressionBase;
-  class StanzaExtensionFactory;
 
   /**
-   * @brief This is the common base class for a Jabber/XMPP Client and a Jabber Component.
+   * @brief This is the common base class for a Jabber/XMPP Client and a jabber Component.
    *
    * It manages connection establishing, authentication, filter registration and invocation.
-   * You should normally use Client for client connections and Component for component connections.
    *
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.3
    */
   class GLOOX_API ClientBase : public TagHandler, public ConnectionDataHandler,
-                               public CompressionDataHandler, public TLSHandler,
-                               public IqHandler
+                               public CompressionDataHandler, public TLSHandler
   {
 
     friend class RosterManager;
@@ -137,7 +121,7 @@ namespace gloox
       virtual const std::string& username() const { return m_jid.username(); }
 
       /**
-       * Returns the current Jabber ID. If an authorization ID has been set (using setAuthzid())
+       * Returns the current Jabber ID. If an authentication ID has been set (using setAuthzid())
        * this authzid is returned.
        * @return A reference to the Jabber ID.
        * @note If you change the server part of the JID, the server of the connection is not synced.
@@ -151,6 +135,13 @@ namespace gloox
        * @param sasl Whether to switch SASL usage on or off.
        */
       void setSasl( bool sasl ) { m_sasl = sasl; }
+
+      /**
+       * Switches usage of TLS on/off (if available). Default: on if available. TLS should only be
+       * disabled if there are problems with using it.
+       * @param tls Whether to switch TLS usage on or off.
+       */
+      GLOOX_DEPRECATED void setTls( bool tls ) { m_tls = (TLSPolicy)tls; }
 
       /**
        * Sets the TLS policy. Default: TLS will be used if available. TLS should only be
@@ -204,7 +195,7 @@ namespace gloox
        * Returns whether TLS is currently enabled (not necessarily used).
        * @return The current TLS status.
        */
-      TLSPolicy tls() const { return m_tls; }
+      bool tls() const { return m_tls != TLSDisabled; }
 
       /**
        * Returns whether Stream Compression is currently enabled (not necessarily used).
@@ -239,48 +230,13 @@ namespace gloox
       const std::string getID();
 
       /**
-       * Sends the given Tag over an established connection.
+       * Sends a given Tag over an established connection.
        * The ClientBase object becomes the owner of this Tag and will delete it after sending it.
        * You should not rely on the existance of the Tag after it's been sent. If you still need
        * it after sending it, use Tag::clone() to create a deep copy.
        * @param tag The Tag to send.
        */
-      void send( Tag* tag );
-
-      /**
-       * Sends the given IQ stanza. The given IqHandler is registered to be notified of replies. This,
-       * of course, only works for IQs of type get or set. An ID is added if necessary.
-       * @param iq The IQ stanza to send.
-       * @param ih The handler to register for replies.
-       * @param context A value that allows for restoring context.
-       * @param del Whether or not delete the IqHandler object after its being called.
-       * Default: @b false.
-       */
-      void send( IQ& iq, IqHandler* ih, int context, bool del = false );
-
-      /**
-       * A convenience function that sends the given IQ stanza.
-       * @param iq The IQ stanza to send.
-       */
-      void send( const IQ& iq );
-
-      /**
-       * A convenience function that sends the given Message stanza.
-       * @param msg The Message stanza to send.
-       */
-      void send( const Message& msg );
-
-      /**
-       * A convenience function that sends the given Subscription stanza.
-       * @param sub The Subscription stanza to send.
-       */
-      void send( const Subscription& sub );
-
-      /**
-       * A convenience function that sends the given Presence stanza.
-       * @param pres The Presence stanza to send.
-       */
-      void send( Presence& pres );
+      virtual void send( Tag *tag );
 
       /**
        * Returns whether authentication has taken place and was successful.
@@ -322,7 +278,7 @@ namespace gloox
        * @param cb The connection to use.
        * @since 0.9
        */
-      void setConnectionImpl( ConnectionBase* cb );
+      void setConnectionImpl( ConnectionBase *cb );
 
       /**
        * This function returns the concrete encryption implementation currently in use.
@@ -338,7 +294,7 @@ namespace gloox
        * @param tb The encryption implementation to use.
        * @since 0.9
        */
-      void setEncryptionImpl( TLSBase* tb );
+      void setEncryptionImpl( TLSBase *tb );
 
       /**
        * This function returns the concrete compression implementation currently in use.
@@ -354,7 +310,7 @@ namespace gloox
        * @param cb The compression implementation to use.
        * @since 0.9
        */
-      void setCompressionImpl( CompressionBase* cb );
+      void setCompressionImpl( CompressionBase *cb );
 
       /**
        * Sends a whitespace ping to the server.
@@ -363,12 +319,12 @@ namespace gloox
       void whitespacePing();
 
       /**
-       * Sends a XMPP Ping (XEP-0199) to the given JID.
-       * @param to Then entity to ping.
-       * @param eh An EventHandler to inform about the reply.
+       * Sends a XMPP Ping (XEP-0199) to the given JID. There is currently no way to know
+       * whether the remote entity answered (other than registering an IQ handler for the
+       * urn:xmpp:ping namespace).
        * @since 0.9
        */
-      void xmppPing( const JID& to, EventHandler* eh );
+      void xmppPing( const JID& to );
 
       /**
        * Use this function to set an authorization ID (authzid). Provided the server supports it
@@ -378,16 +334,6 @@ namespace gloox
        * @since 0.9
        */
       void setAuthzid( const JID& authzid ) { m_authzid = authzid; }
-
-      /**
-       * Use this function to set an authentication ID (authcid) for SASL PLAIN.
-       * The default authcid is the username, i.e. the JID's node part. This should work in most cases.
-       * If this is not what you want to use for authentication, use this function.
-       * @param authcid The authentication ID.
-       * @since 1.0
-       * @note Right now this is used for SASL PLAIN authentication only.
-       */
-      void setAuthcid( const std::string& authcid ) { m_authcid = authcid; }
 
       /**
        * Use this function to limit SASL mechanisms gloox can use. By default, all
@@ -402,34 +348,28 @@ namespace gloox
       void setSASLMechanisms( int mechanisms ) { m_availableSaslMechs = mechanisms; }
 
       /**
-       * Registers a new StanzaExtension with the StanzaExtensionFactory.
-       * @param ext The extension to register.
-       */
-      void registerStanzaExtension( StanzaExtension* ext );
-
-      /**
-       * Removes the given StanzaExtension type from the StanzaExtensionFactory.
-       * @param ext The extension type.
-       * @return @b True if the given type was found (and removed), @b false otherwise.
-       */
-      bool removeStanzaExtension( int ext );
-
-      /**
        * Registers @c cl as object that receives connection notifications.
        * @param cl The object to receive connection notifications.
        */
-      void registerConnectionListener( ConnectionListener* cl );
+      void registerConnectionListener( ConnectionListener *cl );
 
       /**
-       * Registers @c ih as object that receives notifications for IQ stanzas
-       * that contain StanzaExtensions of the given type. The number of handlers
-       * per extension type is not limited.
-       * @param ih The object to receive IQ stanza notifications.
-       * @param exttype The extension type. See StanzaExtension and
-       * @link gloox::StanzaExtensionType StanzaExtensionType @endlink.
-       * @since 1.0
+       * Registers @c ih as object that receives Iq stanza notifications for namespace
+       * @c xmlns. Only one handler per namespace is possible.
+       * @param ih The object to receive Iq stanza notifications.
+       * @param xmlns The namespace the object handles.
        */
-      void registerIqHandler( IqHandler* ih, int exttype );
+      void registerIqHandler( IqHandler *ih, const std::string& xmlns );
+
+      /**
+       * Use this function to be notified of incoming IQ stanzas with the given value of the @b id
+       * attribute.
+       * Since IDs are supposed to be unique, this notification works only once.
+       * @param ih The IqHandler to receive notifications.
+       * @param id The id to track.
+       * @param context A value that allows for restoring context.
+       */
+      void trackID( IqHandler *ih, const std::string& id, int context );
 
       /**
        * Removes the given IqHandler from the list of handlers of pending operations, added
@@ -438,19 +378,19 @@ namespace gloox
        * @param ih The IqHandler to remove.
        * @since 0.8.7
        */
-      void removeIDHandler( IqHandler* ih );
+      void removeIDHandler( IqHandler *ih );
 
       /**
        * Registers @c mh as object that receives Message stanza notifications.
        * @param mh The object to receive Message stanza notifications.
        */
-      void registerMessageHandler( MessageHandler* mh );
+      void registerMessageHandler( MessageHandler *mh );
 
       /**
        * Removes the given object from the list of message handlers.
        * @param mh The object to remove from the list.
        */
-      void removeMessageHandler( MessageHandler* mh );
+      void removeMessageHandler( MessageHandler *mh );
 
       /**
        * Registers the given MessageSession to receive Messages incoming from the session's
@@ -461,19 +401,19 @@ namespace gloox
        * @note Since a MessageSession automatically registers itself with the ClientBase, there is no
        * need to call this function directly.
        */
-      void registerMessageSession( MessageSession* session );
+      void registerMessageSession( MessageSession *session );
 
       /**
        * Removes the given MessageSession from the  list of MessageSessions and deletes it.
        * @param session The MessageSession to be deleted.
        */
-      void disposeMessageSession( MessageSession* session );
+      void disposeMessageSession( MessageSession *session );
 
       /**
        * Registers @c ph as object that receives Presence stanza notifications.
        * @param ph The object to receive Presence stanza notifications.
        */
-      void registerPresenceHandler( PresenceHandler* ph );
+      void registerPresenceHandler( PresenceHandler *ph );
 
       /**
        * Registers a new PresenceHandler for the given JID. Presences received for this
@@ -484,13 +424,13 @@ namespace gloox
        * @param ph The PresenceHandler to inform about presence changes from @c jid.
        * @since 0.9
        */
-      void registerPresenceHandler( const JID& jid, PresenceHandler* ph );
+      void registerPresenceHandler( const JID& jid, PresenceHandler *ph );
 
       /**
        * Registers @c sh as object that receives Subscription stanza notifications.
        * @param sh The object to receive Subscription stanza notifications.
        */
-      void registerSubscriptionHandler( SubscriptionHandler* sh );
+      void registerSubscriptionHandler( SubscriptionHandler *sh );
 
       /**
        * Registers @c th as object that receives incoming packts with a given root tag
@@ -499,7 +439,7 @@ namespace gloox
        * @param tag The element's name.
        * @param xmlns The element's namespace.
        */
-      void registerTagHandler( TagHandler* th, const std::string& tag,
+      void registerTagHandler( TagHandler *th, const std::string& tag,
                                                const std::string& xmlns );
 
       /**
@@ -508,28 +448,25 @@ namespace gloox
        * Only one StatisticsHandler per ClientBase at a time is possible.
        * @param sh The StatisticsHandler to register.
        */
-      void registerStatisticsHandler( StatisticsHandler* sh );
+      void registerStatisticsHandler( StatisticsHandler *sh );
 
       /**
        * Removes the given object from the list of connection listeners.
        * @param cl The object to remove from the list.
        */
-      void removeConnectionListener( ConnectionListener* cl );
+      void removeConnectionListener( ConnectionListener *cl );
 
       /**
-       * Removes the given IQ handler for the given extension type.
-       * @param ih The IqHandler.
-       * @param exttype The extension type. See
-       * @link gloox::StanzaExtensionType StanzaExtensionType @endlink.
-       * @since 1.0
+       * Removes the handler for the given namespace from the list of Iq handlers.
+       * @param xmlns The namespace to remove from the list.
        */
-      void removeIqHandler( IqHandler* ih, int exttype );
+      void removeIqHandler( const std::string& xmlns );
 
       /**
        * Removes the given object from the list of presence handlers.
        * @param ph The object to remove from the list.
        */
-      void removePresenceHandler( PresenceHandler* ph );
+      void removePresenceHandler( PresenceHandler *ph );
 
       /**
        * Removes the given object from the list of presence handlers for the given JID.
@@ -537,13 +474,13 @@ namespace gloox
        * @param ph The PresenceHandler to remove from the list. If @c ph is 0,
        * all handlers for the given JID will be removed.
        */
-      void removePresenceHandler( const JID& jid, PresenceHandler* ph );
+      void removePresenceHandler( const JID& jid, PresenceHandler *ph );
 
       /**
        * Removes the given object from the list of subscription handlers.
        * @param sh The object to remove from the list.
        */
-      void removeSubscriptionHandler( SubscriptionHandler* sh );
+      void removeSubscriptionHandler( SubscriptionHandler *sh );
 
       /**
        * Removes the given object from the list of tag handlers for the given element and namespace.
@@ -551,7 +488,7 @@ namespace gloox
        * @param tag The element to remove the handler for.
        * @param xmlns The namespace qualifying the element.
        */
-      void removeTagHandler( TagHandler* th, const std::string& tag,
+      void removeTagHandler( TagHandler *th, const std::string& tag,
                                              const std::string& xmlns );
 
       /**
@@ -589,13 +526,13 @@ namespace gloox
        * @param types ORed StanzaSubType's that describe the desired message types the handler
        * shall receive. Only StanzaMessage* types are valid. A value of 0 means any type (default).
        */
-      void registerMessageSessionHandler( MessageSessionHandler* msh, int types = 0 );
+      void registerMessageSessionHandler( MessageSessionHandler *msh, int types = 0 );
 
       /**
        * Returns the LogSink instance for this ClientBase and all related objects.
        * @return The LogSink instance used in the current ClientBase.
        */
-      LogSink& logInstance() { return m_logInstance; }
+      LogSink& logInstance();
 
       /**
        * Use this function to retrieve the type of the stream error after it occurs and you received a
@@ -614,7 +551,7 @@ namespace gloox
        * will be returned, if any.
        * @return The describing text of a stream error. Empty if no stream error occured.
        */
-      const std::string& streamErrorText( const std::string& lang = "default" ) const;
+      const std::string streamErrorText( const std::string& lang = "default" ) const;
 
       /**
        * In case the defined-condition element of an stream error contains XML character data you can
@@ -649,37 +586,15 @@ namespace gloox
        * Registers a MUCInvitationHandler with the ClientBase.
        * @param mih The MUCInvitationHandler to register.
        */
-      void registerMUCInvitationHandler( MUCInvitationHandler* mih );
+      void registerMUCInvitationHandler( MUCInvitationHandler *mih );
 
       /**
        * Removes the currently registered MUCInvitationHandler.
        */
       void removeMUCInvitationHandler();
 
-      /**
-       * Adds a StanzaExtension that will be sent with every Presence stanza
-       * sent. Capabilities are included by default if you are using a Client.
-       * @param se A StanzaExtension to add. If an extension of the same type
-       * has been added previously it will be replaced by the new one.
-       * Use removePresenceExtension() to remove an extension.
-       */
-      void addPresenceExtension( StanzaExtension* se );
-
-      /**
-       * Removes the StanzaExtension of the given type from the list of Presence
-       * StanzaExtensions.
-       * Use addPresenceExtension() to replace an already added type.
-       */
-      bool removePresenceExtension( int type );
-
-      /**
-       * Returns the current list of Presence StanzaExtensions.
-       * @return The current list of Presence StanzaExtensions.
-       */
-      const StanzaExtensionList& presenceExtensions() const { return m_presenceExtensions; }
-
       // reimplemented from ParserHandler
-      virtual void handleTag( Tag* tag );
+      virtual void handleTag( Tag *tag );
 
       // reimplemented from CompressionDataHandler
       virtual void handleCompressedData( const std::string& data );
@@ -697,280 +612,100 @@ namespace gloox
       virtual void handleDisconnect( const ConnectionBase* connection, ConnectionError reason );
 
       // reimplemented from TLSHandler
-      virtual void handleEncryptedData( const TLSBase* base, const std::string& data );
+      virtual void handleEncryptedData( const TLSBase *base, const std::string& data );
 
       // reimplemented from TLSHandler
-      virtual void handleDecryptedData( const TLSBase* base, const std::string& data );
+      virtual void handleDecryptedData( const TLSBase *base, const std::string& data );
 
       // reimplemented from TLSHandler
-      virtual void handleHandshakeResult( const TLSBase* base, bool success, CertInfo &certinfo );
+      virtual void handleHandshakeResult( const TLSBase *base, bool success, CertInfo &certinfo );
 
     protected:
-      /**
-       * This function is called when resource binding yieled an error.
-       * @param error A pointer to an Error object that contains more
-       * information. May be 0.
-       */
-      void notifyOnResourceBindError( const Error* error );
-
-      /**
-       * This function is called when binding a resource succeeded.
-       * @param resource The bound resource.
-       */
-      void notifyOnResourceBind( const std::string& resource );
-
-      /**
-       * This function is called when session creation yieled an error.
-       * @param error A pointer to an Error object that contains more
-       * information. May be 0.
-       */
-      void notifyOnSessionCreateError( const Error* error );
-
-      /**
-       * This function is called when the TLS handshake completed correctly. The return
-       * value is used to determine whether or not the client accepted the server's
-       * certificate. If @b false is returned the connection is closed.
-       * @param info Information on the server's certificate.
-       * @return @b True if the certificate seems trustworthy, @b false otherwise.
-       */
+      void notifyOnResourceBindError( ResourceBindError error );
+      void notifyOnSessionCreateError( SessionCreateError error );
       bool notifyOnTLSConnect( const CertInfo& info );
-
-      /**
-       * This function is called to notify about successful connection.
-       */
       void notifyOnConnect();
-
-      /**
-       * This function is used to notify subscribers of stream events.
-       * @param event The event to publish.
-       */
       void notifyStreamEvent( StreamEvent event );
-
-      /**
-       * Disconnects the underlying stream and broadcasts the given reason.
-       * @param reason The reason for the disconnect.
-       */
       virtual void disconnect( ConnectionError reason );
-
-      /**
-       * Sends the stream header.
-       */
       void header();
-
-      /**
-       * Tells ClientBase that authentication was successful (or not).
-       * @param authed Whether or not authentication was successful.
-       */
       void setAuthed( bool authed ) { m_authed = authed; }
-
-      /**
-       * If authentication failed, this function tells ClientBase
-       * the reason.
-       * @param e The reason for the authentication failure.
-       */
       void setAuthFailure( AuthenticationError e ) { m_authError = e; }
-
-      /**
-       * Implementors of this function can check if they support the advertized stream version.
-       * The return value indicates whether or not the stream can be handled. A default
-       * implementation is provided.
-       * @param version The advertized stream version.
-       * @return @b True if the stream can be handled, @b false otherwise.
-       */
       virtual bool checkStreamVersion( const std::string& version );
 
-      /**
-       * Starts authentication using the given SASL mechanism.
-       * @param type A SASL mechanism to use for authentication.
-       */
       void startSASL( SaslMechanism type );
-
-      /**
-       * Releases SASL related resources.
-       */
-      void processSASLSuccess();
-
-      /**
-       * Processes the given SASL challenge and sends a response.
-       * @param challenge The SASL challenge to process.
-       */
       void processSASLChallenge( const std::string& challenge );
-
-      /**
-       * Examines the given Tag for SASL errors.
-       * @param tag The Tag to parse.
-       */
-      void processSASLError( Tag* tag );
-
-      /**
-       * Sets the domain to use in SASL NTLM authentication.
-       * @param domain The domain.
-       */
-      void setNTLMDomain( const std::string& domain ) { m_ntlmDomain = domain; }
-
-      /**
-       * Starts the TLS handshake.
-       */
+      void processSASLError( Stanza *stanza );
       void startTls();
-
-      /**
-       * Indicates whether or not TLS is supported.
-       * @return @b True if TLS is supported, @b false otherwise.
-       */
       bool hasTls();
 
-      JID m_jid;                         /**< The 'self' JID. */
-      JID m_authzid;                     /**< An optional authorization ID. See setAuthzid(). */
-      std::string m_authcid;             /**< An alternative authentication ID. See setAuthcid(). */
-      ConnectionBase* m_connection;      /**< The transport connection. */
-      TLSBase* m_encryption;             /**< Used for connection encryption. */
-      CompressionBase* m_compression;    /**< Used for connection compression. */
-      Disco* m_disco;                    /**< The local Service Discovery client. */
+      JID m_jid;
+      JID m_authzid;
+      ConnectionBase *m_connection;
+      TLSBase *m_encryption;
+      CompressionBase *m_compression;
+      Disco *m_disco;
 
-      /** A list of permanent presence extensions. */
-      StanzaExtensionList m_presenceExtensions;
+      std::string m_clientCerts;
+      std::string m_clientKey;
+      std::string m_namespace;
+      std::string m_password;
+      std::string m_xmllang;
+      std::string m_server;
+      std::string m_sid;
+      bool m_compressionActive;
+      bool m_encryptionActive;
+      bool m_compress;
+      bool m_authed;
+      bool m_block;
+      bool m_sasl;
+      TLSPolicy m_tls;
+      int m_port;
 
-      std::string m_selectedResource;    /**< The currently selected resource.
-                                          * See Client::selectResource() and Client::binRessource(). */
-      std::string m_clientCerts;         /**< TLS client certificates. */
-      std::string m_clientKey;           /**< TLS client private key. */
-      std::string m_namespace;           /**< Default namespace. */
-      std::string m_password;            /**< Client's password. */
-      std::string m_xmllang;             /**< Default value of the xml:lang attribute. */
-      std::string m_server;              /**< The server to connect to, if different from the
-                                          * JID's server. */
-      std::string m_sid;                 /**< The stream ID. */
-      bool m_compressionActive;          /**< Indicates whether or not stream compression
-                                          * is currently activated. */
-      bool m_encryptionActive;           /**< Indicates whether or not stream encryption
-                                          * is currently activated. */
-      bool m_compress;                   /**< Whether stream compression
-                                          * is desired at all. */
-      bool m_authed;                     /**< Whether authentication has been completed successfully. */
-      bool m_block;                      /**< Whether blocking connection is wanted. */
-      bool m_sasl;                       /**< Whether SASL authentication is wanted. */
-      TLSPolicy m_tls;                   /**< The current TLS policy. */
-      int m_port;                        /**< The port to connect to, if not to be determined
-                                          * by querying the server's SRV records. */
-
-      int m_availableSaslMechs;          /**< The SASL mechanisms the server offered. */
+      int m_availableSaslMechs;
 
     private:
-#ifdef CLIENTBASE_TEST
-    public:
-#endif
-      /**
-       * @brief This is an implementation of an XMPP Ping (XEP-199).
-       *
-       * @author Jakob Schroeter <js@camaya.net>
-       * @since 1.0
-       */
-      class Ping : public StanzaExtension
-      {
-
-        public:
-          /**
-           * Constructs a new object.
-           */
-          Ping();
-
-          /**
-           * Destructor.
-           */
-          virtual ~Ping();
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            (void)tag;
-            return new Ping();
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const
-          {
-            return new Tag( "ping", "xmlns", XMLNS_XMPP_PING );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-          {
-            return new Ping();
-          }
-
-      };
-
       ClientBase( const ClientBase& );
       ClientBase& operator=( const ClientBase& );
 
-      /**
-       * This function is called right after the opening &lt;stream:stream&gt; was received.
-       */
       virtual void handleStartNode() = 0;
-
-      /**
-       * This function is called for each Tag. Only stream initiation/negotiation should
-       * be done here.
-       * @param tag A Tag to handle.
-       */
-      virtual bool handleNormalNode( Tag* tag ) = 0;
+      virtual bool handleNormalNode( Stanza *stanza ) = 0;
       virtual void rosterFilled() = 0;
       virtual void cleanup() {}
-      virtual void handleIqIDForward( const IQ& iq, int context ) { (void) iq; (void) context; }
-
       void parse( const std::string& data );
       void init();
-      void handleStreamError( Tag* tag );
+      void handleStreamError( Stanza *stanza );
       TLSBase* getDefaultEncryption();
       CompressionBase* getDefaultCompression();
 
-      void notifyIqHandlers( IQ& iq );
-      void notifyMessageHandlers( Message& msg );
-      void notifyPresenceHandlers( Presence& presence );
-      void notifySubscriptionHandlers( Subscription& s10n );
-      void notifyTagHandlers( Tag* tag );
+      void notifyIqHandlers( Stanza *stanza );
+      void notifyMessageHandlers( Stanza *stanza );
+      void notifyPresenceHandlers( Stanza *stanza );
+      void notifySubscriptionHandlers( Stanza *stanza );
+      void notifyTagHandlers( Tag *tag );
       void notifyOnDisconnect( ConnectionError e );
       void send( const std::string& xml );
-      void addFrom( Tag* tag );
-      void addNamespace( Tag* tag );
-
-      // reimplemented from IqHandler
-      virtual bool handleIq( const IQ& iq );
-
-      // reimplemented from IqHandler
-      virtual void handleIqID( const IQ& iq, int context );
 
       struct TrackStruct
       {
-        IqHandler* ih;
+        IqHandler *ih;
         int context;
-        bool del;
       };
 
       struct TagHandlerStruct
       {
-        TagHandler* th;
+        TagHandler *th;
         std::string xmlns;
         std::string tag;
       };
 
       struct JidPresHandlerStruct
       {
-        JID* jid;
+        JID *jid;
         PresenceHandler* ph;
       };
 
-      enum TrackContext
-      {
-        XMPPPing
-      };
-
       typedef std::list<ConnectionListener*>               ConnectionListenerList;
-      typedef std::multimap<const std::string, IqHandler*> IqHandlerMapXmlns;
-      typedef std::multimap<const int, IqHandler*>         IqHandlerMap;
+      typedef std::map<const std::string, IqHandler*>      IqHandlerMap;
       typedef std::map<const std::string, TrackStruct>     IqTrackMap;
       typedef std::map<const std::string, MessageHandler*> MessageHandlerMap;
       typedef std::list<MessageSession*>                   MessageSessionList;
@@ -981,8 +716,7 @@ namespace gloox
       typedef std::list<TagHandlerStruct>                  TagHandlerList;
 
       ConnectionListenerList   m_connectionListeners;
-      IqHandlerMapXmlns        m_iqNSHandlers;
-      IqHandlerMap             m_iqExtHandlers;
+      IqHandlerMap             m_iqNSHandlers;
       IqTrackMap               m_iqIDHandlers;
       MessageSessionList       m_messageSessions;
       MessageHandlerList       m_messageHandlers;
@@ -991,37 +725,28 @@ namespace gloox
       SubscriptionHandlerList  m_subscriptionHandlers;
       TagHandlerList           m_tagHandlers;
       StringList               m_cacerts;
-      StatisticsHandler      * m_statisticsHandler;
-      MUCInvitationHandler   * m_mucInvitationHandler;
-      MessageSessionHandler  * m_messageSessionHandlerChat;
-      MessageSessionHandler  * m_messageSessionHandlerGroupchat;
-      MessageSessionHandler  * m_messageSessionHandlerHeadline;
-      MessageSessionHandler  * m_messageSessionHandlerNormal;
+      StatisticsHandler       *m_statisticsHandler;
+      MUCInvitationHandler    *m_mucInvitationHandler;
+      MessageSessionHandler   *m_messageSessionHandlerChat;
+      MessageSessionHandler   *m_messageSessionHandlerGroupchat;
+      MessageSessionHandler   *m_messageSessionHandlerHeadline;
+      MessageSessionHandler   *m_messageSessionHandlerNormal;
 
-      util::Mutex m_iqHandlerMapMutex;
-
-      Parser m_parser;
+      Parser *m_parser;
       LogSink m_logInstance;
-      StanzaExtensionFactory* m_seFactory;
-      EventDispatcher m_dispatcher;
 
       AuthenticationError m_authError;
       StreamError m_streamError;
       StringMap m_streamErrorText;
       std::string m_streamErrorCData;
-      Tag* m_streamErrorAppCondition;
+      Tag *m_streamErrorAppCondition;
 
       StatisticsStruct m_stats;
 
       SaslMechanism m_selectedSaslMech;
 
-      std::string m_ntlmDomain;
+      int m_idCount;
       bool m_autoMessageSession;
-
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-      CredHandle m_credHandle;
-      CtxtHandle m_ctxtHandle;
-#endif
 
   };
 

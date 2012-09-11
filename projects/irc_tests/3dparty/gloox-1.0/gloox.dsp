@@ -1,25 +1,25 @@
-# Microsoft Developer Studio Project File - Name="gloox 1.0" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="gloox 0.9" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** NICHT BEARBEITEN **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
-CFG=gloox 1.0 - Win32 Debug
+CFG=gloox 0.9 - Win32 Debug
 !MESSAGE Dies ist kein gültiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
 !MESSAGE verwenden Sie den Befehl "Makefile exportieren" und führen Sie den Befehl
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "gloox.mak".
-!MESSAGE
+!MESSAGE 
 !MESSAGE Sie können beim Ausführen von NMAKE eine Konfiguration angeben
 !MESSAGE durch Definieren des Makros CFG in der Befehlszeile. Zum Beispiel:
-!MESSAGE
-!MESSAGE NMAKE /f "gloox.mak" CFG="gloox 1.0 - Win32 Debug"
-!MESSAGE
+!MESSAGE 
+!MESSAGE NMAKE /f "gloox.mak" CFG="gloox 0.9 - Win32 Debug"
+!MESSAGE 
 !MESSAGE Für die Konfiguration stehen zur Auswahl:
-!MESSAGE
-!MESSAGE "gloox 1.0 - Win32 Release" (basierend auf  "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "gloox 1.0 - Win32 Debug" (basierend auf  "Win32 (x86) Dynamic-Link Library")
-!MESSAGE
+!MESSAGE 
+!MESSAGE "gloox 0.9 - Win32 Release" (basierend auf  "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "gloox 0.9 - Win32 Debug" (basierend auf  "Win32 (x86) Dynamic-Link Library")
+!MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -29,7 +29,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "gloox 1.0 - Win32 Release"
+!IF  "$(CFG)" == "gloox 0.9 - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -52,9 +52,10 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 /dll
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib c:\iksemel\Debug\iksemel.lib /nologo /dll /machine:I386 /nodefaultlib:"libc"
 
-!ELSEIF  "$(CFG)" == "gloox 1.0 - Win32 Debug"
+!ELSEIF  "$(CFG)" == "gloox 0.9 - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -77,24 +78,22 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 /dll
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 wsock32.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libcd" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
 
-!ENDIF
+!ENDIF 
 
 # Begin Target
 
-# Name "gloox 1.0 - Win32 Release"
-# Name "gloox 1.0 - Win32 Debug"
+# Name "gloox 0.9 - Win32 Release"
+# Name "gloox 0.9 - Win32 Debug"
 # Begin Group "Quellcodedateien"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
 SOURCE=.\src\adhoc.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\amp.cpp
 # End Source File
 # Begin Source File
 
@@ -107,14 +106,6 @@ SOURCE=.\src\base64.cpp
 # Begin Source File
 
 SOURCE=.\src\bookmarkstorage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\capabilities.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\chatstate.cpp
 # End Source File
 # Begin Source File
 
@@ -138,10 +129,6 @@ SOURCE=.\src\compressionzlib.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\connectionbosh.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\connectionhttpproxy.cpp
 # End Source File
 # Begin Source File
@@ -162,19 +149,15 @@ SOURCE=.\src\connectiontcpserver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\connectiontls.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\dataform.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\dataformfield.cpp
+SOURCE=.\src\dataformbase.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\dataformfieldcontainer.cpp
+SOURCE=.\src\dataformfield.cpp
 # End Source File
 # Begin Source File
 
@@ -198,18 +181,6 @@ SOURCE=.\src\dns.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\error.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\eventdispatcher.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\featureneg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\flexoff.cpp
 # End Source File
 # Begin Source File
@@ -230,11 +201,11 @@ SOURCE=.\src\inbandbytestream.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\instantmucroom.cpp
+SOURCE=.\src\inbandbytestreammanager.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\iq.cpp
+SOURCE=.\src\instantmucroom.cpp
 # End Source File
 # Begin Source File
 
@@ -251,14 +222,6 @@ SOURCE=.\src\logsink.cpp
 # Begin Source File
 
 SOURCE=.\src\md5.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\message.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\messageevent.cpp
 # End Source File
 # Begin Source File
 
@@ -286,10 +249,6 @@ SOURCE=.\src\mutex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\nickname.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\nonsaslauth.cpp
 # End Source File
 # Begin Source File
@@ -306,10 +265,6 @@ SOURCE=.\src\prep.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\presence.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\privacyitem.cpp
 # End Source File
 # Begin Source File
@@ -319,22 +274,6 @@ SOURCE=.\src\privacymanager.cpp
 # Begin Source File
 
 SOURCE=.\src\privatexml.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubevent.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubitem.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubmanager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\receipt.cpp
 # End Source File
 # Begin Source File
 
@@ -358,10 +297,6 @@ SOURCE=.\src\sha.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\shim.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\simanager.cpp
 # End Source File
 # Begin Source File
@@ -382,19 +317,11 @@ SOURCE=.\src\socks5bytestreamserver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\softwareversion.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\stanza.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\stanzaextensionfactory.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\subscription.cpp
 # End Source File
 # Begin Source File
 
@@ -422,15 +349,7 @@ SOURCE=.\src\tlsgnutlsserveranon.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\tlsopensslbase.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\tlsopensslclient.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\tlsopensslserver.cpp
+SOURCE=.\src\tlsopenssl.cpp
 # End Source File
 # Begin Source File
 
@@ -439,10 +358,6 @@ SOURCE=.\src\tlsschannel.cpp
 # Begin Source File
 
 SOURCE=.\src\uniquemucroom.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\util.cpp
 # End Source File
 # Begin Source File
 
@@ -462,7 +377,7 @@ SOURCE=.\src\version.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\xhtmlim.cpp
+SOURCE=.\src\xdelayeddelivery.cpp
 # End Source File
 # End Group
 # Begin Group "Header-Dateien"
@@ -479,10 +394,6 @@ SOURCE=.\src\adhoccommandprovider.h
 # Begin Source File
 
 SOURCE=.\src\adhochandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\amp.h
 # End Source File
 # Begin Source File
 
@@ -503,26 +414,6 @@ SOURCE=.\src\bookmarkhandler.h
 # Begin Source File
 
 SOURCE=.\src\bookmarkstorage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\bytestream.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\bytestreamdatahandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\bytestreamhandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\capabilities.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\chatstate.h
 # End Source File
 # Begin Source File
 
@@ -562,10 +453,6 @@ SOURCE=.\src\connectionbase.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\connectionbosh.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\connectiondatahandler.h
 # End Source File
 # Begin Source File
@@ -598,19 +485,15 @@ SOURCE=.\src\connectiontcpserver.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\connectiontls.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\dataform.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\dataformfield.h
+SOURCE=.\src\dataformbase.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\dataformfieldcontainer.h
+SOURCE=.\src\dataformfield.h
 # End Source File
 # Begin Source File
 
@@ -642,26 +525,6 @@ SOURCE=.\src\dns.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\error.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\event.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\eventdispatcher.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\eventhandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\featureneg.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\flexoff.h
 # End Source File
 # Begin Source File
@@ -686,11 +549,19 @@ SOURCE=.\src\inbandbytestream.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\instantmucroom.h
+SOURCE=.\src\inbandbytestreamdatahandler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\iq.h
+SOURCE=.\src\inbandbytestreamhandler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\inbandbytestreammanager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\instantmucroom.h
 # End Source File
 # Begin Source File
 
@@ -723,14 +594,6 @@ SOURCE=.\src\macros.h
 # Begin Source File
 
 SOURCE=.\src\md5.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\message.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\messageevent.h
 # End Source File
 # Begin Source File
 
@@ -778,15 +641,15 @@ SOURCE=.\src\mucroomhandler.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\mucroomlistener.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\mutex.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\mutexguard.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\nickname.h
 # End Source File
 # Begin Source File
 
@@ -802,11 +665,11 @@ SOURCE=.\src\parser.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\prep.h
+SOURCE=.\src\parserhandler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\presence.h
+SOURCE=.\src\prep.h
 # End Source File
 # Begin Source File
 
@@ -834,34 +697,6 @@ SOURCE=.\src\privatexmlhandler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\pubsub.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubevent.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubeventhandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubitem.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubmanager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\pubsubresulthandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\receipt.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\registration.h
 # End Source File
 # Begin Source File
@@ -875,10 +710,6 @@ SOURCE=.\src\resource.h
 # Begin Source File
 
 SOURCE=.\src\rosteritem.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\rosteritemdata.h
 # End Source File
 # Begin Source File
 
@@ -899,10 +730,6 @@ SOURCE=.\src\searchhandler.h
 # Begin Source File
 
 SOURCE=.\src\sha.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\shim.h
 # End Source File
 # Begin Source File
 
@@ -930,15 +757,19 @@ SOURCE=.\src\socks5bytestream.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\socks5bytestreamdatahandler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\socks5bytestreamhandler.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\socks5bytestreammanager.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\socks5bytestreamserver.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\softwareversion.h
 # End Source File
 # Begin Source File
 
@@ -955,10 +786,6 @@ SOURCE=.\src\stanzaextensionfactory.h
 # Begin Source File
 
 SOURCE=.\src\statisticshandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\subscription.h
 # End Source File
 # Begin Source File
 
@@ -1002,15 +829,7 @@ SOURCE=.\src\tlshandler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\tlsopensslbase.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\tlsopensslclient.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\tlsopensslserver.h
+SOURCE=.\src\tlsopenssl.h
 # End Source File
 # Begin Source File
 
@@ -1019,10 +838,6 @@ SOURCE=.\src\tlsschannel.h
 # Begin Source File
 
 SOURCE=.\src\uniquemucroom.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\util.h
 # End Source File
 # Begin Source File
 
@@ -1042,7 +857,7 @@ SOURCE=.\src\vcardupdate.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\xhtmlim.h
+SOURCE=.\src\xdelayeddelivery.h
 # End Source File
 # End Group
 # Begin Group "Ressourcendateien"

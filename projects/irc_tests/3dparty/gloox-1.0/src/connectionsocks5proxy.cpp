@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -12,8 +12,6 @@
 
 
 
-#include "config.h"
-
 #include "gloox.h"
 
 #include "connectionsocks5proxy.h"
@@ -21,51 +19,49 @@
 #include "logsink.h"
 #include "prep.h"
 #include "base64.h"
-#include "util.h"
 
 #include <string>
-#include <cstdlib>
 
 #include <string.h>
 
-#if ( !defined( _WIN32 ) && !defined( _WIN32_WCE ) ) || defined( __SYMBIAN32__ )
+#if !defined( _WIN32 ) && !defined( _WIN32_WCE )
 # include <netinet/in.h>
 #endif
 
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
+#ifdef _WIN32
 # include <winsock.h>
 #elif defined( _WIN32_WCE )
 # include <winsock2.h>
 #endif
 
+#ifndef _WIN32_WCE
+# include <sstream>
+#endif
+
+#include <cstdlib>
+
 namespace gloox
 {
 
-  ConnectionSOCKS5Proxy::ConnectionSOCKS5Proxy( ConnectionBase* connection,
-                                                const LogSink& logInstance,
-                                                const std::string& server,
-                                                int port, bool ip )
+  ConnectionSOCKS5Proxy::ConnectionSOCKS5Proxy( ConnectionBase *connection, const LogSink& logInstance,
+                                                const std::string& server, int port, bool ip )
     : ConnectionBase( 0 ), m_connection( connection ),
       m_logInstance( logInstance ), m_s5state( S5StateDisconnected ), m_ip( ip )
   {
-// FIXME check return value?
-    prep::idna( server, m_server );
+    m_server = prep::idna( server );
     m_port = port;
 
     if( m_connection )
       m_connection->registerConnectionDataHandler( this );
   }
 
-  ConnectionSOCKS5Proxy::ConnectionSOCKS5Proxy( ConnectionDataHandler* cdh,
-                                                ConnectionBase* connection,
+  ConnectionSOCKS5Proxy::ConnectionSOCKS5Proxy( ConnectionDataHandler *cdh, ConnectionBase *connection,
                                                 const LogSink& logInstance,
-                                                const std::string& server,
-                                                int port, bool ip )
+                                                const std::string& server, int port, bool ip )
     : ConnectionBase( cdh ), m_connection( connection ),
       m_logInstance( logInstance ), m_s5state( S5StateDisconnected ), m_ip( ip )
   {
-// FIXME check return value?
-    prep::idna( server, m_server );
+    m_server = prep::idna( server );
     m_port = port;
 
     if( m_connection )
@@ -94,14 +90,6 @@ namespace gloox
 
   ConnectionError ConnectionSOCKS5Proxy::connect()
   {
-// FIXME CHECKME
-    if( m_connection && m_connection->state() == StateConnected && m_handler )
-    {
-      m_state = StateConnected;
-      m_s5state = S5StateConnected;
-      return ConnNoError;
-    }
-
     if( m_connection && m_handler )
     {
       m_state = StateConnecting;
@@ -161,7 +149,7 @@ namespace gloox
       m_connection->cleanup();
   }
 
-  void ConnectionSOCKS5Proxy::getStatistics( long int &totalIn, long int &totalOut )
+  void ConnectionSOCKS5Proxy::getStatistics( int &totalIn, int &totalOut )
   {
     if( m_connection )
       m_connection->getStatistics( totalIn, totalOut );
@@ -187,32 +175,32 @@ namespace gloox
     if( !m_connection || !m_handler )
       return;
 
-    ConnectionError connError = ConnNoError;
-
     switch( m_s5state  )
     {
       case S5StateConnecting:
         if( data.length() != 2 || data[0] != 0x05 )
-          connError = ConnIoError;
-
+        {
+          m_connection->disconnect();
+          m_handler->handleDisconnect( this, ConnIoError );
+        }
         if( data[1] == 0x00 ) // no auth
         {
           negotiate();
         }
-        else if( data[1] == 0x02 && !m_proxyUser.empty() && !m_proxyPwd.empty() ) // user/password auth
+        else if( data[1] == 0x02 && !m_proxyUser.empty() && !m_proxyPassword.empty() ) // user/password auth
         {
-          m_logInstance.dbg( LogAreaClassConnectionSOCKS5Proxy,
+          m_logInstance.log( LogLevelDebug, LogAreaClassConnectionSOCKS5Proxy,
                              "authenticating to socks5 proxy as user " + m_proxyUser );
           m_s5state = S5StateAuthenticating;
-          char* d = new char[3 + m_proxyUser.length() + m_proxyPwd.length()];
-          size_t pos = 0;
+          char* d = new char[3 + m_proxyUser.length() + m_proxyPassword.length()];
+          int pos = 0;
           d[pos++] = 0x01;
-          d[pos++] = (char)m_proxyUser.length();
+          d[pos++] = m_proxyUser.length();
           strncpy( d + pos, m_proxyUser.c_str(), m_proxyUser.length() );
           pos += m_proxyUser.length();
-          d[pos++] = (char)m_proxyPwd.length();
-          strncpy( d + pos, m_proxyPwd.c_str(), m_proxyPwd.length() );
-          pos += m_proxyPwd.length();
+          d[pos++] = m_proxyPassword.length();
+          strncpy( d + pos, m_proxyPassword.c_str(), m_proxyPassword.length() );
+          pos += m_proxyPassword.length();
 
           if( !send( std::string( d, pos ) ) )
           {
@@ -221,12 +209,20 @@ namespace gloox
           }
           delete[] d;
         }
+        else if( data[1] == (char)0xFF && !m_proxyUser.empty() && !m_proxyPassword.empty() )
+        {
+          m_connection->disconnect();
+          m_handler->handleDisconnect( this, ConnProxyNoSupportedAuth );
+        }
+        else if( data[1] == (char)0xFF && ( m_proxyUser.empty() || m_proxyPassword.empty() ) )
+        {
+          m_connection->disconnect();
+          m_handler->handleDisconnect( this, ConnProxyAuthRequired );
+        }
         else
         {
-          if( data[1] == (char)(unsigned char)0xFF && !m_proxyUser.empty() && !m_proxyPwd.empty() )
-            connError = ConnProxyNoSupportedAuth;
-          else
-            connError = ConnProxyAuthRequired;
+          m_connection->disconnect();
+          m_handler->handleDisconnect( this, ConnProxyAuthRequired );
         }
         break;
       case S5StateNegotiating:
@@ -239,16 +235,27 @@ namespace gloox
             m_handler->handleConnect( this );
           }
           else // connection refused
-            connError = ConnConnectionRefused;
+          {
+            m_connection->disconnect();
+            m_handler->handleDisconnect( this, ConnConnectionRefused );
+          }
         }
         else
-          connError = ConnIoError;
+        {
+          m_connection->disconnect();
+          m_handler->handleDisconnect( this, ConnIoError );
+        }
         break;
       case S5StateAuthenticating:
         if( data.length() == 2 && data[0] == 0x01 && data[1] == 0x00 )
+        {
           negotiate();
+        }
         else
-          connError = ConnProxyAuthFailed;
+        {
+          m_connection->disconnect();
+          m_handler->handleDisconnect( this, ConnProxyAuthFailed );
+        }
         break;
       case S5StateConnected:
         m_handler->handleReceivedData( this, data );
@@ -256,20 +263,13 @@ namespace gloox
       default:
         break;
     }
-
-    if( connError != ConnNoError )
-    {
-      m_connection->disconnect();
-      m_handler->handleDisconnect( this, connError );
-    }
-
   }
 
   void ConnectionSOCKS5Proxy::negotiate()
   {
     m_s5state = S5StateNegotiating;
-    char* d = new char[m_ip ? 10 : 6 + m_server.length() + 1];
-    size_t pos = 0;
+    char *d = new char[m_ip ? 10 : 6 + m_server.length() + 1];
+    int pos = 0;
     d[pos++] = 0x05; // SOCKS version 5
     d[pos++] = 0x01; // command CONNECT
     d[pos++] = 0x00; // reserved
@@ -279,17 +279,17 @@ namespace gloox
     {
       d[pos++] = 0x01; // IPv4 address
       std::string s;
-      const size_t j = server.length();
-      size_t l = 0;
-      for( size_t k = 0; k < j && l < 4; ++k )
+      int j = server.length();
+      int l = 0;
+      for( int k = 0; k < j && l < 4; ++k )
       {
         if( server[k] != '.' )
           s += server[k];
 
         if( server[k] == '.' || k == j-1 )
         {
-          d[pos++] = static_cast<char>( atoi( s.c_str() ) & 0xFF );
-          s = EmptyString;
+          d[pos++] = atoi( s.c_str() ) & 0x0FF;
+          s = "";
           ++l;
         }
       }
@@ -298,26 +298,27 @@ namespace gloox
     {
       if( port == -1 )
       {
-        const DNS::HostMap& servers = DNS::resolve( m_server, m_logInstance );
+        DNS::HostMap servers = DNS::resolve( m_server, m_logInstance );
         if( servers.size() )
         {
-          const std::pair< std::string, int >& host = *servers.begin();
-          server = host.first;
-          port = host.second;
+          server = (*(servers.begin())).first;
+          port = (*(servers.begin())).second;
         }
       }
       d[pos++] = 0x03; // hostname
-      d[pos++] = (char)m_server.length();
+      d[pos++] = m_server.length();
       strncpy( d + pos, m_server.c_str(), m_server.length() );
       pos += m_server.length();
     }
     int nport = htons( port );
-    d[pos++] = static_cast<char>( nport );
-    d[pos++] = static_cast<char>( nport >> 8 );
+    d[pos++] = nport;
+    d[pos++] = nport >> 8;
 
-    std::string message = "Requesting socks5 proxy connection to " + server + ":"
-        + util::int2string( port );
-    m_logInstance.dbg( LogAreaClassConnectionSOCKS5Proxy, message );
+#ifndef _WIN32_WCE
+    std::ostringstream oss;
+    oss << "requesting socks5 proxy connection to " << server << ":" << port;
+    m_logInstance.log( LogLevelDebug, LogAreaClassConnectionSOCKS5Proxy, oss.str() );
+#endif
 
     if( !send( std::string( d, pos ) ) )
     {
@@ -335,25 +336,27 @@ namespace gloox
       int port = m_port;
       if( port == -1 )
       {
-        const DNS::HostMap& servers = DNS::resolve( m_server, m_logInstance );
-        if( !servers.empty() )
+        DNS::HostMap servers = DNS::resolve( m_server, m_logInstance );
+        if( servers.size() )
         {
-          const std::pair< std::string, int >& host = *servers.begin();
-          server = host.first;
-          port = host.second;
+          server = (*(servers.begin())).first;
+          port = (*(servers.begin())).second;
         }
       }
-      m_logInstance.dbg( LogAreaClassConnectionSOCKS5Proxy,
-                         "Attempting to negotiate socks5 proxy connection" );
+      m_logInstance.log( LogLevelDebug, LogAreaClassConnectionSOCKS5Proxy,
+                         "attempting to negotiate socks5 proxy connection" );
 
-      const bool auth = !m_proxyUser.empty() && !m_proxyPwd.empty();
-      const char d[4] = {
-        0x05,                             // SOCKS version 5
-        static_cast<char>( auth ? 0x02    // two methods
-                                : 0x01 ), // one method
-        0x00,                             // method: no auth
-        0x02                              // method: username/password auth
-      };
+      bool auth = !m_proxyUser.empty() && !m_proxyPassword.empty();
+      char *d = new char[auth ? 4 : 3];
+      d[0] = 0x05; // SOCKS version 5
+      if( auth )
+      {
+        d[1] = 0x02; // two methods
+        d[3] = 0x02; // method: username/password auth
+      }
+      else
+        d[1] = 0x01; // one method
+      d[2] = 0x00; // method: no auth
 
       if( !send( std::string( d, auth ? 4 : 3 ) ) )
       {
@@ -361,6 +364,7 @@ namespace gloox
         if( m_handler )
           m_handler->handleDisconnect( this, ConnIoError );
       }
+      delete[] d;
     }
   }
 
@@ -368,7 +372,7 @@ namespace gloox
                                                 ConnectionError reason )
   {
     cleanup();
-    m_logInstance.dbg( LogAreaClassConnectionSOCKS5Proxy, "socks5 proxy connection closed" );
+    m_logInstance.log( LogLevelDebug, LogAreaClassConnectionSOCKS5Proxy, "socks5 proxy connection closed" );
 
     if( m_handler )
       m_handler->handleDisconnect( this, reason );

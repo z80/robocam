@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -22,8 +22,7 @@
 namespace gloox
 {
 
-  class IQ;
-  class Presence;
+  class Stanza;
 
   /**
    * A map of JID/RosterItem pairs.
@@ -114,7 +113,7 @@ namespace gloox
        * @since 0.9
        */
       virtual void handleRosterPresence( const RosterItem& item, const std::string& resource,
-                                         Presence::PresenceType presence, const std::string& msg ) = 0;
+                                         Presence presence, const std::string& msg ) = 0;
 
       /**
        * This function is called on every status change of a JID that matches the Client's
@@ -128,7 +127,7 @@ namespace gloox
        * @since 0.9
        */
       virtual void handleSelfPresence( const RosterItem& item, const std::string& resource,
-                                       Presence::PresenceType presence, const std::string& msg ) = 0;
+                                       Presence presence, const std::string& msg ) = 0;
 
       /**
        * This function is called when an entity wishes to subscribe to this entity's presence.
@@ -157,15 +156,15 @@ namespace gloox
       /**
        * This function is called whenever presence from an entity is received which is not in
        * the roster.
-       * @param presence The full presence stanza.
+       * @param stanza The full presence stanza.
        */
-      virtual void handleNonrosterPresence( const Presence& presence ) = 0;
+      virtual void handleNonrosterPresence( Stanza* stanza ) = 0;
 
       /**
        * This function is called if the server returned an error.
-       * @param iq The error stanza.
+       * @param stanza The error stanza.
        */
-      virtual void handleRosterError( const IQ& iq ) = 0;
+      virtual void handleRosterError( Stanza* stanza ) = 0;
   };
 
 }

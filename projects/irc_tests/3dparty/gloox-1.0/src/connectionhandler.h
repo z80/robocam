@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -27,7 +27,7 @@ namespace gloox
    *
    * You should not need to use this class directly.
    *
-   * @author Jakob Schroeter <js@camaya.net>
+   * @author Jakob Schröter <js@camaya.net>
    * @since 0.9
    */
   class GLOOX_API ConnectionHandler
@@ -40,10 +40,9 @@ namespace gloox
 
       /**
        * This function is called to receive an incoming connection.
-       * @param server The server that the connection was made to.
        * @param connection The incoming connection.
        */
-      virtual void handleIncomingConnection( ConnectionBase* server, ConnectionBase* connection ) = 0;
+      virtual void handleIncomingConnection( ConnectionBase* connection ) = 0;
 
   };
 

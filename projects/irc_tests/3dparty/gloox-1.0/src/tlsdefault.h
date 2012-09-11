@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+ * Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
  * This file is part of the gloox library. http://camaya.net/gloox
  *
  * This software is distributed under a license. The full license
@@ -22,10 +22,7 @@ namespace gloox
   class TLSHandler;
 
   /**
-   * @brief This is an abstraction of the various TLS backends.
-   *
-   * You should use an instance of this class should you whish to use TLS encryption.
-   * TLS support for the main XMPP connection is managed by Client/ClientBase directly.
+   * @brief This is an abstraction of the various TLS implementations.
    *
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.9
@@ -54,40 +51,35 @@ namespace gloox
        * @param server The server to use in certificate verification.
        * @param type What you want to use this TLS object for.
        */
-      TLSDefault( TLSHandler* th, const std::string server, Type type = VerifyingClient );
+      TLSDefault( TLSHandler *th, const std::string server, Type type = VerifyingClient );
 
       /**
        * Virtual Destructor.
        */
       virtual ~TLSDefault();
 
-      // reimplemented from TLSBase
-      virtual bool init( const std::string& clientKey = EmptyString,
-                         const std::string& clientCerts = EmptyString,
-                         const StringList& cacerts = StringList() );
-
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual bool encrypt( const std::string& data );
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual int decrypt( const std::string& data );
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual void cleanup();
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual bool handshake();
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual bool isSecure() const;
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual void setCACerts( const StringList& cacerts );
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual const CertInfo& fetchTLSInfo() const;
 
-      // reimplemented from TLSBase
+      // re-implemented from TLSBase
       virtual void setClientCert( const std::string& clientKey, const std::string& clientCerts );
 
       /**
@@ -98,7 +90,6 @@ namespace gloox
 
     private:
       TLSBase* m_impl;
-
   };
 }
 

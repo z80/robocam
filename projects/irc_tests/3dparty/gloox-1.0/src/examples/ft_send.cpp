@@ -7,7 +7,7 @@
 #include "../logsink.h"
 #include "../siprofileft.h"
 #include "../siprofilefthandler.h"
-#include "../bytestreamdatahandler.h"
+#include "../socks5bytestreamdatahandler.h"
 #include "../socks5bytestreamserver.h"
 using namespace gloox;
 
@@ -19,8 +19,6 @@ using namespace gloox;
 #include <fstream>
 #include <ios>
 
-#include <cstdio> // [s]print[f]
-
 #if defined( WIN32 ) || defined( _WIN32 )
 # include <windows.h>
 #endif
@@ -31,10 +29,10 @@ using namespace gloox;
  *
  * Sends the given file to the given full JID.
  */
-class FTTest : public LogHandler, ConnectionListener, SIProfileFTHandler, BytestreamDataHandler
+class FTTest : public LogHandler, ConnectionListener, SIProfileFTHandler, SOCKS5BytestreamDataHandler
 {
   public:
-    FTTest( const JID& to, const std::string& file ) : m_bs( 0 ), m_to( to ), m_file( file ), m_quit( false ) {}
+    FTTest( const JID& to, const std::string& file ) : m_s5b( 0 ), m_to( to ), m_file( file ), m_quit( false ) {}
 
     virtual ~FTTest() {}
 
@@ -98,24 +96,24 @@ class FTTest : public LogHandler, ConnectionListener, SIProfileFTHandler, Bytest
               m_quit = true;
             }
           }
-          if( m_bs && !ifile.eof() )
+          if( m_s5b && !ifile.eof() )
           {
-            if( m_bs->isOpen() )
+            if( m_s5b->isOpen() )
             {
               ifile.read( input, 200024 );
               std::string t( input, ifile.gcount() );
-              if( !m_bs->send( t ) )
+              if( !m_s5b->send( t ) )
                 m_quit = true;
             }
-            m_bs->recv( 1 );
+            m_s5b->recv( 1 );
           }
-          else if( m_bs )
-            m_bs->close();
+          else if( m_s5b )
+            m_s5b->close();
         }
         printf( "ce: %d\n", ce );
       }
 
-      f->dispose( m_bs );
+      f->dispose( m_s5b );
       delete f;
       delete m_server;
       delete j;
@@ -136,14 +134,12 @@ class FTTest : public LogHandler, ConnectionListener, SIProfileFTHandler, Bytest
 
     virtual bool onTLSConnect( const CertInfo& info )
     {
-      time_t from( info.date_from );
-      time_t to( info.date_to );
-
       printf( "status: %d\nissuer: %s\npeer: %s\nprotocol: %s\nmac: %s\ncipher: %s\ncompression: %s\n"
               "from: %s\nto: %s\n",
               info.status, info.issuer.c_str(), info.server.c_str(),
               info.protocol.c_str(), info.mac.c_str(), info.cipher.c_str(),
-              info.compression.c_str(), ctime( &from ), ctime( &to ) );
+              info.compression.c_str(), ctime( (const time_t*)&info.date_from ),
+              ctime( (const time_t*)&info.date_to ) );
       return true;
     }
 
@@ -152,72 +148,64 @@ class FTTest : public LogHandler, ConnectionListener, SIProfileFTHandler, Bytest
       printf("log: level: %d, area: %d, %s\n", level, area, message.c_str() );
     }
 
-    virtual void handleFTRequest( const JID& from, const JID& /*to*/, const std::string& sid,
+    virtual void handleFTRequest( const JID& from, const std::string& id, const std::string& sid,
                                   const std::string& name, long size, const std::string& hash,
                                   const std::string& date, const std::string& mimetype,
-                                  const std::string& desc, int /*stypes*/ )
+                                  const std::string& desc, int /*stypes*/, long /*offset*/, long /*length*/ )
     {
       printf( "received ft request from %s: %s (%ld bytes, sid: %s). hash: %s, date: %s, mime-type: %s\n"
               "desc: %s\n",
               from.full().c_str(), name.c_str(), size, sid.c_str(), hash.c_str(), date.c_str(),
               mimetype.c_str(), desc.c_str() );
-      f->acceptFT( from, sid, SIProfileFT::FTTypeS5B );
+      f->acceptFT( from, id, SIProfileFT::FTTypeS5B );
     }
 
 //     virtual void handleFTRequestResult( const JID& /*from*/, const std::string& /*sid*/ )
 //     {
 //     }
 
-    virtual void handleFTRequestError( const IQ& /*iq*/, const std::string& /*sid*/ )
+    virtual void handleFTRequestError( Stanza* /*stanza*/, const std::string& /*sid*/ )
     {
       printf( "ft request error\n" );
       m_quit = true;
     }
 
-    virtual void handleFTBytestream( Bytestream* bs )
+    virtual void handleFTSOCKS5Bytestream( SOCKS5Bytestream* s5b )
     {
-      printf( "received bytestream of type: %s", bs->type() == Bytestream::S5B ? "s5b" : "ibb" );
-      m_bs = bs;
-      m_bs->registerBytestreamDataHandler( this );
-      if( m_bs->connect() )
+      printf( "received socks5 bytestream\n" );
+      m_s5b = s5b;
+      m_s5b->registerSOCKS5BytestreamDataHandler( this );
+      if( m_s5b->connect() )
       {
-        if( bs->type() == Bytestream::S5B )
-          printf( "ok! s5b connected to streamhost\n" );
-        else
-          printf( "ok! ibb sent request to remote entity\n" );
+        printf( "ok! s5b connected to streamhost\n" );
       }
     }
 
-    virtual const std::string handleOOBRequestResult( const JID& /*from*/, const JID& /*to*/, const std::string& /*sid*/ )
-    {
-      return std::string();
-    };
-
-    virtual void handleBytestreamData( Bytestream* /*bs*/, const std::string& data )
+    virtual void handleSOCKS5Data( SOCKS5Bytestream* /*s5b*/, const std::string& data )
     {
       printf( "received %d bytes of data:\n%s\n", data.length(), data.c_str() );
     }
 
-    virtual void handleBytestreamError( Bytestream* /*bs*/, const IQ& /*iq*/ )
+    virtual void handleSOCKS5Error( SOCKS5Bytestream* /*s5b*/, Stanza* /*stanza*/ )
     {
-      printf( "bytestream error\n" );
+      printf( "socks5 stream error\n" );
     }
 
-    virtual void handleBytestreamOpen( Bytestream* /*bs*/ )
+    virtual void handleSOCKS5Open( SOCKS5Bytestream* /*s5b*/ )
     {
-      printf( "bytestream opened\n" );
+      printf( "stream opened\n" );
     }
 
-    virtual void handleBytestreamClose( Bytestream* /*bs*/ )
+    virtual void handleSOCKS5Close( SOCKS5Bytestream* /*s5b*/ )
     {
-      printf( "bytestream closed\n" );
+      printf( "stream closed\n" );
       m_quit = true;
     }
 
   private:
     Client *j;
     SIProfileFT* f;
-    Bytestream* m_bs;
+    SOCKS5Bytestream* m_s5b;
     SOCKS5BytestreamServer* m_server;
     JID m_to;
     std::string m_file;

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,106 +15,24 @@
 #define SEARCHHANDLER_H__
 
 #include "stanza.h"
+#include "dataform.h"
 
 #include <string>
 
 namespace gloox
 {
 
-  class DataForm;
-
   /**
    * Holds all the possible fields a server may require for searching according
    * to Section 7, XEP-0055.
-   *
-   * @author Jakob Schroeter <js@camaya.net>
-   * @since 1.0
    */
-  class SearchFieldStruct
+  struct SearchFieldStruct
   {
-    public:
-      /**
-       *
-       */
-      SearchFieldStruct() {}
-
-      /**
-       *
-       */
-      SearchFieldStruct( const std::string& first, const std::string& last, const std::string& nick,
-                         const std::string& email )
-        : m_first( first ), m_last( last ), m_nick( nick ), m_email( email )
-      {}
-
-      /**
-       *
-       */
-      SearchFieldStruct( const Tag* tag )
-      {
-        if( !tag || tag->name() != "item" || !tag->hasAttribute( "jid" ) )
-          return;
-
-        m_jid.setJID( tag->findAttribute( "jid" ) );
-        const TagList& l = tag->children();
-        TagList::const_iterator it = l.begin();
-        for( ; it != l.end(); ++it )
-        {
-          if( (*it)->name() == "first" )
-            m_first = (*it)->cdata();
-          else if( (*it)->name() == "last" )
-            m_last = (*it)->cdata();
-          else if( (*it)->name() == "email" )
-            m_email = (*it)->cdata();
-          else if( (*it)->name() == "nick" )
-            m_nick = (*it)->cdata();
-        }
-      }
-
-      /**
-       *
-       */
-      ~SearchFieldStruct() {}
-
-      /**
-       *
-       */
-      const std::string first() const { return m_first; }
-
-      /**
-       *
-       */
-      const std::string last() const { return m_last; }
-
-      /**
-       *
-       */
-      const std::string email() const { return m_email; }
-
-      /**
-       *
-       */
-      const std::string nick() const { return m_nick; }
-
-      /**
-       *
-       */
-      Tag* tag() const
-      {
-        Tag* t = new Tag( "item" );
-        t->addAttribute( "jid", m_jid.bare() );
-        new Tag( t, "first", m_first );
-        new Tag( t, "last", m_last );
-        new Tag( t, "nick", m_nick );
-        new Tag( t, "email", m_email );
-        return t;
-      }
-
-    private:
-      std::string m_first;              /**< User's first name. */
-      std::string m_last;               /**< User's last name. */
-      std::string m_nick;               /**< User's nickname. */
-      std::string m_email;              /**< User's email. */
-      JID m_jid;                        /**< User's JID. */
+    std::string first;              /**< User's first name. */
+    std::string last;               /**< User's last name. */
+    std::string nick;               /**< User's nickname. */
+    std::string email;              /**< User's email. */
+    JID jid;                        /**< User's JID. */
   };
 
   /**
@@ -131,7 +49,7 @@ namespace gloox
   /**
    * A list of directory entries returned by a search.
    */
-  typedef std::list<const SearchFieldStruct*> SearchResultList;
+  typedef std::list<SearchFieldStruct> SearchResultList;
 
   /**
    * @brief A virtual interface that enables objects to receive Jabber Search (XEP-0055) results.
@@ -162,10 +80,11 @@ namespace gloox
       /**
        * This function is called to announce the searchable fields a directory supports. It is the result
        * of a call to @link gloox::Search::fetchSearchFields Search::fetchSearchFields() @endlink.
+       * @note The SearchHandler is responsible for deleting the DataForm.
        * @param directory The directory that was queried.
-       * @param form A DataForm describing the valid searchable fields. Do not delete the form.
+       * @param form A DataForm describing the valid searchable fields.
        */
-      virtual void handleSearchFields( const JID& directory, const DataForm* form ) = 0;
+      virtual void handleSearchFields( const JID& directory, DataForm *form ) = 0;
 
      /**
       * This function is called to let the SearchHandler know about the results of the search.
@@ -176,17 +95,18 @@ namespace gloox
 
       /**
        * This function is called to let the SearchHandler know about the result of the search.
+       * @note The SearchHandler is responsible for deleting the DataForm.
        * @param directory The searched directory.
-       * @param form A DataForm containing the search results. Do not delete the form.
+       * @param form A DataForm containing the search results.
        */
-      virtual void handleSearchResult( const JID& directory, const DataForm* form ) = 0;
+      virtual void handleSearchResult( const JID& directory, const DataForm *form ) = 0;
 
       /**
        * This function is called if a error occured as a result to a search or search field request.
        * @param directory The queried/searched directory.
-       * @param error The error. May be 0.
+       * @param stanza The full error stanza.
        */
-      virtual void handleSearchError( const JID& directory, const Error* error ) = 0;
+      virtual void handleSearchError( const JID& directory, Stanza *stanza ) = 0;
 
   };
 

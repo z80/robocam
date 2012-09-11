@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -13,7 +13,6 @@
 
 #include "nonsaslauth.h"
 #include "client.h"
-#include "error.h"
 #include "sha.h"
 
 #include <string>
@@ -21,84 +20,18 @@
 namespace gloox
 {
 
-  // ---- NonSaslAuth::Query ----
-  NonSaslAuth::Query::Query( const std::string& user )
-    : StanzaExtension( ExtNonSaslAuth ), m_user( user ), m_digest( true )
-  {
-  }
-
-  NonSaslAuth::Query::Query( const Tag* tag )
-    : StanzaExtension( ExtNonSaslAuth )
-  {
-    if( !tag || tag->name() != "query" || tag->xmlns() != XMLNS_AUTH )
-      return;
-
-    m_digest = tag->hasChild( "digest" );
-  }
-
-  NonSaslAuth::Query* NonSaslAuth::Query::newInstance( const std::string& user,
-                                                       const std::string& sid,
-                                                       const std::string& pwd,
-                                                       const std::string& resource ) const
-  {
-    Query* q = new Query( user );
-    if( m_digest && !sid.empty() )
-    {
-      SHA sha;
-      sha.feed( sid );
-      sha.feed( pwd );
-      q->m_pwd = sha.hex();
-    }
-    else
-      q->m_pwd = pwd;
-
-    q->m_resource = resource;
-    q->m_digest = m_digest;
-    return q;
-  }
-
-  const std::string& NonSaslAuth::Query::filterString() const
-  {
-    static const std::string filter = "/iq/query[@xmlns='" + XMLNS_AUTH + "']";
-    return filter;
-  }
-
-  Tag* NonSaslAuth::Query::tag() const
-  {
-    if( m_user.empty() )
-      return 0;
-
-    Tag* t = new Tag( "query" );
-    t->setXmlns( XMLNS_AUTH );
-    new Tag( t, "username", m_user );
-
-    if( !m_pwd.empty() && !m_resource.empty() )
-    {
-      new Tag( t, m_digest ? "digest" : "password", m_pwd );
-      new Tag( t, "resource", m_resource );
-    }
-
-    return t;
-  }
-  // ---- ~NonSaslAuth::Query ----
-
-  // ---- NonSaslAuth ----
-  NonSaslAuth::NonSaslAuth( Client* parent )
+  NonSaslAuth::NonSaslAuth( Client *parent )
     : m_parent( parent )
   {
     if( m_parent )
-    {
-      m_parent->registerStanzaExtension( new Query() );
-      m_parent->registerIqHandler( this, ExtNonSaslAuth );
-    }
+      m_parent->registerIqHandler( this, XMLNS_AUTH );
   }
 
   NonSaslAuth::~NonSaslAuth()
   {
     if( m_parent )
     {
-      m_parent->removeStanzaExtension( ExtNonSaslAuth );
-      m_parent->removeIqHandler( this, ExtNonSaslAuth );
+      m_parent->removeIqHandler( XMLNS_AUTH );
       m_parent->removeIDHandler( this );
     }
   }
@@ -108,58 +41,73 @@ namespace gloox
     m_sid = sid;
     const std::string& id = m_parent->getID();
 
-    IQ iq( IQ::Get, m_parent->jid().server(), id );
-    iq.addExtension( new Query( m_parent->username() ) );
-    m_parent->send( iq, this, TrackRequestAuthFields );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "to", m_parent->jid().server() );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "type", "get" );
+    Tag *q = new Tag( iq, "query" );
+    q->addAttribute( "xmlns", XMLNS_AUTH );
+    new Tag( q, "username", m_parent->username() );
+
+    m_parent->trackID( this, id, TRACK_REQUEST_AUTH_FIELDS );
+    m_parent->send( iq );
   }
 
-  void NonSaslAuth::handleIqID( const IQ& iq, int context )
+  bool NonSaslAuth::handleIqID( Stanza *stanza, int context )
   {
-    switch( iq.subtype() )
+    switch( stanza->subtype() )
     {
-      case IQ::Error:
+      case StanzaIqError:
       {
-        const Error* e = iq.error();
-        if( e )
-        {
-          switch( e->error() )
-          {
-            case StanzaErrorConflict:
-              m_parent->setAuthFailure( NonSaslConflict );
-              break;
-            case StanzaErrorNotAcceptable:
-              m_parent->setAuthFailure( NonSaslNotAcceptable );
-              break;
-            case StanzaErrorNotAuthorized:
-              m_parent->setAuthFailure( NonSaslNotAuthorized );
-              break;
-            default:
-              break;
-          }
-        }
         m_parent->setAuthed( false );
         m_parent->disconnect( ConnAuthenticationFailed );
+
+        Tag *t = stanza->findChild( "error" );
+        if( t )
+        {
+          if( t->hasChild( "conflict" ) || t->hasAttribute( "code", "409" ) )
+            m_parent->setAuthFailure( NonSaslConflict );
+          else if( t->hasChild( "not-acceptable" ) || t->hasAttribute( "code", "406" ) )
+            m_parent->setAuthFailure( NonSaslNotAcceptable );
+          else if( t->hasChild( "not-authorized" ) || t->hasAttribute( "code", "401" ) )
+            m_parent->setAuthFailure( NonSaslNotAuthorized );
+        }
         break;
       }
-      case IQ::Result:
+      case StanzaIqResult:
         switch( context )
         {
-          case TrackRequestAuthFields:
+          case TRACK_REQUEST_AUTH_FIELDS:
           {
-            const Query* q = iq.findExtension<Query>( ExtNonSaslAuth );
-            if( !q )
-              return;
-
             const std::string& id = m_parent->getID();
 
-            IQ re( IQ::Set, JID(), id );
-            re.addExtension( q->newInstance( m_parent->username(), m_sid,
-                                             m_parent->password(),
-                                             m_parent->jid().resource() ) );
-            m_parent->send( re, this, TrackSendAuth );
+            Tag *iq = new Tag( "iq" );
+            iq->addAttribute( "id", id );
+            iq->addAttribute( "type", "set" );
+            Tag *query = new Tag( iq, "query" );
+            query->addAttribute( "xmlns", XMLNS_AUTH );
+            new Tag( query, "username", m_parent->jid().username() );
+            new Tag( query, "resource", m_parent->jid().resource() );
+
+            Tag *q = stanza->findChild( "query" );
+            if( ( q->hasChild( "digest" ) ) && !m_sid.empty() )
+            {
+              SHA sha;
+              sha.feed( m_sid );
+              sha.feed( m_parent->password() );
+              sha.finalize();
+              new Tag( query, "digest", sha.hex() );
+            }
+            else
+            {
+              new Tag( query, "password", m_parent->password() );
+            }
+
+            m_parent->trackID( this, id, TRACK_SEND_AUTH );
+            m_parent->send( iq );
             break;
           }
-          case TrackSendAuth:
+          case TRACK_SEND_AUTH:
             m_parent->setAuthed( true );
             m_parent->connected();
             break;
@@ -169,6 +117,12 @@ namespace gloox
       default:
         break;
     }
+    return false;
+  }
+
+  bool NonSaslAuth::handleIq( Stanza * /*stanza*/ )
+  {
+    return false;
   }
 
 }

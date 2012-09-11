@@ -9,8 +9,6 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 class RegTest : public RegistrationHandler, ConnectionListener, LogHandler
 {
   public:
@@ -31,7 +29,7 @@ class RegTest : public RegistrationHandler, ConnectionListener, LogHandler
 // - in onConnect() or at any later time call Registration::changePassword()
 
 // to delete an account:
-// - connect to teh server as usual
+// - connect to the server as usual
 // - in onConnect() or at any later time call Registration::removeAccount()
 
 // be sure to read the API documentation for class Registration!

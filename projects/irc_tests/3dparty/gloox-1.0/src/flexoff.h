@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -18,7 +18,6 @@
 #include "discohandler.h"
 #include "flexoffhandler.h"
 #include "iqhandler.h"
-#include "stanzaextension.h"
 
 namespace gloox
 {
@@ -38,7 +37,7 @@ namespace gloox
        * Creates a new FlexibleOffline object that manages retrieval of offline messages.
        * @param parent The ClientBase to use for communication.
        */
-      FlexibleOffline( ClientBase* parent );
+      FlexibleOffline( ClientBase *parent );
 
       /**
        * Virtual Destructor.
@@ -71,8 +70,7 @@ namespace gloox
        * fetched. If the list is empty all messages are fetched (&lt;fetch&gt;).
        * @param msgs A list of message nodes to fetch.
        */
-      void fetchMessages( const StringList& msgs )
-        { messageOperation( FORequestMsgs, msgs ); }
+      void fetchMessages( const StringList& msgs );
 
       /**
        * Initiates removing of one or more specific messages, or all messages.
@@ -80,15 +78,14 @@ namespace gloox
        * If the list of message nodes contains one or more nodes, the corresponding messages are
        * removed. If the list is empty all messages are removed (&lt;purge&gt;).
        */
-      void removeMessages( const StringList& msgs )
-        { messageOperation( FORemoveMsgs, msgs ); }
+      void removeMessages( const StringList& msgs );
 
       /**
        * Registers a FlexibleOfflineHandler as object that receives results of XEP-0013 queries.
        * Only one Handler at a time is possible.
        * @param foh The Handler object to register.
        */
-      void registerFlexibleOfflineHandler( FlexibleOfflineHandler* foh );
+      void registerFlexibleOfflineHandler( FlexibleOfflineHandler *foh );
 
       /**
        * Removes the registered handler.
@@ -96,70 +93,21 @@ namespace gloox
       void removeFlexibleOfflineHandler();
 
       // reimplemented from DiscoHandler
-      virtual void handleDiscoInfo( const JID& from, const Disco::Info& info, int context );
+      virtual void handleDiscoInfoResult( Stanza *stanza, int context );
 
       // reimplemented from DiscoHandler
-      virtual void handleDiscoItems( const JID& from, const Disco::Items& items, int context );
+      virtual void handleDiscoItemsResult( Stanza *stanza, int context );
 
       // reimplemented from DiscoHandler
-      virtual void handleDiscoError( const JID& from, const Error* error, int context );
+      virtual void handleDiscoError( Stanza *stanza, int context );
 
-      // reimplemented from IqHandler.
-      virtual bool handleIq( const IQ& iq ) { (void)iq; return false; }
+      // reimplemented from IqHandler
+      virtual bool handleIqID( Stanza *stanza, int context );
 
-      // reimplemented from IqHandler.
-      virtual void handleIqID( const IQ& iq, int context );
+      // reimplemented from IqHandler
+      virtual bool handleIq( Stanza *stanza );
 
     private:
-#ifdef FLEXOFF_TEST
-    public:
-#endif
-      class Offline : public StanzaExtension
-      {
-        public:
-          /**
-           * Constructs a new Offline object from the given Tag.
-           * @param tag The Tag to parse.
-           */
-          Offline( const Tag* tag = 0 );
-
-          /**
-           * Constructs a new Offline object for the given context and messages.
-           * @param context The context.
-           * @param msgs The messages.
-           */
-          Offline( int context, const StringList& msgs );
-
-          /**
-           * Virtual destructor.
-           */
-          virtual ~Offline();
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            return new Offline( tag );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-          {
-            return new Offline( *this );
-          }
-
-        private:
-          int m_context;
-          StringList m_msgs;
-      };
-
-      void messageOperation( int context, const StringList& msgs );
-
       enum FOContext
       {
         FOCheckSupport,
@@ -169,8 +117,8 @@ namespace gloox
         FORemoveMsgs
       };
 
-      ClientBase* m_parent;
-      FlexibleOfflineHandler* m_flexibleOfflineHandler;
+      ClientBase *m_parent;
+      FlexibleOfflineHandler *m_flexibleOfflineHandler;
   };
 
 }

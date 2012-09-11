@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -16,19 +16,17 @@
 #include "vcard.h"
 #include "clientbase.h"
 #include "disco.h"
-#include "error.h"
 
 namespace gloox
 {
 
-  VCardManager::VCardManager( ClientBase* parent )
+  VCardManager::VCardManager( ClientBase *parent )
     : m_parent( parent )
   {
     if( m_parent )
     {
-      m_parent->registerIqHandler( this, ExtVCard );
+      m_parent->registerIqHandler( this, XMLNS_VCARD_TEMP );
       m_parent->disco()->addFeature( XMLNS_VCARD_TEMP );
-      m_parent->registerStanzaExtension( new VCard() );
     }
   }
 
@@ -37,12 +35,12 @@ namespace gloox
     if( m_parent )
     {
       m_parent->disco()->removeFeature( XMLNS_VCARD_TEMP );
-      m_parent->removeIqHandler( this, ExtVCard );
+      m_parent->removeIqHandler( XMLNS_VCARD_TEMP );
       m_parent->removeIDHandler( this );
     }
   }
 
-  void VCardManager::fetchVCard( const JID& jid, VCardHandler* vch )
+  void VCardManager::fetchVCard( const JID& jid, VCardHandler *vch )
   {
     if( !m_parent || !vch )
       return;
@@ -52,14 +50,19 @@ namespace gloox
       return;
 
     const std::string& id = m_parent->getID();
-    IQ iq ( IQ::Get, jid, id );
-    iq.addExtension( new VCard() );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "get" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "to", jid.bare() );
+    Tag *v = new Tag( iq, "vCard" );
+    v->addAttribute( "xmlns", XMLNS_VCARD_TEMP );
 
+    m_parent->trackID( this, id, VCardHandler::FetchVCard );
     m_trackMap[id] = vch;
-    m_parent->send( iq, this,VCardHandler::FetchVCard  );
+    m_parent->send( iq );
   }
 
-  void VCardManager::cancelVCardOperations( VCardHandler* vch )
+  void VCardManager::cancelVCardOperations( VCardHandler *vch )
   {
     TrackMap::iterator t;
     TrackMap::iterator it = m_trackMap.begin();
@@ -72,56 +75,73 @@ namespace gloox
     }
   }
 
-  void VCardManager::storeVCard( VCard* vcard, VCardHandler* vch )
+  void VCardManager::storeVCard( const VCard *vcard, VCardHandler *vch )
   {
     if( !m_parent || !vch )
       return;
 
     const std::string& id = m_parent->getID();
-    IQ iq( IQ::Set, JID(), id );
-    iq.addExtension( vcard );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "set" );
+    iq->addAttribute( "id", id );
+    iq->addChild( vcard->tag() );
 
+    m_parent->trackID( this, id, VCardHandler::StoreVCard );
     m_trackMap[id] = vch;
-    m_parent->send( iq, this, VCardHandler::StoreVCard );
+    m_parent->send( iq );
   }
 
-  void VCardManager::handleIqID( const IQ& iq, int context )
+  bool VCardManager::handleIq( Stanza * /*stanza*/ )
   {
-    TrackMap::iterator it = m_trackMap.find( iq.id() );
+    return false;
+  }
+
+  bool VCardManager::handleIqID( Stanza *stanza, int context )
+  {
+    TrackMap::iterator it = m_trackMap.find( stanza->id() );
     if( it != m_trackMap.end() )
     {
-      switch( iq.subtype() )
+      switch( stanza->subtype() )
       {
-        case IQ::Result:
+        case StanzaIqResult:
         {
           switch( context )
           {
             case VCardHandler::FetchVCard:
             {
-              const VCard* v = iq.findExtension<VCard>( ExtVCard );
-              (*it).second->handleVCard( iq.from(), v );
+              Tag *v = stanza->findChild( "vCard", "xmlns", XMLNS_VCARD_TEMP );
+              if( v )
+                (*it).second->handleVCard( stanza->from(), new VCard( v ) );
+              else
+                (*it).second->handleVCard( stanza->from(), 0 );
               break;
             }
             case VCardHandler::StoreVCard:
-              (*it).second->handleVCardResult( VCardHandler::StoreVCard, iq.from() );
+              (*it).second->handleVCardResult( VCardHandler::StoreVCard, stanza->from() );
               break;
           }
         }
         break;
-        case IQ::Error:
+        case StanzaIqError:
         {
-          (*it).second->handleVCardResult( (VCardHandler::VCardContext)context,
-                                           iq.from(),
-                                           iq.error() ? iq.error()->error()
-                                                       : StanzaErrorUndefined );
+          switch( context )
+          {
+            case VCardHandler::FetchVCard:
+              (*it).second->handleVCardResult( VCardHandler::FetchVCard, stanza->from(), stanza->error() );
+              break;
+            case VCardHandler::StoreVCard:
+              (*it).second->handleVCardResult( VCardHandler::StoreVCard, stanza->from(), stanza->error() );
+              break;
+          }
           break;
         }
         default:
-          break;
+          return false;
       }
 
       m_trackMap.erase( it );
     }
+    return false;
   }
 
 }

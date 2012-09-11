@@ -2,19 +2,24 @@
 #include "../../compressiondatahandler.h"
 using namespace gloox;
 
-#include "../../config.h"
+#ifdef _WIN32
+# include "../../../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../../../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 #ifdef HAVE_ZLIB
 
 class ZlibTest : public CompressionDataHandler
 {
   public:
-    ZlibTest() : m_zlib( this ) { m_zlib.init(); }
+    ZlibTest() : m_zlib( this ) {}
     ~ZlibTest() {}
     virtual void handleCompressedData( const std::string& data );
     virtual void handleDecompressedData( const std::string& data );
@@ -109,7 +114,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "CompressionZlib: OK\n" );
+    printf( "CompressionZlib: all tests passed\n" );
     return 0;
   }
   else

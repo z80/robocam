@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -43,16 +43,15 @@ namespace gloox
     sha.feed( m_sid + m_password );
     sha.finalize();
 
-    Tag* h = new Tag( "handshake", sha.hex() );
+    Tag *h = new Tag( "handshake", sha.hex() );
     send( h );
   }
 
-  bool Component::handleNormalNode( Tag* tag )
+  bool Component::handleNormalNode( Stanza *stanza )
   {
-    if( tag->name() != "handshake" )
+    if( stanza->name() != "handshake" )
       return false;
 
-    m_authed = true;
     notifyStreamEvent( StreamEventFinished );
     notifyOnConnect();
 

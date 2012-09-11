@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -22,7 +22,6 @@ namespace gloox
 
   const std::string XMLNS_DISCO_INFO        = "http://jabber.org/protocol/disco#info";
   const std::string XMLNS_DISCO_ITEMS       = "http://jabber.org/protocol/disco#items";
-  const std::string XMLNS_DISCO_PUBLISH     = "http://jabber.org/protocol/disco#publish";
   const std::string XMLNS_ADHOC_COMMANDS    = "http://jabber.org/protocol/commands";
   const std::string XMLNS_COMPRESSION       = "http://jabber.org/protocol/compress";
   const std::string XMLNS_OFFLINE           = "http://jabber.org/protocol/offline";
@@ -73,49 +72,22 @@ namespace gloox
   const std::string XMLNS_MUC_ROOMINFO      = "http://jabber.org/protocol/muc#roominfo";
   const std::string XMLNS_MUC_ROOMS         = "http://jabber.org/protocol/muc#rooms";
   const std::string XMLNS_MUC_REQUEST       = "http://jabber.org/protocol/muc#request";
-
-  const std::string XMLNS_PUBSUB            = "http://jabber.org/protocol/pubsub";
-  const std::string XMLNS_PUBSUB_ERRORS     = "http://jabber.org/protocol/pubsub#errors";
-  const std::string XMLNS_PUBSUB_EVENT      = "http://jabber.org/protocol/pubsub#event";
-  const std::string XMLNS_PUBSUB_OWNER      = "http://jabber.org/protocol/pubsub#owner";
-
-  const std::string XMLNS_CAPS              = "http://jabber.org/protocol/caps";
-  const std::string XMLNS_FT_FASTMODE       = "http://affinix.com/jabber/stream";
-
-  const std::string XMLNS_STREAM            = "http://etherx.jabber.org/streams";
   const std::string XMLNS_XMPP_STREAM       = "urn:ietf:params:xml:ns:xmpp-streams";
+
   const std::string XMLNS_XMPP_STANZAS      = "urn:ietf:params:xml:ns:xmpp-stanzas";
   const std::string XMLNS_STREAM_TLS        = "urn:ietf:params:xml:ns:xmpp-tls";
   const std::string XMLNS_STREAM_SASL       = "urn:ietf:params:xml:ns:xmpp-sasl";
-
   const std::string XMLNS_STREAM_BIND       = "urn:ietf:params:xml:ns:xmpp-bind";
   const std::string XMLNS_STREAM_SESSION    = "urn:ietf:params:xml:ns:xmpp-session";
+
   const std::string XMLNS_STREAM_IQAUTH     = "http://jabber.org/features/iq-auth";
   const std::string XMLNS_STREAM_IQREGISTER = "http://jabber.org/features/iq-register";
   const std::string XMLNS_STREAM_COMPRESS   = "http://jabber.org/features/compress";
 
-  const std::string XMLNS_HTTPBIND          = "http://jabber.org/protocol/httpbind";
-  const std::string XMLNS_XMPP_BOSH         = "urn:xmpp:xbosh";
-  const std::string XMLNS_RECEIPTS          = "urn:xmpp:receipts";
-  const std::string XMLNS_NICKNAME          = "http://jabber.org/protocol/nick";
-
-  const std::string XMLNS_JINGLE            = "urn:xmpp:tmp:jingle";
-  const std::string XMLNS_JINGLE_AUDIO_RTP  = "urn:xmpp:tmp:jingle:apps:audio-rtp";
-  const std::string XMLNS_JINGLE_ICE_UDP    = "urn:xmpp:tmp:jingle:transports:ice-udp";
-  const std::string XMLNS_JINGLE_RAW_UDP    = "urn:xmpp:tmp:jingle:transports:raw-udp";
-  const std::string XMLNS_JINGLE_VIDEO_RTP  = "urn:xmpp:tmp:jingle:apps:video-rtp";
-
-  const std::string XMLNS_SHIM              = "http://jabber.org/protocol/shim";
-  const std::string XMLNS_ATTENTION         = "urn:xmpp:attention:0";
-
   const std::string XMPP_STREAM_VERSION_MAJOR = "1";
   const std::string XMPP_STREAM_VERSION_MINOR = "0";
-  const std::string GLOOX_VERSION           = "1.0";
-  const std::string GLOOX_CAPS_NODE         = "http://camaya.net/gloox";
+  const std::string GLOOX_VERSION           = "0.9.9.12";
 
-  const std::string XMLNS = "xmlns";
-  const std::string TYPE = "type";
-  const std::string EmptyString = "";
 }
 
 const char* gloox_version()

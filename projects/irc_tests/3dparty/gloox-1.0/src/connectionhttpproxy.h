@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -29,22 +29,16 @@ namespace gloox
    * Usage:
    *
    * @code
-   * Client* c = new Client( ... );
-   * ConnectionTCPClient* conn0 = new ConnectionTCPClient( c->logInstance(),
-   *                                                       proxyHost, proxyPort );
-   * ConnectionHTTPProxy* conn1 = new ConnectionHTTPProxy( c, conn0, c->logInstance(),
-   *                                                       xmppHost, xmppPort );
-   * c->setConnectionImpl( conn1 );
+   * Client *c = new Client( ... );
+   * c->setConnectionImpl( new ConnectionHTTPProxy( c,
+   *                                new ConnectionTCP( c->logInstance(), proxyHost, proxyPort ),
+   *                                c->logInstance(), xmppHost, xmppPort ) );
    * @endcode
    *
-   * Make sure to pass the proxy host/port to the transport connection (ConnectionTCPClient in this case),
+   * Make sure to pass the proxy host/port to the transport connection (ConnectionTCP in this case),
    * and the XMPP host/port to the proxy connection.
    *
-   * ConnectionHTTPProxy uses the CONNECT method to pass through the proxy. If your proxy does not
-   * allow this kind of connections, or if it kills connections after some time, you may want to use
-   * ConnectionBOSH instead or in addition.
-   *
-   * The reason why ConnectionHTTPProxy doesn't manage its own ConnectionTCPClient is that it allows it
+   * The reason why ConnectionHTTPProxy doesn't manage its own ConnectionTCP is that it allows it
    * to be used with other transports (like IPv6 or chained SOCKS5/HTTP proxies).
    *
    * @author Jakob Schroeter <js@camaya.net>
@@ -66,7 +60,7 @@ namespace gloox
        * registerConnectionDataHandler(). This is not necessary if this object is
        * part of a 'connection chain', e.g. with ConnectionSOCKS5Proxy.
        */
-      ConnectionHTTPProxy( ConnectionBase* connection, const LogSink& logInstance,
+      ConnectionHTTPProxy( ConnectionBase *connection, const LogSink& logInstance,
                            const std::string& server, int port = -1 );
 
       /**
@@ -80,7 +74,7 @@ namespace gloox
        * @param port The port to connect to. This is the XMPP server's port, @b not the proxy's.
        * The default of -1 means that SRV records will be used to find out about the actual host:port.
        */
-      ConnectionHTTPProxy( ConnectionDataHandler* cdh, ConnectionBase* connection,
+      ConnectionHTTPProxy( ConnectionDataHandler *cdh, ConnectionBase *connection,
                            const LogSink& logInstance,
                            const std::string& server, int port = -1 );
 
@@ -108,7 +102,7 @@ namespace gloox
       virtual void cleanup();
 
       // reimplemented from ConnectionBase
-      virtual void getStatistics( long int &totalIn, long int &totalOut );
+      virtual void getStatistics( int &totalIn, int &totalOut );
 
       // reimplemented from ConnectionDataHandler
       virtual void handleReceivedData( const ConnectionBase* connection, const std::string& data );
@@ -137,7 +131,7 @@ namespace gloox
        * @param password The password to use for proxy authorization.
        */
       void setProxyAuth( const std::string& user, const std::string& password )
-        { m_proxyUser = user; m_proxyPwd = password; }
+        { m_proxyUser = user; m_proxyPassword = password; }
 
       /**
        * Sets the underlying transport connection. A possibly existing connection will be deleted.
@@ -155,11 +149,11 @@ namespace gloox
    private:
       ConnectionHTTPProxy &operator=( const ConnectionHTTPProxy& );
 
-      ConnectionBase* m_connection;
+      ConnectionBase *m_connection;
       const LogSink& m_logInstance;
 
       std::string m_proxyUser;
-      std::string m_proxyPwd;
+      std::string m_proxyPassword;
       std::string m_proxyHandshakeBuffer;
 
       bool m_http11;

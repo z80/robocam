@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -41,7 +41,7 @@ namespace gloox
        * later using registerMUCRoomHandler(). However, without one, MUC is no joy.
        * @note To subsequently configure the room, use MUCRoom::registerMUCRoomConfigHandler().
        */
-      InstantMUCRoom( ClientBase* parent, const JID& nick, MUCRoomHandler* mrh );
+      InstantMUCRoom( ClientBase *parent, const JID& nick, MUCRoomHandler *mrh );
 
       /**
        * Virtual Destructor.

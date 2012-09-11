@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -20,34 +20,34 @@ namespace gloox
 {
 
   /**
-   * A structure describing the current connection statistics.
+   * A strcuture describing the current connection statistics.
    */
   struct StatisticsStruct
   {
-    long int totalBytesSent;             /**< The total number of bytes sent over the wire. This does @b not
+    int totalBytesSent;             /**< The total number of bytes sent over the wire. This does @b not
                                      * include the TLS handshake nor any TLS-related overhead, but it does
                                      * include anything sent before compression was switched on. */
-    long int totalBytesReceived;         /**< The total number of bytes received over the wire. This does @b not
+    int totalBytesReceived;         /**< The total number of bytes received over the wire. This does @b not
                                      * include the TLS handshake nor any TLS-related overhead, but it does
                                      * include anything sent before compression was switched on. */
-    long int compressedBytesSent;        /**< Total number of bytes sent over the wire after compression was
+    int compressedBytesSent;        /**< Total number of bytes sent over the wire after compression was
                                      * applied. */
-    long int compressedBytesReceived;    /**< Total number of bytes received over the wire before decompression
+    int compressedBytesReceived;    /**< Total number of bytes received over the wire before decompression
                                      * was applied. */
-    long int uncompressedBytesSent;      /**< Total number of bytes sent over the wire before compression was
+    int uncompressedBytesSent;      /**< Total number of bytes sent over the wire before compression was
                                      * applied. */
-    long int uncompressedBytesReceived;  /**< Total number of bytes received over the wire after decompression
+    int uncompressedBytesReceived;  /**< Total number of bytes received over the wire after decompression
                                      * was applied. */
-    long int totalStanzasSent;           /**< The total number of Stanzas sent. */
-    long int totalStanzasReceived;       /**< The total number of Stanzas received. */
-    long int iqStanzasSent;              /**< The total number of IQ Stanzas sent. */
-    long int iqStanzasReceived;          /**< The total number of IQ Stanzas received. */
-    long int messageStanzasSent;         /**< The total number of Message Stanzas sent. */
-    long int messageStanzasReceived;     /**< The total number of Message Stanzas received. */
-    long int s10nStanzasSent;            /**< The total number of Subscription Stanzas sent. */
-    long int s10nStanzasReceived;        /**< The total number of Subscription Stanzas received. */
-    long int presenceStanzasSent;        /**< The total number of Presence Stanzas sent. */
-    long int presenceStanzasReceived;    /**< The total number of Presence Stanzas received. */
+    int totalStanzasSent;           /**< The total number of Stanzas sent. */
+    int totalStanzasReceived;       /**< The total number of Stanzas received. */
+    int iqStanzasSent;              /**< The total number of IQ Stanzas sent. */
+    int iqStanzasReceived;          /**< The total number of IQ Stanzas received. */
+    int messageStanzasSent;         /**< The total number of Message Stanzas sent. */
+    int messageStanzasReceived;     /**< The total number of Message Stanzas received. */
+    int s10nStanzasSent;            /**< The total number of Subscription Stanzas sent. */
+    int s10nStanzasReceived;        /**< The total number of Subscription Stanzas received. */
+    int presenceStanzasSent;        /**< The total number of Presence Stanzas sent. */
+    int presenceStanzasReceived;    /**< The total number of Presence Stanzas received. */
     bool encryption;                /**< Whether or not the connection (to the server) is encrypted. */
     bool compression;               /**< Whether or not the stream (to the server) gets compressed. */
   };

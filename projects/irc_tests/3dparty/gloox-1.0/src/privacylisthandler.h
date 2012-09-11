@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,6 @@
 #define PRIVACYLISTHANDLER_H__
 
 #include "privacyitem.h"
-#include "gloox.h"
 
 #include <string>
 #include <list>
@@ -77,7 +76,7 @@ namespace gloox
        * @param name The name of the list.
        * @param items A list of PrivacyItem's.
        */
-      virtual void handlePrivacyList( const std::string& name, const PrivacyList& items ) = 0;
+      virtual void handlePrivacyList( const std::string& name, PrivacyList& items ) = 0;
 
       /**
        * Reimplement this function to be notified about new or changed lists.

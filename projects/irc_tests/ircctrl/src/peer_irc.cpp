@@ -1,6 +1,7 @@
 
 #include "peer_irc.h"
 #include "irc_peer.h"
+#include <iostream>
 #include <boost/bind.hpp>
 #include <boost/bind/placeholders.hpp>
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -47,7 +47,7 @@ namespace gloox
    *     void handleBookmarks( const BookmarkList &bList, const ConferenceList &cList );
    *
    *   private:
-   *     BookmarkStorage* m_bs;
+   *     BookmarkStorage *m_bs;
    *     BookmarkList m_bList;
    *     ConferenceList m_cList;
    * };
@@ -83,7 +83,7 @@ namespace gloox
    *   ci.name = "jabber/xmpp development room";
    *   ci.jid = "jdev@conference.jabber.org";
    *   ci.nick = "myNick";
-   *   ci.password = EmptyString;
+   *   ci.password = "";
    *   ci.autojoin = true;
    *   m_cList.push_back( ci );
    *
@@ -101,7 +101,7 @@ namespace gloox
        * Constructs a new BookmarkStorage object.
        * @param parent The ClientBase to use for communication.
        */
-      BookmarkStorage( ClientBase* parent );
+      BookmarkStorage( ClientBase *parent );
 
       /**
        * Virtual destructor.
@@ -126,23 +126,21 @@ namespace gloox
        * Use this function to register a BookmarkHandler.
        * @param bmh The BookmarkHandler which shall receive retrieved bookmarks.
        */
-      void registerBookmarkHandler( BookmarkHandler* bmh )
-        { m_bookmarkHandler = bmh; }
+      void registerBookmarkHandler( BookmarkHandler *bmh );
 
       /**
        * Use this function to un-register the BookmarkHandler.
        */
-      void removeBookmarkHandler()
-        { m_bookmarkHandler = 0; }
+      void removeBookmarkHandler();
 
       // reimplemented from PrivateXMLHandler
-      virtual void handlePrivateXML( const Tag* xml );
+      virtual void handlePrivateXML( const std::string& tag, Tag *xml );
 
       // reimplemented from PrivateXMLHandler
       virtual void handlePrivateXMLResult( const std::string& uid, PrivateXMLResult pxResult );
 
     private:
-      BookmarkHandler* m_bookmarkHandler;
+      BookmarkHandler *m_bookmarkHandler;
   };
 
 }

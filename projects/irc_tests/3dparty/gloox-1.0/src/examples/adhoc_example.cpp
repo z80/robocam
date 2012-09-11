@@ -12,8 +12,6 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 
 class AdhocTest : public ConnectionListener, AdhocCommandProvider, LogHandler
 {
@@ -42,14 +40,14 @@ class AdhocTest : public ConnectionListener, AdhocCommandProvider, LogHandler
       delete( j );
     }
 
-    virtual void handleAdhocCommand( const JID& from, const Adhoc::Command& command,
-                                     const std::string& /*sess*/ )
+    void handleAdhocCommand( const std::string& command, Tag */*tag*/, const JID& from,
+                             const std::string& /*id*/ )
     {
-      if( command.node() == "helloworld" )
+      if( command == "helloworld" )
         printf( "Hello World!, by %s\n", from.full().c_str() );
-      else if( command.node() == "config" )
+      else if( command == "config" )
         printf( "configuration command called by %s\n", from.full().c_str() );
-      else if( command.node() == "shutdown" )
+      else if( command == "shutdown" )
       {
         printf( "shutting down, by %s\n", from.full().c_str() );
       }

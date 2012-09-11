@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -40,9 +40,8 @@ namespace gloox
        * @param jid The JID of the queried contact.
        * @param seconds The idle time or time of last presence of the contact. (Depends
        * on the JID, check the spec.)
-       * @param status If the contact is offline, this is the last presence status message. May be empty.
        */
-      virtual void handleLastActivityResult( const JID& jid, long seconds, const std::string& status ) = 0;
+      virtual void handleLastActivityResult( const JID& jid, int seconds ) = 0;
 
       /**
        * This function is called when an error is returned by the queried antity.

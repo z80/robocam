@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -16,8 +16,6 @@
 #define MUCROOMHANDLER_H__
 
 #include "gloox.h"
-#include "presence.h"
-#include "disco.h"
 
 #include <string>
 
@@ -26,7 +24,6 @@ namespace gloox
 
   class JID;
   class MUCRoom;
-  class Message;
   class DataForm;
 
   /**
@@ -34,7 +31,7 @@ namespace gloox
    */
   struct MUCRoomParticipant
   {
-    JID* nick;                      /**< Pointer to a JID holding the participant's full JID
+    JID *nick;                      /**< Pointer to a JID holding the participant's full JID
                                      * in the form @c room\@service/nick. <br>
                                      * @note The MUC server @b may change the chosen nickname.
                                      * If the @b self member of this struct is true, one should
@@ -42,7 +39,7 @@ namespace gloox
                                      * is important. */
     MUCRoomAffiliation affiliation; /**< The participant's affiliation with the room. */
     MUCRoomRole role;               /**< The participant's role with the room. */
-    JID* jid;                       /**< Pointer to the occupant's full JID in a non-anonymous room or
+    JID *jid;                       /**< Pointer to the occupant's full JID in a non-anonymous room or
                                      * in a semi-anonymous room if the user (of gloox) has a role of
                                      * moderator.
                                      * 0 if the MUC service doesn't provide the JID. */
@@ -54,7 +51,7 @@ namespace gloox
     std::string reason;             /**< If the presence change is the result of an action where the
                                      * actor can provide a reason for the action, this reason is stored
                                      * here. Examples: Kicking, banning, leaving the room. */
-    JID* actor;                     /**< If the presence change is the result of an action of a room
+    JID *actor;                     /**< If the presence change is the result of an action of a room
                                      * member, a pointer to the actor's JID is stored here, if the
                                      * actor chose to disclose his or her identity. Examples: Kicking
                                      * and banning.
@@ -102,10 +99,10 @@ namespace gloox
        * this function returned.
        * @param room The room.
        * @param participant A struct describing the occupant's status and/or action.
-       * @param presence The occupant's full presence.
+       * @param presence The occupant's presence.
        */
-      virtual void handleMUCParticipantPresence( MUCRoom* room, const MUCRoomParticipant participant,
-          const Presence& presence ) = 0;
+      virtual void handleMUCParticipantPresence( MUCRoom *room, const MUCRoomParticipant participant,
+                                                 Presence presence ) = 0;
 
       /**
        * This function is called when a message arrives through the room.
@@ -113,21 +110,17 @@ namespace gloox
        * it privately, you should create a new MessageSession to the user's full room nick and use
        * that for any further private communication with the user.
        * @param room The room the message came from.
-       * @param msg The entire Message.
-       * @param priv Indicates whether this is a private message.
-       * @note The sender's nick name can be obtained with this call:
-       * @code
-       * const std::string nick = msg.from().resource();
-       * @endcode
-       * @note The message may contain an extension of type DelayedDelivery describing the
-       * date/time when the message was originally sent. The presence of such an extension
-       * usually indicates that the message is sent as part of the room history. This extension
-       * can be obtained with this call:
-       * @code
-       * const DelayedDelivery* dd = msg.when(); // may be 0 if no such extension exists
-       * @endcode
+       * @param nick The sending user's nickname in the room.
+       * @param message The message.
+       * @param history Indicates whether or not this is a message that was sent prior to
+       * entering the room and is part of the room history the room sends after joining.
+       * @param when This is only used if @c history is @b true and then contains the
+       * datetime the message was sent in a notation as described in XEP-0082.
+       * @param privateMessage Indicates whether this is a private message.
        */
-      virtual void handleMUCMessage( MUCRoom* room, const Message& msg, bool priv ) = 0;
+      virtual void handleMUCMessage( MUCRoom *room, const std::string& nick,
+                                     const std::string& message, bool history,
+                                     const std::string& when, bool privateMessage ) = 0;
 
       /**
        * This function is called if the room that was just joined didn't exist prior to the attempted
@@ -146,7 +139,7 @@ namespace gloox
        * @return @b True to accept the default room configuration, @b false to keep the room locked
        * until configured manually by the room owner.
        */
-      virtual bool handleMUCRoomCreation( MUCRoom* room ) = 0;
+      virtual bool handleMUCRoomCreation( MUCRoom *room ) = 0;
 
       /**
        * This function is called when the room subject has been changed.
@@ -155,7 +148,7 @@ namespace gloox
        * @note With some MUC services the nick may be empty when a room is first entered.
        * @param subject The new room subject.
        */
-      virtual void handleMUCSubject( MUCRoom* room, const std::string& nick,
+      virtual void handleMUCSubject( MUCRoom *room, const std::string& nick,
                                      const std::string& subject ) = 0;
 
       /**
@@ -165,7 +158,7 @@ namespace gloox
        * @param invitee The JID if the person that declined the invitation.
        * @param reason An optional  reason for declining the invitation.
        */
-      virtual void handleMUCInviteDecline( MUCRoom* room, const JID& invitee,
+      virtual void handleMUCInviteDecline( MUCRoom *room, const JID& invitee,
                                            const std::string& reason ) = 0;
 
       /**
@@ -184,7 +177,7 @@ namespace gloox
        * @param room The room.
        * @param error The error.
        */
-      virtual void handleMUCError( MUCRoom* room, StanzaError error ) = 0;
+      virtual void handleMUCError( MUCRoom *room, StanzaError error ) = 0;
 
       /**
        * This function usually (see below) is called in response to a call to MUCRoom::getRoomInfo().
@@ -193,13 +186,13 @@ namespace gloox
        * @param name The room's name as returned by Service Discovery.
        * @param infoForm A DataForm containing extended room information. May be 0 if the service
        * doesn't support extended room information. See Section 15.5 of XEP-0045 for defined
-       * field types. You should not delete the form.
+       * field types.
        *
        * @note This function may be called without a prior call to MUCRoom::getRoomInfo(). This
        * happens if the room config is changed, e.g. by a room admin.
        */
-      virtual void handleMUCInfo( MUCRoom* room, int features, const std::string& name,
-                                  const DataForm* infoForm ) = 0;
+      virtual void handleMUCInfo( MUCRoom *room, int features, const std::string& name,
+                                  const DataForm *infoForm ) = 0;
 
       /**
        * This function is called in response to a call to MUCRoom::getRoomItems().
@@ -207,7 +200,7 @@ namespace gloox
        * @param items A map of room participants. The key is the name, the value is the occupant's
        * room JID. The map may be empty if such info is private.
        */
-      virtual void handleMUCItems( MUCRoom* room, const Disco::ItemList& items ) = 0;
+      virtual void handleMUCItems( MUCRoom *room, const StringMap& items ) = 0;
 
   };
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,6 @@
 #define SIPROFILEHANDLER_H__
 
 #include "jid.h"
-#include "simanager.h"
 
 #include <string>
 
@@ -48,12 +47,15 @@ namespace gloox
        * a stream to send a file to you. You should use either SIManager::acceptSI() or
        * SIManager::declineSI() to accept or reject the request, respectively.
        * @param from The SI requestor.
-       * @param to The SI recipient, usually oneself. Used in component scenario.
        * @param id The request's id (@b not the stream's id). This id MUST be supplied to either
        * SIManager::acceptSI() or SIManager::declineSI().
-       * @param si The request's complete SI.
+       * @param profile The requested stream profile.
+       * @param si The request's complete &lt;si/&gt; Tag.
+       * @param ptag The profile-specific child of the SI request. May be 0, but should not be.
+       * @param fneg The &lt;feature/&gt; child of the SI request. May be 0.
        */
-      virtual void handleSIRequest( const JID& from, const JID& to, const std::string& id, const SIManager::SI& si ) = 0;
+      virtual void handleSIRequest( const JID& from, const std::string& id, const std::string& profile,
+                                    Tag* si, Tag* ptag, Tag* fneg ) = 0;
 
   };
 

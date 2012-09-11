@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -21,9 +21,10 @@
 namespace gloox
 {
 
-  GnuTLSServerAnon::GnuTLSServerAnon( TLSHandler* th )
+  GnuTLSServerAnon::GnuTLSServerAnon( TLSHandler *th )
     : GnuTLSBase( th ), m_dhBits( 1024 )
   {
+    init();
   }
 
   GnuTLSServerAnon::~GnuTLSServerAnon()
@@ -38,9 +39,7 @@ namespace gloox
     init();
   }
 
-  bool GnuTLSServerAnon::init( const std::string&,
-                               const std::string&,
-                               const StringList& )
+  void GnuTLSServerAnon::init()
   {
     const int protocolPriority[] = { GNUTLS_TLS1, 0 };
     const int kxPriority[]       = { GNUTLS_KX_ANON_DH, 0 };
@@ -49,17 +48,17 @@ namespace gloox
     const int compPriority[]     = { GNUTLS_COMP_ZLIB, GNUTLS_COMP_NULL, 0 };
     const int macPriority[]      = { GNUTLS_MAC_SHA, GNUTLS_MAC_MD5, 0 };
 
-    if( m_initLib && gnutls_global_init() != 0 )
-      return false;
+    if( gnutls_global_init() != 0 )
+      return;
 
     if( gnutls_anon_allocate_server_credentials( &m_anoncred ) < 0 )
-      return false;
+      return;
 
     generateDH();
     gnutls_anon_set_server_dh_params( m_anoncred, m_dhParams );
 
     if( gnutls_init( m_session, GNUTLS_SERVER ) != 0 )
-      return false;
+      return;
 
     gnutls_protocol_set_priority( *m_session, protocolPriority );
     gnutls_cipher_set_priority( *m_session, cipherPriority );
@@ -73,9 +72,6 @@ namespace gloox
     gnutls_transport_set_ptr( *m_session, (gnutls_transport_ptr_t)this );
     gnutls_transport_set_push_function( *m_session, pushFunc );
     gnutls_transport_set_pull_function( *m_session, pullFunc );
-
-    m_valid = true;
-    return true;
   }
 
   void GnuTLSServerAnon::generateDH()

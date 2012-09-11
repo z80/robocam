@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -58,18 +58,11 @@ namespace gloox
       const std::string hex();
 
       /**
-       * Returns the raw binary message digest. Finalizes the hash if finalize()
-       * has not been called before.
-       * @return The message raw binary digest.
-       */
-      const std::string binary();
-
-      /**
        * Provide input to SHA1.
        * @param data The data to compute the digest of.
        * @param length The size of the data in bytes.
        */
-      void feed( const unsigned char* data, unsigned length );
+      void feed( const unsigned char *data, unsigned length );
 
       /**
        * Provide input to SHA1.

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -22,13 +22,10 @@ namespace gloox
 {
 
   class JID;
-  class IQ;
-  class Bytestream;
+  class Stanza;
 
   /**
    * @brief An abstract base class to handle file transfer (FT) requests.
-   *
-   * See SIProfileFT for more information regarding file transfer.
    *
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.9
@@ -47,9 +44,9 @@ namespace gloox
        * to send a file to you. You should use either SIProfileFT::acceptFT() or
        * SIProfileFT::declineFT() to accept or reject the request, respectively.
        * @param from The file transfer requestor.
-       * @param to The file transfer recipient. Usuall oneself. Used in component scenario.
-       * @param sid The requested stream's ID. This sid MUST be supplied to SIProfileFT::acceptFT()
-       * and SIProfileFT::declineFT(), respectively.
+       * @param id The request's id. This id MUST be supplied to either SIProfileFT::acceptFT() or
+       * SIProfileFT::declineFT().
+       * @param sid The requested stream's ID.
        * @param name The file name.
        * @param size The file size.
        * @param hash The file content's MD5 sum.
@@ -58,45 +55,47 @@ namespace gloox
        * @param desc The file's description.
        * @param stypes An ORed list of @link gloox::SIProfileFT::StreamType SIProfileFT::StreamType @endlink
        * indicating the StreamTypes the initiator supports.
+       * @param offset The offset in bytes from which the file should be transmitted.
+       * @param length The number of bytes to send, starting from the given offset. A value of -1
+       * indicates that the entire file is to be transmitted (taking the offset into account).
        */
-      virtual void handleFTRequest( const JID& from, const JID& to, const std::string& sid,
+      virtual void handleFTRequest( const JID& from, const std::string& id, const std::string& sid,
                                     const std::string& name, long size, const std::string& hash,
                                     const std::string& date, const std::string& mimetype,
-                                    const std::string& desc, int stypes ) = 0;
+                                    const std::string& desc, int stypes, long offset, long length ) = 0;
+
+      /**
+       * This function is called to handle results of outgoing file transfer requests,
+       * i.e. you requested a stream (using SIProfileFT::requestFT()) to send a file
+       * to a remote entity.
+       * @param from The file transfer receiver.
+       * @param sid The stream ID.
+       */
+//       virtual void handleFTRequestResult( const JID& from, const std::string& sid ) = 0;
 
       /**
        * This function is called to handle a request error or decline.
-       * @param iq The complete error stanza.
+       * @param stanza The complete error stanza.
        * @param sid The request's SID.
        */
-      virtual void handleFTRequestError( const IQ& iq, const std::string& sid ) = 0;
+      virtual void handleFTRequestError( Stanza* stanza, const std::string& sid ) = 0;
 
       /**
-       * This function is called to pass a negotiated bytestream (SOCKS5 or IBB).
+       * This function is called to pass a negotiated SOCKS5 bytestream.
        * The bytestream is not yet open and not ready to send/receive data.
        * @note To initialize the bytestream and to prepare it for data transfer
        * do the following, preferable in that order:
-       * @li register a BytestreamDataHandler with the Bytestream,
+       * @li register a SOCKS5BytestreamDataHandler with the SOCKS5Bytestream,
        * @li set up a separate thread for the bytestream or integrate it into
        * your main loop,
        * @li call its connect() method and check the return value.
        * To not block your application while the data transfer and/or the connection
-       * attempts last, you most likely want to put the bytestream into its own
+       * attempts last, you most likely want to put  the bytestream into its own
        * thread or process (before calling connect() on it). It is safe to do so
        * without additional synchronization.
-       * @param bs The bytestream.
+       * @param s5b The SOCKS5 bytestream.
        */
-      virtual void handleFTBytestream( Bytestream* bs ) = 0;
-
-      /**
-       * This function is called if the contact chose OOB as the mechanism.
-       * @param from The remote contact's JID.
-       * @param to The local recipient's JID. Usually oneself. Used in component scenario.
-       * @param sid The stream's ID.
-       * @return The file's URL.
-       */
-      virtual const std::string handleOOBRequestResult( const JID& from, const JID& to, const std::string& sid ) = 0;
-
+      virtual void handleFTSOCKS5Bytestream( SOCKS5Bytestream* s5b ) = 0;
   };
 
 }

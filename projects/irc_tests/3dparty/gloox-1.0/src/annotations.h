@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -47,7 +47,7 @@ namespace gloox
    *     void handleAnnotations( const AnnotationsList &aList );
    *
    *   private:
-   *     Annotations* m_notes;
+   *     Annotations *m_notes;
    *     AnnotationsList m_list;
    * };
    *
@@ -98,7 +98,7 @@ namespace gloox
        * Constructs a new Annotations object.
        * @param parent The ClientBase to use for communication.
        */
-      Annotations( ClientBase* parent );
+      Annotations( ClientBase *parent );
 
       /**
        * Virtual destructor.
@@ -122,24 +122,21 @@ namespace gloox
        * Use this function to register a AnnotationsHandler.
        * @param ah The AnnotationsHandler which shall receive retrieved notes.
        */
-      void registerAnnotationsHandler( AnnotationsHandler* ah )
-        { m_annotationsHandler = ah; }
+      void registerAnnotationsHandler( AnnotationsHandler *ah );
 
       /**
        * Use this function to un-register the AnnotationsHandler.
        */
-      void removeAnnotationsHandler()
-        { m_annotationsHandler = 0; }
+      void removeAnnotationsHandler();
 
       // reimplemented from PrivateXMLHandler
-      virtual void handlePrivateXML( const Tag* xml );
+      virtual void handlePrivateXML( const std::string& tag, Tag *xml );
 
       // reimplemented from PrivateXMLHandler
       virtual void handlePrivateXMLResult( const std::string& uid, PrivateXMLResult pxResult );
 
     private:
-      AnnotationsHandler* m_annotationsHandler;
-
+      AnnotationsHandler *m_annotationsHandler;
   };
 
 }

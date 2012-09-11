@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -11,44 +11,52 @@
 */
 
 #include "dataformfield.h"
-#include "util.h"
+#include "dataformbase.h"
 #include "tag.h"
 
 namespace gloox
 {
 
-  static const char* fieldTypeValues[] =
-  {
-    "boolean", "fixed", "hidden", "jid-multi", "jid-single",
-    "list-multi", "list-single", "text-multi", "text-private", "text-single", ""
-  };
-
-  DataFormField::DataFormField( FieldType type )
+  DataFormField::DataFormField( DataFormFieldType type )
     : m_type( type ), m_required( false )
   {
   }
 
   DataFormField::DataFormField( const std::string& name, const std::string& value,
-                        const std::string& label, FieldType type )
-    : m_type( type ), m_name( name ), m_label( label ), m_required( false )
+                                const std::string& label, DataFormFieldType type )
+    : m_name( name ), m_label( label ), m_type( type ), m_required( false )
   {
     m_values.push_back( value );
   }
 
-  DataFormField::DataFormField( const Tag* tag )
-    : m_type( TypeInvalid ), m_required( false )
+  DataFormField::DataFormField( Tag *tag )
+    : m_type( FieldTypeInvalid ), m_required( false )
   {
     if( !tag )
       return;
 
-    const std::string& type = tag->findAttribute( TYPE );
-    if( type.empty() )
-    {
-      if( !tag->name().empty() )
-        m_type = TypeNone;
-    }
-    else
-      m_type = (FieldType)util::lookup( type, fieldTypeValues );
+    if( tag->hasAttribute( "type", "boolean" ) )
+      m_type = FieldTypeBoolean;
+    else if( tag->hasAttribute( "type", "fixed" ) )
+      m_type = FieldTypeFixed;
+    else if( tag->hasAttribute( "type", "hidden" ) )
+      m_type = FieldTypeHidden;
+    else if( tag->hasAttribute( "type", "jid-multi" ) )
+      m_type = FieldTypeJidMulti;
+    else if( tag->hasAttribute( "type", "jid-single" ) )
+      m_type = FieldTypeJidSingle;
+    else if( tag->hasAttribute( "type", "list-multi" ) )
+      m_type = FieldTypeListMulti;
+    else if( tag->hasAttribute( "type", "list-single" ) )
+      m_type = FieldTypeListSingle;
+    else if( tag->hasAttribute( "type", "text-multi" ) )
+      m_type = FieldTypeTextMulti;
+    else if( tag->hasAttribute( "type", "text-private" ) )
+      m_type = FieldTypeTextPrivate;
+    else if( tag->hasAttribute( "type", "text-single" ) )
+      m_type = FieldTypeTextSingle;
+    else if( !tag->hasAttribute( "type" ) && !tag->name().empty() )
+      m_type = FieldTypeNone;
 
     if( tag->hasAttribute( "var" ) )
       m_name = tag->findAttribute( "var" );
@@ -56,8 +64,8 @@ namespace gloox
     if( tag->hasAttribute( "label" ) )
       m_label = tag->findAttribute( "label" );
 
-    const TagList& l = tag->children();
-    TagList::const_iterator it = l.begin();
+    const Tag::TagList& l = tag->children();
+    Tag::TagList::const_iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
       if( (*it)->name() == "desc" )
@@ -66,16 +74,16 @@ namespace gloox
         m_required = true;
       else if( (*it)->name() == "value" )
       {
-        if( m_type == TypeTextMulti || m_type == TypeListMulti || m_type == TypeJidMulti )
+        if( m_type == FieldTypeTextMulti || m_type == FieldTypeListMulti || m_type == FieldTypeJidMulti )
           addValue( (*it)->cdata() );
         else
           setValue( (*it)->cdata() );
       }
       else if( (*it)->name() == "option" )
       {
-        Tag* v = (*it)->findChild( "value" );
+        Tag *v = (*it)->findChild( "value" );
         if( v )
-          m_options.insert( std::make_pair( (*it)->findAttribute( "label" ), v->cdata() ) );
+          m_options[(*it)->findAttribute( "label" )] = v->cdata();
       }
     }
 
@@ -87,11 +95,47 @@ namespace gloox
 
   Tag* DataFormField::tag() const
   {
-    if( m_type == TypeInvalid )
+    if( m_type == FieldTypeInvalid )
       return 0;
 
-    Tag* field = new Tag( "field" );
-    field->addAttribute( TYPE, util::lookup( m_type, fieldTypeValues ) );
+    Tag *field = new Tag( "field" );
+
+    switch( m_type )
+    {
+      case FieldTypeBoolean:
+        field->addAttribute( "type", "boolean" );
+        break;
+      case FieldTypeFixed:
+        field->addAttribute( "type", "fixed" );
+        break;
+      case FieldTypeHidden:
+        field->addAttribute( "type", "hidden" );
+        break;
+      case FieldTypeJidMulti:
+        field->addAttribute( "type", "jid-multi" );
+        break;
+      case FieldTypeJidSingle:
+        field->addAttribute( "type", "jid-single" );
+        break;
+      case FieldTypeListMulti:
+        field->addAttribute( "type", "list-multi" );
+        break;
+      case FieldTypeListSingle:
+        field->addAttribute( "type", "list-single" );
+        break;
+      case FieldTypeTextMulti:
+        field->addAttribute( "type", "text-multi" );
+        break;
+      case FieldTypeTextPrivate:
+        field->addAttribute( "type", "text-private" );
+        break;
+      case FieldTypeTextSingle:
+        field->addAttribute( "type", "text-single" );
+        break;
+      default:
+        break;
+    }
+
     field->addAttribute( "var", m_name );
     field->addAttribute( "label", m_label );
     if( m_required )
@@ -100,16 +144,17 @@ namespace gloox
     if( !m_desc.empty() )
       new Tag( field, "desc", m_desc );
 
-    if( m_type == TypeListSingle || m_type == TypeListMulti )
+    if( m_type == FieldTypeListSingle || m_type == FieldTypeListMulti )
     {
-      StringMultiMap::const_iterator it = m_options.begin();
+      StringMap::const_iterator it = m_options.begin();
       for( ; it != m_options.end(); ++it )
       {
-        Tag* option = new Tag( field, "option", "label", (*it).first );
+        Tag *option = new Tag( field, "option" );
+        option->addAttribute( "label", (*it).first );
         new Tag( option, "value", (*it).second );
       }
     }
-    else if( m_type == TypeBoolean )
+    else if( m_type == FieldTypeBoolean )
     {
       if( m_values.size() == 0 || m_values.front() == "false" || m_values.front() == "0" )
         new Tag( field, "value", "0" );
@@ -117,15 +162,15 @@ namespace gloox
         new Tag( field, "value", "1" );
     }
 
-    if( m_type == TypeTextMulti || m_type == TypeListMulti || m_type == TypeJidMulti )
+    if( m_type == FieldTypeTextMulti || m_type == FieldTypeListMulti || m_type == FieldTypeJidMulti )
     {
       StringList::const_iterator it = m_values.begin();
       for( ; it != m_values.end() ; ++it )
         new Tag( field, "value", (*it) );
     }
 
-    if( m_values.size() && !( m_type == TypeTextMulti || m_type == TypeListMulti
-                              || m_type == TypeBoolean || m_type == TypeJidMulti ) )
+    if( m_values.size() && !( m_type == FieldTypeTextMulti || m_type == FieldTypeListMulti
+                              || m_type == FieldTypeBoolean || m_type == FieldTypeJidMulti ) )
       new Tag( field, "value", m_values.front() );
 
     return field;

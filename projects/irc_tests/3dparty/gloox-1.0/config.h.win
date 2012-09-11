@@ -17,13 +17,10 @@
 /* Uncomment if you have LibIDN available and want to use it */
 // #define HAVE_LIBIDN 1
 
-/* Uncomment if you have the getaddrinfo function and want IPv6 support (XP and up) */
-// #define HAVE_GETADDRINFO 1
-
 /* Comment out if you don't have windns.h (e.g. if you use an old Platform SDK) */
 #define HAVE_WINDNS_H 1
 
-/* Comment out if you don't have the `setsockopt' function. Usually available. */
+/* Comment out if you don't have setsockopt() */
 #define HAVE_SETSOCKOPT 1
 
 #ifdef _MSC_VER
@@ -31,13 +28,4 @@
 #pragma comment( lib, "Secur32.lib" )
 #pragma comment( lib, "Crypt32.lib" )
 #pragma comment( lib, "ws2_32.lib" )
-
-/* The following silences a few C4355 warnings ('this' : used in member initializer list).
-   This is only used with Parser which doesn't do anything with its TagHandler in the ctor,
-   so muting C4355 is safe. */
-#pragma warning( disable : 4355 )
-
-/* The following silcences warnings concerning "unsafe" functions (sprintf, strncpy, etc.).
-   They are used in a safe way here, though. */
-#pragma warning( disable : 4996 )
 #endif

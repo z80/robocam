@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -59,7 +59,7 @@ namespace gloox
        *
        * @param session The new MessageSession.
        */
-      virtual void handleMessageSession( MessageSession* session ) = 0;
+      virtual void handleMessageSession( MessageSession *session ) = 0;
   };
 
 }

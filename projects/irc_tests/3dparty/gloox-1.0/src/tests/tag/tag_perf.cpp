@@ -5,11 +5,11 @@ using namespace gloox;
 
 #include <stdio.h>
 #include <locale.h>
-#include <cstdlib>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 #include <sys/time.h>
+
+#include <cstdlib>
 
 static double divider = 1000000;
 static int num = 2500;
@@ -24,18 +24,18 @@ static void printTime ( const char * testName, struct timeval tv1, struct timeva
   printf( "%s: %.03f seconds (%.00f/s)\n", testName, t, num / t );
 }
 
-static Tag * newTag ( const std::string& str )
+static Tag * newTag ( const std::string& str, bool incoming = false )
 {
-  Tag *aaa = new Tag( str, str );
-  Tag *bbb = new Tag( aaa, str, str ); bbb->addAttribute( str, str );
-  Tag *ccc = new Tag( aaa, str, str ); ccc->addAttribute( str, str );
-  Tag *ddd = new Tag( ccc, str, str ); ddd->addAttribute( str, str );
-  Tag *eee = new Tag( ccc, str, str ); eee->addAttribute( str, str );
-  Tag *fff = new Tag( aaa, str, str ); fff->addAttribute( str, str );
-  Tag *ggg = new Tag( fff, str, str ); ggg->addAttribute( str, str );
-  Tag *hhh = new Tag( bbb, str, str ); hhh->addAttribute( str, str );
-  Tag *iii = new Tag( bbb, str, str ); iii->addAttribute( str, str );
-  Tag *jjj = new Tag( hhh, str, str ); jjj->addAttribute( str, str );
+  Tag *aaa = new Tag( str, str, incoming );
+  Tag *bbb = new Tag( aaa, str, str, incoming ); bbb->addAttribute( str, str );
+  Tag *ccc = new Tag( aaa, str, str, incoming ); ccc->addAttribute( str, str );
+  Tag *ddd = new Tag( ccc, str, str, incoming ); ddd->addAttribute( str, str );
+  Tag *eee = new Tag( ccc, str, str, incoming ); eee->addAttribute( str, str );
+  Tag *fff = new Tag( aaa, str, str, incoming ); fff->addAttribute( str, str );
+  Tag *ggg = new Tag( fff, str, str, incoming ); ggg->addAttribute( str, str );
+  Tag *hhh = new Tag( bbb, str, str, incoming ); hhh->addAttribute( str, str );
+  Tag *iii = new Tag( bbb, str, str, incoming ); iii->addAttribute( str, str );
+  Tag *jjj = new Tag( hhh, str, str, incoming ); jjj->addAttribute( str, str );
   return aaa;
 }
 
@@ -46,7 +46,7 @@ static const std::string escapedString   = "&amp;&lt;&gt;&apos;&quot;&#60;&#62;&
 
 static inline Tag * newSimpleTag ()    { return newTag( simpleString ); }
 static inline Tag * newEscapedTag ()   { return newTag( escapedString ); }
-static inline Tag * newEscapableTag () { return newTag( escapableString ); }
+static inline Tag * newEscapableTag () { return newTag( escapableString, true ); }
 
 
 static const int sz_max = 1000;
@@ -111,7 +111,7 @@ int main( int /*argc*/, char** /*argv*/ )
   for (int i = 0; i < num; ++i)
   {
     randomize( 100 );
-    delete newTag( values);
+    delete newTag( values, true );
   }
   gettimeofday( &tv2, 0 );
   printTime ("relaxing create/delete (small)", tv1, tv2);
@@ -123,7 +123,7 @@ int main( int /*argc*/, char** /*argv*/ )
   for (int i = 0; i < num; ++i)
   {
     randomize( 1000 );
-    delete newTag( values );
+    delete newTag( values, true );
   }
   gettimeofday( &tv2, 0 );
   printTime ("relaxing create/delete (big)", tv1, tv2);

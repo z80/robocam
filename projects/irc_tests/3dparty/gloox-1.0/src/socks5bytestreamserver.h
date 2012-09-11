@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -46,7 +46,7 @@ namespace gloox
        * @param port The local port to listen on.
        * @param ip The local IP to bind to. If empty, the server will listen on all local interfaces.
        */
-      SOCKS5BytestreamServer( const LogSink& logInstance, int port, const std::string& ip = EmptyString );
+      SOCKS5BytestreamServer( const LogSink& logInstance, int port, const std::string& ip = "" );
 
       /**
        * Destructor.
@@ -73,30 +73,16 @@ namespace gloox
        */
       void stop();
 
-      /**
-       * Expose our TCP Connection localPort
-       * Returns the local port.
-       * @return The local port.
-       */
-      int localPort() const;
+      // re-implemented from ConnectionHandler
+      virtual void handleIncomingConnection( ConnectionBase* connection );
 
-      /**
-       * Expose our TCP Connection localInterface
-       * Returns the locally bound IP address.
-       * @return The locally bound IP address.
-       */
-      const std::string localInterface() const;
-
-      // reimplemented from ConnectionHandler
-      virtual void handleIncomingConnection( ConnectionBase* server, ConnectionBase* connection );
-
-      // reimplemented from ConnectionDataHandler
+      // re-implemented from ConnectionDataHandler
       virtual void handleReceivedData( const ConnectionBase* connection, const std::string& data );
 
-      // reimplemented from ConnectionDataHandler
+      // re-implemented from ConnectionDataHandler
       virtual void handleConnect( const ConnectionBase* connection );
 
-      // reimplemented from ConnectionDataHandler
+      // re-implemented from ConnectionDataHandler
       virtual void handleDisconnect( const ConnectionBase* connection, ConnectionError reason );
 
     private:
@@ -132,7 +118,7 @@ namespace gloox
 
       ConnectionTCPServer* m_tcpServer;
 
-      util::Mutex m_mutex;
+      Mutex m_mutex;
       const LogSink& m_logInstance;
       std::string m_ip;
       int m_port;

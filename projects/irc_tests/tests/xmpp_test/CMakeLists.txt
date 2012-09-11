@@ -33,7 +33,8 @@ add_executable( xmpp_test ${src} )
 #find_library( libssl    NAMES libssl.a    PATHS $ENV{PATH} )
 #find_library( libcrypto NAMES libcrypto.a PATHS $ENV{PATH} )
 #find_library( libz      NAMES libz.a      PATHS $ENV{PATH} )
-target_link_libraries( xmpp_test ircctrl ${QT_LIBRARIES} )
+find_library( libgloox NAMES libgloox.so libgloox.lib PATHS ${ROOT}/3dparty/gloox-1.0/src/.libs )
+target_link_libraries( xmpp_test ${libgloox} ${QT_LIBRARIES} )
 #${libresolv} ${libresolv} ${libssl} ${libcrypto} ${libz} )
 
 

@@ -9,8 +9,6 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 class ComponentTest : public DiscoHandler, ConnectionListener, LogHandler
 {
   public:
@@ -49,17 +47,17 @@ class ComponentTest : public DiscoHandler, ConnectionListener, LogHandler
       return true;
     }
 
-    virtual void handleDiscoInfo( const JID& /*iq*/, const Disco::Info&, int /*context*/ )
+    virtual void handleDiscoInfoResult( Stanza */*stanza*/, int /*context*/ )
     {
       printf( "handleDiscoInfoResult}\n" );
     }
 
-    virtual void handleDiscoItems( const JID& /*iq*/, const Disco::Items&, int /*context*/ )
+    virtual void handleDiscoItemsResult( Stanza */*stanza*/, int /*context*/ )
     {
       printf( "handleDiscoItemsResult\n" );
     }
 
-    virtual void handleDiscoError( const JID& /*iq*/, const Error*, int /*context*/ )
+    virtual void handleDiscoError( Stanza */*stanza*/, int /*context*/ )
     {
       printf( "handleDiscoError\n" );
     }

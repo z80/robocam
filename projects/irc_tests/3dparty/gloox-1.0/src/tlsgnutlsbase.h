@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,7 +17,13 @@
 
 #include "tlsbase.h"
 
-#include "config.h"
+#ifdef _WIN32
+# include "../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #ifdef HAVE_GNUTLS
 
@@ -32,7 +38,7 @@ namespace gloox
    *
    * You should not need to use this class directly.
    *
-   * @author Jakob Schroeter <js@camaya.net>
+   * @author Jakob Schröter <js@camaya.net>
    * @since 0.9
    */
   class GnuTLSBase : public TLSBase
@@ -43,7 +49,7 @@ namespace gloox
        * @param th The TLSHandler to handle TLS-related events.
        * @param server The server to use in certificate verification.
        */
-      GnuTLSBase( TLSHandler* th, const std::string& server = EmptyString );
+      GnuTLSBase( TLSHandler *th, const std::string& server = "" );
 
       /**
        * Virtual destructor.
@@ -69,19 +75,20 @@ namespace gloox
       virtual void setClientCert( const std::string& /*clientKey*/, const std::string& /*clientCerts*/ ) {}
 
     protected:
+      virtual void init() = 0;
       virtual void getCertInfo() {}
 
       gnutls_session_t* m_session;
 
       std::string m_recvBuffer;
-      char* m_buf;
+      char *m_buf;
       const int m_bufsize;
 
-      ssize_t pullFunc( void* data, size_t len );
-      static ssize_t pullFunc( gnutls_transport_ptr_t ptr, void* data, size_t len );
+      ssize_t pullFunc( void *data, size_t len );
+      static ssize_t pullFunc( gnutls_transport_ptr_t ptr, void *data, size_t len );
 
-      ssize_t pushFunc( const void* data, size_t len );
-      static ssize_t pushFunc( gnutls_transport_ptr_t ptr, const void* data, size_t len );
+      ssize_t pushFunc( const void *data, size_t len );
+      static ssize_t pushFunc( gnutls_transport_ptr_t ptr, const void *data, size_t len );
 
   };
 

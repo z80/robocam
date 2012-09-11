@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,8 @@
 #ifndef DATAFORMITEM_H__
 #define DATAFORMITEM_H__
 
-#include "dataformfieldcontainer.h"
+#include "dataformfield.h"
+#include "dataformbase.h"
 
 namespace gloox
 {
@@ -28,7 +29,7 @@ namespace gloox
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.7
    */
-  class GLOOX_API DataFormItem : public DataFormFieldContainer
+  class GLOOX_API DataFormItem : public DataFormBase, public DataFormField
   {
     public:
       /**
@@ -42,17 +43,14 @@ namespace gloox
        * @param tag The tag to read the 'field' elements from.
        * @since 0.8.5
        */
-      DataFormItem( const Tag* tag );
+      DataFormItem( Tag *tag );
 
       /**
        * Virtual destructor.
        */
       virtual ~DataFormItem();
 
-      /**
-       * Creates and returns a Tag representation of the current object.
-       * @return A Tag representation of the current object.
-       */
+      // reimplemented from DataFormField
       virtual Tag* tag() const;
 
   };

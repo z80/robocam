@@ -44,7 +44,7 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -78,27 +78,21 @@ am_libgloox_la_OBJECTS = jid.lo parser.lo connectiontcpclient.lo \
 	privatexml.lo registration.lo nonsaslauth.lo rosteritem.lo \
 	rostermanager.lo privacyitem.lo bookmarkstorage.lo \
 	annotations.lo privacymanager.lo lastactivity.lo flexoff.lo \
-	dataform.lo dataformfield.lo dataformfieldcontainer.lo \
-	messagesession.lo messageeventfilter.lo chatstatefilter.lo \
-	gloox.lo inbandbytestream.lo messagefilter.lo vcard.lo \
-	vcardmanager.lo md5.lo sha.lo search.lo dataformreported.lo \
-	dataformitem.lo mucroom.lo mucmessagesession.lo oob.lo \
-	vcardupdate.lo stanzaextensionfactory.lo delayeddelivery.lo \
-	gpgencrypted.lo gpgsigned.lo uniquemucroom.lo \
-	instantmucroom.lo compressionzlib.lo tlsgnutlsclient.lo \
-	connectionhttpproxy.lo tlsgnutlsserveranon.lo tlsgnutlsbase.lo \
-	tlsgnutlsclientanon.lo tlsschannel.lo tlsdefault.lo \
-	simanager.lo siprofileft.lo mutex.lo connectionsocks5proxy.lo \
-	socks5bytestreammanager.lo socks5bytestream.lo \
-	connectiontcpbase.lo connectiontcpserver.lo \
-	socks5bytestreamserver.lo amp.lo pubsubitem.lo \
-	pubsubmanager.lo error.lo util.lo iq.lo message.lo presence.lo \
-	subscription.lo capabilities.lo chatstate.lo connectionbosh.lo \
-	connectiontls.lo messageevent.lo receipt.lo nickname.lo \
-	eventdispatcher.lo pubsubevent.lo xhtmlim.lo featureneg.lo \
-	shim.lo softwareversion.lo attention.lo tlsopensslclient.lo \
-	tlsopensslbase.lo tlsopensslserver.lo compressiondefault.lo \
-	connectiontlsserver.lo
+	dataform.lo dataformfield.lo dataformbase.lo messagesession.lo \
+	messageeventfilter.lo chatstatefilter.lo gloox.lo \
+	inbandbytestream.lo inbandbytestreammanager.lo \
+	messagefilter.lo vcard.lo vcardmanager.lo md5.lo sha.lo \
+	search.lo dataformreported.lo dataformitem.lo mucroom.lo \
+	mucmessagesession.lo oob.lo vcardupdate.lo \
+	stanzaextensionfactory.lo delayeddelivery.lo \
+	xdelayeddelivery.lo gpgencrypted.lo gpgsigned.lo \
+	uniquemucroom.lo instantmucroom.lo compressionzlib.lo \
+	tlsgnutlsclient.lo tlsopenssl.lo connectionhttpproxy.lo \
+	tlsgnutlsserveranon.lo tlsgnutlsbase.lo tlsgnutlsclientanon.lo \
+	tlsschannel.lo tlsdefault.lo simanager.lo siprofileft.lo \
+	mutex.lo connectionsocks5proxy.lo socks5bytestreammanager.lo \
+	socks5bytestream.lo connectiontcpbase.lo \
+	connectiontcpserver.lo socks5bytestreamserver.lo
 libgloox_la_OBJECTS = $(am_libgloox_la_OBJECTS)
 libgloox_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -133,6 +127,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -174,7 +169,7 @@ CPPFLAGS =  -pthread
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -ansi
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -192,18 +187,16 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2012-09-10
+ISODATE = 2012-09-11
 LD = /usr/bin/ld
-LDFLAGS =  -pthread
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lresolv   -lssl -lcrypto -lz
+LIBS = -lresolv -lresolv   -lidn -lgnutls   -lz
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/missing --run makeinfo
-MAYBE_EXAMPLES = examples
-MAYBE_TESTS = tests
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -214,10 +207,10 @@ OTOOL64 =
 PACKAGE = gloox
 PACKAGE_BUGREPORT = js@camaya.net
 PACKAGE_NAME = gloox
-PACKAGE_STRING = gloox 1.0
+PACKAGE_STRING = gloox 0.9.9.12
 PACKAGE_TARNAME = gloox
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 0.9.9.12
 PATH_SEPARATOR = :
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -pthread
@@ -227,7 +220,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.0
+VERSION = 0.9.9.12
 abs_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src
 abs_srcdir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src
 abs_top_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
@@ -282,11 +275,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-SUBDIRS = . $(MAYBE_TESTS) $(MAYBE_EXAMPLES)
-DIST_SUBDIRS = . tests examples
+SUBDIRS = . examples tests
 AM_CPPFLAGS = -Wall -pedantic -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith \
-                -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual \
-                -Wwrite-strings -Wformat-security -Wmissing-format-attribute -Wno-long-long
+                -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual -ansi
 
 lib_LTLIBRARIES = libgloox.la
 libgloox_la_SOURCES = jid.cpp parser.cpp connectiontcpclient.cpp clientbase.cpp tag.cpp stanza.cpp logsink.cpp \
@@ -294,86 +285,62 @@ libgloox_la_SOURCES = jid.cpp parser.cpp connectiontcpclient.cpp clientbase.cpp 
                         disco.cpp adhoc.cpp privatexml.cpp registration.cpp \
                         nonsaslauth.cpp rosteritem.cpp rostermanager.cpp privacyitem.cpp \
                         bookmarkstorage.cpp annotations.cpp privacymanager.cpp lastactivity.cpp \
-                        flexoff.cpp dataform.cpp dataformfield.cpp dataformfieldcontainer.cpp \
-                        messagesession.cpp messageeventfilter.cpp chatstatefilter.cpp gloox.cpp \
-                        inbandbytestream.cpp messagefilter.cpp vcard.cpp \
+                        flexoff.cpp dataform.cpp dataformfield.cpp dataformbase.cpp messagesession.cpp \
+                        messageeventfilter.cpp chatstatefilter.cpp gloox.cpp \
+                        inbandbytestream.cpp inbandbytestreammanager.cpp messagefilter.cpp vcard.cpp \
                         vcardmanager.cpp md5.cpp sha.cpp search.cpp dataformreported.cpp dataformitem.cpp \
                         mucroom.cpp mucmessagesession.cpp oob.cpp vcardupdate.cpp stanzaextensionfactory.cpp \
-                        delayeddelivery.cpp gpgencrypted.cpp gpgsigned.cpp \
+                        delayeddelivery.cpp xdelayeddelivery.cpp gpgencrypted.cpp gpgsigned.cpp \
                         uniquemucroom.cpp instantmucroom.cpp compressionzlib.cpp tlsgnutlsclient.cpp \
-                        connectionhttpproxy.cpp tlsgnutlsserveranon.cpp tlsgnutlsbase.cpp \
+                        tlsopenssl.cpp connectionhttpproxy.cpp tlsgnutlsserveranon.cpp tlsgnutlsbase.cpp \
                         tlsgnutlsclientanon.cpp tlsschannel.cpp tlsdefault.cpp simanager.cpp siprofileft.cpp \
                         mutex.cpp connectionsocks5proxy.cpp socks5bytestreammanager.cpp socks5bytestream.cpp \
-                        connectiontcpbase.cpp connectiontcpserver.cpp socks5bytestreamserver.cpp amp.cpp \
-                        pubsubitem.cpp pubsubmanager.cpp \
-                        error.cpp util.cpp iq.cpp message.cpp presence.cpp \
-                        subscription.cpp capabilities.cpp chatstate.cpp connectionbosh.cpp connectiontls.cpp \
-                        messageevent.cpp receipt.cpp nickname.cpp eventdispatcher.cpp \
-                        pubsubevent.cpp xhtmlim.cpp featureneg.cpp \
-                        shim.cpp softwareversion.cpp attention.cpp \
-                        tlsopensslclient.cpp tlsopensslbase.cpp \
-                        tlsopensslserver.cpp compressiondefault.cpp \
-                        connectiontlsserver.cpp
+                        connectiontcpbase.cpp connectiontcpserver.cpp socks5bytestreamserver.cpp
 
-libgloox_la_LDFLAGS = -version-info 8:0:0 -no-undefined -no-allow-shlib-undefined
+libgloox_la_LDFLAGS = -version-info 7:0:0 -no-undefined -no-allow-shlib-undefined
 libgloox_la_LIBADD = 
 libgloox_la_CFLAGS = $(CPPFLAGS)
 libglooxincludedir = $(includedir)/gloox
 libglooxinclude_HEADERS = adhoccommandprovider.h      privacymanager.h        tag.h \
-                            adhoc.h attention.h iqhandler.h             privatexml.h \
+                            adhoc.h                   iqhandler.h             privatexml.h \
                             annotations.h             client.h                privatexmlhandler.h \
                             annotationshandler.h      component.h             registration.h \
                             bookmarkhandler.h         registrationhandler.h   jid.h \
                             bookmarkstorage.h         messagehandler.h        rosteritem.h \
                             clientbase.h              rosterlistener.h        taghandler.h \
                             connectionlistener.h      rostermanager.h         gloox.h \
-                            glooxversion.h \
                             disco.h                   presencehandler.h       subscriptionhandler.h \
                             discohandler.h            privacyitem.h           stanza.h \
                             disconodehandler.h        privacylisthandler.h    loghandler.h \
                             lastactivity.h            lastactivityhandler.h   flexoff.h \
                             flexoffhandler.h          dataform.h              dataformfield.h \
-                            dataformitem.h            dataformfieldcontainer.h dataformreported.h \
+                            dataformitem.h            dataformbase.h          dataformreported.h \
                             macros.h                  logsink.h               messagesession.h \
                             messageeventhandler.h     messagesessionhandler.h chatstatehandler.h \
                             chatstatefilter.h         messageeventfilter.h    inbandbytestream.h \
-                            messagefilter.h           vcard.h \
+                            inbandbytestreamhandler.h inbandbytestreamdatahandler.h \
+                            inbandbytestreammanager.h messagefilter.h         vcard.h \
                             vcardmanager.h            vcardhandler.h          adhochandler.h \
                             search.h                  searchhandler.h         statisticshandler.h \
                             resource.h                mucroom.h               mucroomhandler.h \
                             mucroomconfighandler.h    parser.h                \
                             mucinvitationhandler.h    stanzaextension.h       oob.h \
                             vcardupdate.h             delayeddelivery.h       base64.h \
-                            gpgencrypted.h            gpgsigned.h \
+                            xdelayeddelivery.h        gpgencrypted.h          gpgsigned.h \
                             md5.h                     sha.h                   uniquemucroom.h \
                             instantmucroom.h          tlsbase.h               tlshandler.h \
                             connectionbase.h          connectiondatahandler.h compressiondatahandler.h \
                             compressionbase.h         connectiontcpclient.h   connectionhttpproxy.h \
                             tlsdefault.h              simanager.h             siprofilehandler.h \
                             sihandler.h               siprofileft.h           siprofilefthandler.h \
-                            socks5bytestreammanager.h connectionsocks5proxy.h event.h \
-                            socks5bytestream.h        socks5bytestreamserver.h \
-                            softwareversion.h \
-                            eventhandler.h \
+                            socks5bytestreammanager.h connectionsocks5proxy.h socks5bytestreamdatahandler.h \
+                            socks5bytestreamhandler.h socks5bytestream.h      socks5bytestreamserver.h \
                             mutex.h                   mutexguard.h            connectiontcpbase.h \
-                            connectiontcpserver.h     amp.h                   pubsubmanager.h \
-                            iq.h                      pubsub.h                \
-                            pubsubresulthandler.h     error.h                 chatstate.h \
-                            connectionhandler.h \
-                            message.h                 presence.h              subscription.h \
-                            bytestream.h              bytestreamdatahandler.h bytestreamhandler.h \
-                            capabilities.h            connectionbosh.h        featureneg.h \
-                            connectiontls.h           messageevent.h          receipt.h \
-                            nickname.h                pubsubevent.h           xhtmlim.h \
-                            eventdispatcher.h         \
-                            pubsubitem.h shim.h util.h \
-                            connectiontlsserver.h compressiondefault.h
+                            connectiontcpserver.h     connectionhandler.h
 
-noinst_HEADERS = config.h prep.h dns.h nonsaslauth.h mucmessagesession.h stanzaextensionfactory.h \
-                   tlsgnutlsclient.h \
-                   tlsgnutlsbase.h tlsgnutlsclientanon.h tlsgnutlsserveranon.h tlsopensslbase.h tlsschannel.h \
-                   compressionzlib.h rosteritemdata.h tlsopensslclient.h \
-                   tlsopensslserver.h
+noinst_HEADERS = prep.h dns.h nonsaslauth.h mucmessagesession.h stanzaextensionfactory.h tlsgnutlsclient.h \
+                   tlsgnutlsbase.h tlsgnutlsclientanon.h tlsgnutlsserveranon.h tlsopenssl.h tlsschannel.h \
+                   compressionzlib.h
 
 EXTRA_DIST = version.rc
 all: all-recursive
@@ -451,101 +418,76 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/adhoc.Plo
-include ./$(DEPDIR)/amp.Plo
 include ./$(DEPDIR)/annotations.Plo
-include ./$(DEPDIR)/attention.Plo
 include ./$(DEPDIR)/base64.Plo
 include ./$(DEPDIR)/bookmarkstorage.Plo
-include ./$(DEPDIR)/capabilities.Plo
-include ./$(DEPDIR)/chatstate.Plo
 include ./$(DEPDIR)/chatstatefilter.Plo
 include ./$(DEPDIR)/client.Plo
 include ./$(DEPDIR)/clientbase.Plo
 include ./$(DEPDIR)/component.Plo
-include ./$(DEPDIR)/compressiondefault.Plo
 include ./$(DEPDIR)/compressionzlib.Plo
-include ./$(DEPDIR)/connectionbosh.Plo
 include ./$(DEPDIR)/connectionhttpproxy.Plo
 include ./$(DEPDIR)/connectionsocks5proxy.Plo
 include ./$(DEPDIR)/connectiontcpbase.Plo
 include ./$(DEPDIR)/connectiontcpclient.Plo
 include ./$(DEPDIR)/connectiontcpserver.Plo
-include ./$(DEPDIR)/connectiontls.Plo
-include ./$(DEPDIR)/connectiontlsserver.Plo
 include ./$(DEPDIR)/dataform.Plo
+include ./$(DEPDIR)/dataformbase.Plo
 include ./$(DEPDIR)/dataformfield.Plo
-include ./$(DEPDIR)/dataformfieldcontainer.Plo
 include ./$(DEPDIR)/dataformitem.Plo
 include ./$(DEPDIR)/dataformreported.Plo
 include ./$(DEPDIR)/delayeddelivery.Plo
 include ./$(DEPDIR)/disco.Plo
 include ./$(DEPDIR)/dns.Plo
-include ./$(DEPDIR)/error.Plo
-include ./$(DEPDIR)/eventdispatcher.Plo
-include ./$(DEPDIR)/featureneg.Plo
 include ./$(DEPDIR)/flexoff.Plo
 include ./$(DEPDIR)/gloox.Plo
 include ./$(DEPDIR)/gpgencrypted.Plo
 include ./$(DEPDIR)/gpgsigned.Plo
 include ./$(DEPDIR)/inbandbytestream.Plo
+include ./$(DEPDIR)/inbandbytestreammanager.Plo
 include ./$(DEPDIR)/instantmucroom.Plo
-include ./$(DEPDIR)/iq.Plo
 include ./$(DEPDIR)/jid.Plo
 include ./$(DEPDIR)/lastactivity.Plo
 include ./$(DEPDIR)/logsink.Plo
 include ./$(DEPDIR)/md5.Plo
-include ./$(DEPDIR)/message.Plo
-include ./$(DEPDIR)/messageevent.Plo
 include ./$(DEPDIR)/messageeventfilter.Plo
 include ./$(DEPDIR)/messagefilter.Plo
 include ./$(DEPDIR)/messagesession.Plo
 include ./$(DEPDIR)/mucmessagesession.Plo
 include ./$(DEPDIR)/mucroom.Plo
 include ./$(DEPDIR)/mutex.Plo
-include ./$(DEPDIR)/nickname.Plo
 include ./$(DEPDIR)/nonsaslauth.Plo
 include ./$(DEPDIR)/oob.Plo
 include ./$(DEPDIR)/parser.Plo
 include ./$(DEPDIR)/prep.Plo
-include ./$(DEPDIR)/presence.Plo
 include ./$(DEPDIR)/privacyitem.Plo
 include ./$(DEPDIR)/privacymanager.Plo
 include ./$(DEPDIR)/privatexml.Plo
-include ./$(DEPDIR)/pubsubevent.Plo
-include ./$(DEPDIR)/pubsubitem.Plo
-include ./$(DEPDIR)/pubsubmanager.Plo
-include ./$(DEPDIR)/receipt.Plo
 include ./$(DEPDIR)/registration.Plo
 include ./$(DEPDIR)/rosteritem.Plo
 include ./$(DEPDIR)/rostermanager.Plo
 include ./$(DEPDIR)/search.Plo
 include ./$(DEPDIR)/sha.Plo
-include ./$(DEPDIR)/shim.Plo
 include ./$(DEPDIR)/simanager.Plo
 include ./$(DEPDIR)/siprofileft.Plo
 include ./$(DEPDIR)/socks5bytestream.Plo
 include ./$(DEPDIR)/socks5bytestreammanager.Plo
 include ./$(DEPDIR)/socks5bytestreamserver.Plo
-include ./$(DEPDIR)/softwareversion.Plo
 include ./$(DEPDIR)/stanza.Plo
 include ./$(DEPDIR)/stanzaextensionfactory.Plo
-include ./$(DEPDIR)/subscription.Plo
 include ./$(DEPDIR)/tag.Plo
 include ./$(DEPDIR)/tlsdefault.Plo
 include ./$(DEPDIR)/tlsgnutlsbase.Plo
 include ./$(DEPDIR)/tlsgnutlsclient.Plo
 include ./$(DEPDIR)/tlsgnutlsclientanon.Plo
 include ./$(DEPDIR)/tlsgnutlsserveranon.Plo
-include ./$(DEPDIR)/tlsopensslbase.Plo
-include ./$(DEPDIR)/tlsopensslclient.Plo
-include ./$(DEPDIR)/tlsopensslserver.Plo
+include ./$(DEPDIR)/tlsopenssl.Plo
 include ./$(DEPDIR)/tlsschannel.Plo
 include ./$(DEPDIR)/uniquemucroom.Plo
-include ./$(DEPDIR)/util.Plo
 include ./$(DEPDIR)/vcard.Plo
 include ./$(DEPDIR)/vcardmanager.Plo
 include ./$(DEPDIR)/vcardupdate.Plo
-include ./$(DEPDIR)/xhtmlim.Plo
+include ./$(DEPDIR)/xdelayeddelivery.Plo
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -923,14 +865,8 @@ leaktest:
 
 leakcheck: leaktest
 
-includetest:
-	@for i in *.h; do \
-	  echo -e "#include \"$$i\"\nint main() {}" >tmp.cpp; \
-	  $(CXX) -I.. tmp.cpp 2>&1 | sed "s/^$$i://g" >$$i.test.log; \
-	  test -s $$i.test.log && echo "INC $$i: failed" || rm $$i.test.log; \
-	done
-	@rm tmp.cpp
-	@ls *.h.test.log &>/dev/null || echo "INC all: ok"
+examples:
+	make -C examples
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

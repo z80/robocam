@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -37,7 +37,7 @@ namespace gloox
        * @param parent The ClientBase to use for communication.
        * @param jid The @b bare JID of the MUC room.
        */
-      MUCMessageSession( ClientBase* parent, const JID& jid );
+      MUCMessageSession( ClientBase *parent, const JID& jid );
 
       /**
        * Virtual Destructor.
@@ -57,7 +57,7 @@ namespace gloox
       virtual void setSubject( const std::string& subject );
 
       // reimplemented from MessageSession
-      virtual void handleMessage( Message& msg );
+      virtual void handleMessage( Stanza *stanza );
 
   };
 

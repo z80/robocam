@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -13,9 +13,11 @@
 
 #include "mutex.h"
 
-#include "config.h"
+#if !defined( _WIN32 ) && !defined( _WIN32_WCE )
+# include "config.h"
+#endif
 
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
+#ifdef _WIN32
 # include <windows.h>
 #endif
 
@@ -30,101 +32,79 @@
 namespace gloox
 {
 
-  namespace util
+  class MutexImpl
   {
+    public:
+      MutexImpl();
+      ~MutexImpl();
+      void lock();
+      void unlock();
+    private:
+      MutexImpl( const MutexImpl& );
+      MutexImpl& operator=( const MutexImpl& );
 
-    class Mutex::MutexImpl
-    {
-      public:
-        MutexImpl();
-        ~MutexImpl();
-        void lock();
-        bool trylock();
-        void unlock();
-      private:
-        MutexImpl( const MutexImpl& );
-        MutexImpl& operator=( const MutexImpl& );
-
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-        CRITICAL_SECTION m_cs;
+#ifdef _WIN32
+      CRITICAL_SECTION m_cs;
 #elif defined( HAVE_PTHREAD )
-        pthread_mutex_t m_mutex;
+      pthread_mutex_t m_mutex;
 #endif
 
-    };
+  };
 
-    Mutex::MutexImpl::MutexImpl()
-    {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-      InitializeCriticalSection( &m_cs );
+  MutexImpl::MutexImpl()
+  {
+#ifdef _WIN32
+    InitializeCriticalSection( &m_cs );
 #elif defined( HAVE_PTHREAD )
-      pthread_mutex_init( &m_mutex, 0 );
+    pthread_mutex_init( &m_mutex, 0 );
 #endif
-    }
+  }
 
-    Mutex::MutexImpl::~MutexImpl()
-    {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-      DeleteCriticalSection( &m_cs );
+  MutexImpl::~MutexImpl()
+  {
+#ifdef _WIN32
+    DeleteCriticalSection( &m_cs );
 #elif defined( HAVE_PTHREAD )
-      pthread_mutex_destroy( &m_mutex );
+    pthread_mutex_destroy( &m_mutex );
 #endif
-    }
+  }
 
-    void Mutex::MutexImpl::lock()
-    {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-      EnterCriticalSection( &m_cs );
+  void MutexImpl::lock()
+  {
+#ifdef _WIN32
+    EnterCriticalSection( &m_cs );
 #elif defined( HAVE_PTHREAD )
-      pthread_mutex_lock( &m_mutex );
+    pthread_mutex_lock( &m_mutex );
 #endif
-    }
+  }
 
-    bool Mutex::MutexImpl::trylock()
-    {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-      return TryEnterCriticalSection( &m_cs ) ? true : false;
+  void MutexImpl::unlock()
+  {
+#ifdef _WIN32
+    LeaveCriticalSection( &m_cs );
 #elif defined( HAVE_PTHREAD )
-      return !( pthread_mutex_trylock( &m_mutex ) );
-#else
-      return true;
+    pthread_mutex_unlock( &m_mutex );
 #endif
-    }
+  }
 
-    void Mutex::MutexImpl::unlock()
-    {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-      LeaveCriticalSection( &m_cs );
-#elif defined( HAVE_PTHREAD )
-      pthread_mutex_unlock( &m_mutex );
-#endif
-    }
+  Mutex::Mutex()
+    : m_mutex( new MutexImpl() )
+  {
+  }
 
-    Mutex::Mutex()
-      : m_mutex( new MutexImpl() )
-    {
-    }
+  Mutex::~Mutex()
+  {
+    delete m_mutex;
+  }
 
-    Mutex::~Mutex()
-    {
-      delete m_mutex;
-    }
+  void Mutex::lock()
+  {
+    m_mutex->lock();
+  }
 
-    void Mutex::lock()
-    {
-      m_mutex->lock();
-    }
-
-    bool Mutex::trylock()
-    {
-      return m_mutex->trylock();
-    }
-
-    void Mutex::unlock()
-    {
-      m_mutex->unlock();
-    }
-
+  void Mutex::unlock()
+  {
+    m_mutex->unlock();
   }
 
 }

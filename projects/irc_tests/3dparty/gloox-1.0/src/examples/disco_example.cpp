@@ -1,4 +1,3 @@
-
 #include "../client.h"
 #include "../connectionlistener.h"
 #include "../discohandler.h"
@@ -11,8 +10,6 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-
-#include <cstdio> // [s]print[f]
 
 class DiscoTest : public DiscoHandler, ConnectionListener, LogHandler
 {
@@ -55,17 +52,17 @@ class DiscoTest : public DiscoHandler, ConnectionListener, LogHandler
       return true;
     }
 
-    virtual void handleDiscoInfo( const JID& /*iq*/, const Disco::Info&, int /*context*/ )
+    virtual void handleDiscoInfoResult( Stanza */*stanza*/, int /*context*/ )
     {
       printf( "handleDiscoInfoResult}\n" );
     }
 
-    virtual void handleDiscoItems( const JID& /*iq*/, const Disco::Items&, int /*context*/ )
+    virtual void handleDiscoItemsResult( Stanza */*stanza*/, int /*context*/ )
     {
       printf( "handleDiscoItemsResult\n" );
     }
 
-    virtual void handleDiscoError( const JID& /*iq*/, const Error*, int /*context*/ )
+    virtual void handleDiscoError( Stanza */*stanza*/, int /*context*/ )
     {
       printf( "handleDiscoError\n" );
     }

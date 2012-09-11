@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -18,44 +18,16 @@
 namespace gloox
 {
 
-  void VCard::insertField( Tag* vcard, const char* field, const std::string& var )
-  {
-    if( field && !var.empty() )
-      new Tag( vcard, field, var );
-  }
-
-  void VCard::insertField( Tag* vcard, const char* field, bool var )
-  {
-    if( field && var )
-      new Tag( vcard, field );
-  }
-
-  void VCard::checkField( const Tag* vcard, const char* field, std::string& var )
-  {
-    if( field )
-    {
-      Tag* child = vcard->findChild( field );
-      if( child )
-        var = child->cdata();
-    }
-  }
-
   VCard::VCard()
-    : StanzaExtension( ExtVCard ), m_class( ClassNone ), m_prodid( "gloox" + GLOOX_VERSION ),
+    : m_class( ClassNone ), m_prodid( "gloox" + GLOOX_VERSION ),
       m_N( false ), m_PHOTO( false ), m_LOGO( false )
   {
-    m_valid = true;
   }
 
-  VCard::VCard( const Tag* vcard )
-    : StanzaExtension( ExtVCard ), m_class( ClassNone ), m_prodid( "gloox" + GLOOX_VERSION ),
+  VCard::VCard( Tag *vcard )
+    : m_class( ClassNone ), m_prodid( "gloox" + GLOOX_VERSION ),
       m_N( false ), m_PHOTO( false ), m_LOGO( false )
   {
-    if( !vcard || vcard->name() != "vCard" || vcard->xmlns() != XMLNS_VCARD_TEMP )
-      return;
-
-    m_valid = true;
-
     checkField( vcard, "FN", m_formattedname );
     checkField( vcard, "NICKNAME", m_nickname );
     checkField( vcard, "URL", m_url );
@@ -72,96 +44,94 @@ namespace gloox
     checkField( vcard, "SORT-STRING", m_sortstring );
     checkField( vcard, "UID", m_uid );
 
-    TagList::const_iterator it = vcard->children().begin();
+    Tag::TagList::const_iterator it = vcard->children().begin();
     for( ; it != vcard->children().end(); ++it )
     {
-      const Tag& tag = *(*it);
-      if( tag.name() == "N" )
+      if( (*it)->name() == "N" )
       {
         m_N = true;
-        const Tag * child = tag.findChild( "FAMILY" );
-        if( child )
-          m_name.family = child->cdata();
-        if( ( child = tag.findChild( "GIVEN" ) ) )
-          m_name.given = child->cdata();
-        if( ( child = tag.findChild( "MIDDLE" ) ) )
-          m_name.middle = child->cdata();
-        if( ( child = tag.findChild( "PREFIX" ) ) )
-          m_name.prefix = child->cdata();
-        if( ( child = tag.findChild( "SUFFIX" ) ) )
-          m_name.suffix = child->cdata();
+        if( (*it)->hasChild( "FAMILY" ) )
+          m_name.family = (*it)->findChild( "FAMILY" )->cdata();
+        if( (*it)->hasChild( "GIVEN" ) )
+          m_name.given = (*it)->findChild( "GIVEN" )->cdata();
+        if( (*it)->hasChild( "MIDDLE" ) )
+          m_name.middle = (*it)->findChild( "MIDDLE" )->cdata();
+        if( (*it)->hasChild( "PREFIX" ) )
+          m_name.prefix = (*it)->findChild( "PREFIX" )->cdata();
+        if( (*it)->hasChild( "SUFFIX" ) )
+          m_name.suffix = (*it)->findChild( "SUFFIX" )->cdata();
       }
-      else if( tag.name() == "PHOTO" )
+      else if( (*it)->name() == "PHOTO" )
       {
-        if( tag.hasChild( "EXTVAL" ) )
+        if( (*it)->hasChild( "EXTVAL" ) )
         {
-          m_photo.extval = tag.findChild( "EXTVAL" )->cdata();
+          m_photo.extval = (*it)->findChild( "EXTVAL" )->cdata();
           m_PHOTO = true;
         }
-        else if( tag.hasChild( "TYPE" ) && tag.hasChild( "BINVAL" ) )
+        else if( (*it)->hasChild( "TYPE" ) && (*it)->hasChild( "BINVAL" ) )
         {
-          std::string binval = tag.findChild( "BINVAL" )->cdata();
+          std::string binval = (*it)->findChild( "BINVAL" )->cdata();
           std::string::size_type pos = 0;
           while( ( pos = binval.find( '\n' ) ) != std::string::npos )
             binval.erase( pos, 1 );
-          m_photo.type = tag.findChild( "TYPE" )->cdata();
+          m_photo.type = (*it)->findChild( "TYPE" )->cdata();
           m_photo.binval = Base64::decode64( binval );
           m_PHOTO = true;
         }
       }
-      else if( tag.name() == "LOGO" )
+      else if( (*it)->name() == "LOGO" )
       {
-        if( tag.hasChild( "EXTVAL" ) )
+        if( (*it)->hasChild( "EXTVAL" ) )
         {
-          m_logo.extval = tag.findChild( "EXTVAL" )->cdata();
+          m_logo.extval = (*it)->findChild( "EXTVAL" )->cdata();
           m_LOGO = true;
         }
-        else if( tag.hasChild( "TYPE" ) && tag.hasChild( "BINVAL" ) )
+        else if( (*it)->hasChild( "TYPE" ) && (*it)->hasChild( "BINVAL" ) )
         {
-          std::string binval = tag.findChild( "BINVAL" )->cdata();
+          std::string binval = (*it)->findChild( "BINVAL" )->cdata();
           std::string::size_type pos = 0;
           while( ( pos = binval.find( '\n' ) ) != std::string::npos )
             binval.erase( pos, 1 );
-          m_logo.type = tag.findChild( "TYPE" )->cdata();
+          m_logo.type = (*it)->findChild( "TYPE" )->cdata();
           m_logo.binval = Base64::decode64( binval );
           m_LOGO = true;
         }
       }
-      else if( tag.name() == "EMAIL" && tag.hasChild( "USERID" ) )
+      else if( (*it)->name() == "EMAIL" && (*it)->hasChild( "USERID" ) )
       {
         Email item;
-        item.userid = tag.findChild( "USERID" )->cdata();
-        item.internet = tag.hasChild( "INTERNET" );
-        item.x400 = tag.hasChild( "X400" );
-        item.work = tag.hasChild( "WORK" );
-        item.home = tag.hasChild( "HOME" );
-        item.pref = tag.hasChild( "PREF" );
+        item.userid = (*it)->findChild( "USERID" )->cdata();
+        item.internet = (*it)->hasChild( "INTERNET" );
+        item.x400 = (*it)->hasChild( "X400" );
+        item.work = (*it)->hasChild( "WORK" );
+        item.home = (*it)->hasChild( "HOME" );
+        item.pref = (*it)->hasChild( "PREF" );
         m_emailList.push_back( item );
       }
-      else if( tag.name() == "ADR" )
+      else if( (*it)->name() == "ADR" )
       {
         Address item;
-        checkField( &tag, "POBOX", item.pobox );
-        checkField( &tag, "EXTADD", item.extadd );
-        checkField( &tag, "STREET", item.street );
-        checkField( &tag, "LOCALITY", item.locality );
-        checkField( &tag, "REGION", item.region );
-        checkField( &tag, "PCODE", item.pcode );
-        checkField( &tag, "CTRY", item.ctry );
-        item.postal = tag.hasChild( "POSTAL" );
-        item.parcel = tag.hasChild( "PARCEL" );
-        item.work = tag.hasChild( "WORK" );
-        item.home = tag.hasChild( "HOME" );
-        item.pref = tag.hasChild( "PREF" );
-        item.dom = tag.hasChild( "DOM" );
-        item.intl = !item.dom && tag.hasChild( "INTL" );
+        checkField( (*it), "POBOX", item.pobox );
+        checkField( (*it), "EXTADD", item.extadd );
+        checkField( (*it), "STREET", item.street );
+        checkField( (*it), "LOCALITY", item.locality );
+        checkField( (*it), "REGION", item.region );
+        checkField( (*it), "PCODE", item.pcode );
+        checkField( (*it), "CTRY", item.ctry );
+        item.postal = (*it)->hasChild( "POSTAL" );
+        item.parcel = (*it)->hasChild( "PARCEL" );
+        item.work = (*it)->hasChild( "WORK" );
+        item.home = (*it)->hasChild( "HOME" );
+        item.pref = (*it)->hasChild( "PREF" );
+        item.dom = (*it)->hasChild( "DOM" );
+        item.intl = !item.dom && (*it)->hasChild( "INTL" );
         m_addressList.push_back( item );
       }
-      else if( tag.name() == "LABEL" )
+      else if( (*it)->name() == "LABEL" )
       {
         Label item;
-        TagList::const_iterator it2 = tag.children().begin();
-        for( ; it2 != tag.children().end(); ++it2 )
+        Tag::TagList::const_iterator it2 = (*it)->children().begin();
+        for( ; it2 != (*it)->children().end(); ++it2 )
         {
           if( (*it2)->name() == "LINE" )
             item.lines.push_back( (*it)->cdata() );
@@ -175,29 +145,29 @@ namespace gloox
         }
         m_labelList.push_back( item );
       }
-      else if( tag.name() == "TEL" && tag.hasChild( "NUMBER" ) )
+      else if( (*it)->name() == "TEL" && (*it)->hasChild( "NUMBER" ) )
       {
         Telephone item;
-        item.number = tag.findChild( "NUMBER" )->cdata();
-        item.work = tag.hasChild( "WORK" );
-        item.home = tag.hasChild( "HOME" );
-        item.voice = tag.hasChild( "VOICE" );
-        item.fax = tag.hasChild( "FAX" );
-        item.pager = tag.hasChild( "PAGER" );
-        item.msg = tag.hasChild( "MSG" );
-        item.cell = tag.hasChild( "CELL" );
-        item.video = tag.hasChild( "VIDEO" );
-        item.bbs = tag.hasChild( "BBS" );
-        item.modem = tag.hasChild( "MODEM" );
-        item.isdn = tag.hasChild( "ISDN" );
-        item.pcs = tag.hasChild( "PCS" );
-        item.pref = tag.hasChild( "PREF" );
+        item.number = (*it)->findChild( "NUMBER" )->cdata();
+        item.work = (*it)->hasChild( "WORK" );
+        item.home = (*it)->hasChild( "HOME" );
+        item.voice = (*it)->hasChild( "VOICE" );
+        item.fax = (*it)->hasChild( "FAX" );
+        item.pager = (*it)->hasChild( "PAGER" );
+        item.msg = (*it)->hasChild( "MSG" );
+        item.cell = (*it)->hasChild( "CELL" );
+        item.video = (*it)->hasChild( "VIDEO" );
+        item.bbs = (*it)->hasChild( "BBS" );
+        item.modem = (*it)->hasChild( "MODEM" );
+        item.isdn = (*it)->hasChild( "ISDN" );
+        item.pcs = (*it)->hasChild( "PCS" );
+        item.pref = (*it)->hasChild( "PREF" );
         m_telephoneList.push_back( item );
       }
-      else if( tag.name() == "ORG" )
+      else if( (*it)->name() == "ORG" )
       {
-        TagList::const_iterator ito = tag.children().begin();
-        for( ; ito != tag.children().end(); ++ito )
+        Tag::TagList::const_iterator ito = (*it)->children().begin();
+        for( ; ito != (*it)->children().end(); ++ito )
         {
           if( (*ito)->name() == "ORGNAME" )
             m_org.name = (*ito)->cdata();
@@ -205,18 +175,18 @@ namespace gloox
             m_org.units.push_back( (*ito)->cdata() );
         }
       }
-      else if( tag.name() == "GEO" )
+      else if( (*it)->name() == "GEO" )
       {
-        checkField( &tag, "LON", m_geo.longitude );
-        checkField( &tag, "LAT", m_geo.latitude );
+        checkField( (*it), "LON", m_geo.longitude );
+        checkField( (*it), "LAT", m_geo.latitude );
       }
-      else if( tag.name() == "CLASS" )
+      else if( (*it)->name() == "CLASS" )
       {
-        if( tag.hasChild( "PRIVATE" ) )
+        if( (*it)->hasChild( "PRIVATE" ) )
           m_class = ClassPrivate;
-        else if( tag.hasChild( "PUBLIC" ) )
+        else if( (*it)->hasChild( "PUBLIC" ) )
           m_class = ClassPublic;
-        else if( tag.hasChild( "CONFIDENTIAL" ) )
+        else if( (*it)->hasChild( "CONFIDENTIAL" ) )
           m_class = ClassConfidential;
       }
 
@@ -224,9 +194,14 @@ namespace gloox
 
   }
 
-  void VCard::setName( const std::string& family, const std::string& given,
-                       const std::string& middle, const std::string& prefix,
-                       const std::string& suffix )
+  void VCard::checkField( Tag *vcard, const std::string& field, std::string& var )
+  {
+    if( vcard->hasChild( field ) )
+      var = vcard->findChild( field )->cdata();
+  }
+
+  void VCard::setName( const std::string& family, const std::string& given, const std::string& middle,
+                       const std::string& prefix, const std::string& suffix )
   {
     m_name.family = family;
     m_name.given = given;
@@ -253,13 +228,6 @@ namespace gloox
       m_photo.binval = binval;
       m_PHOTO = true;
     }
-    else
-    {
-      m_photo.type = EmptyString;
-      m_photo.binval = EmptyString;
-      m_photo.extval = EmptyString;
-      m_PHOTO = false;
-    }
   }
 
   void VCard::setLogo( const std::string& extval )
@@ -279,13 +247,6 @@ namespace gloox
       m_logo.binval = binval;
       m_LOGO = true;
     }
-    else
-    {
-      m_logo.type = EmptyString;
-      m_logo.binval = EmptyString;
-      m_logo.extval = EmptyString;
-      m_LOGO = false;
-    }
   }
 
   void VCard::addEmail( const std::string& userid, int type )
@@ -295,11 +256,11 @@ namespace gloox
 
     Email item;
     item.userid = userid;
-    item.internet = ((type & AddrTypeInet) == AddrTypeInet);
-    item.x400 = ((type & AddrTypeX400) == AddrTypeX400);
-    item.work = ((type & AddrTypeWork) == AddrTypeWork);
-    item.home = ((type & AddrTypeHome) == AddrTypeHome);
-    item.pref = ((type & AddrTypePref) == AddrTypePref);
+    item.internet = type & AddrTypeInet ? true : false;
+    item.x400 = type & AddrTypeX400 ? true : false;
+    item.work = type & AddrTypeWork ? true : false;
+    item.home = type & AddrTypeHome ? true : false;
+    item.pref = type & AddrTypePref ? true : false;
 
     m_emailList.push_back( item );
   }
@@ -321,31 +282,31 @@ namespace gloox
     item.region = region;
     item.pcode = pcode;
     item.ctry = ctry;
-    item.home = ((type & AddrTypeHome) == AddrTypeHome);
-    item.work = ((type & AddrTypeWork) == AddrTypeWork);
-    item.parcel = ((type & AddrTypeParcel) == AddrTypeParcel);
-    item.postal = ((type & AddrTypePostal) == AddrTypePostal);
-    item.dom = ((type & AddrTypeDom) == AddrTypeDom);
-    item.intl = !item.dom && ((type & AddrTypeIntl) == AddrTypeIntl);
-    item.pref = ((type & AddrTypePref) == AddrTypePref);
+    item.home = type & AddrTypeHome ? true : false;
+    item.work = type & AddrTypeWork ? true : false;
+    item.parcel = type & AddrTypeParcel ? true : false;
+    item.postal = type & AddrTypePostal ? true : false;
+    item.dom = type & AddrTypeDom ? true : false;
+    item.intl = !item.dom && type & AddrTypeIntl ? true : false;
+    item.pref = type & AddrTypePref ? true : false;
 
     m_addressList.push_back( item );
   }
 
   void VCard::addLabel( const StringList& lines, int type )
   {
-    if( lines.empty() )
+    if( !lines.size() )
       return;
 
     Label item;
     item.lines = lines;
-    item.work = ((type & AddrTypeWork) == AddrTypeWork);
-    item.home = ((type & AddrTypeHome) == AddrTypeHome);
-    item.postal = ((type & AddrTypePostal) == AddrTypePostal);
-    item.parcel = ((type & AddrTypeParcel) == AddrTypeParcel);
-    item.pref = ((type & AddrTypePref) == AddrTypePref);
-    item.dom = ((type & AddrTypeDom) == AddrTypeDom);
-    item.intl = !item.dom && ((type & AddrTypeIntl) == AddrTypeIntl);
+    item.work = type & AddrTypeWork ? true : false;
+    item.home = type & AddrTypeHome ? true : false;
+    item.postal = type & AddrTypePostal ? true : false;
+    item.parcel = type & AddrTypeParcel ? true : false;
+    item.pref = type & AddrTypePref ? true : false;
+    item.dom = type & AddrTypeDom ? true : false;
+    item.intl = !item.dom && type & AddrTypeIntl;
 
     m_labelList.push_back( item );
   }
@@ -357,19 +318,19 @@ namespace gloox
 
     Telephone item;
     item.number = number;
-    item.work = ((type & AddrTypeWork) == AddrTypeWork);
-    item.home = ((type & AddrTypeHome) == AddrTypeHome);
-    item.voice = ((type & AddrTypeVoice) == AddrTypeVoice);
-    item.fax = ((type & AddrTypeFax) == AddrTypeFax);
-    item.pager = ((type & AddrTypePager) == AddrTypePager);
-    item.msg = ((type & AddrTypeMsg) == AddrTypeMsg);
-    item.cell = ((type & AddrTypeCell) == AddrTypeCell);
-    item.video = ((type & AddrTypeVideo) == AddrTypeVideo);
-    item.bbs = ((type & AddrTypeBbs) == AddrTypeBbs);
-    item.modem = ((type & AddrTypeModem) == AddrTypeModem);
-    item.isdn = ((type & AddrTypeIsdn) == AddrTypeIsdn);
-    item.pcs = ((type & AddrTypePcs) == AddrTypePcs);
-    item.pref = ((type & AddrTypePref) == AddrTypePref);
+    item.work = type & AddrTypeWork ? true : false;
+    item.home = type & AddrTypeHome ? true : false;
+    item.voice = type & AddrTypeVoice ? true : false;
+    item.fax = type & AddrTypeFax ? true : false;
+    item.pager = type & AddrTypePager ? true : false;
+    item.msg = type & AddrTypeMsg ? true : false;
+    item.cell = type & AddrTypeCell ? true : false;
+    item.video = type & AddrTypeVideo ? true : false;
+    item.bbs = type & AddrTypeBbs ? true : false;
+    item.modem = type & AddrTypeModem ? true : false;
+    item.isdn = type & AddrTypeIsdn ? true : false;
+    item.pcs = type & AddrTypePcs ? true : false;
+    item.pref = type & AddrTypePref ? true : false;
 
     m_telephoneList.push_back( item );
   }
@@ -392,20 +353,10 @@ namespace gloox
     }
   }
 
-  const std::string& VCard::filterString() const
-  {
-    static const std::string filter = "/iq/vCard[@xmlns='" + XMLNS_VCARD_TEMP + "']";
-    return filter;
-  }
-
   Tag* VCard::tag() const
   {
-    Tag* v = new Tag( "vCard" );
-    v->setXmlns( XMLNS_VCARD_TEMP );
-
-    if( !m_valid )
-      return v;
-
+    Tag *v = new Tag( "vCard" );
+    v->addAttribute( "xmlns", XMLNS_VCARD_TEMP );
     v->addAttribute( "version", "3.0" );
 
     insertField( v, "FN", m_formattedname );
@@ -425,7 +376,7 @@ namespace gloox
 
     if( m_N )
     {
-      Tag* n = new Tag( v, "N" );
+      Tag *n = new Tag( v, "N" );
       insertField( n, "FAMILY", m_name.family );
       insertField( n, "GIVEN", m_name.given );
       insertField( n, "MIDDLE", m_name.middle );
@@ -435,7 +386,7 @@ namespace gloox
 
     if( m_PHOTO )
     {
-      Tag* p = new Tag( v, "PHOTO" );
+      Tag *p = new Tag( v, "PHOTO" );
       if( !m_photo.extval.empty() )
       {
         new Tag( p, "EXTVAL", m_photo.extval );
@@ -449,7 +400,7 @@ namespace gloox
 
     if( m_LOGO )
     {
-      Tag* l = new Tag( v, "LOGO" );
+      Tag *l = new Tag( v, "LOGO" );
       if( !m_logo.extval.empty() )
       {
         new Tag( l, "EXTVAL", m_logo.extval );
@@ -464,7 +415,7 @@ namespace gloox
     EmailList::const_iterator ite = m_emailList.begin();
     for( ; ite != m_emailList.end(); ++ite )
     {
-      Tag* e = new Tag( v, "EMAIL" );
+      Tag *e = new Tag( v, "EMAIL" );
       insertField( e, "INTERNET", (*ite).internet );
       insertField( e, "WORK", (*ite).work );
       insertField( e, "HOME", (*ite).home );
@@ -476,7 +427,7 @@ namespace gloox
     AddressList::const_iterator ita = m_addressList.begin();
     for( ; ita != m_addressList.end(); ++ita )
     {
-      Tag* a = new Tag( v, "ADR" );
+      Tag *a = new Tag( v, "ADR" );
       insertField( a, "POSTAL", (*ita).postal );
       insertField( a, "PARCEL", (*ita).parcel );
       insertField( a, "HOME", (*ita).home );
@@ -498,7 +449,7 @@ namespace gloox
     TelephoneList::const_iterator itt = m_telephoneList.begin();
     for( ; itt != m_telephoneList.end(); ++itt )
     {
-      Tag* t = new Tag( v, "TEL" );
+      Tag *t = new Tag( v, "TEL" );
       insertField( t, "NUMBER", (*itt).number );
       insertField( t, "HOME", (*itt).home );
       insertField( t, "WORK", (*itt).work );
@@ -517,23 +468,23 @@ namespace gloox
 
     if( !m_geo.latitude.empty() && !m_geo.longitude.empty() )
     {
-      Tag* g = new Tag( v, "GEO" );
+      Tag *g = new Tag( v, "GEO" );
       new Tag( g, "LAT", m_geo.latitude );
       new Tag( g, "LON", m_geo.longitude );
     }
 
     if( !m_org.name.empty() )
     {
-      Tag* o = new Tag( v, "ORG" );
+      Tag *o = new Tag( v, "ORG" );
       new Tag( o, "ORGNAME", m_org.name );
       StringList::const_iterator ito = m_org.units.begin();
       for( ; ito != m_org.units.end(); ++ito )
-        new Tag( o, "ORGUNIT", (*ito) );
+        new Tag( o, "ORGUNITS", (*ito) );
     }
 
     if( m_class != ClassNone )
     {
-      Tag* c = new Tag( v, "CLASS" );
+      Tag *c = new Tag( v, "CLASS" );
       switch( m_class )
       {
         case ClassPublic:
@@ -552,4 +503,17 @@ namespace gloox
 
     return v;
   }
+
+  void VCard::insertField( Tag *vcard, const std::string& field, const std::string& var ) const
+  {
+    if( !var.empty() )
+      new Tag( vcard, field, var );
+  }
+
+  void VCard::insertField( Tag *vcard, const std::string& field, bool var ) const
+  {
+    if( var )
+      new Tag( vcard, field );
+  }
+
 }

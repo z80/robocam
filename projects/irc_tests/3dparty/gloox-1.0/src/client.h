@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,17 +15,16 @@
 #define CLIENT_H__
 
 #include "clientbase.h"
-#include "presence.h"
+#include "iqhandler.h"
+#include "stanza.h"
 
 #include <string>
 
 namespace gloox
 {
 
-  class Capabilities;
   class RosterManager;
   class NonSaslAuth;
-  class IQ;
 
   /**
    * @brief This class implements a basic Jabber Client.
@@ -55,7 +54,7 @@ namespace gloox
    *   j->connect();
    * }
    *
-   * virtual void TestProg::presenceHandler( Presence* presence )
+   * virtual void TestProg::presenceHandler( Stanza *stanza )
    * {
    *   // handle incoming presence packets here
    * }
@@ -73,7 +72,7 @@ namespace gloox
    * returned.
    * @note As of gloox 0.9, by default a priority of 0 is sent along with the initial presence.
    * @note As of gloox 0.9, initial presence is automatically sent. Presence: available, Priority: 0.
-   * To disable sending of initial Presence use setPresence() with a value of Unavailable
+   * To disable sending of initial Presence use setPresence() with a value of PresenceUnavailable
    * prior to connecting.
    *
    * @section sasl_auth SASL Authentication
@@ -123,60 +122,34 @@ namespace gloox
       Client( const JID& jid, const std::string& password, int port = -1 );
 
       /**
+       * Constructs a new Client.
+       * SASL and TLS are on by default.
+       * The actual host will be resolved using SRV records. The server value is used as a fallback
+       * in case no SRV record is found.
+       * @param username The username/local part of the JID.
+       * @param resource The resource part of the JID.
+       * @param password The password to use for authentication.
+       * @param server The Jabber ID'S server part and the host name to connect to. If those are different
+       * for your setup, use the second constructor instead.
+       * @param port The port to connect to. The default of -1 means to look up the port via DNS SRV.
+       */
+      Client( const std::string& username, const std::string& password,
+              const std::string& server, const std::string& resource, int port = -1 );
+
+      /**
        * Virtual destructor.
        */
       virtual ~Client();
 
       /**
-       * Use this function to bind an additional resource or to @b re-try to bind a
-       * resource in case previous binding failed and you were notified by means of
-       * ConnectionListener::onResourceBindError(). Use hasResourceBind() to find out if the
-       * server supports binding of multiple resources. bindResource() is a NOOP if it doesn't.
-       * @note ConnectionListener::onResourceBound() and ConnectionListener::onResourceBindError()
-       * will be called in case of success and failure, respectively.
-       * @param resource The resource identifier to bind. May be empty. In that case
-       * the server will assign a unique resource identifier.
-       * @return Returns @b true if binding of multiple resources is supported, @b false
-       * otherwise. A return value of @b true does not indicate that the resource was
-       * successfully bound.
-       * @note It is not necessary to call this function to bind the initial, main, resource.
-       * @since 1.0
+       * Use this function to @b re-try to bind a resource only in case you were notified about an
+       * error by means of ConnectionListener::onResourceBindError().
+       * You may (or should) use setResource() before.
        */
-      bool bindResource( const std::string& resource )
-        { return bindOperation( resource, true ); }
+      void bindResource();
 
       /**
-       * Use this function to select a resource identifier that has been bound
-       * previously by means of bindResource(). It is not necessary to call this function
-       * if only one resource is bound. Use hasResourceBind() to find out if the
-       * server supports binding of multiple resources. selectResource() is a NOOP if it doesn't.
-       * @param resource A resource string that has been bound previously.
-       * @note If the resource string has not been bound previously, future sending of
-       * stanzas will fail.
-       */
-      bool selectResource( const std::string& resource );
-
-      /**
-       * This function can be used to find out whether the server supports binding of multiple
-       * resources.
-       * @return @b True if binding of multiple resources is supported by the server,
-       * @b false otherwise.
-       */
-      bool hasResourceBind() const { return ((m_streamFeatures & StreamFeatureUnbind) == StreamFeatureUnbind); }
-
-      /**
-       * Use this function to unbind a resource identifier that has been bound
-       * previously by means of bindResource(). Use hasResourceBind() to find out if the
-       * server supports binding of multiple resources. unbindResource() is a NOOP if it doesn't.
-       * @param resource A resource string that has been bound previously.
-       * @note Servers are encouraged to terminate the connection should the only bound
-       * resource be unbound.
-       */
-      bool unbindResource( const std::string& resource )
-        { return bindOperation( resource, false ); }
-
-      /**
-       * Returns the current prepped main resource.
+       * Returns the current prepped resource.
        * @return The resource used to connect.
        */
       const std::string& resource() const { return m_jid.resource(); }
@@ -185,7 +158,7 @@ namespace gloox
        * Returns the current priority.
        * @return The priority of the current resource.
        */
-      int priority() const { return m_presence.priority(); }
+      int priority() const { return m_priority; }
 
       /**
        * Sets the username to use to connect to the XMPP server.
@@ -194,58 +167,53 @@ namespace gloox
       void setUsername( const std::string &username );
 
       /**
-       * Sets the main resource to use to connect to the XMPP server.
+       * Sets the resource to use to connect to the XMPP server.
        * @param resource The resource to use to log into the server.
        */
       void setResource( const std::string &resource ) { m_jid.setResource( resource ); }
 
       /**
-       * Sends directed presence to the given JID. This is a NOOP if there's no active connection.
-       * To broadcast presence use setPresence( Presence::PresenceType, int, const std::string& ).
-       * @param to The JID to send directed Presence to.
-       * @param pres The presence to send.
-       * @param priority The priority to include. Legal values: -128 <= priority <= 127
-       * @param status The optional status message to include.
-       * @note This function does not include any presence extensions (as added by
-       * means of addPresenceExtension()) to the stanza.
-       */
-      void setPresence( const JID& to, Presence::PresenceType pres, int priority,
-                        const std::string& status = EmptyString );
-
-      /**
-       * Use this function to set the entity's presence, that is, to broadcast presence to all
-       * subscribed entities. To send directed presence, use
-       * setPresence( const JID&, Presence::PresenceType, int, const std::string& ).
+       * Use this function to set the entity's presence.
        * If used prior to establishing a connection, the set values will be sent with
        * the initial presence stanza.
-       * If used while a connection already is established, a presence stanza will be
+       * If used while a connection already is established a repective presence stanza will be
        * sent out immediately.
-       * @param pres The Presence value to set.
+       * @param presence The Presence value to set.
        * @param priority An optional priority value. Legal values: -128 <= priority <= 127
-       * @param status An optional message describing the presence state.
+       * @param msg An optional message describing the presence state.
        * @since 0.9
        */
-      void setPresence( Presence::PresenceType pres, int priority,
-                        const std::string& status = EmptyString );
-
-      /**
-       * Use this function to broadcast the entity's presence to all
-       * subscribed entities. This is a NOOP if there's no active connection.
-       * To send directed presence, use
-       * setPresence( const JID&, Presence::PresenceType, int, const std::string& ).
-       * If used while a connection already is established a repective presence stanza will be
-       * sent out immediately. Use presence() to modify the Presence object.
-       * @note When login is finished, initial presence will be sent automatically.
-       * So you do not need to call this function after login.
-       * @since 1.0
-       */
-      void setPresence() { sendPresence( m_presence ); }
+      void setPresence( Presence presence, int priority = 0, const std::string& msg = "" );
 
       /**
        * Returns the current presence.
        * @return The current presence.
        */
-      Presence& presence() { return m_presence; }
+      Presence presence() const { return m_presence; }
+
+      /**
+       * Returns the current status message.
+       * @return The current status message.
+       */
+      const std::string& status() const { return m_status; }
+
+      /**
+       * Use this function to add a StanzaExtension which will be sent with eacha nd every
+       * Presence Stanza that is sent out. Use cases include
+       * signed presence (@link gloox::GPGSigned GPGSigned @endlink, XEP-0027),
+       * VCard avatar notifications (@link gloox::VCardUpdate VCardUpdate @endlink, XEP-0153),
+       * and others (see @link gloox::StanzaExtension StanzaExtension @endlink for derived classes.
+       * @param se The StanzaExtension to add. Client will become the owner of the given
+       * StanzaExtension.
+       * @note Currently there is no way to selectively remove an extension. Use
+       * removePresenceExtensions() to remove all extensions.
+       */
+      void addPresenceExtension( StanzaExtension *se );
+
+      /**
+       * Use this function to remove all extensions added using addPresenceExtension().
+       */
+      void removePresenceExtensions();
 
       /**
        * This is a temporary hack to enforce Non-SASL login. You should not need to use it.
@@ -288,151 +256,38 @@ namespace gloox
       void nonSaslLogin();
 
     private:
-      /**
-       * @brief This is an implementation of a resource binding StanzaExtension.
-       *
-       * @author Jakob Schroeter <js@camaya.net>
-       * @since 1.0
-       */
-      class ResourceBind : public StanzaExtension
-      {
-
-        public:
-          /**
-           * Constructs a new object with the given resource string.
-           * @param resource The resource to set.
-           * @param bind Indicates whether this is an bind or unbind request.
-           * Defaults to @b true (bind).
-           */
-          ResourceBind( const std::string& resource, bool bind = true );
-
-          /**
-           * Constructs a new object from the given Tag.
-           * @param tag The Tag to parse.
-           */
-          ResourceBind( const Tag* tag );
-
-          /**
-           * Destructor.
-           */
-          ~ResourceBind();
-
-          /**
-           * Returns the requested resource.
-           * @return The requested resource.
-           */
-          const std::string& resource() const { return m_resource; }
-
-          /**
-           * Returns the assigned JID.
-           * @return The assigned JID.
-           */
-          const JID& jid() const { return m_jid; }
-
-          /**
-           * Use this function to find out whether the extension contains a
-           * bind or unbind request.
-           * @return @b True if the extension contains an unbind request, @b false otherwise.
-           */
-          bool unbind() const { return !m_bind; }
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            return new ResourceBind( tag );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-          {
-            return new ResourceBind( *this );
-          }
-
-        private:
-          std::string m_resource;
-          JID m_jid;
-          bool m_bind;
-      };
-
-      /**
-       * @brief This is an implementation of a session creating StanzaExtension.
-       *
-       * @author Jakob Schroeter <js@camaya.net>
-       * @since 1.0
-       */
-      class SessionCreation : public StanzaExtension
-      {
-
-        public:
-          /**
-           * Constructs a new object.
-           */
-          SessionCreation() : StanzaExtension( ExtSessionCreation ) {}
-
-          /**
-           * Destructor.
-           */
-          ~SessionCreation() {}
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const { return EmptyString; }
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-            { (void)tag; return 0; }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-            { return 0; }
-
-      };
-
       virtual void handleStartNode() {}
-      virtual bool handleNormalNode( Tag* tag );
+      virtual bool handleNormalNode( Stanza *stanza );
       virtual void disconnect( ConnectionError reason );
-      virtual void handleIqIDForward( const IQ& iq, int context );
-
-      int getStreamFeatures( Tag* tag );
-      int getSaslMechs( Tag* tag );
-      int getCompressionMethods( Tag* tag );
-      void processResourceBind( const IQ& iq );
-      void processCreateSession( const IQ& iq );
-      void sendPresence( Presence& pres );
+      int getStreamFeatures( Stanza *stanza );
+      int getSaslMechs( Tag *tag );
+      int getCompressionMethods( Tag *tag );
+      void processResourceBind( Stanza *stanza );
+      void processCreateSession( Stanza *stanza );
+      void sendPresence();
       void createSession();
       void negotiateCompression( StreamFeature method );
       void connected();
       virtual void rosterFilled();
       virtual void cleanup();
-      bool bindOperation( const std::string& resource, bool bind );
 
       void init();
 
-      enum TrackContext
-      {
-        CtxResourceBind = 1000,  // must be higher than the last element in ClientBase's TrackContext
-        CtxResourceUnbind,
-        CtxSessionEstablishment
-      };
+      RosterManager *m_rosterManager;
+      NonSaslAuth *m_auth;
 
-      RosterManager* m_rosterManager;
-      NonSaslAuth* m_auth;
+      StanzaExtensionList m_presenceExtensions;
 
       Presence m_presence;
+      std::string m_status;
 
       bool m_resourceBound;
       bool m_forceNonSasl;
       bool m_manageRoster;
+      bool m_doAuth;
 
       int m_streamFeatures;
+      int m_priority;
 
   };
 

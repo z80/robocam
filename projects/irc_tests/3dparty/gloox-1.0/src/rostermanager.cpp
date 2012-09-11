@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,108 +15,25 @@
 #include "rostermanager.h"
 #include "disco.h"
 #include "rosteritem.h"
-#include "rosteritemdata.h"
 #include "rosterlistener.h"
 #include "privatexml.h"
-#include "util.h"
-#include "stanzaextension.h"
-#include "capabilities.h"
 
 
 namespace gloox
 {
 
-  // ---- RosterManager::Query ----
-  RosterManager::Query::Query( const JID& jid, const std::string& name, const StringList& groups )
-    : StanzaExtension( ExtRoster )
-  {
-    m_roster.push_back( new RosterItemData( jid.bare(), name, groups ) );
-  }
-
-  RosterManager::Query::Query( const JID& jid )
-    : StanzaExtension( ExtRoster )
-  {
-    m_roster.push_back( new RosterItemData( jid.bare() ) );
-  }
-
-  RosterManager::Query::Query( const Tag* tag )
-    : StanzaExtension( ExtRoster )
-  {
-    if( !tag || tag->name() != "query" || tag->xmlns() != XMLNS_ROSTER )
-      return;
-
-    const ConstTagList& l = tag->findTagList( "query/item" );
-    ConstTagList::const_iterator it = l.begin();
-    for( ; it != l.end(); ++it )
-    {
-      StringList groups;
-      const ConstTagList& g = (*it)->findTagList( "item/group" );
-      ConstTagList::const_iterator it_g = g.begin();
-      for( ; it_g != g.end(); ++it_g )
-        groups.push_back( (*it_g)->cdata() );
-
-      const std::string sub = (*it)->findAttribute( "subscription" );
-      if( sub == "remove" )
-        m_roster.push_back( new RosterItemData( (*it)->findAttribute( "jid" ) ) );
-      else
-      {
-        RosterItemData* rid = new RosterItemData( (*it)->findAttribute( "jid" ),
-                                                  (*it)->findAttribute( "name" ),
-                                                  groups );
-        rid->setSubscription( sub, (*it)->findAttribute( "ask" ) );
-        m_roster.push_back( rid );
-      }
-    }
-  }
-
-  RosterManager::Query::~Query()
-  {
-    util::clearList( m_roster );
-  }
-
-  const std::string& RosterManager::Query::filterString() const
-  {
-    static const std::string filter = "/iq/query[@xmlns='" + XMLNS_ROSTER + "']";
-    return filter;
-  }
-
-  Tag* RosterManager::Query::tag() const
-  {
-    Tag* t = new Tag( "query" );
-    t->setXmlns( XMLNS_ROSTER );
-
-    RosterData::const_iterator it = m_roster.begin();
-    for( ; it != m_roster.end(); ++it )
-      t->addChild( (*it)->tag() );
-
-    return t;
-  }
-
-  StanzaExtension* RosterManager::Query::clone() const
-  {
-    Query* q = new Query();
-    RosterData::const_iterator it = m_roster.begin();
-    for( ; it != m_roster.end(); ++it )
-    {
-      q->m_roster.push_back( new RosterItemData( *(*it) ) );
-    }
-    return q;
-  }
-  // ---- ~RosterManager::Query ----
-
-  // ---- RosterManager ----
-  RosterManager::RosterManager( ClientBase* parent )
+  RosterManager::RosterManager( ClientBase *parent )
     : m_rosterListener( 0 ), m_parent( parent ), m_privateXML( 0 ),
       m_syncSubscribeReq( false )
   {
     if( m_parent )
     {
-      m_parent->registerIqHandler( this, ExtRoster );
+      m_parent->registerIqHandler( this, XMLNS_ROSTER );
       m_parent->registerPresenceHandler( this );
       m_parent->registerSubscriptionHandler( this );
-      m_parent->registerStanzaExtension( new Query() );
 
       m_self = new RosterItem( m_parent->jid().bare() );
+
       m_privateXML = new PrivateXML( m_parent );
     }
   }
@@ -125,16 +42,18 @@ namespace gloox
   {
     if( m_parent )
     {
-      m_parent->removeIqHandler( this, ExtRoster );
+      m_parent->removeIqHandler( XMLNS_ROSTER );
       m_parent->removeIDHandler( this );
       m_parent->removePresenceHandler( this );
       m_parent->removeSubscriptionHandler( this );
-      m_parent->removeStanzaExtension( ExtRoster );
       delete m_self;
       delete m_privateXML;
     }
 
-    util::clearMap( m_roster );
+    Roster::iterator it = m_roster.begin();
+    for( ; it != m_roster.end(); ++it )
+      delete (*it).second;
+    m_roster.clear();
   }
 
   Roster* RosterManager::roster()
@@ -144,91 +63,125 @@ namespace gloox
 
   void RosterManager::fill()
   {
-    if( !m_parent )
-      return;
-
-    util::clearMap( m_roster );
-    m_privateXML->requestXML( "roster", XMLNS_ROSTER_DELIMITER, this );
-    IQ iq( IQ::Get, JID(), m_parent->getID() );
-    iq.addExtension( new Query() );
-    m_parent->send( iq, this, RequestRoster );
-  }
-
-  bool RosterManager::handleIq( const IQ& iq )
-  {
-    if( iq.subtype() != IQ::Set ) // FIXME add checks for 'from' attribute (empty or bare self jid?)
-      return false;
-
-    // single roster item push
-    const Query* q = iq.findExtension<Query>( ExtRoster );
-    if( q && q->roster().size() )
-      mergePush( q->roster() );
-
-    IQ re( IQ::Result, JID(), iq.id() );
-    m_parent->send( re );
-    return true;
-  }
-
-  void RosterManager::handleIqID( const IQ& iq, int context )
-  {
-    if( iq.subtype() == IQ::Result ) // initial roster
+    Roster::iterator it2;
+    Roster::iterator it = m_roster.begin();
+    while( it != m_roster.end() )
     {
-      const Query* q = iq.findExtension<Query>( ExtRoster );
-      if( q )
-        mergeRoster( q->roster() );
-
-      if( context == RequestRoster )
-      {
-        if( m_parent )
-          m_parent->rosterFilled();
-
-        if( m_rosterListener )
-          m_rosterListener->handleRoster( m_roster );
-      }
+      it2 = it++;
+      delete (*it2).second;
+      m_roster.erase( it2 );
     }
-    else if( iq.subtype() == IQ::Error )
+
+    m_privateXML->requestXML( "roster", XMLNS_ROSTER_DELIMITER, this );
+
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "get" );
+    iq->addAttribute( "id", m_parent->getID() );
+    Tag *q = new Tag( iq, "query" );
+    q->addAttribute( "xmlns", XMLNS_ROSTER );
+    m_parent->send( iq );
+  }
+
+  bool RosterManager::handleIq( Stanza *stanza )
+  {
+    if( stanza->subtype() == StanzaIqResult ) // initial roster
     {
-      if( context == RequestRoster && m_parent )
-        m_parent->rosterFilled();
+      extractItems( stanza, false );
 
       if( m_rosterListener )
-        m_rosterListener->handleRosterError( iq );
+        m_rosterListener->handleRoster( m_roster );
+
+      m_parent->rosterFilled();
+
+      return true;
     }
+    else if( stanza->subtype() == StanzaIqSet ) // roster item push
+    {
+      extractItems( stanza, true );
+
+      Tag *iq = new Tag( "iq" );
+      iq->addAttribute( "id", stanza->id() );
+      iq->addAttribute( "type", "result" );
+      m_parent->send( iq );
+
+      return true;
+    }
+    else if( stanza->subtype() == StanzaIqError )
+    {
+      if( m_rosterListener )
+        m_rosterListener->handleRosterError( stanza );
+    }
+
+    return false;
   }
 
-  void RosterManager::handlePresence( const Presence& presence )
+  bool RosterManager::handleIqID( Stanza * /*stanza*/, int /*context*/ )
   {
-    if( presence.subtype() == Presence::Error )
+    return false;
+  }
+
+  void RosterManager::handlePresence( Stanza *stanza )
+  {
+    if( stanza->subtype() == StanzaPresenceError )
       return;
 
-    bool self = false;
-    Roster::iterator it = m_roster.find( presence.from().bare() );
-    if( it != m_roster.end() || ( self = ( presence.from().bare() == m_self->jid() ) ) )
+    StringList caps;
+    const Tag::TagList& l = stanza->children();
+    Tag::TagList::const_iterator it_c = l.begin();
+    for( ; it_c != l.end(); ++it_c )
     {
-      RosterItem* ri = self ? m_self : (*it).second;
-      const std::string& resource = presence.from().resource();
+      if( (*it_c)->name() == "c" )
+      {
+        std::string cap;
+        cap.append( (*it_c)->findAttribute( "node" ).c_str() );
+        cap.append( "#" );
+        cap.append( (*it_c)->findAttribute( "ver" ).c_str() );
+        if( (*it_c)->findAttribute( "ext" ).size ())
+        {
+          cap.append( "#" );
+          cap.append( (*it_c)->findAttribute( "ext" ).c_str() );
+        }
+        caps.push_back( cap );
+      }
+    }
 
-      if( presence.presence() == Presence::Unavailable )
-        ri->removeResource( resource );
+    Roster::iterator it = m_roster.find( stanza->from().bare() );
+    if( it != m_roster.end() )
+    {
+      if( stanza->presence() == PresenceUnavailable )
+        (*it).second->removeResource( stanza->from().resource() );
       else
       {
-        ri->setPresence( resource, presence.presence() );
-        ri->setStatus( resource, presence.status() );
-        ri->setPriority( resource, presence.priority() );
-        ri->setExtensions( resource, presence.extensions() );
+        (*it).second->setPresence( stanza->from().resource(), stanza->presence() );
+        (*it).second->setStatus( stanza->from().resource(), stanza->status() );
+        (*it).second->setPriority( stanza->from().resource(), stanza->priority() );
+  //       (*it).second->setCaps ( caps );
       }
 
-      if( m_rosterListener && !self )
-        m_rosterListener->handleRosterPresence( *ri, resource,
-                                                presence.presence(), presence.status() );
-      else if( m_rosterListener && self )
-        m_rosterListener->handleSelfPresence( *ri, resource,
-                                              presence.presence(), presence.status() );
+      if( m_rosterListener )
+        m_rosterListener->handleRosterPresence( (*(*it).second), stanza->from().resource(),
+                                                stanza->presence(), stanza->status() );
+    }
+    else if( stanza->from().bare() == m_self->jid() )
+    {
+      if( stanza->presence() == PresenceUnavailable )
+        m_self->removeResource( stanza->from().resource() );
+      else
+      {
+        m_self->setPresence( stanza->from().resource(), stanza->presence() );
+        m_self->setStatus( stanza->from().resource(), stanza->status() );
+        m_self->setPriority( stanza->from().resource(), stanza->priority() );
+  //       (*it).second->setCaps ( caps );
+      }
+
+      if( m_rosterListener )
+        m_rosterListener->handleSelfPresence( *m_self, stanza->from().resource(),
+                                              stanza->presence(), stanza->status() );
     }
     else
     {
       if( m_rosterListener )
-        m_rosterListener->handleNonrosterPresence( presence );
+        m_rosterListener->handleNonrosterPresence( stanza );
     }
   }
 
@@ -240,7 +193,13 @@ namespace gloox
 
     add( jid, name, groups );
 
-    Subscription s( Subscription::Subscribe, jid.bareJID(), msg );
+    Tag *s = new Tag( "presence" );
+    s->addAttribute( "type", "subscribe" );
+    s->addAttribute( "to", jid.bare() );
+    s->addAttribute( "from", m_parent->jid().full() );
+    if( !msg.empty() )
+      new Tag( s, "status", msg );
+
     m_parent->send( s );
   }
 
@@ -250,33 +209,66 @@ namespace gloox
     if( !jid )
       return;
 
-    IQ iq( IQ::Set, JID(), m_parent->getID() );
-    iq.addExtension( new Query( jid, name, groups) );
+    const std::string& id = m_parent->getID();
 
-    m_parent->send( iq, this, AddRosterItem );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "set" );
+    iq->addAttribute( "id", id );
+    Tag *q = new Tag( iq, "query" );
+    q->addAttribute( "xmlns", XMLNS_ROSTER );
+    Tag *i = new Tag( q, "item" );
+    i->addAttribute( "jid", jid.bare() );
+    if( !name.empty() )
+      i->addAttribute( "name", name );
+
+    if( groups.size() != 0 )
+    {
+      StringList::const_iterator it = groups.begin();
+      for( ; it != groups.end(); ++it )
+        new Tag( i, "group", (*it) );
+    }
+
+    m_parent->send( iq );
   }
 
   void RosterManager::unsubscribe( const JID& jid, const std::string& msg )
   {
-    Subscription p( Subscription::Unsubscribe, jid.bareJID(), msg );
-    m_parent->send( p );
+    Tag *s = new Tag( "presence" );
+    s->addAttribute( "type", "unsubscribe" );
+    s->addAttribute( "to", jid.bare() );
+    if( !msg.empty() )
+      new Tag( s, "status", msg );
+
+    m_parent->send( s );
+
   }
 
   void RosterManager::cancel( const JID& jid, const std::string& msg )
   {
-    Subscription p( Subscription::Unsubscribed, jid.bareJID(), msg );
-    m_parent->send( p );
+    Tag *s = new Tag( "presence" );
+    s->addAttribute( "type", "unsubscribed" );
+    s->addAttribute( "to", jid.bare() );
+    if( !msg.empty() )
+      new Tag( s, "status", msg );
+
+    m_parent->send( s );
+
   }
 
   void RosterManager::remove( const JID& jid )
   {
-    if( !jid )
-      return;
+    const std::string& id = m_parent->getID();
 
-    IQ iq( IQ::Set, JID(), m_parent->getID() );
-    iq.addExtension( new Query( jid ) );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "set" );
+    iq->addAttribute( "id", id );
+    Tag *q = new Tag( iq, "query" );
+    q->addAttribute( "xmlns", XMLNS_ROSTER );
+    Tag *i = new Tag( q, "item" );
+    i->addAttribute( "jid", jid.bare() );
+    i->addAttribute( "subscription", "remove" );
 
-    m_parent->send( iq, this, RemoveRosterItem );
+    m_parent->send( iq );
   }
 
   void RosterManager::synchronize()
@@ -284,58 +276,92 @@ namespace gloox
     Roster::const_iterator it = m_roster.begin();
     for( ; it != m_roster.end(); ++it )
     {
-      if( !(*it).second->changed() )
-        continue;
+      if( (*it).second->changed() )
+      {
+        const std::string& id = m_parent->getID();
 
-      IQ iq( IQ::Set, JID(), m_parent->getID() );
-      iq.addExtension( new Query( (*it).second->jid(), (*it).second->name(), (*it).second->groups() ) );
-      m_parent->send( iq, this, SynchronizeRoster );
+        Tag *iq = new Tag( "iq" );
+        iq->addAttribute( "type", "set" );
+        iq->addAttribute( "id", id );
+        Tag *q = new Tag( iq, "query" );
+        q->addAttribute( "xmlns", XMLNS_ROSTER );
+        Tag *i = new Tag( q, "item" );
+        i->addAttribute( "jid", (*it).second->jid() );
+        if( !(*it).second->name().empty() )
+          i->addAttribute( "name", (*it).second->name() );
+
+        if( (*it).second->groups().size() != 0 )
+        {
+          StringList::const_iterator g_it = (*it).second->groups().begin();
+          for( ; g_it != (*it).second->groups().end(); ++g_it )
+            new Tag( i, "group", (*g_it) );
+        }
+
+        m_parent->send( iq );
+      }
     }
   }
 
   void RosterManager::ackSubscriptionRequest( const JID& to, bool ack )
   {
-    Subscription p( ack ? Subscription::Subscribed
-                                            : Subscription::Unsubscribed, to.bareJID() );
+    Tag *p = new Tag( "presence" );
+    if( ack )
+      p->addAttribute( "type", "subscribed" );
+    else
+      p->addAttribute( "type", "unsubscribed" );
+
+    p->addAttribute( "to", to.bare() );
     m_parent->send( p );
   }
 
-  void RosterManager::handleSubscription( const Subscription& s10n )
+  void RosterManager::handleSubscription( Stanza *stanza )
   {
     if( !m_rosterListener )
       return;
 
-    switch( s10n.subtype() )
+    switch( stanza->subtype() )
     {
-      case Subscription::Subscribe:
+      case StanzaS10nSubscribe:
       {
-        bool answer = m_rosterListener->handleSubscriptionRequest( s10n.from(), s10n.status() );
+        bool answer = m_rosterListener->handleSubscriptionRequest( stanza->from(), stanza->status() );
         if( m_syncSubscribeReq )
         {
-          ackSubscriptionRequest( s10n.from(), answer );
+          ackSubscriptionRequest( stanza->from(), answer );
         }
         break;
       }
-      case Subscription::Subscribed:
+      case StanzaS10nSubscribed:
       {
-        m_rosterListener->handleItemSubscribed( s10n.from() );
+//         Tag *p = new Tag( "presence" );
+//         p->addAttribute( "type", "subscribe" );
+//         p->addAttribute( "to", stanza->from().bare() );
+//         m_parent->send( p );
+
+        m_rosterListener->handleItemSubscribed( stanza->from() );
         break;
       }
 
-      case Subscription::Unsubscribe:
+      case StanzaS10nUnsubscribe:
       {
-        Subscription p( Subscription::Unsubscribed, s10n.from().bareJID() );
+        Tag *p = new Tag( "presence" );
+        p->addAttribute( "type", "unsubscribed" );
+        p->addAttribute( "to", stanza->from().bare() );
         m_parent->send( p );
 
-        bool answer = m_rosterListener->handleUnsubscriptionRequest( s10n.from(), s10n.status() );
+        bool answer = m_rosterListener->handleUnsubscriptionRequest( stanza->from(), stanza->status() );
         if( m_syncSubscribeReq && answer )
-          remove( s10n.from().bare() );
+          remove( stanza->from().bare() );
         break;
       }
 
-      case Subscription::Unsubscribed:
+      case StanzaS10nUnsubscribed:
       {
-        m_rosterListener->handleItemUnsubscribed( s10n.from() );
+//         Tag *p = new Tag( "presence" );
+//         p->addAttribute( "type", "unsubscribe" );
+//         p->addAttribute( "to", stanza->from().bare() );
+//         m_parent->send( p );
+
+        m_rosterListener->handleItemUnsubscribed( stanza->from() );
         break;
       }
 
@@ -344,7 +370,7 @@ namespace gloox
     }
   }
 
-  void RosterManager::registerRosterListener( RosterListener* rl, bool syncSubscribeReq )
+  void RosterManager::registerRosterListener( RosterListener *rl, bool syncSubscribeReq )
   {
     m_syncSubscribeReq = syncSubscribeReq;
     m_rosterListener = rl;
@@ -356,18 +382,95 @@ namespace gloox
     m_rosterListener = 0;
   }
 
+  void RosterManager::extractItems( Tag *tag, bool isPush )
+  {
+    Tag *t = tag->findChild( "query" );
+    const Tag::TagList& l = t->children();
+    Tag::TagList::const_iterator it = l.begin();
+    for( ; it != l.end(); ++it )
+    {
+      if( (*it)->name() == "item" )
+      {
+        StringList gl;
+        if( (*it)->hasChild( "group" ) )
+        {
+          const Tag::TagList& g = (*it)->children();
+          Tag::TagList::const_iterator it_g = g.begin();
+          for( ; it_g != g.end(); ++it_g )
+          {
+            gl.push_back( (*it_g)->cdata() );
+          }
+        }
+
+        const JID& jid = (*it)->findAttribute( "jid" );
+        Roster::iterator it_d = m_roster.find( jid.bare() );
+        if( it_d != m_roster.end() )
+        {
+          (*it_d).second->setName( (*it)->findAttribute( "name" ) );
+          const std::string& sub = (*it)->findAttribute( "subscription" );
+          if( sub == "remove" )
+          {
+            delete (*it_d).second;
+            m_roster.erase( it_d );
+            if( m_rosterListener )
+              m_rosterListener->handleItemRemoved( jid );
+            continue;
+          }
+          const std::string& ask = (*it)->findAttribute( "ask" );
+          bool a = false;
+          if( !ask.empty() )
+            a = true;
+          (*it_d).second->setSubscription( sub, a );
+          (*it_d).second->setGroups( gl );
+          (*it_d).second->setSynchronized();
+
+          if( isPush && m_rosterListener )
+            m_rosterListener->handleItemUpdated( jid );
+        }
+        else
+        {
+          const std::string& sub = (*it)->findAttribute( "subscription" );
+          if( sub == "remove" )
+            continue;
+          const std::string& name = (*it)->findAttribute( "name" );
+          const std::string& ask = (*it)->findAttribute( "ask" );
+          bool a = false;
+          if( !ask.empty() )
+            a = true;
+
+          StringList caps;
+          add( jid.bare(), name, gl, caps, sub, a );
+          if( isPush && m_rosterListener )
+            m_rosterListener->handleItemAdded( jid );
+        }
+      }
+    }
+  }
+
+  void RosterManager::add( const std::string& jid, const std::string& name,
+                           const StringList& groups, const StringList& caps,
+                           const std::string& sub, bool ask )
+  {
+    if( m_roster.find( jid ) == m_roster.end() )
+      m_roster[jid] = new RosterItem( jid, name );
+
+    m_roster[jid]->setSubscription( sub, ask );
+    m_roster[jid]->setGroups( groups );
+//     m_roster[jid]->setCaps( caps );
+    m_roster[jid]->setSynchronized();
+  }
+
   void RosterManager::setDelimiter( const std::string& delimiter )
   {
     m_delimiter = delimiter;
-    Tag* t = new Tag( "roster", m_delimiter );
-    t->addAttribute( XMLNS, XMLNS_ROSTER_DELIMITER );
+    Tag *t = new Tag( "roster", m_delimiter );
+    t->addAttribute( "xmlns", XMLNS_ROSTER_DELIMITER );
     m_privateXML->storeXML( t, this );
   }
 
-  void RosterManager::handlePrivateXML( const Tag* xml )
+  void RosterManager::handlePrivateXML( const std::string& /*tag*/, Tag *xml )
   {
-    if( xml )
-      m_delimiter = xml->cdata();
+    m_delimiter = xml->cdata();
   }
 
   void RosterManager::handlePrivateXMLResult( const std::string& /*uid*/, PrivateXMLResult /*result*/ )
@@ -377,45 +480,10 @@ namespace gloox
   RosterItem* RosterManager::getRosterItem( const JID& jid )
   {
     Roster::const_iterator it = m_roster.find( jid.bare() );
-    return it != m_roster.end() ? (*it).second : 0;
-  }
-
-  void RosterManager::mergePush( const RosterData& data )
-  {
-    RosterData::const_iterator it = data.begin();
-    for( ; it != data.end(); ++it )
-    {
-      Roster::iterator itr = m_roster.find( (*it)->jid() );
-      if( itr != m_roster.end() )
-      {
-        if( (*it)->remove() )
-        {
-          if( m_rosterListener )
-            m_rosterListener->handleItemRemoved( (*it)->jid() );
-          delete (*itr).second;
-          m_roster.erase( itr );
-        }
-        else
-        {
-          (*itr).second->setData( *(*it) );
-          if( m_rosterListener )
-            m_rosterListener->handleItemUpdated( (*it)->jid() );
-        }
-      }
-      else if( !(*it)->remove() )
-      {
-        m_roster.insert( std::make_pair( (*it)->jid(), new RosterItem( *(*it) ) ) );
-        if( m_rosterListener )
-          m_rosterListener->handleItemAdded( (*it)->jid() );
-      }
-    }
-  }
-
-  void RosterManager::mergeRoster( const RosterData& data )
-  {
-    RosterData::const_iterator it = data.begin();
-    for( ; it != data.end(); ++it )
-      m_roster.insert( std::make_pair( (*it)->jid(), new RosterItem( *(*it) ) ) );
+    if( it != m_roster.end() )
+      return (*it).second;
+    else
+      return 0;
   }
 
 }

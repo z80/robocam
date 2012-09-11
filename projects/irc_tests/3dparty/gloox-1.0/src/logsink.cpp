@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -18,6 +18,7 @@ namespace gloox
 {
 
   LogSink::LogSink()
+    : m_fileFilter( 0 )
   {
   }
 
@@ -35,13 +36,13 @@ namespace gloox
     }
   }
 
-  void LogSink::registerLogHandler( LogLevel level, int areas, LogHandler* lh )
+  void LogSink::registerLogHandler( LogLevel level, int areas, LogHandler *lh )
   {
     LogInfo info = { level, areas };
     m_logHandlers[lh] = info;
   }
 
-  void LogSink::removeLogHandler( LogHandler* lh )
+  void LogSink::removeLogHandler( LogHandler *lh )
   {
     m_logHandlers.erase( lh );
   }

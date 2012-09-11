@@ -1,8 +1,9 @@
 #include "../client.h"
 #include "../messagehandler.h"
 #include "../connectionlistener.h"
+#include "../discohandler.h"
 #include "../disco.h"
-#include "../message.h"
+#include "../stanza.h"
 #include "../gloox.h"
 #include "../lastactivity.h"
 #include "../flexoff.h"
@@ -15,9 +16,7 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
-class FlexOffTest : public MessageHandler, ConnectionListener, FlexibleOfflineHandler,
+class FlexOffTest : public DiscoHandler, MessageHandler, ConnectionListener, FlexibleOfflineHandler,
                            LogHandler
 {
   public:
@@ -31,6 +30,7 @@ class FlexOffTest : public MessageHandler, ConnectionListener, FlexibleOfflineHa
       j = new Client( jid, "hurkhurks" );
       j->registerConnectionListener( this );
       j->registerMessageHandler( this );
+      j->disco()->registerDiscoHandler( this );
       j->disco()->setVersion( "messageTest", GLOOX_VERSION, "Linux" );
       j->disco()->setIdentity( "client", "bot" );
       StringList ca;
@@ -68,22 +68,41 @@ class FlexOffTest : public MessageHandler, ConnectionListener, FlexibleOfflineHa
       return true;
     }
 
-    virtual void handleMessage( const Message& msg, MessageSession * /*session*/ )
+    virtual void handleDiscoInfoResult( Stanza */*stanza*/, int /*context*/ )
     {
-      printf( "type: %d, subject: %s, message: %s, thread id: %s\n", msg.subtype(),
-              msg.subject().c_str(), msg.body().c_str(), msg.thread().c_str() );
+      printf( "handleDiscoInfoResult}\n" );
+    }
+
+    virtual void handleDiscoItemsResult( Stanza */*stanza*/, int /*context*/ )
+    {
+      printf( "handleDiscoItemsResult\n" );
+    }
+
+    virtual void handleDiscoError( Stanza */*stanza*/, int /*context*/ )
+    {
+      printf( "handleDiscoError\n" );
+    }
+
+    virtual void handleMessage( Stanza *stanza, MessageSession * /*session*/ )
+    {
+      printf( "type: %d, subject: %s, message: %s, thread id: %s\n", stanza->subtype(),
+              stanza->subject().c_str(), stanza->body().c_str(), stanza->thread().c_str() );
       Tag *m = new Tag( "message" );
       m->addAttribute( "from", j->jid().full() );
-      m->addAttribute( "to", msg.from().full() );
+      m->addAttribute( "to", stanza->from().full() );
       m->addAttribute( "type", "chat" );
-      Tag *b = new Tag( "body", "You said:\n> " + msg.body() + "\nI like that statement." );
+      Tag *b = new Tag( "body", "You said:\n> " + stanza->body() + "\nI like that statement." );
       m->addChild( b );
-      if( !msg.subject().empty() )
+      if( !stanza->subject().empty() )
       {
-        Tag *s = new Tag( "subject", "Re:" +  msg.subject() );
+        Tag *s = new Tag( "subject", "Re:" +  stanza->subject() );
         m->addChild( s );
       }
       j->send( m );
+    }
+
+    virtual void handleMessage( const std::string& /*jid*/, Stanza * /*stanza*/ )
+    {
     }
 
     virtual void handleFlexibleOfflineSupport( bool support )
@@ -106,12 +125,12 @@ class FlexOffTest : public MessageHandler, ConnectionListener, FlexibleOfflineHa
       f->fetchHeaders();
     }
 
-    virtual void handleFlexibleOfflineMessageHeaders( const Disco::ItemList& headers )
+    virtual void handleFlexibleOfflineMessageHeaders( StringMap& headers )
     {
       printf( "FlexOff: %d headers received.\n", headers.size() );
       StringList l;
       l.push_back( "Fdd" );
-      l.push_back( (*(headers.begin()))->node() );
+      l.push_back( (*(headers.begin())).first );
       f->fetchMessages( l );
       f->removeMessages( l );
     }

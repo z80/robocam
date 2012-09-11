@@ -41,7 +41,7 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
@@ -102,7 +102,7 @@ CPPFLAGS =  -pthread
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -ansi
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -120,18 +120,16 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2012-09-10
+ISODATE = 2012-09-11
 LD = /usr/bin/ld
-LDFLAGS =  -pthread
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lresolv   -lssl -lcrypto -lz
+LIBS = -lresolv -lresolv   -lidn -lgnutls   -lz
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/missing --run makeinfo
-MAYBE_EXAMPLES = examples
-MAYBE_TESTS = tests
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -142,10 +140,10 @@ OTOOL64 =
 PACKAGE = gloox
 PACKAGE_BUGREPORT = js@camaya.net
 PACKAGE_NAME = gloox
-PACKAGE_STRING = gloox 1.0
+PACKAGE_STRING = gloox 0.9.9.12
 PACKAGE_TARNAME = gloox
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 0.9.9.12
 PATH_SEPARATOR = :
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -pthread
@@ -155,7 +153,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.0
+VERSION = 0.9.9.12
 abs_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/tests
 abs_srcdir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/tests
 abs_top_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
@@ -210,34 +208,9 @@ target_alias =
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
-SUBDIRS = adhoc adhoccommand adhoccommandnote amprule amp base64 \
-          capabilities chatstatefilter client clientbase connectionbosh \
-          dataform dataformfield \
-          dataformreported dataformitem delayeddelivery discoinfo discoitems disco \
-          error \
-          featureneg flexoffline flexofflineoffline \
-          gpgencrypted gpgsigned \
-          inbandbytestreamibb inbandbytestream iq \
-          jid \
-          lastactivity lastactivityquery \
-          md5 message messageeventfilter \
-          mucroommuc mucroommucadmin mucroommucowner mucroommucuser \
-          nickname nonsaslauthquery nonsaslauth \
-          oob \
-          parser prep presence privacymanager privacymanagerquery \
-          privatexml \
-          pubsubmanagerpubsub pubsubmanager pubsubevent\
-          receipt \
-          registrationquery registration \
-          rostermanagerquery rostermanager \
-          searchquery search \
-          sha shim \
-          simanager simanagersi stanzaextensionfactory subscription \
-          tag tlsgnutls \
-          uniquemucroomunique \
-          vcard vcardupdate \
-          xpath \
-          zlib util
+SUBDIRS = base64 chatstatefilter client clientbase dataform dataformfield delayeddelivery gpgencrypted \
+	  gpgsigned jid md5 messageeventfilter oob parser prep search sha simanager stanza \
+	  stanzaextensionfactory tag tlsgnutls vcardupdate xdelayeddelivery xpath zlib
 
 all: all-recursive
 
@@ -590,7 +563,7 @@ check: test
 
 test: ${SUBDIRS}
 	@for i in $?; do \
-	  ${MAKE} -C $$i all || exit; \
+	  ${MAKE} -C $$i all; \
 	done;
 	@for i in $?; do \
 	  $$i/$${i}_test;    \
@@ -600,7 +573,7 @@ leaktest: leakcheck
 
 leakcheck: ${SUBDIRS}
 	@for i in $?; do \
-	  ${MAKE} -C $$i all || exit; \
+	  ${MAKE} -C $$i all; \
 	done;
 	@for i in $?; do \
 	  valgrind -q --leak-check=full --show-reachable=yes $$i/$${i}_test;    \

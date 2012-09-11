@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,6 @@
 #define MESSAGESESSION_H__
 
 #include "jid.h"
-#include "gloox.h"
 
 #include <string>
 #include <list>
@@ -24,21 +23,22 @@ namespace gloox
 {
 
   class ClientBase;
+  class Tag;
   class MessageFilter;
   class MessageHandler;
-  class Message;
+  class Stanza;
 
   /**
    * @brief An abstraction of a message session between any two entities.
    *
-   * This is an alternative interface to unmanaged messaging. The original interface, using the simple
+   * This is an alternative interface to raw, old-style messaging. The original interface, using the simple
    * MessageHandler-derived interface, is based on an all-or-nothing approach. Once registered with
    * ClientBase, a handler receives all message stanzas sent to this client and has to do any filtering
    * on its own.
    *
    * MessageSession adds an abstraction to a chat conversation. A MessageSession is responsible for
    * communicating with exactly one (full) JID. It is extensible with so-called MessageFilters, which can
-   * provide additional features such as Message Events, or Chat State Notifications.
+   * provide additional features such as Message Events, Chat State Notifications or In-Band Bytestreams.
    *
    * You can still use the old MessageHandler in parallel, but messages will not be relayed to both
    * the generic MessageHandler and a MessageSession established for the sender's JID. The MessageSession
@@ -70,7 +70,7 @@ namespace gloox
    * ChatStateHandler, too. The handlers are registered with the session to receive the
    * respective events.
    * @code
-   * virtual void MyClass::handleMessageSession( MessageSession* session )
+   * virtual void MyClass::handleMessageSession( MessageSession *session )
    * {
    *   // for this example only, we delete any earlier session
    *   if( m_session )
@@ -117,8 +117,7 @@ namespace gloox
    * @endcode
    *
    * To send a message to the chat partner of the session, use
-   * @ref send( const std::string& message, const std::string& subject, const StanzaExtensionList& ).
-   * You don't have to care about
+   * @ref send( const std::string& message, const std::string& subject ). You don't have to care about
    * receipient, thread id, etc., they are added automatically.
    *
    * @code
@@ -130,11 +129,13 @@ namespace gloox
    * @code
    * MessageSession* MyClass::newSession( const JID& to )
    * {
-   *   MessageSession* session = new MessageSession( m_client, to );
+   *   MessageSession *session = new MessageSession( m_client, to );
    *   session->registerMessageHandler( this );
    *   return session;
    * }
    * @endcode
+   *
+   * See InBandBytestreamManager for a detailed description on how to implement In-Band Bytestreams.
    *
    * @note You should never delete a MessageSession manually. Use ClientBase::disposeMessageSession()
    * instead.
@@ -161,11 +162,10 @@ namespace gloox
        * from a full JID to this MessageSession. If unsure, use the default. You probably only want to use
        * a non-default value if this MessageSession is supposed to talk directly to a server or component
        * JID that has no resource. This 'upgrade' will only happen once.
-       * @param types ORed list of Message::MessageType values this MessageSession shall receive.
-       * Defaults to 0 which means any type is received.
-       * @param honorTID Indicates whether thread IDs should be honored when matching incoming messages to MessageSessions. The default is usually fine.
+       * @param types ORed list of StanzaSubType values this MessageSession shall receive. Only the
+       * StanzaMessage* types are valid. Defaults to 0 which means any type is received.
        */
-      MessageSession( ClientBase* parent, const JID& jid, bool wantUpgrade = true, int types = 0, bool honorTID = true );
+      MessageSession( ClientBase *parent, const JID& jid, bool wantUpgrade = true, int types = 0 );
 
       /**
        * Virtual destructor.
@@ -190,17 +190,10 @@ namespace gloox
 
       /**
        * Use this function to set the session's thread ID if e.g. a specific thread is
-       * continued. It should not normally be needed to set the thread ID manually.
+       * continued. It shpuld not normally be needed to set the thread ID manually.
        * @param thread The new thread ID.
        */
       void setThreadID( const std::string& thread ) { m_thread = thread; }
-
-      /**
-       * Indicates whether thread IDs are honored when matching incoming
-       * messages to MessageSessions.
-       * @return Whether thread IDs are honored.
-       */
-      bool honorThreadID() const { return m_honorThreadID; }
 
       /**
        * Use this function to associate a MessageHandler with this MessageSession.
@@ -208,26 +201,21 @@ namespace gloox
        * remote contact.
        * @param mh The MessageHandler to register.
        */
-      void registerMessageHandler( MessageHandler* mh )
-        { m_messageHandler = mh; }
+      void registerMessageHandler( MessageHandler *mh );
 
       /**
        * This function clears the internal pointer to the MessageHandler and therefore
        * disables message delivery.
        */
-      void removeMessageHandler()
-        { m_messageHandler = 0; }
+      void removeMessageHandler();
 
       /**
        * A convenience function to quickly send a message (optionally with subject). This is
        * the preferred way to send a message from a MessageSession.
        * @param message The message to send.
        * @param subject The optional subject to send.
-       * @param sel An optional list of StanzaExtensions. The extensions will be owned by the message-to-be-sent;
-       * do not attempt to re-use or delete them.
        */
-      virtual void send( const std::string& message, const std::string& subject = EmptyString,
-                         const StanzaExtensionList& sel = StanzaExtensionList() );
+      virtual void send( const std::string& message, const std::string& subject = "" );
 
       /**
        * Use this function to hook a new MessageFilter into a MessageSession.
@@ -237,27 +225,26 @@ namespace gloox
        * use disposeMessageFilter().
        * @param mf The MessageFilter to add.
        */
-      void registerMessageFilter( MessageFilter* mf )
-        { m_messageFilterList.push_back( mf ); }
+      void registerMessageFilter( MessageFilter *mf );
 
       /**
        * Use this function to remove a MessageFilter from the MessageSession.
        * @param mf The MessageFilter to remove.
        * @note To remove and delete the MessageFilter in one step use disposeMessageFilter().
        */
-      void removeMessageFilter( MessageFilter* mf )
-        { m_messageFilterList.remove( mf ); }
+      void removeMessageFilter( MessageFilter *mf );
 
       /**
        * Use this function to remove and delete a MessageFilter from the MessageSession.
        * @param mf The MessageFilter to remove and delete.
        * @note To just remove (and not delete) the MessageFilter use removeMessageFilter().
        */
-      void disposeMessageFilter( MessageFilter* mf );
+      void disposeMessageFilter( MessageFilter *mf );
 
       /**
        * Returns the message type this MessageSession wants to receive.
-       * @return ORed list of Message::MessageType values this MessageSession wants to receive.
+       * @return ORed list of StanzaSubType values this MessageSession wants to receive. Only the
+       * StanzaMessage* types are valid.
        */
       int types() const { return m_types; }
 
@@ -266,29 +253,26 @@ namespace gloox
        * subsequently sent messages will be sent to that bare JID. The server will
        * determine the best resource to deliver to. Useful if the target
        * resource changed presence to e.g. away or offline.
+       * @since 0.9.4
        */
       void resetResource();
 
-      /**
-       * This function can be used to feed a message into the session. Ususally, only
-       * ClientBase should call this function.
-       * @param msg A Message to feed into the session.
-       */
-      virtual void handleMessage( Message& msg );
+      // re-implemented from MessageHandler
+      virtual void handleMessage( Stanza *stanza );
 
     protected:
       /**
-       * A wrapper around ClientBase::send(). You should @b not use this function to send a
-       * chat message because the Tag is not prepared accordingly (neither a thread ID is added nor is
-       * the message ran through the message filters).
-       * @param msg A Message to send.
-       */
-      virtual void send( const Message& msg );
-      void decorate( Message& msg );
+      * A wrapper around ClientBase::send(). You should @b not use this function to send a
+      * chat message because the Tag is not prepared accordingly (neither Thread ID nor Message
+      * Event requests are added).
+      * @param tag A Tag to send.
+      */
+      virtual void send( Tag *tag );
+      void decorate( Tag *tag );
 
-      ClientBase* m_parent;
+      ClientBase *m_parent;
       JID m_target;
-      MessageHandler* m_messageHandler;
+      MessageHandler *m_messageHandler;
 
     private:
       void setResource( const std::string& resource );
@@ -300,7 +284,6 @@ namespace gloox
       int m_types;
       bool m_wantUpgrade;
       bool m_hadMessages;
-      bool m_honorThreadID;
 
   };
 

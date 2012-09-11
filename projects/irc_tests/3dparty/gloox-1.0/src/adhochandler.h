@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -16,6 +16,9 @@
 #define ADHOCHANDLER_H__
 
 #include "adhoc.h"
+#include "dataform.h"
+
+#include <map>
 
 namespace gloox
 {
@@ -55,19 +58,34 @@ namespace gloox
 
       /**
        * This function is called in response to a call to Adhoc::getCommands() or
-       * Adhoc::checkSupport() or Adhoc::execute() in case the respective request returned
-       * an error.
+       * Adhoc::checkSupport() in case the respective request returned an error.
        * @param remote The queried remote entity's JID.
-       * @param error The error condition. May be 0.
+       * @param error The error condition.
        */
-      virtual void handleAdhocError( const JID& remote, const Error* error ) = 0;
+      virtual void handleAdhocError( const JID& remote, StanzaError error ) = 0;
 
       /**
        * This function is called in response to a remote command execution.
        * @param remote The remote entity's JID.
        * @param command The command being executed.
+       * @param status The command's execution status.
+       * @param sessionid The current execution cycle's ID.
+       * @param form A Data Form for the client to display, containing a result or additional
+       * input fields for the user to fill in.
+       * @param actions ORed AdhocExecuteActions which are allowed to be executed from the current
+       * stage.
+       * @param defaultAction The default action that will be executed if none of the allowed
+       * @b actions is chosen.
+       * @param note A textual note containing information about current conditions in a command
+       * sequence. May  be empty (no note).
+       * @param type The note's severity.
        */
-      virtual void handleAdhocExecutionResult( const JID& remote, const Adhoc::Command& command ) = 0;
+      virtual void handleAdhocExecutionResult( const JID& remote, const std::string& command,
+                                               Adhoc::AdhocCommandStatus status,
+                                               const std::string& sessionid,
+                                               const DataForm& form, int actions,
+                                               Adhoc::AdhocExecuteActions defaultAction,
+                                               const std::string& note, Adhoc::AdhocNoteType type ) = 0;
   };
 
 }

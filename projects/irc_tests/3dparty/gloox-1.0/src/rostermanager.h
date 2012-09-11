@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -52,7 +52,7 @@ namespace gloox
        * Creates a new RosterManager.
        * @param parent The ClientBase which is used for communication.
        */
-      RosterManager( ClientBase* parent );
+      RosterManager( ClientBase *parent );
 
       /**
        * Virtual destructor.
@@ -79,9 +79,8 @@ namespace gloox
        * @param groups A list of groups the contact belongs to.
        * @param msg A message sent along with the request.
        */
-      void subscribe( const JID& jid, const std::string& name = EmptyString,
-                      const StringList& groups = StringList(),
-                      const std::string& msg = EmptyString );
+      void subscribe( const JID& jid, const std::string& name = "", const StringList& groups = StringList(),
+                      const std::string& msg = "" );
 
       /**
        * Synchronizes locally modified RosterItems back to the server.
@@ -105,7 +104,7 @@ namespace gloox
        * @since 0.9
        * @note Use remove() to remove a contact from the roster and to cancel its subscriptions.
        */
-      void unsubscribe( const JID& jid, const std::string& msg = EmptyString );
+      void unsubscribe( const JID& jid, const std::string& msg = "" );
 
       /**
        * Use this function to cancel the contact's subscription to your presence. The contact will
@@ -115,7 +114,7 @@ namespace gloox
        * @since 0.9
        * @note Use remove() to remove a contact from the roster and to cancel its subscriptions.
        */
-      void cancel( const JID& jid, const std::string& msg = EmptyString );
+      void cancel( const JID& jid, const std::string& msg = "" );
 
       /**
        * Use this function to remove a contact from the roster. Subscription is implicitely
@@ -162,7 +161,7 @@ namespace gloox
        * @param syncSubscribeReq Indicates whether (Un)SubscriptionRequests shall
        * be handled synchronous (@b true) or asynchronous (@b false). Default: synchronous.
        */
-      void registerRosterListener( RosterListener* rl, bool syncSubscribeReq = true );
+      void registerRosterListener( RosterListener *rl, bool syncSubscribeReq = true );
 
       /**
        * Complementary function to @ref registerRosterListener. Removes the current RosterListener.
@@ -171,110 +170,36 @@ namespace gloox
       void removeRosterListener();
 
       // reimplemented from IqHandler.
-      virtual bool handleIq( const IQ& iq );
+      virtual bool handleIq( Stanza *stanza );
 
       // reimplemented from IqHandler.
-      virtual void handleIqID( const IQ& iq, int context );
+      virtual bool handleIqID( Stanza *stanza, int context );
 
       // reimplemented from PresenceHandler.
-      virtual void handlePresence( const Presence& presence );
+      virtual void handlePresence( Stanza *stanza );
 
       // reimplemented from SubscriptionHandler.
-      virtual void handleSubscription( const Subscription& subscription );
+      virtual void handleSubscription( Stanza *stanza );
 
       // reimplemented from PrivateXMLHandler
-      virtual void handlePrivateXML( const Tag* xml );
+      virtual void handlePrivateXML( const std::string& tag, Tag *xml );
 
       // reimplemented from PrivateXMLHandler
       virtual void handlePrivateXMLResult( const std::string& uid, PrivateXMLResult pxResult );
 
     private:
-#ifdef ROSTERMANAGER_TEST
-    public:
-#endif
-      typedef std::list<RosterItemData*> RosterData;
+      void add( const std::string& jid, const std::string& name,
+                const StringList& groups, const StringList& caps, const std::string& sub, bool ask );
+      void extractItems( Tag *tag, bool isPush );
 
-      /**
-       * @brief An implementation of StanzaExtension that helps in roster management.
-       *
-       * @author Jakob Schroeter <js@camaya.net>
-       * @since 1.0
-       */
-      class Query : public StanzaExtension
-      {
-        public:
-          /**
-           * Constructs a new object that can be used to add a contact to the roster.
-           * @param jid The contact's JID.
-           * @param name The contact's optional user-defined name.
-           * @param groups An optional list of groups the contact belongs to.
-           */
-          Query( const JID& jid, const std::string& name, const StringList& groups );
-
-          /**
-           * Constructs a new object that can be used to remove a contact from the roster.
-           * @param jid The contact's JID.
-           */
-          Query( const JID& jid );
-
-          /**
-           * Creates a new Query object from teh given Tag.
-           * @param tag The Tag to parse.
-           */
-          Query( const Tag* tag = 0 );
-
-          /**
-           * Destructor.
-           */
-          ~Query();
-
-          /**
-           * Retruns the internal roster that was created by the ctors (either from an
-           * incoming packet or passed arguments).
-           * This is not necessarily the full roster, but may be a single item.
-           * @return The (possibly partial) roster).
-           */
-          const RosterData& roster() const { return m_roster; }
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            return new Query( tag );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const;
-
-        private:
-          RosterData m_roster;
-
-      };
-
-      void mergePush( const RosterData& data );
-      void mergeRoster( const RosterData& data );
-
-      RosterListener* m_rosterListener;
+      RosterListener *m_rosterListener;
       Roster m_roster;
-      ClientBase* m_parent;
-      PrivateXML* m_privateXML;
-      RosterItem* m_self;
+      ClientBase *m_parent;
+      PrivateXML *m_privateXML;
+      RosterItem *m_self;
 
       std::string m_delimiter;
       bool m_syncSubscribeReq;
-
-      enum RosterContext
-      {
-        RequestRoster,
-        AddRosterItem,
-        RemoveRosterItem,
-        SynchronizeRoster
-      };
 
   };
 

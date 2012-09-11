@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,8 @@
 #ifndef DATAFORMREPORTED_H__
 #define DATAFORMREPORTED_H__
 
-#include "dataformfieldcontainer.h"
+#include "dataformfield.h"
+#include "dataformbase.h"
 
 namespace gloox
 {
@@ -22,7 +23,7 @@ namespace gloox
   class Tag;
 
   /**
-   * @brief An abstraction of a &lt;reported&gt; element in a XEP-0004 Data Form of type result.
+   * @brief An abstraction of an &lt;reported&gt; element in a XEP-0004 Data Form of type result.
    *
    * There are some constraints regarding usage of this element you should be aware of. Check XEP-0004
    * section 3.4. This class does not enforce correct usage at this point.
@@ -30,7 +31,7 @@ namespace gloox
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.7
    */
-  class GLOOX_API DataFormReported : public DataFormFieldContainer
+  class GLOOX_API DataFormReported : public DataFormBase, public DataFormField
   {
     public:
       /**
@@ -51,10 +52,7 @@ namespace gloox
        */
       virtual ~DataFormReported();
 
-      /**
-       * Creates and returns a Tag representation of the current object.
-       * @return A Tag representation of the current object.
-       */
+      // reimplemented from DataFormField
       virtual Tag* tag() const;
 
   };

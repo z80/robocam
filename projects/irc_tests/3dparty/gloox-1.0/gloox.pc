@@ -5,6 +5,6 @@ includedir=${prefix}/include
 
 Name: gloox
 Description: A high-level XMPP/Jabber library for C++
-Version: 1.0
+Version: 0.9.9.12
 Libs: -L${libdir} -lgloox
 Cflags: -I${includedir}

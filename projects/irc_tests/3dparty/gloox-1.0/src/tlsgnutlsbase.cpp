@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,13 +17,14 @@
 #ifdef HAVE_GNUTLS
 
 #include <errno.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include <cstdlib>
+#include <cstring>
 
 namespace gloox
 {
 
-  GnuTLSBase::GnuTLSBase( TLSHandler* th, const std::string& server )
+  GnuTLSBase::GnuTLSBase( TLSHandler *th, const std::string& server )
     : TLSBase( th, server ), m_session( new gnutls_session_t ), m_buf( 0 ), m_bufsize( 17000 )
   {
     m_buf = (char*)calloc( m_bufsize + 1, sizeof( char ) );
@@ -35,10 +36,7 @@ namespace gloox
     m_buf = 0;
     cleanup();
     delete m_session;
-// FIXME: It segfaults if more then one account uses
-// encryption at same time, so we comment it for now.
-// Do we need to deinit at all?
-//     gnutls_global_deinit();
+    gnutls_global_deinit();
   }
 
   bool GnuTLSBase::encrypt( const std::string& data )
@@ -49,7 +47,7 @@ namespace gloox
       return true;
     }
 
-    ssize_t ret = 0;
+    int ret = 0;
     std::string::size_type sum = 0;
     do
     {
@@ -67,14 +65,14 @@ namespace gloox
     if( !m_secure )
     {
       handshake();
-      return static_cast<int>( data.length() );
+      return data.length();
     }
 
     int sum = 0;
     int ret = 0;
     do
     {
-      ret = static_cast<int>( gnutls_record_recv( *m_session, m_buf, m_bufsize ) );
+      ret = gnutls_record_recv( *m_session, m_buf, m_bufsize );
 
       if( ret > 0 && m_handler )
       {
@@ -89,9 +87,6 @@ namespace gloox
 
   void GnuTLSBase::cleanup()
   {
-    if( !m_mutex.trylock() )
-      return;
-
     TLSHandler* handler = m_handler;
     m_handler = 0;
     gnutls_bye( *m_session, GNUTLS_SHUT_RDWR );
@@ -106,8 +101,6 @@ namespace gloox
     m_session = 0;
     m_session = new gnutls_session_t;
     m_handler = handler;
-
-    m_mutex.unlock();
   }
 
   bool GnuTLSBase::handshake()
@@ -139,7 +132,7 @@ namespace gloox
     return true;
   }
 
-  ssize_t GnuTLSBase::pullFunc( void* data, size_t len )
+  ssize_t GnuTLSBase::pullFunc( void *data, size_t len )
   {
     ssize_t cpy = ( len > m_recvBuffer.length() ) ? ( m_recvBuffer.length() ) : ( len );
     if( cpy > 0 )
@@ -155,12 +148,12 @@ namespace gloox
     }
   }
 
-  ssize_t GnuTLSBase::pullFunc( gnutls_transport_ptr_t ptr, void* data, size_t len )
+  ssize_t GnuTLSBase::pullFunc( gnutls_transport_ptr_t ptr, void *data, size_t len )
   {
     return static_cast<GnuTLSBase*>( ptr )->pullFunc( data, len );
   }
 
-  ssize_t GnuTLSBase::pushFunc( const void* data, size_t len )
+  ssize_t GnuTLSBase::pushFunc( const void *data, size_t len )
   {
     if( m_handler )
       m_handler->handleEncryptedData( this, std::string( (const char*)data, len ) );
@@ -168,7 +161,7 @@ namespace gloox
     return len;
   }
 
-  ssize_t GnuTLSBase::pushFunc( gnutls_transport_ptr_t ptr, const void* data, size_t len )
+  ssize_t GnuTLSBase::pushFunc( gnutls_transport_ptr_t ptr, const void *data, size_t len )
   {
     return static_cast<GnuTLSBase*>( ptr )->pushFunc( data, len );
   }

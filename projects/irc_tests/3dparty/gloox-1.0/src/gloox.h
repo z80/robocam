@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -25,14 +25,14 @@
  * @ref xeps_sec <br>
  * @ref filetransfer_sec <br>
  * @ref proxy_sec <br>
- * @ref upgrading_sec <br>
  * <br>
  *
  * @section intro_sec Introduction
  *
  * The design of gloox follows the so-called observer pattern, which basically means that everything is
  * event-driven. There are two ways you can connect to the Jabber/XMPP network using gloox, either as
- * client or as component. For a C++ XMPP server library see <http://camaya.net/glooxd>.
+ * client or as component. A third way, as server, is not supported by gloox, even though it might be
+ * possible to get something going.
  *
  * @note Section 11.5 of the XMPP specification (RFC 3290) requires that only UTF-8 is used as encoding
  * for any traffic sent over the wire. Since gloox cannot know which encoding is used in any given input,
@@ -53,14 +53,14 @@
  * {
  *   public:
  *     // reimplemented from PresenceHandler
- *     virtual void handlePresence( const Presence& presence );
+ *     virtual void handlePresence( Stanza *stanza );
  *
  *   [...]
  * };
  *
- * void MyClass::handlePresence( const Presence& presence )
+ * void MyClass::handlePresence( Stanza *stanza )
  * {
- *   // extract further information from the Presence object
+ *   // extract further information from the stanza
  * }
  * @endcode
  *
@@ -68,14 +68,14 @@
  * @code
  * OtherClass::doSomething()
  * {
- *   Client* client = new Client( ... );
+ *   Client *client = new Client( ... );
  *   [...]
- *   MyClass* handler = new MyClass( ... );
+ *   MyClass *handler = new MyClass( ... );
  *   client->registerPresenceHandler( handler );
  * }
  * @endcode
  *
- * Now, every time a presence stanza (not subscription stanza) is received, handlePresence() is called
+ * Now, everytime a presence stanza (not subscription stanza) is received, handlePresence() is called
  * with the current stanza as argument. You can then use the extensive getters of the Stanza class to
  * extract stanza data.
  *
@@ -120,7 +120,7 @@
  * The @link gloox::Component Component @endlink class supports this protocol and can be used to create
  * a new Jabber component. It's as simple as:
  * @code
- * Component* comp = new Component( ... );
+ * Component *comp = new Component( ... );
  * comp->connect();
  * @endcode
  *
@@ -145,7 +145,7 @@
  * void MyClass::doSomething()
  * {
  *   JID jid( "jid@server/resource" );
- *   Client* client = new Client( jid, "password" );
+ *   Client *client = new Client( jid, "password" );
  *   client->registerConnectionListener( this );
  *   client->registerPresenceHandler( this );
  *   client->connect();
@@ -161,16 +161,14 @@
  *   // examine certificate info
  * }
  *
- * void MyClass::handlePresence( Presence* presence )
+ * void MyClass::handlePresence( Stanza *stanza )
  * {
  *   // presence info
  * }
  * @endcode
  *
- * @note gloox does not officially support the style of connection which is usually used on port
+ * @note gloox does not (and will not) support the style of connection which is usually used on port
  * 5223, i.e. SSL encryption before any XML is sent, because it's a legacy method and not standard XMPP.
- * However, gloox includes a ConnectionTLS class that, as a side-effect, allows you to establish such
- * connections.
  *
  * @note @link gloox::Client::connect() Client::connect() @endlink by default blocks until the
  * connection ends (either @link gloox::Client::disconnect() Client::disconnect() @endlink is called
@@ -216,11 +214,11 @@
  * @code
  * Client* client = new Client( ... );
  * client->connect( false );
- * int sock = static_cast<ConnectionTCPClient*>( client->connectionImpl() )->socket();
+ * int sock = dynamic_cast<ConnectionTCPClient*>( client->connectionImpl() )->socket();
  *
  * [...]
  * @endcode
- * Obviously this will only work as long as you haven't set a different type of connection using setConnectionImpl().
+ *
  *
  * @note This has changed in 0.9. ClientBase::fileDescriptor() is no longer available.
  *
@@ -241,12 +239,13 @@
  *
  * Also defined in RFC 3921: Privacy Lists. A Privacy List can be used to explicitely block or allow
  * sending of stanzas from and to contacts, respectively. You can define rules based on JID, stanza type,
- * etc. The @link gloox::PrivacyManager PrivacyManager @endlink class and the
+ * etc. Needless to say that gloox implements Privacy Lists as well. ;) The
+ * @link gloox::PrivacyManager PrivacyManager @endlink class and the
  * @link gloox::PrivacyListHandler PrivacyListHandler @endlink virtual interface allow for full
  * flexibility in Privacy List handling.
  *
  * @code
- * PrivacyManager* p = new PrivacyManager( ... );
+ * PrivacyManager *p = new PrivacyManager( ... );
  * [...]
  * PrivacyListHandler::PrivacyList list;
  * PrivacyItem item( PrivacyItem::TypeJid, PrivacyItem::ActionDeny,
@@ -271,7 +270,7 @@
  * of messages as well as message events and chat states (such as typing notifications, etc.). See
  * @link gloox::MessageSession MessageSession @endlink for more details.
  *
- * @section xeps_sec Protocol Extensions (XEPs)
+ * @section xeps_sec Protocol Enhancements (XEPs)
  *
  * The XMPP Standards Foundation has published a number of extensions to the core protocols, called
  * XMPP Extension Protocols (XEPs). A couple of these XEPs are implemented in gloox:
@@ -284,62 +283,47 @@
  * and @link gloox::GPGEncrypted GPGEncrypted @endlink)
  * @li XEP-0030 @link gloox::Disco Service Discovery @endlink
  * @li XEP-0045 @link gloox::MUCRoom Multi-User Chat @endlink
- * @li XEP-0047 Used with @ref filetransfer_sec
+ * @li XEP-0047 @link gloox::InBandBytestreamManager In-Band Bytestreams @endlink
  * @li XEP-0048 @link gloox::BookmarkStorage Bookmark Storage @endlink
  * @li XEP-0049 @link gloox::PrivateXML Private XML Storage @endlink
  * @li XEP-0050 @link gloox::Adhoc Ad-hoc Commands @endlink
  * @li XEP-0054 @link gloox::VCardManager vcard-temp @endlink
- * @li XEP-0060 @link gloox::PubSub::Manager Publish-Subscribe @endlink
  * @li XEP-0065 @link gloox::SOCKS5BytestreamManager SOCKS5 Bytestreams @endlink, used with
  * @ref filetransfer_sec and @ref proxy_sec
- * @li XEP-0066 @link gloox::OOB Out of Band Data @endlink, also used with @ref filetransfer_sec
+ * @li XEP-0066 @link gloox::OOB Out of Band Data @endlink
  * @li XEP-0077 @link gloox::Registration In-Band Registration @endlink
  * @li XEP-0078 Non-SASL Authentication (automatically used if the server does not support SASL)
- * @li XEP-0079 @link gloox::AMP Advanced Message Processing @endlink
  * @li XEP-0083 Nested Roster Groups (automatically used if supported by the server. see
  * @link gloox::RosterManager::delimiter() RosterManager @endlink)
  * @li XEP-0085 Chat State Notifications (see @link gloox::MessageSession MessageSession @endlink for
  * examples)
- * @li XEP-0091 @link gloox::DelayedDelivery Delayed Delivery @endlink (old spec)
+ * @li XEP-0091 @link gloox::XDelayedDelivery Delayed Delivery @endlink (old spec)
  * @li XEP-0092 Software Version (integrated into @link gloox::Disco Service Discovery @endlink)
  * @li XEP-0095 @link gloox::SIManager Stream Initiation @endlink, used with @ref filetransfer_sec
  * @li XEP-0096 @ref filetransfer_sec
- * @li XEP-0106 @link gloox::JID::escapeNode() JID Escaping @endlink
  * @li XEP-0114 @link gloox::Component Jabber Component Protocol @endlink
- * @li XEP-0115 @link gloox::Capabilities Entity Capabilities @endlink (used automatically internally)
- * @li XEP-0124 @link gloox::ConnectionBOSH Bidirectional-streams Over Synchronous HTTP (BOSH) @endlink
- * @li XEP-0131 @link gloox::SHIM Stanza Headers and Internet Metadata @endlink
  * @li XEP-0138 Stream Compression (used automatically if gloox is compiled with zlib and if the server
  * supports it)
  * @li XEP-0145 @link gloox::Annotations Annotations @endlink
  * @li XEP-0153 @link gloox::VCardUpdate vCard-based Avatars @endlink
- * @li XEP-0172 @link gloox::Nickname User Nickname @endlink
- * @li XEP-0184 @link gloox::Receipt Message Receipts @endlink
- * @li XEP-0199 @link gloox::ClientBase::xmppPing() XMPP Ping @endlink
  * @li XEP-0203 @link gloox::DelayedDelivery Delayed Delivery @endlink (new spec)
- * @li XEP-0206 @link gloox::ConnectionBOSH see BOSH @endlink
- * @li XEP-0224 @link gloox::Attention Attention @endlink
- * @li XEP-0256 @link gloox::LastActivity::Query Last Activity in Presence @endlink
- *
- * Further extensions can easily be implemented using
- * @link gloox::StanzaExtension StanzaExtensions @endlink.
- *
+
  * @section filetransfer_sec File Transfer
  *
  * For file transfer, gloox implements XEP-0095 (Stream Initiation) as well XEP-0096 (File Transfer)
- * for the signalling, and XEP-0065 (SOCKS5 Bytestreams) as well as XEP-0047 (In-Band Bytestreams)
- * for the transport. See @link gloox::SIProfileFT SIProfileFT @endlink.
+ * for the signalling, and XEP-0065 (SOCKS5 Bytestreams) for the transport. See
+ * @link gloox::SIProfileFT SIProfileFT @endlink.
+ *
+ * Additionally, there is an implementation of XEP-0047 (In-Band Bytestreams) which is currently not
+ * integrated into the signalling of XEPs 0095  and 0096. Therefore, this protocol is probably not
+ * suited for offering file transfer to end-users.
+ * See @link gloox::InBandBytestreamManager InBandBytestreamManager @endlink.
  *
  * @section proxy_sec HTTP and SOCKS5 Proxy support
  *
  * gloox is capable of traversing HTTP as well as SOCKS5 proxies, even chained. See
  * @link gloox::ConnectionHTTPProxy ConnectionHTTPProxy @endlink and
  * @link gloox::ConnectionSOCKS5Proxy ConnectionSOCKS5Proxy @endlink.
- *
- * @section upgrading_sec Upgrading from earlier versions
- *
- * See <a href='upgrading.html'>Upgrading</a>.
- *
  */
 
 #ifndef GLOOX_H__
@@ -373,9 +357,6 @@ namespace gloox
 
   /** Service Discovery Items namespace (XEP-0030) */
   GLOOX_API extern const std::string XMLNS_DISCO_ITEMS;
-
-  /** Service Discovery Publish namespace (XEP-0030) */
-  GLOOX_API extern const std::string XMLNS_DISCO_PUBLISH;
 
   /** Adhoc Commands namespace (XEP-0050) */
   GLOOX_API extern const std::string XMLNS_ADHOC_COMMANDS;
@@ -503,27 +484,6 @@ namespace gloox
   /** Multi-User Chat namespace (request) (XEP-0045) */
   GLOOX_API extern const std::string XMLNS_MUC_REQUEST;
 
-  /** PubSub namespace (XEP-0060) */
-  GLOOX_API extern const std::string XMLNS_PUBSUB;
-
-  /** PubSub namespace (errors) (XEP-0060) */
-  GLOOX_API extern const std::string XMLNS_PUBSUB_ERRORS;
-
-  /** PubSub namespace (event) (XEP-0060) */
-  GLOOX_API extern const std::string XMLNS_PUBSUB_EVENT;
-
-  /** PubSub namespace (owner) (XEP-0060) */
-  GLOOX_API extern const std::string XMLNS_PUBSUB_OWNER;
-
-  /** Entity Capabilities namespace (XEP-0115) */
-  GLOOX_API extern const std::string XMLNS_CAPS;
-
-  /** SOCKS5 Fast Mode namespace */
-  GLOOX_API extern const std::string XMLNS_FT_FASTMODE;
-
-  /** XMPP stream namespace (RFC 3920) */
-  GLOOX_API extern const std::string XMLNS_STREAM;
-
   /** XMPP stream namespace (RFC 3920) */
   GLOOX_API extern const std::string XMLNS_XMPP_STREAM;
 
@@ -551,40 +511,6 @@ namespace gloox
   /** Stream Compression Feature namespace (XEP-0138) */
   GLOOX_API extern const std::string XMLNS_STREAM_COMPRESS;
 
-  /** General HTTP binding (BOSH) namespace (XEP-0124) */
-  GLOOX_API extern const std::string XMLNS_HTTPBIND;
-
-  /** XMPP-over-BOSH extensions (XEP-0206) */
-  GLOOX_API extern const std::string XMLNS_XMPP_BOSH;
-
-  /** Message Receipt namespace (XEP-0184) */
-  GLOOX_API extern const std::string XMLNS_RECEIPTS;
-
-  /** Message Receipt namespace (XEP-0172) */
-  GLOOX_API extern const std::string XMLNS_NICKNAME;
-
-  /** Jingle namespace (XEP-0166) */
-  GLOOX_API extern const std::string XMLNS_JINGLE;
-
-  /** Jingle Audio via RTP namespace (XEP-0167) */
-  GLOOX_API extern const std::string XMLNS_JINGLE_AUDIO_RTP;
-
-  /** Jingle ICE-UDP Transport namespace (XEP-0176) */
-  GLOOX_API extern const std::string XMLNS_JINGLE_ICE_UDP;
-
-  /** Jingle Raw UDP Transport namespace (XEP-0177) */
-  GLOOX_API extern const std::string XMLNS_JINGLE_RAW_UDP;
-
-  /** Jingle Video via RTP namespace (XEP-0180) */
-  GLOOX_API extern const std::string XMLNS_JINGLE_VIDEO_RTP;
-
-  /** Stanza Headers and Internet Metadata (SHIM) namespace (XEP-0131) */
-  GLOOX_API extern const std::string XMLNS_SHIM;
-
-  /** Attention namespace (XEP-0224) */
-  GLOOX_API extern const std::string XMLNS_ATTENTION;
-
-
   /** Supported stream version (major). */
   GLOOX_API extern const std::string XMPP_STREAM_VERSION_MAJOR;
 
@@ -593,18 +519,6 @@ namespace gloox
 
   /** gloox version */
   GLOOX_API extern const std::string GLOOX_VERSION;
-
-  /** gloox caps node */
-  GLOOX_API extern const std::string GLOOX_CAPS_NODE;
-
-  /** A string containing "xmlns". */
-  GLOOX_API extern const std::string XMLNS;
-
-  /** A string containing "type". */
-  GLOOX_API extern const std::string TYPE;
-
-  /** An empty string. */
-  GLOOX_API extern const std::string EmptyString;
 
   /**
    * This describes the possible states of a stream.
@@ -662,7 +576,7 @@ namespace gloox
                                      * or the server offered no auth mechanisms at all. */
     ConnTlsFailed,                  /**< The server's certificate could not be verified or the TLS
                                      * handshake did not complete successfully. */
-    ConnTlsNotAvailable,            /**< The server didn't offer TLS while it was set to be required,
+    ConnTlsNotAvailable,            /**< The server didn't offer TLS while it was set to be required
                                      * or TLS was not compiled in.
                                      * @since 0.9.4 */
     ConnCompressionFailed,          /**< Negotiating/initializing compression failed.
@@ -691,8 +605,7 @@ namespace gloox
   enum StreamFeature
   {
     StreamFeatureBind             =    1, /**< The server supports resource binding. */
-    StreamFeatureUnbind           =    2, /**< The server supports binding multiple resources. */
-    StreamFeatureSession          =    4, /**< The server supports sessions. */
+    StreamFeatureSession          =    2, /**< The server supports sessions. */
     StreamFeatureStartTls         =    8, /**< The server supports &lt;starttls&gt;. */
     StreamFeatureIqRegister       =   16, /**< The server supports XEP-0077 (In-Band
                                            * Registration). */
@@ -718,7 +631,6 @@ namespace gloox
                                      * RFC 2245 Section 6. */
     SaslMechExternal       =  2048, /**< SASL EXTERNAL according to RFC 2222 Section 7.4. */
     SaslMechGssapi         =  4096, /**< SASL GSSAPI (Win32 only). */
-    SaslMechNTLM           =  8192, /**< SASL NTLM (Win32 only). */
     SaslMechAll            = 65535  /**< Includes all supported SASL mechanisms. */
   };
 
@@ -727,6 +639,9 @@ namespace gloox
    */
   enum StreamError
   {
+    StreamErrorUndefined,           /**< An undefined/unknown error occured. Also used if a diconnect was
+                                     * user-initiated. Also set before and during a established connection
+                                     * (where obviously no error occured). */
     StreamErrorBadFormat,           /**< The entity has sent XML that cannot be processed;
                                      * this error MAY be used instead of the more specific XML-related
                                      * errors, such as &lt;bad-namespace-prefix/&gt;, &lt;invalid-xml/&gt;,
@@ -771,8 +686,8 @@ namespace gloox
     StreamErrorPolicyViolation,     /**< The entity has violated some local service policy; the server MAY
                                      * choose to specify the policy in the &lt;text/&gt;  element or an
                                      * application-specific condition element. */
-    StreamErrorRemoteConnectionFailed,/**< The server is unable to properly connect to a remote entity that
-                                     * is required for authentication or authorization. */
+    StreamErrorRemoteConnectionFailed,/**< The server is unable to properly connect to a remote entity that is
+                                     * required for authentication or authorization. */
     StreamErrorResourceConstraint,  /**< the server lacks the system resources necessary to service the
                                      * stream. */
     StreamErrorRestrictedXml,       /**< The entity has attempted to send restricted XML features such as a
@@ -797,11 +712,106 @@ namespace gloox
                                      * entity in the stream header specifies a version of XMPP that is not
                                      * supported by the server; the server MAY specify the version(s) it
                                      * supports in the &lt;text/&gt; element. */
-    StreamErrorXmlNotWellFormed,    /**< The initiating entity has sent XML that is not well-formed as
+    StreamErrorXmlNotWellFormed     /**< The initiating entity has sent XML that is not well-formed as
                                      * defined by [XML]. */
-    StreamErrorUndefined            /**< An undefined/unknown error occured. Also used if a diconnect was
-     * user-initiated. Also set before and during a established connection
-                                     * (where obviously no error occured). */
+  };
+
+  /**
+   * Describes the possible stanza types.
+   */
+  enum StanzaType
+  {
+    StanzaUndefined,                /**< Undefined. */
+    StanzaIq,                       /**< An Info/Query stanza. */
+    StanzaMessage,                  /**< A message stanza. */
+    StanzaS10n,                     /**< A presence/subscription stanza. */
+    StanzaPresence                  /**< A presence stanza. */
+  };
+
+  /**
+   * Describes the possible stanza-sub-types.
+   */
+  enum StanzaSubType
+  {
+    StanzaSubUndefined        =  0, /**< Undefined. */
+    StanzaIqGet               =  1, /**< The stanza is a request for information or requirements. */
+    StanzaIqSet               =  2, /**<
+                                     * The stanza provides required data, sets new values, or
+                                     * replaces existing values.
+                                     */
+    StanzaIqResult            =  4, /**< The stanza is a response to a successful get or set request. */
+    StanzaIqError             =  8, /**<
+                                     * An error has occurred regarding processing or
+                                     * delivery of a previously-sent get or set (see Stanza Errors
+                                     * (Section 9.3)).
+                                     */
+    StanzaPresenceUnavailable = 16,      /**<
+                                     * Signals that the entity is no longer available for
+                                     * communication.
+                                     */
+    StanzaPresenceAvailable =   32, /**<
+                                     * Signals to the server that the sender is online and available
+                                     * for communication.
+                                     */
+    StanzaPresenceProbe    =    64, /**<
+                                     * A request for an entity's current presence; SHOULD be
+                                     * generated only by a server on behalf of a user.
+                                     */
+    StanzaPresenceError    =   128, /**<
+                                     * An error has occurred regarding processing or delivery of
+                                     * a previously-sent presence stanza.
+                                     */
+    StanzaS10nSubscribe    =   256, /**<
+                                     * The sender wishes to subscribe to the recipient's
+                                     * presence.
+                                     */
+    StanzaS10nSubscribed   =   512, /**<
+                                     * The sender has allowed the recipient to receive
+                                     * their presence.
+                                     */
+    StanzaS10nUnsubscribe  =  1024, /**<
+                                     * The sender is unsubscribing from another entity's
+                                     * presence.
+                                     */
+    StanzaS10nUnsubscribed =  2048, /**<
+                                     * The subscription request has been denied or a
+                                     * previously-granted subscription has been cancelled.
+                                     */
+    StanzaMessageChat      =  4096, /**<
+                                     * The message is sent in the context of a one-to-one chat
+                                     * conversation. A compliant client SHOULD present the message in an
+                                     * interface enabling one-to-one chat between the two parties,
+                                     * including an appropriate conversation history.
+                                     */
+    StanzaMessageError     =  8192, /**<
+                                     * An error has occurred related to a previous message sent
+                                     * by the sender (for details regarding stanza error syntax, refer to
+                                     * [XMPP-CORE]). A compliant client SHOULD present an appropriate
+                                     * interface informing the sender of the nature of the error.
+                                     */
+    StanzaMessageGroupchat = 16384, /**<
+                                     * The message is sent in the context of a multi-user
+                                     * chat environment (similar to that of [IRC]). A compliant client
+                                     * SHOULD present the message in an interface enabling many-to-many
+                                     * chat between the parties, including a roster of parties in the
+                                     * chatroom and an appropriate conversation history.
+                                     */
+    StanzaMessageHeadline  = 32768, /**<
+                                     * The message is probably generated by an automated
+                                     * service that delivers or broadcasts content (news, sports, market
+                                     * information, RSS feeds, etc.). No reply to the message is
+                                     * expected, and a compliant client SHOULD present the message in an
+                                     * interface that appropriately differentiates the message from
+                                     * standalone messages, chat sessions, or groupchat sessions (e.g.,
+                                     * by not providing the recipient with the ability to reply).
+                                     */
+    StanzaMessageNormal    = 65536  /**<
+                                     * The message is a single message that is sent outside the
+                                     * context of a one-to-one conversation or groupchat, and to which it
+                                     * is expected that the recipient will reply. A compliant client
+                                     * SHOULD present the message in an interface enabling the recipient
+                                     * to reply, but without a conversation history.
+                                     */
   };
 
   /**
@@ -809,13 +819,12 @@ namespace gloox
    */
   enum StanzaErrorType
   {
-    StanzaErrorTypeAuth,            /**< Retry after providing credentials. */
+    StanzaErrorTypeUndefined,       /**< No error. */
     StanzaErrorTypeCancel,          /**< Do not retry (the error is unrecoverable). */
     StanzaErrorTypeContinue,        /**< Proceed (the condition was only a warning). */
     StanzaErrorTypeModify,          /**< Retry after changing the data sent. */
-
-    StanzaErrorTypeWait,            /**< Retry after waiting (the error is temporary). */
-    StanzaErrorTypeUndefined        /**< No error. */
+    StanzaErrorTypeAuth,            /**< Retry after providing credentials. */
+    StanzaErrorTypeWait             /**< Retry after waiting (the error is temporary). */
   };
 
   /**
@@ -824,7 +833,7 @@ namespace gloox
    */
   enum StanzaError
   {
-
+    StanzaErrorUndefined = 0,       /**< No stanza error occured. */
     StanzaErrorBadRequest,          /**< The sender has sent XML that is malformed or that cannot be
                                      * processed (e.g., an IQ stanza that includes an unrecognized value
                                      * of the 'type' attribute); the associated error type SHOULD be
@@ -832,9 +841,9 @@ namespace gloox
     StanzaErrorConflict,            /**< Access cannot be granted because an existing resource or session
                                      * exists with the same name or address; the associated error type
                                      * SHOULD be "cancel". */
-    StanzaErrorFeatureNotImplemented,/**< The feature requested is not implemented by the recipient or
-                                      * server and therefore cannot be processed; the associated error
-                                      * type SHOULD be "cancel". */
+    StanzaErrorFeatureNotImplemented,/**< The feature requested is not implemented by the recipient or server
+                                     * and therefore cannot be processed; the associated error type SHOULD be
+                                     * "cancel". */
     StanzaErrorForbidden,           /**< The requesting entity does not possess the required permissions to
                                      * perform the action; the associated error type SHOULD be "auth". */
     StanzaErrorGone,                /**< The recipient or server can no longer be contacted at this address
@@ -858,23 +867,21 @@ namespace gloox
     StanzaErrorNotAllowed,          /**< The recipient or server does not allow any entity to perform the
                                      * action; the associated error type SHOULD be "cancel". */
     StanzaErrorNotAuthorized,       /**< The sender must provide proper credentials before being allowed to
-                                     * perform the action, or has provided impreoper credentials; the
-                                     * associated error type should be "auth". */
-    StanzaErrorNotModified,         /**< The item requested has not changed since it was last requested;
-                                     * the associated error type SHOULD be "continue". */
+                                     * perform the action, or has provided improper credentials; the
+                                     * associated error type SHOULD be "auth". */
     StanzaErrorPaymentRequired,     /**< The requesting entity is not authorized to access the requested
                                      * service because payment is required; the associated error type SHOULD
                                      * be "auth". */
     StanzaErrorRecipientUnavailable,/**< The intended recipient is temporarily unavailable; the associated
-                                     * error type SHOULD be "wait" (note: an application MUST NOT return
-                                     * this error if doing so would provide information about the intended
+                                     * error type SHOULD be "wait" (note: an application MUST NOT return this
+                                     * error if doing so would provide information about the intended
                                      * recipient's network availability to an entity that is not authorized
                                      * to know such information). */
-    StanzaErrorRedirect,            /**< The recipient or server is redirecting requests for this
-                                     * information to another entity, usually temporarily (the error
-                                     * stanza SHOULD contain the alternate address, which MUST be a valid
-                                     * JID, in the XML character data of the &lt;redirect/&gt; element);
-                                     * the associated error type SHOULD be "modify". */
+    StanzaErrorRedirect,            /**< The recipient or server is redirecting requests for this information
+                                     * to another entity, usually temporarily (the error stanza SHOULD
+                                     * contain the alternate address, which MUST be a valid JID, in the XML
+                                     * character data of the &lt;redirect/&gt; element); the associated
+                                     * error type SHOULD be "modify". */
     StanzaErrorRegistrationRequired,/**< The requesting entity is not authorized to access the requested
                                      * service because registration is required; the associated error type
                                      * SHOULD be "auth". */
@@ -882,8 +889,8 @@ namespace gloox
                                      * the intended recipient does not exist; the associated error type
                                      * SHOULD be "cancel". */
     StanzaErrorRemoteServerTimeout, /**< A remote server or service specified as part or all of the JID of
-                                     * the intended recipient (or required to fulfill a request) could not
-                                     * be contacted within a reasonable amount of time; the associated error
+                                     * the intended recipient (or required to fulfill a request) could not be
+                                     * contacted within a reasonable amount of time; the associated error
                                      * type SHOULD be "wait". */
     StanzaErrorResourceConstraint,  /**< The server or recipient lacks the system resources necessary to
                                      * service the request; the associated error type SHOULD be "wait". */
@@ -896,30 +903,25 @@ namespace gloox
                                      * conditions in this list; any error type may be associated with this
                                      * condition, and it SHOULD be used only in conjunction with an
                                      * application-specific condition. */
-    StanzaErrorUnexpectedRequest,   /**< The recipient or server understood the request but was not
-                                     * expecting it at this time (e.g., the request was out of order);
-                                     * the associated error type SHOULD be "wait". */
-    StanzaErrorUnknownSender,       /**< The stanza 'from' address specified by a connected client is not
-                                     * valid for the stream (e.g., the stanza does not include a 'from'
-                                     * address when multiple resources are bound to the stream); the
-                                     * associated error type SHOULD be "modify".*/
-    StanzaErrorUndefined            /**< No stanza error occured. */
+    StanzaErrorUnexpectedRequest    /**< The recipient or server understood the request but was not expecting
+                                     * it at this time (e.g., the request was out of order); the associated
+                                     * error type SHOULD be "wait". */
   };
 
   /**
    * Describes the possible 'available presence' types.
    */
-//   enum Presence
-//   {
-//     PresenceUnknown,                /**< Unknown status. */
-//     PresenceAvailable,              /**< The entity or resource is online and available. */
-//     PresenceChat,                   /**< The entity or resource is actively interested in chatting. */
-//     PresenceAway,                   /**< The entity or resource is temporarily away. */
-//     PresenceDnd,                    /**< The entity or resource is busy (dnd = "Do Not Disturb"). */
-//     PresenceXa,                     /**< The entity or resource is away for an extended period (xa =
-//                                      * "eXtended Away"). */
-//     PresenceUnavailable             /**< The entity or resource is offline. */
-//   };
+  enum Presence
+  {
+    PresenceUnknown,                /**< Unknown status. */
+    PresenceAvailable,              /**< The entity or resource is online and available. */
+    PresenceChat,                   /**< The entity or resource is actively interested in chatting. */
+    PresenceAway,                   /**< The entity or resource is temporarily away. */
+    PresenceDnd,                    /**< The entity or resource is busy (dnd = "Do Not Disturb"). */
+    PresenceXa,                     /**< The entity or resource is away for an extended period (xa =
+                                     * "eXtended Away"). */
+    PresenceUnavailable             /**< The entity or resource is offline. */
+  };
 
   /**
    * Describes the verification results of a certificate.
@@ -947,9 +949,9 @@ namespace gloox
     std::string issuer;             /**< The name of the issuing entity.*/
     std::string server;             /**< The server the certificate has been issued for. */
     int date_from;                  /**< The date from which onwards the certificate is valid
-                                     * (UNIX timestamp; UTC; not set when using OpenSSL). */
+                                     * (in UTC, not set when using OpenSSL). */
     int date_to;                    /**< The date up to which the certificate is valid
-                                     * (UNIX timestamp; UTC; not set when using OpenSSL). */
+                                     * (in UTC, not set when using OpenSSL). */
     std::string protocol;           /**< The encryption protocol used for the connection. */
     std::string cipher;             /**< The cipher used for the connection. */
     std::string mac;                /**< The MAC used for the connection. */
@@ -957,7 +959,7 @@ namespace gloox
   };
 
   /**
-   * Describes the defined SASL (and non-SASL) error conditions.
+   * Describes the defined SASL error conditions.
    */
   enum AuthenticationError
   {
@@ -978,10 +980,6 @@ namespace gloox
     SaslInvalidMechanism,           /**< The initiating entity did not provide a mechanism or requested a
                                      * mechanism that is not supported by the receiving entity; sent in reply
                                      * to an &lt;auth/&gt; element. */
-    SaslMalformedRequest,           /**< The request is malformed (e.g., the &lt;auth/&gt; element includes
-                                     * an initial response but the mechanism does not allow that); sent in
-                                     * reply to an &lt;abort/&gt;, &lt;auth/&gt;, &lt;challenge/&gt;, or
-                                     * &lt;response/&gt; element. */
     SaslMechanismTooWeak,           /**< The mechanism requested by the initiating entity is weaker than
                                      * server policy permits for that initiating entity; sent in reply to a
                                      * &lt;response/&gt; element or an &lt;auth/&gt; element with initial
@@ -1003,25 +1001,22 @@ namespace gloox
    */
   enum LogArea
   {
-    LogAreaClassParser                = 0x000001, /**< Log messages from Parser. */
-    LogAreaClassConnectionTCPBase     = 0x000002, /**< Log messages from ConnectionTCPBase. */
-    LogAreaClassClient                = 0x000004, /**< Log messages from Client. */
-    LogAreaClassClientbase            = 0x000008, /**< Log messages from ClientBase. */
-    LogAreaClassComponent             = 0x000010, /**< Log messages from Component. */
-    LogAreaClassDns                   = 0x000020, /**< Log messages from DNS. */
-    LogAreaClassConnectionHTTPProxy   = 0x000040, /**< Log messages from ConnectionHTTPProxy */
-    LogAreaClassConnectionSOCKS5Proxy = 0x000080, /**< Log messages from ConnectionSOCKS5Proxy */
-    LogAreaClassConnectionTCPClient   = 0x000100, /**< Log messages from ConnectionTCPClient. */
-    LogAreaClassConnectionTCPServer   = 0x000200, /**< Log messages from ConnectionTCPServer. */
-    LogAreaClassS5BManager            = 0x000400, /**< Log messages from SOCKS5BytestreamManager. */
-    LogAreaClassSOCKS5Bytestream      = 0x000800, /**< Log messages from SOCKS5Bytestream. */
-    LogAreaClassConnectionBOSH        = 0x001000, /**< Log messages from ConnectionBOSH */
-    LogAreaClassConnectionTLS         = 0x002000, /**< Log messages from ConnectionTLS */
-    LogAreaAllClasses                 = 0x01FFFF, /**< All log messages from all the classes. */
-    LogAreaXmlIncoming                = 0x020000, /**< Incoming XML. */
-    LogAreaXmlOutgoing                = 0x040000, /**< Outgoing XML. */
-    LogAreaUser                       = 0x800000, /**< User-defined sources. */
-    LogAreaAll                        = 0xFFFFFF  /**< All log sources. */
+    LogAreaClassParser                = 0x00001, /**< Log messages from Parser. */
+    LogAreaClassConnectionTCPBase     = 0x00002, /**< Log messages from ConnectionTCPBase. */
+    LogAreaClassClient                = 0x00004, /**< Log messages from Client. */
+    LogAreaClassClientbase            = 0x00008, /**< Log messages from ClientBase. */
+    LogAreaClassComponent             = 0x00010, /**< Log messages from Component. */
+    LogAreaClassDns                   = 0x00020, /**< Log messages from DNS. */
+    LogAreaClassConnectionHTTPProxy   = 0x00040, /**< Log messages from ConnectionHTTPProxy */
+    LogAreaClassConnectionSOCKS5Proxy = 0x00080, /**< Log messages from ConnectionHTTPProxy */
+    LogAreaClassConnectionTCPClient   = 0x00100, /**< Log messages from ConnectionTCPClient. */
+    LogAreaClassConnectionTCPServer   = 0x00200, /**< Log messages from ConnectionTCPServer. */
+    LogAreaClassS5BManager            = 0x00400, /**< Log messages from SOCKS5BytestreamManager. */
+    LogAreaAllClasses                 = 0x01FFF, /**< All log messages from all the classes. */
+    LogAreaXmlIncoming                = 0x02000, /**< Incoming XML. */
+    LogAreaXmlOutgoing                = 0x04000, /**< Outgoing XML. */
+    LogAreaUser                       = 0x80000, /**< User-defined sources. */
+    LogAreaAll                        = 0xFFFFF  /**< All log sources. */
   };
 
   /**
@@ -1039,14 +1034,13 @@ namespace gloox
    */
   enum MessageEventType
   {
-    MessageEventOffline   =  1,     /**< Indicates that the message has been stored offline by the
+    MessageEventCancel    = 0,      /**< Cancels the 'Composing' event. */
+    MessageEventOffline   = 1,      /**< Indicates that the message has been stored offline by the
                                      * intended recipient's server. */
-    MessageEventDelivered =  2,     /**< Indicates that the message has been delivered to the
+    MessageEventDelivered = 2,      /**< Indicates that the message has been delivered to the
                                      * recipient. */
-    MessageEventDisplayed =  4,     /**< Indicates that the message has been displayed */
-    MessageEventComposing =  8,     /**< Indicates that a reply is being composed. */
-    MessageEventInvalid   = 16,     /**< Invalid type. */
-    MessageEventCancel    = 32      /**< Cancels the 'Composing' event. */
+    MessageEventDisplayed = 4,      /**< Indicates that the message has been displayed */
+    MessageEventComposing = 8       /**< Indicates that a reply is being composed. */
   };
 
   /**
@@ -1058,9 +1052,8 @@ namespace gloox
     ChatStateComposing    =  2,     /**< User is composing a message. */
     ChatStatePaused       =  4,     /**< User had been composing but now has stopped. */
     ChatStateInactive     =  8,     /**< User has not been actively participating in the chat session. */
-    ChatStateGone         = 16,     /**< User has effectively ended their participation in the chat
+    ChatStateGone         = 16      /**< User has effectively ended their participation in the chat
                                      * session. */
-    ChatStateInvalid      = 32      /**< Invalid type. */
   };
 
   /**
@@ -1104,8 +1097,7 @@ namespace gloox
     AffiliationOutcast,             /**< The user has been banned from the room. */
     AffiliationMember,              /**< The user is a member of the room. */
     AffiliationOwner,               /**< The user is a room owner. */
-    AffiliationAdmin,               /**< The user is a room admin. */
-    AffiliationInvalid              /**< Invalid affiliation. */
+    AffiliationAdmin                /**< The user is a room admin. */
   };
 
   /**
@@ -1116,8 +1108,7 @@ namespace gloox
     RoleNone,                       /**< Not present in room. */
     RoleVisitor,                    /**< The user visits a room. */
     RoleParticipant,                /**< The user has voice in a moderatd room. */
-    RoleModerator,                  /**< The user is a room moderator. */
-    RoleInvalid                     /**< Invalid role. */
+    RoleModerator                   /**< The user is a room moderator. */
   };
 
   /**
@@ -1125,75 +1116,33 @@ namespace gloox
    */
   enum MUCRoomFlag
   {
-    FlagPasswordProtected  = 1<< 1, /**< Password-protected room. */
-    FlagPublicLogging      = 1<< 2, /**< Room conversation is logged. Code: 170 */
-    FlagPublicLoggingOff   = 1<< 3, /**< Room conversation is not logged. Code: 171 */
-    FlagHidden             = 1<< 4, /**< Hidden room. */
-    FlagMembersOnly        = 1<< 5, /**< Members-only room. */
-    FlagModerated          = 1<< 6, /**< Moderated room. */
-    FlagNonAnonymous       = 1<< 7, /**< Non-anonymous room. Code: 100, 172 */
-    FlagOpen               = 1<< 8, /**< Open room. */
-    FlagPersistent         = 1<< 9, /**< Persistent room .*/
-    FlagPublic             = 1<<10, /**< Public room. */
-    FlagSemiAnonymous      = 1<<11, /**< Semi-anonymous room. Code: 173 */
-    FlagTemporary          = 1<<12, /**< Temporary room. */
-    FlagUnmoderated        = 1<<13, /**< Unmoderated room. */
-    FlagUnsecured          = 1<<14, /**< Unsecured room. */
-    FlagFullyAnonymous     = 1<<15  /**< Fully anonymous room. Code: 174 */
-    // keep in sync with MUCUserFlag below
+    FlagPasswordProtected  =    1,  /**< Password-protected room.*/
+    FlagPublicLogging      =    2,  /**< Room conversation is publicly logged. */
+    FlagHidden             =    4,  /**< Hidden room. */
+    FlagMembersOnly        =    8,  /**< Members-only room. */
+    FlagModerated          =   16,  /**< Moderated room. */
+    FlagNonAnonymous       =   32,  /**< Non-anonymous room. */
+    FlagOpen               =   64,  /**< Open room. */
+    FlagPersistent         =  128,  /**< Persistent room .*/
+    FlagPublic             =  256,  /**< Public room. */
+    FlagSemiAnonymous      =  512,  /**< Semi-anonymous room. */
+    FlagTemporary          = 1024,  /**< Temporary room. */
+    FlagUnmoderated        = 2048,  /**< Unmoderated room. */
+    FlagUnsecured          = 4096,  /**< Unsecured room. */
+    FlagFullyAnonymous     = 8192   /**< Fully anonymous room. */
   };
 
   /**
    * Configuration flags for a user.
    */
-  // keep in sync with MUCRoomFlag above
   enum MUCUserFlag
   {
-    UserSelf               = 1<<16, /**< Other flags relate to the current user him/herself. Code: 110 */
-    UserNickChanged        = 1<<17, /**< The user changed his/her nickname. Code: 303 */
-    UserKicked             = 1<<18, /**< The user has been kicked. Code: 307 */
-    UserBanned             = 1<<19, /**< The user has been banned. Code: 301 */
-    UserAffiliationChanged = 1<<20, /**< The user's affiliation with the room changed and as a result
-                                     * he/she has been removed from the room. Code: 321 */
-    UserRoomDestroyed      = 1<<21, /**< The room has been destroyed. */
-    UserNickAssigned       = 1<<22, /**< Service has assigned or modified occupant's roomnick.
-                                     * Code: 210*/
-    UserNewRoom            = 1<<23, /**< The room has been newly created. Code: 201*/
-    UserMembershipRequired = 1<<24, /**< User is being removed from the room because the room has
-                                     * been changed to members-only and the user is not a member.
-                                     * Code: 322 */
-    UserRoomShutdown       = 1<<25, /**< User is being removed from the room because of a system
-                                     * shutdown. Code: 332 */
-    UserAffiliationChangedWNR = 1<<26 /**< The user's affiliation changed While Not in the Room.
-                                       * Code: 101 */
-  };
-
-  /**
-   * Describes possible subscription types according to RFC 3921, Section 9.
-   */
-  enum SubscriptionType
-  {
-    S10nNone,                       /**< Contact and user are not subscribed to each other, and
-                                     * neither has requested a subscription from the other. */
-    S10nNoneOut,                    /**< Contact and user are not subscribed to each other, and
-                                     * user has sent contact a subscription request but contact
-                                     * has not replied yet. */
-    S10nNoneIn,                     /**< Contact and user are not subscribed to each other, and
-                                     * contact has sent user a subscription request but user has
-                                     * not replied yet (note: contact's server SHOULD NOT push or
-                                     * deliver roster items in this state, but instead SHOULD wait
-                                     * until contact has approved subscription request from user). */
-    S10nNoneOutIn,                  /**< Contact and user are not subscribed to each other, contact
-                                     * has sent user a subscription request but user has not replied
-                                     * yet, and user has sent contact a subscription request but
-                                     * contact has not replied yet. */
-    S10nTo,                         /**< User is subscribed to contact (one-way). */
-    S10nToIn,                       /**< User is subscribed to contact, and contact has sent user a
-                                     * subscription request but user has not replied yet. */
-    S10nFrom,                       /**< Contact is subscribed to user (one-way). */
-    S10nFromOut,                    /**< Contact is subscribed to user, and user has sent contact a
-                                     * subscription request but contact has not replied yet. */
-    S10nBoth                        /**< User and contact are subscribed to each other (two-way). */
+    UserSelf               =   1,   /**< Other flags relate to the current user him/herself. */
+    UserNickChanged        =   2,   /**< The user changed his/her nickname. */
+    UserKicked             =   4,   /**< The user has been kicked. */
+    UserBanned             =   8,   /**< The user has been banned. */
+    UserAffiliationChanged =  16,   /**< The user's affiliation with the room changed. */
+    UserRoomDestroyed      =  32    /**< The room has been destroyed. */
   };
 
   /**
@@ -1202,25 +1151,10 @@ namespace gloox
   typedef std::list<std::string> StringList;
 
   /**
-   * A list of pointers to strings.
-   */
-  typedef std::list<std::string*> StringPList;
-
-  /**
    * A map of strings.
    */
   typedef std::map<std::string, std::string> StringMap;
 
-  /**
-   * A multimap of strings.
-   */
-  typedef std::multimap<std::string, std::string> StringMultiMap;
-
-  class StanzaExtension;
-  /**
-   * A list of StanzaExtensions.
-   */
-  typedef std::list<const StanzaExtension*> StanzaExtensionList;
 }
 
 extern "C"

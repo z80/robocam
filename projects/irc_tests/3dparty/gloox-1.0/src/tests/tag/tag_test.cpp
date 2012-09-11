@@ -1,11 +1,9 @@
 #include "../../tag.h"
-#include "../../util.h"
 using namespace gloox;
 
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 int main( int /*argc*/, char** /*argv*/ )
 {
@@ -125,8 +123,8 @@ int main( int /*argc*/, char** /*argv*/ )
 
   //-------
   name = "findChildren test";
-  TagList l = t->findChildren( "vie" );
-  TagList::const_iterator it = l.begin();
+  Tag::TagList l = t->findChildren( "vie" );
+  Tag::TagList::const_iterator it = l.begin();
   if( l.size() != 2 || (*it) != v || *(++it) != v2 )
   {
     ++fail;
@@ -136,8 +134,18 @@ int main( int /*argc*/, char** /*argv*/ )
   c = 0;
 
   //-------
-  name = "util::escape";
-  if ( util::escape( "&<>'\"" ) != "&amp;&lt;&gt;&apos;&quot;" )
+  name = "escape";
+  if ( Tag::escape( "&<>'\"" ) != "&amp;&lt;&gt;&apos;&quot;" )
+  {
+    ++fail;
+    printf( "test '%s' failed\n", name.c_str() );
+  }
+
+  //-------
+  name = "relax";
+  if ( Tag::relax( "&amp;&lt;&gt;&apos;&quot;&#60;&#62;&#39;&#34;""&#x3c;&#x3e;"
+                   "&#x3C;&#x3E;&#x27;&#x22;&#X3c;&#x3e;&#X3C;&#X3E;&#X27;&#X22;" )
+        != "&<>'\"<>'\"<><>'\"<><>'\"" )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
@@ -239,7 +247,7 @@ int main( int /*argc*/, char** /*argv*/ )
   c->addAttribute( "abc", "def" );
   c->addAttribute( "xyz", "123" );
   d = c->clone();
-  if( *c != *d )
+  if( c->xml() != d->xml() )
   {
     ++fail;
     printf( "test '%s' failed: %s\n", name.c_str(), d->xml().c_str() );
@@ -249,169 +257,9 @@ int main( int /*argc*/, char** /*argv*/ )
   delete d;
   d = 0;
 
-  //-------
-  name = "mixed content 1";
-  c = new Tag( "abc" );
-  c->addCData( "cdata1" );
-  new Tag( c, "fgh" );
-  c->addCData( "cdata2" );
-  new Tag( c, "xyz" );
-  c->addCData( "cdata3" );
-  if( c->xml() != "<abc>cdata1<fgh/>cdata2<xyz/>cdata3</abc>" )
-  {
-    ++fail;
-    printf( "test '%s' failed: %s\n", name.c_str(), c->xml().c_str() );
-  }
-  delete c;
-  c = 0;
 
-  //-------
-  name = "operator bool()";
-  Tag tag1( "" );
-  if( tag1 )
-  {
-    ++fail;
-    printf( "test '%s' failed: %s\n", name.c_str(), tag1.xml().c_str() );
-  }
 
-  //-------
-  name = "bool operator!()";
-  Tag tag2( "abc" );
-  if( !tag2 )
-  {
-    ++fail;
-    printf( "test '%s' failed: %s\n", name.c_str(), d->xml().c_str() );
-  }
 
-  //-------
-  {
-    name = "simple xmlns";
-    Tag t( "abc" );
-    t.setXmlns( "foo" );
-    if( t.xml() != "<abc xmlns='foo'/>" )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-  }
-
-  //-------
-  {
-    name = "simple nested xmlns 2";
-    Tag t( "abc" );
-    t.setXmlns( "foo" );
-    Tag* d = new Tag( &t, "def" );
-    d->setXmlns( "foobar", "xyz" );
-    d->setPrefix( "xyz" );
-    if( t.xml() != "<abc xmlns='foo'><xyz:def xmlns:xyz='foobar'/></abc>" )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-  }
-
-  //-------
-  {
-    name = "attribute with xmlns";
-    Tag t( "abc" );
-    t.setXmlns( "foo", "xyz" );
-    Tag::Attribute* a = new Tag::Attribute( "foo", "bar", "foo" );
-    a->setPrefix( "xyz" );
-    t.addAttribute( a );
-    if( t.xml() != "<abc xmlns:xyz='foo' xyz:foo='bar'/>" )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-  }
-
-  //-------
-  {
-    name = "escape attribute value";
-    Tag t( "foo", "abc", "&amp;" );
-    if( t.xml() != "<foo abc='&amp;amp;'/>" )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-  }
-
-  //-------
-  {
-    name = "remove child 1";
-    Tag t( "foo" );
-    t.addChild( new Tag( "test", "xmlns", "foo" ) );
-    t.addChild( new Tag( "abc", "xmlns", "foobar" ) );
-    t.addAttribute( "attr1", "value1" );
-    t.addAttribute( "attr2", "value2" );
-    t.removeChild( "test" );
-    if( t.hasChild( "test" ) )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-
-    name = "remove child 2";
-    t.removeChild( "abc", "foobar" );
-    if( t.hasChild( "abc", "xmlns", "foobar" ) )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-
-    name = "remove attrib 1";
-    t.removeAttribute( "attr1" );
-    if( t.hasAttribute( "attr1", "value1") )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-
-    name = "remove attrib 2";
-    t.removeAttribute( "attr2", "value2" );
-    if( t.hasAttribute( "attr2", "value2") )
-    {
-      ++fail;
-      printf( "test '%s' failed: %s\n", name.c_str(), t.xml().c_str() );
-    }
-  }
-
-  //-------
-  {
-    name = "invalid chars 1";
-    Tag t( "foo" );
-    bool check = t.addAttribute( "nul", std::string( 1, 0x00 ) );
-    if( check || t.hasAttribute( "nul" ) )
-    {
-      ++fail;
-      printf( "test '%s' failed:%s\n", name.c_str(), t.xml().c_str() );
-    }
-  }
-
-  //-------
-  {
-    name = "invalid chars 2";
-    for( int i = 0; i <= 0xff; ++i )
-    {
-      Tag::Attribute a( "test", std::string( 1, i ) );
-
-      if( ( i < 0x09 || i == 0x0b || i == 0x0c
-          || ( i > 0x0d && i < 0x20 ) || i == 0xc0
-          || i == 0xc1 || i >= 0xf5 ) && a )
-      {
-        ++fail;
-        printf( "test '%s' (branch 1) failed (i == %02X)\n", name.c_str(), i );
-      }
-      else if( ( i == 0x09 || i == 0x0a || i == 0x0d
-                 || ( i >= 0x20 && i < 0xc0 )
-                 || ( i > 0xc1 && i < 0xf5 ) ) && !a )
-      {
-        ++fail;
-        printf( "test '%s' (branch 2) failed (i == %02X)\n", name.c_str(), i );
-      }
-//       printf( "i: 0x%02X, a: %d, value: %s\n", i, (bool)a, std::string( 1, i ).c_str() );
-    }
-  }
 
 
 
@@ -440,7 +288,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "Tag: OK\n" );
+    printf( "Tag: all tests passed\n" );
     return 0;
   }
   else

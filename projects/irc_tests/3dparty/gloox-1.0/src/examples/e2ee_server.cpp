@@ -1,7 +1,7 @@
 #include "../client.h"
 #include "../connectionlistener.h"
 #include "../disco.h"
-#include "../message.h"
+#include "../stanza.h"
 #include "../gloox.h"
 #include "../loghandler.h"
 #include "../tlshandler.h"
@@ -16,19 +16,23 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-#include "../config.h"
+#ifdef WIN32
+# include "../../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #ifdef HAVE_GNUTLS
 
 /*
- * Using TLS to encrypt end-to-end traffic is not a recommended practice in XMPP,
- * nor is it standardized in any way. Use this code at your own risk.
+ * Using TLS to encrypt end-to-end traffic is not a recommended prectice, nor is
+ * it standardized in any way. Use this code at your own risk.
  */
 
 class MessageTest : public ConnectionListener, LogHandler,
@@ -76,14 +80,12 @@ class MessageTest : public ConnectionListener, LogHandler,
 
     virtual bool onTLSConnect( const CertInfo& info )
     {
-      time_t from( info.date_from );
-      time_t to( info.date_to );
-
       printf( "status: %d\nissuer: %s\npeer: %s\nprotocol: %s\nmac: %s\ncipher: %s\ncompression: %s\n"
               "from: %s\nto: %s\n",
               info.status, info.issuer.c_str(), info.server.c_str(),
               info.protocol.c_str(), info.mac.c_str(), info.cipher.c_str(),
-              info.compression.c_str(), ctime( &from ), ctime( &to ) );
+              info.compression.c_str(), ctime( (const time_t*)&info.date_from ),
+              ctime( (const time_t*)&info.date_to ) );
       return true;
     }
 
@@ -114,7 +116,7 @@ class MessageTest : public ConnectionListener, LogHandler,
       xtlsSend();
     }
 
-    virtual void handleHandshakeResult( const TLSBase* /*base*/, bool success, CertInfo& /*certinfo*/ )
+    virtual void handleHandshakeResult( const TLSBase* /*base*/, bool success, CertInfo &certinfo )
     {
       if( success )
         printf( "xtls handshake successful, waiting for encrypted packets!\n" );
@@ -125,17 +127,15 @@ class MessageTest : public ConnectionListener, LogHandler,
       }
     }
 
-    virtual void handleMessage( const Message& msg, MessageSession * /*session*/ )
+    virtual void handleMessage( Stanza *stanza, MessageSession * /*session*/ )
     {
-      Tag* m = msg.tag();
-      Tag *x = m->findChild( "xtls", "xmlns", "test:xtls" );
+      Tag *x = stanza->findChild( "xtls", "xmlns", "test:xtls" );
       if( x )
       {
         printf( "decrypting: %d\n", x->cdata().length() );
         m_tls->decrypt( Base64::decode64( x->cdata() ) );
         xtlsSend();
       }
-      delete m;
     }
 
     virtual void handleLog( LogLevel level, LogArea area, const std::string& message )

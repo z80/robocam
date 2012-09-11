@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -10,10 +10,7 @@
   This software is distributed without any warranty.
 */
 
-#include "config.h"
-
 #include "sha.h"
-#include "gloox.h"
 
 #include <cstdio>
 
@@ -53,9 +50,13 @@ namespace gloox
   const std::string SHA::hex()
   {
     if( m_corrupted )
-      return EmptyString;
+      return "";
 
-    finalize();
+    if( !m_finished )
+    {
+      pad();
+      m_finished = true;
+    }
 
     char buf[41];
     for( int i = 0; i < 20; ++i )
@@ -64,28 +65,17 @@ namespace gloox
     return std::string( buf, 40 );
   }
 
-  const std::string SHA::binary()
-  {
-    if( !m_finished )
-      finalize();
-
-    unsigned char digest[20];
-    for( int i = 0; i < 20; ++i )
-      digest[i] = (unsigned char)( H[i >> 2] >> ( ( 3 - ( i & 3 ) ) << 3 ) );
-
-    return std::string( (char*)digest, 20 );
-  }
-
   void SHA::finalize()
   {
     if( !m_finished )
     {
       pad();
       m_finished = true;
+      return;
     }
   }
 
-  void SHA::feed( const unsigned char* data, unsigned length )
+  void SHA::feed( const unsigned char *data, unsigned length )
   {
     if( !length )
       return;
@@ -123,7 +113,7 @@ namespace gloox
 
   void SHA::feed( const std::string& data )
   {
-    feed( (const unsigned char*)data.c_str(), (int)data.length() );
+    feed( (const unsigned char*)data.c_str(), data.length() );
   }
 
   void SHA::process()
@@ -140,7 +130,7 @@ namespace gloox
 
     for( t = 0; t < 16; t++ )
     {
-      W[t] =  ((unsigned) Message_Block[t * 4]) << 24;
+      W[t] = ((unsigned) Message_Block[t * 4]) << 24;
       W[t] |= ((unsigned) Message_Block[t * 4 + 1]) << 16;
       W[t] |= ((unsigned) Message_Block[t * 4 + 2]) << 8;
       W[t] |= ((unsigned) Message_Block[t * 4 + 3]);
@@ -212,31 +202,39 @@ namespace gloox
 
   void SHA::pad()
   {
-    Message_Block[Message_Block_Index++] = 0x80;
-
     if( Message_Block_Index > 55 )
     {
+      Message_Block[Message_Block_Index++] = 0x80;
       while( Message_Block_Index < 64 )
       {
         Message_Block[Message_Block_Index++] = 0;
       }
 
       process();
-    }
 
-    while( Message_Block_Index < 56 )
+      while( Message_Block_Index < 56 )
+      {
+        Message_Block[Message_Block_Index++] = 0;
+      }
+    }
+    else
     {
-      Message_Block[Message_Block_Index++] = 0;
+      Message_Block[Message_Block_Index++] = 0x80;
+      while( Message_Block_Index < 56 )
+      {
+        Message_Block[Message_Block_Index++] = 0;
+      }
+
     }
 
-    Message_Block[56] = static_cast<unsigned char>( ( Length_High >> 24 ) & 0xFF );
-    Message_Block[57] = static_cast<unsigned char>( ( Length_High >> 16 ) & 0xFF );
-    Message_Block[58] = static_cast<unsigned char>( ( Length_High >> 8 ) & 0xFF );
-    Message_Block[59] = static_cast<unsigned char>( ( Length_High ) & 0xFF );
-    Message_Block[60] = static_cast<unsigned char>( ( Length_Low >> 24 ) & 0xFF );
-    Message_Block[61] = static_cast<unsigned char>( ( Length_Low >> 16 ) & 0xFF );
-    Message_Block[62] = static_cast<unsigned char>( ( Length_Low >> 8 ) & 0xFF );
-    Message_Block[63] = static_cast<unsigned char>( ( Length_Low ) & 0xFF );
+    Message_Block[56] = ( Length_High >> 24 ) & 0xFF;
+    Message_Block[57] = ( Length_High >> 16 ) & 0xFF;
+    Message_Block[58] = ( Length_High >> 8 ) & 0xFF;
+    Message_Block[59] = ( Length_High ) & 0xFF;
+    Message_Block[60] = ( Length_Low >> 24 ) & 0xFF;
+    Message_Block[61] = ( Length_Low >> 16 ) & 0xFF;
+    Message_Block[62] = ( Length_Low >> 8 ) & 0xFF;
+    Message_Block[63] = ( Length_Low ) & 0xFF;
 
     process();
   }

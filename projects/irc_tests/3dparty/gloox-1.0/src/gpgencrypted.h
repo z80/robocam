@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,6 @@
 #ifndef GPGENCRYPTED_H__
 #define GPGENCRYPTED_H__
 
-#include "gloox.h"
 #include "stanzaextension.h"
 
 #include <string>
@@ -49,7 +48,7 @@ namespace gloox
        * have a name of 'x' in the @c jabber:x:encrypted namespace.
        * @param tag The Tag to parse.
        */
-      GPGEncrypted( const Tag* tag );
+      GPGEncrypted( Tag *tag );
 
       /**
        * Virtual destructor.
@@ -63,22 +62,7 @@ namespace gloox
       const std::string& encrypted() const { return m_encrypted; }
 
       // reimplemented from StanzaExtension
-      virtual const std::string& filterString() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* newInstance( const Tag* tag ) const
-      {
-        return new GPGEncrypted( tag );
-      }
-
-      // reimplemented from StanzaExtension
       Tag* tag() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* clone() const
-      {
-        return new GPGEncrypted( *this );
-      }
 
     private:
       std::string m_encrypted;

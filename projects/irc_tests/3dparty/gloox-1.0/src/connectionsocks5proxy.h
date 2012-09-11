@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -29,16 +29,16 @@ namespace gloox
    * To use with a SOCKS5 proxy:
    *
    * @code
-   * Client* c = new Client( ... );
+   * Client *c = new Client( ... );
    * c->setConnectionImpl( new ConnectionSOCKS5Proxy( c,
-   *                         new ConnectionTCPClient( c->logInstance(), proxyHost, proxyPort ),
-   *                           c->logInstance(), xmppHost, xmppPort ) );
+   *                                new ConnectionTCP( c->logInstance(), proxyHost, proxyPort ),
+   *                                c->logInstance(), xmppHost, xmppPort ) );
    * @endcode
    *
-   * Make sure to pass the proxy host/port to the transport connection (ConnectionTCPClient in this case),
+   * Make sure to pass the proxy host/port to the transport connection (ConnectionTCP in this case),
    * and the XMPP host/port to the proxy connection.
    *
-   * The reason why ConnectionSOCKS5Proxy doesn't manage its own ConnectionTCPClient is that it allows it
+   * The reason why ConnectionSOCKS5Proxy doesn't manage its own ConnectionTCP is that it allows it
    * to be used with other transports (like IPv6 or chained HTTP/SOCKS5 proxies).
    *
    * @note This class is also used by the SOCKS5 bytestreams implementation (with slightly different
@@ -67,7 +67,7 @@ namespace gloox
        * registerConnectionDataHandler(). This is not necessary if this object is
        * part of a 'connection chain', e.g. with ConnectionHTTPProxy.
        */
-      ConnectionSOCKS5Proxy( ConnectionBase* connection, const LogSink& logInstance,
+      ConnectionSOCKS5Proxy( ConnectionBase *connection, const LogSink& logInstance,
                              const std::string& server, int port = -1, bool ip = false );
 
       /**
@@ -82,7 +82,7 @@ namespace gloox
        * The default of -1 means that SRV records will be used to find out about the actual host:port.
        * @param ip Indicates whether @c server is an IP address (true) or a host name (false).
        */
-      ConnectionSOCKS5Proxy( ConnectionDataHandler* cdh, ConnectionBase* connection,
+      ConnectionSOCKS5Proxy( ConnectionDataHandler *cdh, ConnectionBase *connection,
                              const LogSink& logInstance,
                              const std::string& server, int port = -1, bool ip = false );
 
@@ -110,7 +110,7 @@ namespace gloox
       virtual void cleanup();
 
       // reimplemented from ConnectionBase
-      virtual void getStatistics( long int &totalIn, long int &totalOut );
+      virtual void getStatistics( int &totalIn, int &totalOut );
 
       // reimplemented from ConnectionDataHandler
       virtual void handleReceivedData( const ConnectionBase* connection, const std::string& data );
@@ -140,7 +140,7 @@ namespace gloox
        * @param password The password to use for proxy authorization.
        */
       void setProxyAuth( const std::string& user, const std::string& password )
-        { m_proxyUser = user; m_proxyPwd = password; }
+        { m_proxyUser = user; m_proxyPassword = password; }
 
       /**
        * Sets the underlying transport connection. A possibly existing connection will be deleted.
@@ -167,7 +167,7 @@ namespace gloox
       Socks5State m_s5state;
 
       std::string m_proxyUser;
-      std::string m_proxyPwd;
+      std::string m_proxyPassword;
       std::string m_proxyHandshakeBuffer;
       bool m_ip;
 

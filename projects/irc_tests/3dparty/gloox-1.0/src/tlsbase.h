@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -16,7 +16,6 @@
 #define TLSBASE_H__
 
 #include "gloox.h"
-#include "mutex.h"
 #include "tlshandler.h"
 
 namespace gloox
@@ -25,7 +24,7 @@ namespace gloox
   /**
    * @brief An abstract base class for TLS implementations.
    *
-   * @author Jakob Schroeter <js@camaya.net>
+   * @author Jakob Schröter <js@camaya.net>
    * @since 0.9
    */
   class GLOOX_API TLSBase
@@ -36,36 +35,13 @@ namespace gloox
        * @param th The TLSHandler to handle TLS-related events.
        * @param server The server to use in certificate verification.
        */
-      TLSBase( TLSHandler* th, const std::string server )
-        : m_handler( th ), m_server( server ), m_secure( false ), m_valid( false ), m_initLib( true )
-      {}
+      TLSBase( TLSHandler *th, const std::string server )
+        : m_handler( th ), m_server( server ), m_secure( false ), m_valid( false ) {}
 
       /**
        * Virtual destructor.
        */
       virtual ~TLSBase() {}
-
-      /**
-       * Initializes the TLS module. This function must be called (and execute successfully)
-       * before the module can be used.
-       * @param clientKey The absolute path to the user's private key in PEM format.
-       * @param clientCerts A path to a certificate bundle in PEM format.
-       * @param cacerts A list of absolute paths to CA root certificate files in PEM format.
-       * @return @b False if initialization failed, @b true otherwise.
-       * @since 1.0
-       */
-      virtual bool init( const std::string& clientKey = EmptyString,
-                         const std::string& clientCerts = EmptyString,
-                         const StringList& cacerts = StringList() ) = 0;
-
-      /**
-       * Enables/disables initialization of the underlying TLS library. By default,
-       * initialization is performed. You may want to switch it off if the TLS library
-       * is used elsewhere in your applicationas well and you have no control over the
-       * initialization.
-       * @param init Whether or not to intialize the underlying TLS library.
-       */
-      void setInitLib( bool init ) { m_initLib = init; }
 
       /**
        * Use this function to feed unencrypted data to the encryption implementation.
@@ -131,16 +107,14 @@ namespace gloox
       virtual void setClientCert( const std::string& clientKey, const std::string& clientCerts ) = 0;
 
     protected:
-      TLSHandler* m_handler;
+      TLSHandler *m_handler;
       StringList m_cacerts;
       std::string m_clientKey;
       std::string m_clientCerts;
       std::string m_server;
       CertInfo m_certInfo;
-      util::Mutex m_mutex;
       bool m_secure;
       bool m_valid;
-      bool m_initLib;
 
   };
 

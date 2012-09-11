@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -25,11 +25,11 @@ namespace gloox
       m_valid = false;
   }
 
-  OOB::OOB( const Tag* tag )
+  OOB::OOB( Tag *tag )
     : StanzaExtension( ExtOOB ), m_iqext( false ), m_valid( false )
   {
-    if( tag && ( ( tag->name() == "x" && tag->hasAttribute( XMLNS, XMLNS_X_OOB ) ) ||
-        ( tag && tag->name() == "query" && tag->hasAttribute( XMLNS, XMLNS_IQ_OOB ) ) ) )
+    if( tag && ( ( tag->name() == "x" && tag->hasAttribute( "xmlns", XMLNS_X_OOB ) ) ||
+        ( tag && tag->name() == "query" && tag->hasAttribute( "xmlns", XMLNS_IQ_OOB ) ) ) )
     {
       if( tag->name() == "query" )
         m_iqext = true;
@@ -50,26 +50,23 @@ namespace gloox
   {
   }
 
-  const std::string& OOB::filterString() const
-  {
-    static const std::string filter =
-           "/presence/x[@xmlns='" + XMLNS_X_OOB + "']"
-           "|/message/x[@xmlns='" + XMLNS_X_OOB + "']"
-           "|/iq/query[@xmlns='" + XMLNS_IQ_OOB + "']";
-    return filter;
-  }
-
   Tag* OOB::tag() const
   {
     if( !m_valid )
       return 0;
 
-    Tag* t = 0;
+    Tag *t = 0;
 
     if( m_iqext )
-      t = new Tag( "query", XMLNS, XMLNS_IQ_OOB );
+    {
+      t = new Tag( "query" );
+      t->addAttribute( "xmlns", XMLNS_IQ_OOB );
+    }
     else
-      t = new Tag( "x", XMLNS, XMLNS_X_OOB );
+    {
+      t = new Tag( "x" );
+      t->addAttribute( "xmlns", XMLNS_X_OOB );
+    }
 
     new Tag( t, "url", m_url );
     if( !m_desc.empty() )

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -34,11 +34,11 @@ namespace gloox
     }
   }
 
-  VCardUpdate::VCardUpdate( const Tag* tag )
+  VCardUpdate::VCardUpdate( Tag *tag )
     : StanzaExtension( ExtVCardUpdate ),
       m_notReady( true ), m_noImage( true ), m_valid( false )
   {
-    if( tag && tag->name() == "x" && tag->hasAttribute( XMLNS, XMLNS_X_VCARD_UPDATE ) )
+    if( tag && tag->name() == "x" && tag->hasAttribute( "xmlns", XMLNS_X_VCARD_UPDATE ) )
     {
       m_valid = true;
       if( tag->hasChild( "photo" ) )
@@ -55,24 +55,22 @@ namespace gloox
   {
   }
 
-  const std::string& VCardUpdate::filterString() const
-  {
-    static const std::string filter = "/presence/x[@xmlns='" + XMLNS_X_VCARD_UPDATE + "']";
-    return filter;
-  }
-
   Tag* VCardUpdate::tag() const
   {
     if( !m_valid )
       return 0;
 
-    Tag* x = new Tag( "x", XMLNS, XMLNS_X_VCARD_UPDATE );
-    if( !m_notReady )
-    {
-      Tag* p = new Tag( x, "photo" );
-      if( !m_noImage )
-        p->setCData( m_hash );
-    }
+    Tag *x = new Tag( "x" );
+    x->addAttribute( "xmlns", XMLNS_X_VCARD_UPDATE );
+    if( m_notReady )
+      return x;
+
+    Tag *p = new Tag( x, "photo" );
+    if( m_noImage )
+      return x;
+
+    p->setCData( m_hash );
+
     return x;
   }
 

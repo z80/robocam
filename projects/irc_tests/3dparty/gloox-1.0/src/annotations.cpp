@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -19,7 +19,7 @@
 namespace gloox
 {
 
-  Annotations::Annotations( ClientBase* parent )
+  Annotations::Annotations( ClientBase *parent )
     : PrivateXML( parent ),
       m_annotationsHandler( 0 )
   {
@@ -31,15 +31,19 @@ namespace gloox
 
   void Annotations::storeAnnotations( const AnnotationsList& aList )
   {
-    Tag* s = new Tag( "storage", XMLNS, XMLNS_ANNOTATIONS );
+    Tag *s = new Tag( "storage" );
+    s->addAttribute( "xmlns", XMLNS_ANNOTATIONS );
 
-    AnnotationsList::const_iterator it = aList.begin();
-    for( ; it != aList.end(); ++it )
+    if( aList.size() )
     {
-      Tag* n = new Tag( s, "note", (*it).note );
-      n->addAttribute( "jid", (*it).jid );
-      n->addAttribute( "cdate", (*it).cdate );
-      n->addAttribute( "mdate", (*it).mdate );
+      AnnotationsList::const_iterator it = aList.begin();
+      for( ; it != aList.end(); ++it )
+      {
+        Tag *n = new Tag( s, "note", (*it).note );
+        n->addAttribute( "jid", (*it).jid );
+        n->addAttribute( "cdate", (*it).cdate );
+        n->addAttribute( "mdate", (*it).mdate );
+      }
     }
 
     storeXML( s, this );
@@ -50,14 +54,11 @@ namespace gloox
     requestXML( "storage", XMLNS_ANNOTATIONS, this );
   }
 
-  void Annotations::handlePrivateXML( const Tag* xml )
+  void Annotations::handlePrivateXML( const std::string& /*tag*/, Tag *xml )
   {
-    if( !xml )
-      return;
-
     AnnotationsList aList;
-    const TagList& l = xml->children();
-    TagList::const_iterator it = l.begin();
+    const Tag::TagList& l = xml->children();
+    Tag::TagList::const_iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
       if( (*it)->name() == "note" )
@@ -85,6 +86,16 @@ namespace gloox
 
   void Annotations::handlePrivateXMLResult( const std::string& /*uid*/, PrivateXMLResult /*result*/ )
   {
+  }
+
+  void Annotations::registerAnnotationsHandler( AnnotationsHandler *ah )
+  {
+    m_annotationsHandler = ah;
+  }
+
+  void Annotations::removeAnnotationsHandler()
+  {
+    m_annotationsHandler = 0;
   }
 
 }

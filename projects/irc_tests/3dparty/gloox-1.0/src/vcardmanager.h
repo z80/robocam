@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -51,7 +51,7 @@ namespace gloox
    *       m_vcardManager->fetchVCard( jid, this );
    *     };
    *
-   *     virtual void handleVCard( const JID& jid, const VCard* vcard );
+   *     virtual void handleVCard( const JID& jid, const VCard *vcard );
    *     {
    *       printf( "received vcard\n" );
    *     };
@@ -65,7 +65,7 @@ namespace gloox
    *   ...
    *
    *   private:
-   *     VCardManager* m_vcardManager;
+   *     VCardManager *m_vcardManager;
    * };
    * @endcode
    *
@@ -79,7 +79,7 @@ namespace gloox
    * @code
    *     void storeMyVCard()
    *     {
-   *       VCard* v = new VCard();
+   *       VCard *v = new VCard();
    *       v->setFormattedname( "Me" );
    *       v->setNickname( "Myself" );
    *       ...
@@ -104,7 +104,7 @@ namespace gloox
        * Constructor.
        * @param parent The ClientBase object to use for communication.
        */
-      VCardManager( ClientBase* parent );
+      VCardManager( ClientBase *parent );
 
       /**
        * Virtual destructor.
@@ -114,10 +114,10 @@ namespace gloox
       /**
        * Use this function to fetch the VCard of a remote entity or yourself.
        * The result will be announced by calling handleVCard() the VCardHandler.
-       * @param jid The entity's JID. Should be a bare JID unless you want to fetch the VCard of, e.g., a MUC item.
+       * @param jid The entity's JID.
        * @param vch The VCardHandler that will receive the result of the VCard fetch.
        */
-      void fetchVCard( const JID& jid, VCardHandler* vch );
+      void fetchVCard( const JID& jid, VCardHandler *vch );
 
       /**
        * Use this function to store or update your own VCard on the server. Remember to
@@ -127,7 +127,7 @@ namespace gloox
        * @param vcard Your VCard to store.
        * @param vch The VCardHandler that will receive the result of the VCard store.
        */
-      void storeVCard( VCard* vcard, VCardHandler* vch );
+      void storeVCard( const VCard *vcard, VCardHandler *vch );
 
       /**
        * Use this function, e.g. from your VCardHandler-derived class's dtor, to cancel any
@@ -136,17 +136,17 @@ namespace gloox
        * @param vch The VCardHandler to remove from any queues.
        * @since 0.9
        */
-      void cancelVCardOperations( VCardHandler* vch );
+      void cancelVCardOperations( VCardHandler *vch );
 
-      // reimplemented from IqHandler.
-      virtual bool handleIq( const IQ& iq ) { (void)iq; return false; }
+      // reimplemented from IqHandler
+      virtual bool handleIq( Stanza *stanza );
 
-      // reimplemented from IqHandler.
-      virtual void handleIqID( const IQ& iq, int context );
+      // reimplemented from IqHandler
+      virtual bool handleIqID( Stanza *stanza, int context );
 
     private:
       typedef std::map<std::string, VCardHandler*> TrackMap;
-      ClientBase* m_parent;
+      ClientBase *m_parent;
       TrackMap m_trackMap;
 
   };

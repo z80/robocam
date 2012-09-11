@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -12,7 +12,13 @@
 
 
 
-#include "config.h"
+#ifdef _WIN32
+# include "../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #include "clientbase.h"
 #include "connectionbase.h"
@@ -21,11 +27,9 @@
 #include "connectiontcpclient.h"
 #include "disco.h"
 #include "messagesessionhandler.h"
+#include "parser.h"
 #include "tag.h"
-#include "iq.h"
-#include "message.h"
-#include "subscription.h"
-#include "presence.h"
+#include "stanza.h"
 #include "connectionlistener.h"
 #include "iqhandler.h"
 #include "messagehandler.h"
@@ -35,65 +39,37 @@
 #include "loghandler.h"
 #include "taghandler.h"
 #include "mucinvitationhandler.h"
-#include "mucroom.h"
 #include "jid.h"
 #include "base64.h"
-#include "error.h"
 #include "md5.h"
-#include "util.h"
 #include "tlsdefault.h"
 #include "compressionzlib.h"
-#include "stanzaextensionfactory.h"
-#include "eventhandler.h"
-#include "event.h"
 
 #include <cstdlib>
 #include <string>
 #include <map>
 #include <list>
 #include <algorithm>
-#include <cmath>
-#include <ctime>
-#include <cstdio>
 
-#include <string.h> // for memset()
-
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-#include <tchar.h>
+#ifndef _WIN32_WCE
+# include <sstream>
+# include <iomanip>
 #endif
 
 namespace gloox
 {
 
-  // ---- ClientBase::Ping ----
-  ClientBase::Ping::Ping()
-    : StanzaExtension( ExtPing )
-  {
-  }
-
-  ClientBase::Ping::~Ping()
-  {
-  }
-
-  const std::string& ClientBase::Ping::filterString() const
-  {
-    static const std::string filter = "/iq/ping[@xmlns='" + XMLNS_XMPP_PING + "']";
-    return filter;
-  }
-  // ---- ~ClientBase::Ping ----
-
-  // ---- ClientBase ----
   ClientBase::ClientBase( const std::string& ns, const std::string& server, int port )
     : m_connection( 0 ), m_encryption( 0 ), m_compression( 0 ), m_disco( 0 ), m_namespace( ns ),
       m_xmllang( "en" ), m_server( server ), m_compressionActive( false ), m_encryptionActive( false ),
-      m_compress( true ), m_authed( false ), m_block( false ), m_sasl( true ), m_tls( TLSOptional ), m_port( port ),
+      m_compress( true ), m_authed( false ), m_sasl( true ), m_tls( TLSOptional ), m_port( port ),
       m_availableSaslMechs( SaslMechAll ),
       m_statisticsHandler( 0 ), m_mucInvitationHandler( 0 ),
       m_messageSessionHandlerChat( 0 ), m_messageSessionHandlerGroupchat( 0 ),
       m_messageSessionHandlerHeadline( 0 ), m_messageSessionHandlerNormal( 0 ),
-      m_parser( this ), m_seFactory( 0 ), m_authError( AuthErrorUndefined ),
-      m_streamError( StreamErrorUndefined ), m_streamErrorAppCondition( 0 ),
-      m_selectedSaslMech( SaslMechNone ), m_autoMessageSession( false )
+      m_parser( 0 ), m_authError( AuthErrorUndefined ), m_streamError( StreamErrorUndefined ),
+      m_streamErrorAppCondition( 0 ), m_selectedSaslMech( SaslMechNone ),
+      m_idCount( 0 ), m_autoMessageSession( false )
   {
     init();
   }
@@ -108,9 +84,9 @@ namespace gloox
       m_statisticsHandler( 0 ), m_mucInvitationHandler( 0 ),
       m_messageSessionHandlerChat( 0 ), m_messageSessionHandlerGroupchat( 0 ),
       m_messageSessionHandlerHeadline( 0 ), m_messageSessionHandlerNormal( 0 ),
-      m_parser( this ), m_seFactory( 0 ), m_authError( AuthErrorUndefined ),
-      m_streamError( StreamErrorUndefined ), m_streamErrorAppCondition( 0 ),
-      m_selectedSaslMech( SaslMechNone ), m_autoMessageSession( false )
+      m_parser( 0 ), m_authError( AuthErrorUndefined ), m_streamError( StreamErrorUndefined ),
+      m_streamErrorAppCondition( 0 ), m_selectedSaslMech( SaslMechNone ),
+      m_idCount( 0 ), m_autoMessageSession( false )
   {
     init();
   }
@@ -121,16 +97,31 @@ namespace gloox
     {
       m_disco = new Disco( this );
       m_disco->setVersion( "based on gloox", GLOOX_VERSION );
-      m_disco->addFeature( XMLNS_XMPP_PING );
     }
 
-    registerStanzaExtension( new Error() );
-    registerStanzaExtension( new Ping() );
-    registerIqHandler( this, ExtPing );
-
     m_streamError = StreamErrorUndefined;
+
     m_block = false;
-    memset( &m_stats, 0, sizeof( m_stats ) );
+
+    m_stats.totalBytesSent = 0;
+    m_stats.totalBytesReceived = 0;
+    m_stats.compressedBytesSent = 0;
+    m_stats.compressedBytesReceived = 0;
+    m_stats.uncompressedBytesSent = 0;
+    m_stats.uncompressedBytesReceived = 0;
+    m_stats.totalStanzasSent = 0;
+    m_stats.totalStanzasReceived = 0;
+    m_stats.iqStanzasSent = 0;
+    m_stats.iqStanzasReceived = 0;
+    m_stats.messageStanzasSent = 0;
+    m_stats.messageStanzasReceived = 0;
+    m_stats.s10nStanzasSent = 0;
+    m_stats.s10nStanzasReceived = 0;
+    m_stats.presenceStanzasSent = 0;
+    m_stats.presenceStanzasReceived = 0;
+    m_stats.encryption = false;
+    m_stats.compression = false;
+
     cleanup();
   }
 
@@ -139,12 +130,12 @@ namespace gloox
     delete m_connection;
     delete m_encryption;
     delete m_compression;
-    delete m_seFactory;
-    m_seFactory = 0; // to avoid usage when Disco gets deleted below
+    delete m_parser;
     delete m_disco;
-    m_disco = 0;
 
-    util::clearList( m_messageSessions );
+    MessageSessionList::const_iterator it = m_messageSessions.begin();
+    for( ; it != m_messageSessions.end(); ++it )
+      delete (*it);
 
     PresenceJidHandlerList::const_iterator it1 = m_presenceJidHandlers.begin();
     for( ; it1 != m_presenceJidHandlers.end(); ++it1 )
@@ -164,6 +155,9 @@ namespace gloox
     if( m_server.empty() )
       return false;
 
+    if( !m_parser )
+      m_parser = new Parser( this );
+
     if( !m_connection )
       m_connection = new ConnectionTCPClient( this, m_logInstance, m_server, m_port );
 
@@ -173,104 +167,88 @@ namespace gloox
     if( !m_encryption )
       m_encryption = getDefaultEncryption();
 
+    if( m_encryption )
+    {
+      m_encryption->setCACerts( m_cacerts );
+      m_encryption->setClientCert( m_clientKey, m_clientCerts );
+    }
+
     if( !m_compression )
       m_compression = getDefaultCompression();
 
-    m_logInstance.dbg( LogAreaClassClientbase, "This is gloox " + GLOOX_VERSION + ", connecting to "
-                                               + m_server + ":" + util::int2string( m_port ) + "..." );
+    m_logInstance.log( LogLevelDebug, LogAreaClassClientbase, "This is gloox " + GLOOX_VERSION
+                                                              + ", connecting..." );
     m_block = block;
     ConnectionError ret = m_connection->connect();
-    if( ret != ConnNoError )
-      return false;
-
-    if( m_block )
-      m_connection->receive();
-
-    return true;
+    return ret == ConnNoError;
   }
 
-  void ClientBase::handleTag( Tag* tag )
+  void ClientBase::handleTag( Tag *tag )
   {
     if( !tag )
     {
-      logInstance().dbg( LogAreaClassClientbase, "stream closed" );
+      logInstance().log( LogLevelDebug, LogAreaClassClientbase, "stream closed" );
       disconnect( ConnStreamClosed );
       return;
     }
 
-    logInstance().dbg( LogAreaXmlIncoming, tag->xml() );
+    Stanza *stanza = new Stanza( tag );
+
+    logInstance().log( LogLevelDebug, LogAreaXmlIncoming, stanza->xml() );
     ++m_stats.totalStanzasReceived;
 
-    if( tag->name() == "stream" && tag->xmlns() == XMLNS_STREAM )
+    if( tag->name() == "stream:stream" )
     {
-      const std::string& version = tag->findAttribute( "version" );
+      const std::string& version = stanza->findAttribute( "version" );
       if( !checkStreamVersion( version ) )
       {
-        logInstance().dbg( LogAreaClassClientbase, "This server is not XMPP-compliant"
+        logInstance().log( LogLevelDebug, LogAreaClassClientbase, "This server is not XMPP-compliant"
             " (it does not send a 'version' attribute). Please fix it or try another one.\n" );
         disconnect( ConnStreamVersionError );
         return;
       }
 
-      m_sid = tag->findAttribute( "id" );
+      m_sid = stanza->findAttribute( "id" );
       handleStartNode();
     }
-    else if( tag->name() == "error" && tag->xmlns() == XMLNS_STREAM )
+    else if( tag->name() == "stream:error" )
     {
-      handleStreamError( tag );
+      handleStreamError( stanza );
       disconnect( ConnStreamError );
     }
     else
     {
-      if( !handleNormalNode( tag ) )
+      if( !handleNormalNode( stanza ) )
       {
-        if( tag->xmlns().empty() || tag->xmlns() == XMLNS_CLIENT )
+        switch( stanza->type() )
         {
-          if( tag->name() == "iq"  )
-          {
-            IQ iq( tag );
-            m_seFactory->addExtensions( iq, tag );
-            notifyIqHandlers( iq );
+          case StanzaIq:
+            notifyIqHandlers( stanza );
             ++m_stats.iqStanzasReceived;
-          }
-          else if( tag->name() == "message" )
-          {
-            Message msg( tag );
-            m_seFactory->addExtensions( msg, tag );
-            notifyMessageHandlers( msg );
+            break;
+          case StanzaPresence:
+            notifyPresenceHandlers( stanza );
+            ++m_stats.presenceStanzasReceived;
+            break;
+          case StanzaS10n:
+            notifySubscriptionHandlers( stanza );
+            ++m_stats.s10nStanzasReceived;
+            break;
+          case StanzaMessage:
+            notifyMessageHandlers( stanza );
             ++m_stats.messageStanzasReceived;
-          }
-          else if( tag->name() == "presence" )
-          {
-            const std::string& type = tag->findAttribute( TYPE );
-            if( type == "subscribe"  || type == "unsubscribe"
-                || type == "subscribed" || type == "unsubscribed" )
-            {
-              Subscription sub( tag );
-              m_seFactory->addExtensions( sub, tag );
-              notifySubscriptionHandlers( sub );
-              ++m_stats.s10nStanzasReceived;
-            }
-            else
-            {
-              Presence pres( tag );
-              m_seFactory->addExtensions( pres, tag );
-              notifyPresenceHandlers( pres );
-              ++m_stats.presenceStanzasReceived;
-            }
-          }
-          else
-            m_logInstance.err( LogAreaClassClientbase, "Received invalid stanza." );
-        }
-        else
-        {
-          notifyTagHandlers( tag );
+            break;
+          default:
+            notifyTagHandlers( tag );
+            break;
         }
       }
     }
 
     if( m_statisticsHandler )
       m_statisticsHandler->handleStatistics( getStatistics() );
+
+    delete stanza;
   }
 
   void ClientBase::handleCompressedData( const std::string& data )
@@ -280,12 +258,15 @@ namespace gloox
     else if( m_connection )
       m_connection->send( data );
     else
-      m_logInstance.err( LogAreaClassClientbase, "Compression finished, but chain broken" );
+      m_logInstance.log( LogLevelError, LogAreaClassClientbase, "Compression finished, but chain broken" );
   }
 
   void ClientBase::handleDecompressedData( const std::string& data )
   {
-    parse( data );
+    if( m_parser )
+      parse( data );
+    else
+      m_logInstance.log( LogLevelError, LogAreaClassClientbase, "Decompression finished, but chain broken" );
   }
 
   void ClientBase::handleEncryptedData( const TLSBase* /*base*/, const std::string& data )
@@ -293,15 +274,17 @@ namespace gloox
     if( m_connection )
       m_connection->send( data );
     else
-      m_logInstance.err( LogAreaClassClientbase, "Encryption finished, but chain broken" );
+      m_logInstance.log( LogLevelError, LogAreaClassClientbase, "Encryption finished, but chain broken" );
   }
 
   void ClientBase::handleDecryptedData( const TLSBase* /*base*/, const std::string& data )
   {
     if( m_compression && m_compressionActive )
       m_compression->decompress( data );
-    else
+    else if( m_parser )
       parse( data );
+    else
+      m_logInstance.log( LogLevelError, LogAreaClassClientbase, "Decryption finished, but chain broken" );
   }
 
   void ClientBase::handleHandshakeResult( const TLSBase* /*base*/, bool success, CertInfo &certinfo )
@@ -310,18 +293,18 @@ namespace gloox
     {
       if( !notifyOnTLSConnect( certinfo ) )
       {
-        logInstance().err( LogAreaClassClientbase, "Server's certificate rejected!" );
+        logInstance().log( LogLevelError, LogAreaClassClientbase, "Server's certificate rejected!" );
         disconnect( ConnTlsFailed );
       }
       else
       {
-        logInstance().dbg( LogAreaClassClientbase, "connection encryption active" );
+        logInstance().log( LogLevelDebug, LogAreaClassClientbase, "connection encryption active" );
         header();
       }
     }
     else
     {
-      logInstance().err( LogAreaClassClientbase, "TLS handshake failed!" );
+      logInstance().log( LogLevelError, LogAreaClassClientbase, "TLS handshake failed!" );
       disconnect( ConnTlsFailed );
     }
   }
@@ -332,65 +315,54 @@ namespace gloox
       m_encryption->decrypt( data );
     else if( m_compression && m_compressionActive )
       m_compression->decompress( data );
-    else
+    else if( m_parser )
       parse( data );
+    else
+      m_logInstance.log( LogLevelError, LogAreaClassClientbase, "Received data, but chain broken" );
   }
 
   void ClientBase::handleConnect( const ConnectionBase* /*connection*/ )
   {
     header();
+    if( m_block && m_connection )
+    {
+      m_connection->receive();
+    }
   }
 
   void ClientBase::handleDisconnect( const ConnectionBase* /*connection*/, ConnectionError reason )
   {
     if( m_connection )
       m_connection->cleanup();
-
-    if( m_encryption )
-      m_encryption->cleanup();
-
-    if( m_compression )
-      m_compression->cleanup();
-
-    m_encryptionActive = false;
-    m_compressionActive = false;
-
     notifyOnDisconnect( reason );
   }
 
   void ClientBase::disconnect( ConnectionError reason )
   {
-    if( !m_connection || m_connection->state() < StateConnecting )
-      return;
+    if( m_connection && m_connection->state() >= StateConnecting )
+    {
+      if( reason != ConnTlsFailed )
+        send( "</stream:stream>" );
 
-    if( reason != ConnTlsFailed )
-      send( "</stream:stream>" );
+      m_connection->disconnect();
+      m_connection->cleanup();
+      m_parser->reset();
 
-    m_connection->disconnect();
-    m_connection->cleanup();
+      if( m_encryption )
+        m_encryption->cleanup();
 
-    if( m_encryption )
-      m_encryption->cleanup();
+      m_encryptionActive = false;
+      m_compressionActive = false;
 
-    if( m_compression )
-      m_compression->cleanup();
-
-    m_encryptionActive = false;
-    m_compressionActive = false;
-
-    notifyOnDisconnect( reason );
+      notifyOnDisconnect( reason );
+    }
   }
 
   void ClientBase::parse( const std::string& data )
   {
-    std::string copy = data;
-    int i = 0;
-    if( ( i = m_parser.feed( copy ) ) >= 0 )
+    if( m_parser && !m_parser->feed( data ) )
     {
-      std::string error = "parse error (at pos ";
-      error += util::int2string( i );
-      error += "): ";
-      m_logInstance.err( LogAreaClassClientbase, error + copy );
+      m_logInstance.log( LogLevelError, LogAreaClassClientbase, "parse error: " + data );
       Tag* e = new Tag( "stream:error" );
       new Tag( e, "restricted-xml", "xmlns", XMLNS_XMPP_STREAM );
       send( e );
@@ -418,7 +390,9 @@ namespace gloox
 
   void ClientBase::startTls()
   {
-    send( new Tag( "starttls", XMLNS, XMLNS_STREAM_TLS ) );
+    Tag *start = new Tag( "starttls" );
+    start->addAttribute( "xmlns", XMLNS_STREAM_TLS );
+    send( start );
   }
 
   void ClientBase::setServer( const std::string &server )
@@ -438,7 +412,8 @@ namespace gloox
   {
     m_selectedSaslMech = type;
 
-    Tag* a = new Tag( "auth", XMLNS, XMLNS_STREAM_SASL );
+    Tag *a = new Tag( "auth" );
+    a->addAttribute( "xmlns", XMLNS_STREAM_SASL );
 
     switch( type )
     {
@@ -454,10 +429,7 @@ namespace gloox
           tmp += m_authzid.bare();
 
         tmp += '\0';
-        if( !m_authcid.empty() )
-          tmp += m_authcid;
-        else
-          tmp += m_jid.username();
+        tmp += m_jid.username();
         tmp += '\0';
         tmp += m_password;
         a->setCData( Base64::encode64( tmp ) );
@@ -465,14 +437,18 @@ namespace gloox
       }
       case SaslMechAnonymous:
         a->addAttribute( "mechanism", "ANONYMOUS" );
+        a->setCData( getID() );
         break;
       case SaslMechExternal:
         a->addAttribute( "mechanism", "EXTERNAL" );
-        a->setCData( Base64::encode64( m_authzid ? m_authzid.bare() : m_jid.bare() ) );
-       break;
+        if( m_authzid )
+          a->setCData( Base64::encode64( m_authzid.bare() ) );
+        else
+          a->setCData( Base64::encode64( m_jid.bare() ) );
+        break;
       case SaslMechGssapi:
       {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
+#ifdef _WIN32
         a->addAttribute( "mechanism", "GSSAPI" );
 // The client calls GSS_Init_sec_context, passing in 0 for
 // input_context_handle (initially) and a targ_name equal to output_name
@@ -486,32 +462,8 @@ namespace gloox
         a->setCData( Base64::encode64( token ) );
 //         etc... see gssapi-sasl-draft.txt
 #else
-        logInstance().err( LogAreaClassClientbase,
-                    "SASL GSSAPI is not supported on this platform. You should never see this." );
-#endif
-        break;
-      }
-      case SaslMechNTLM:
-      {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-        a->addAttribute( "mechanism", "NTLM" );
-        SEC_WINNT_AUTH_IDENTITY identity, *ident = 0;
-        memset( &identity, 0, sizeof( identity ) );
-        if( m_jid.username().length() > 0 )
-        {
-          identity.User = (unsigned char*)m_jid.username().c_str();
-          identity.UserLength = (unsigned long)m_jid.username().length();
-          identity.Domain = (unsigned char*)m_ntlmDomain.c_str();
-          identity.DomainLength = (unsigned long)m_ntlmDomain.length();
-          identity.Password = (unsigned char*)m_password.c_str();
-          identity.PasswordLength = (unsigned long)m_password.length();
-          identity.Flags = SEC_WINNT_AUTH_IDENTITY_UNICODE;
-          ident = &identity;
-        }
-        AcquireCredentialsHandle( 0, _T( "NTLM" ), SECPKG_CRED_OUTBOUND, 0, ident, 0, 0, &m_credHandle, 0 );
-#else
-        logInstance().err( LogAreaClassClientbase,
-                    "SASL NTLM is not supported on this platform. You should never see this." );
+        logInstance().log( LogLevelError, LogAreaClassClientbase,
+                    "GSSAPI is not supported on this platform. You should never see this." );
 #endif
         break;
       }
@@ -524,7 +476,8 @@ namespace gloox
 
   void ClientBase::processSASLChallenge( const std::string& challenge )
   {
-    Tag* t = new Tag( "response", XMLNS, XMLNS_STREAM_SASL );
+    Tag *t = new Tag( "response" );
+    t->addAttribute( "xmlns", XMLNS_STREAM_SASL );
 
     const std::string& decoded = Base64::decode64( challenge );
 
@@ -532,34 +485,43 @@ namespace gloox
     {
       case SaslMechDigestMd5:
       {
-        if( !decoded.compare( 0, 7, "rspauth" ) )
-          break;
-
-        std::string realm;
-        std::string::size_type end = 0;
-        std::string::size_type pos = decoded.find( "realm=" );
-        if( pos != std::string::npos )
+        if( decoded.substr( 0, 7 ) == "rspauth" )
         {
-          end = decoded.find( '"', pos + 7 );
-          realm = decoded.substr( pos + 7, end - ( pos + 7 ) );
+          break;
+        }
+        std::string realm;
+        size_t r_pos = decoded.find( "realm=" );
+        if( r_pos != std::string::npos )
+        {
+          size_t r_end = decoded.find( "\"", r_pos + 7 );
+          realm = decoded.substr( r_pos + 7, r_end - (r_pos + 7 ) );
         }
         else
           realm = m_jid.server();
 
-        pos = decoded.find( "nonce=" );
-        if( pos == std::string::npos )
+        size_t n_pos = decoded.find( "nonce=" );
+        if( n_pos == std::string::npos )
+        {
           return;
+        }
 
-        end = decoded.find( '"', pos + 7 );
-        while( decoded[end-1] == '\\' )
-          end = decoded.find( '"', end + 1 );
-        std::string nonce = decoded.substr( pos + 7, end - ( pos + 7 ) );
+        size_t n_end = decoded.find( "\"", n_pos + 7 );
+        while( decoded.substr( n_end-1, 1 ) == "\\" )
+          n_end = decoded.find( "\"", n_end + 1 );
+        std::string nonce = decoded.substr( n_pos + 7, n_end - ( n_pos + 7 ) );
 
         std::string cnonce;
+#ifdef _WIN32_WCE
         char cn[4*8+1];
         for( int i = 0; i < 4; ++i )
           sprintf( cn + i*8, "%08x", rand() );
         cnonce.assign( cn, 4*8 );
+#else
+        std::ostringstream cn;
+        for( int i = 0; i < 4; ++i )
+          cn << std::hex << std::setw( 8 ) << std::setfill( '0' ) << rand();
+        cnonce = cn.str();
+#endif
 
         MD5 md5;
         md5.feed( m_jid.username() );
@@ -591,19 +553,12 @@ namespace gloox
         md5.feed( ":auth:" );
         md5.feed( a2 );
         md5.finalize();
+        const std::string& response_value = md5.hex();
 
-        std::string response = "username=\"";
-        response += m_jid.username();
-        response += "\",realm=\"";
-        response += realm;
-        response += "\",nonce=\"";
-        response += nonce;
-        response += "\",cnonce=\"";
-        response += cnonce;
-        response += "\",nc=00000001,qop=auth,digest-uri=\"xmpp/";
-        response += m_jid.server();
-        response += "\",response=";
-        response += md5.hex();
+        std::string response = "username=\"" + m_jid.username() + "\",realm=\"" + realm;
+        response += "\",nonce=\""+ nonce + "\",cnonce=\"" + cnonce;
+        response += "\",nc=00000001,qop=auth,digest-uri=\"xmpp/" + m_jid.server() + "\",response=";
+        response += response_value;
         response += ",charset=utf-8";
 
         if( m_authzid )
@@ -614,55 +569,13 @@ namespace gloox
         break;
       }
       case SaslMechGssapi:
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
+#ifdef _WIN32
         // see gssapi-sasl-draft.txt
 #else
-        m_logInstance.err( LogAreaClassClientbase,
+        m_logInstance.log( LogLevelError, LogAreaClassClientbase,
                            "Huh, received GSSAPI challenge?! This should have never happened!" );
 #endif
         break;
-      case SaslMechNTLM:
-      {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-        bool type1 = ( decoded.length() < 7 ) ? true : false;
-
-        SecBuffer bufferIn = { type1 ? 0 : (unsigned long)decoded.length(),
-                               SECBUFFER_TOKEN,
-                               (void*)decoded.c_str() };
-        SecBufferDesc secIn = { 0, 1, &bufferIn };
-
-        char buffer[4096];
-
-        SecBuffer bufferOut = { sizeof( buffer ), SECBUFFER_TOKEN, buffer };
-        SecBufferDesc secOut = { 0, 1, &bufferOut };
-
-        TimeStamp timestamp;
-        unsigned long contextAttr;
-
-        SECURITY_STATUS status = InitializeSecurityContext( &m_credHandle, type1 ? 0 : &m_ctxtHandle,
-                                                            0, ISC_REQ_MUTUAL_AUTH, 0, 0, &secIn, 0,
-                                                            &m_ctxtHandle, &secOut, &contextAttr,
-                                                            &timestamp );
-        std::string response;
-        if( SUCCEEDED( status ) )
-        {
-          response = std::string( (const char *)bufferOut.pvBuffer, bufferOut.cbBuffer );
-        }
-        else
-        {
-          logInstance().err( LogAreaClassClientbase,
-                             "InitializeSecurityContext() failed, return value "
-                               + util::int2string( status ) );
-        }
-
-        t->setCData( Base64::encode64( response ) );
-#else
-        m_logInstance.err( LogAreaClassClientbase,
-                           "Huh, received NTLM challenge?! This should have never happened!" );
-#endif
-        break;
-      }
-
       default:
         // should never happen.
         break;
@@ -671,116 +584,54 @@ namespace gloox
     send( t );
   }
 
-  void ClientBase::processSASLError( Tag* tag )
+  void ClientBase::processSASLError( Stanza *stanza )
   {
-    if( tag->hasChild( "aborted" ) )
+    if( stanza->hasChild( "aborted" ) )
       m_authError = SaslAborted;
-    else if( tag->hasChild( "incorrect-encoding" ) )
+    else if( stanza->hasChild( "incorrect-encoding" ) )
       m_authError = SaslIncorrectEncoding;
-    else if( tag->hasChild( "invalid-authzid" ) )
+    else if( stanza->hasChild( "invalid-authzid" ) )
       m_authError = SaslInvalidAuthzid;
-    else if( tag->hasChild( "invalid-mechanism" ) )
+    else if( stanza->hasChild( "invalid-mechanism" ) )
       m_authError = SaslInvalidMechanism;
-    else if( tag->hasChild( "malformed-request" ) )
-      m_authError = SaslMalformedRequest;
-    else if( tag->hasChild( "mechanism-too-weak" ) )
+    else if( stanza->hasChild( "mechanism-too-weak" ) )
       m_authError = SaslMechanismTooWeak;
-    else if( tag->hasChild( "not-authorized" ) )
+    else if( stanza->hasChild( "not-authorized" ) )
       m_authError = SaslNotAuthorized;
-    else if( tag->hasChild( "temporary-auth-failure" ) )
+    else if( stanza->hasChild( "temporary-auth-failure" ) )
       m_authError = SaslTemporaryAuthFailure;
-
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-    if( m_selectedSaslMech == SaslMechNTLM )
-    {
-      FreeCredentialsHandle( &m_credHandle );
-      DeleteSecurityContext( &m_ctxtHandle );
-    }
-#endif
   }
 
-  void ClientBase::processSASLSuccess()
-  {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-    if( m_selectedSaslMech == SaslMechNTLM )
-    {
-      FreeCredentialsHandle( &m_credHandle );
-      DeleteSecurityContext( &m_ctxtHandle );
-    }
-#endif
-  }
-
-  void ClientBase::send( IQ& iq, IqHandler* ih, int context, bool del )
-  {
-    if( ih && ( iq.subtype() == IQ::Set || iq.subtype() == IQ::Get ) )
-    {
-      if( iq.id().empty() )
-        iq.setID( getID() );
-
-      TrackStruct track;
-      track.ih = ih;
-      track.context = context;
-      track.del = del;
-      m_iqHandlerMapMutex.lock();
-      m_iqIDHandlers[iq.id()] = track;
-      m_iqHandlerMapMutex.unlock();
-    }
-
-    send( iq );
-  }
-
-  void ClientBase::send( const IQ& iq )
-  {
-    ++m_stats.iqStanzasSent;
-    Tag* tag = iq.tag();
-    addFrom( tag );
-    addNamespace( tag );
-    send( tag );
-  }
-
-  void ClientBase::send( const Message& msg )
-  {
-    ++m_stats.messageStanzasSent;
-    Tag* tag = msg.tag();
-    addFrom( tag );
-    addNamespace( tag );
-    send( tag );
-  }
-
-  void ClientBase::send( const Subscription& sub )
-  {
-    ++m_stats.s10nStanzasSent;
-    Tag* tag = sub.tag();
-    addFrom( tag );
-    addNamespace( tag );
-    send( tag );
-  }
-
-  void ClientBase::send( Presence& pres )
-  {
-    ++m_stats.presenceStanzasSent;
-    Tag* tag = pres.tag();
-    StanzaExtensionList::const_iterator it = m_presenceExtensions.begin();
-    for( ; it != m_presenceExtensions.end(); ++it )
-      tag->addChild( (*it)->tag() );
-    addFrom( tag );
-    addNamespace( tag );
-    send( tag );
-  }
-
-  void ClientBase::send( Tag* tag )
+  void ClientBase::send( Tag *tag )
   {
     if( !tag )
       return;
 
     send( tag->xml() );
 
+    switch( tag->type() )
+    {
+      case StanzaIq:
+        ++m_stats.iqStanzasSent;
+        break;
+      case StanzaMessage:
+        ++m_stats.messageStanzasSent;
+        break;
+      case StanzaS10n:
+        ++m_stats.s10nStanzasSent;
+        break;
+      case StanzaPresence:
+        ++m_stats.presenceStanzasSent;
+        break;
+      default:
+        break;
+    }
     ++m_stats.totalStanzasSent;
+
+    delete tag;
 
     if( m_statisticsHandler )
       m_statisticsHandler->handleStatistics( getStatistics() );
-
-    delete tag;
   }
 
   void ClientBase::send( const std::string& xml )
@@ -794,50 +645,17 @@ namespace gloox
       else
         m_connection->send( xml );
 
-      logInstance().dbg( LogAreaXmlOutgoing, xml );
+      logInstance().log( LogLevelDebug, LogAreaXmlOutgoing, xml );
     }
-  }
-
-  void ClientBase::addFrom( Tag* tag )
-  {
-    if( !m_authed /*for IQ Auth */ || !tag || tag->hasAttribute( "from" ) )
-      return;
-
-    if ( m_selectedResource.empty() )
-      tag->addAttribute( "from", m_jid.bare() );
-    else
-      tag->addAttribute( "from", m_jid.bare() + '/' + m_selectedResource );
-  }
-
-  void ClientBase::addNamespace( Tag* tag )
-  {
-    if( !tag || !tag->xmlns().empty() )
-      return;
-
-    tag->setXmlns( m_namespace );
-  }
-
-  void ClientBase::registerStanzaExtension( StanzaExtension* ext )
-  {
-    if( !m_seFactory )
-      m_seFactory = new StanzaExtensionFactory();
-
-    m_seFactory->registerExtension( ext );
-  }
-
-  bool ClientBase::removeStanzaExtension( int ext )
-  {
-    if( !m_seFactory )
-      return false;
-
-    return m_seFactory->removeExtension( ext );
   }
 
   StatisticsStruct ClientBase::getStatistics()
   {
-    if( m_connection )
-      m_connection->getStatistics( m_stats.totalBytesReceived, m_stats.totalBytesSent );
-
+//     if( m_connection )
+//       m_connection->getStatistics( m_stats.totalBytesReceived, m_stats.totalBytesSent,
+//                                    m_stats.compressedBytesReceived, m_stats.compressedBytesSent,
+//                                    m_stats.uncompressedBytesReceived, m_stats.uncompressedBytesSent,
+//                                    m_stats.compression );
     return m_stats;
   }
 
@@ -851,45 +669,32 @@ namespace gloox
     send( " " );
   }
 
-  void ClientBase::xmppPing( const JID& to, EventHandler* eh )
+  void ClientBase::xmppPing( const JID& to )
   {
     const std::string& id = getID();
-    IQ iq( IQ::Get, to, id );
-    iq.addExtension( new Ping() );
-    m_dispatcher.registerEventHandler( eh, id );
-    send( iq, this, XMPPPing );
-  }
 
-  bool ClientBase::handleIq( const IQ& iq )
-  {
-    const Ping* p = iq.findExtension<Ping>( ExtPing );
-    if( !p || iq.subtype() != IQ::Get )
-      return false;
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "to", to.full() );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "type", "get" );
+    Tag *p = new Tag( iq, "ping" );
+    p->addAttribute( "xmlns", XMLNS_XMPP_PING );
 
-    m_dispatcher.dispatch( Event( Event::PingPing, iq ) );
-    IQ re( IQ::Result, iq.from(), iq.id() );
-    send( re );
-
-    return true;
-  }
-
-  void ClientBase::handleIqID( const IQ& iq, int context )
-  {
-    if( context == XMPPPing )
-      m_dispatcher.dispatch( Event( ( iq.subtype() == IQ::Result ) ? Event::PingPong
-                                                                   : Event::PingError, iq ),
-                             iq.id(), true );
-    else
-      handleIqIDForward( iq, context );
+    send( iq );
   }
 
   const std::string ClientBase::getID()
   {
-    static unsigned int uniqueBaseID = (unsigned int)time( 0 );
-    char r[21+1];
-    sprintf( r, "uid:%08x:%08x", uniqueBaseID, rand() );
-    std::string ret( r, 21 );
-    return ret;
+#ifdef _WIN32_WCE
+    char r[8+1];
+    sprintf( r, "%08x", rand() );
+    std::string ret( r, 8 );
+    return std::string( "uid" ) + ret;
+#else
+    std::ostringstream oss;
+    oss << ++m_idCount;
+    return std::string( "uid" ) + oss.str();
+#endif
   }
 
   bool ClientBase::checkStreamVersion( const std::string& version )
@@ -901,7 +706,7 @@ namespace gloox
     int minor = 0;
     int myMajor = atoi( XMPP_STREAM_VERSION_MAJOR.c_str() );
 
-    size_t dot = version.find( '.' );
+    size_t dot = version.find( "." );
     if( !version.empty() && dot && dot != std::string::npos )
     {
       major = atoi( version.substr( 0, dot ).c_str() );
@@ -911,7 +716,12 @@ namespace gloox
     return myMajor >= major;
   }
 
-  void ClientBase::setConnectionImpl( ConnectionBase* cb )
+  LogSink& ClientBase::logInstance()
+  {
+    return m_logInstance;
+  }
+
+  void ClientBase::setConnectionImpl( ConnectionBase *cb )
   {
     if( m_connection )
     {
@@ -920,7 +730,7 @@ namespace gloox
     m_connection = cb;
   }
 
-  void ClientBase::setEncryptionImpl( TLSBase* tb )
+  void ClientBase::setEncryptionImpl( TLSBase *tb )
   {
     if( m_encryption )
     {
@@ -929,7 +739,7 @@ namespace gloox
     m_encryption = tb;
   }
 
-  void ClientBase::setCompressionImpl( CompressionBase* cb )
+  void ClientBase::setCompressionImpl( CompressionBase *cb )
   {
     if( m_compression )
     {
@@ -938,66 +748,65 @@ namespace gloox
     m_compression = cb;
   }
 
-  void ClientBase::handleStreamError( Tag* tag )
+  void ClientBase::handleStreamError( Stanza *stanza )
   {
     StreamError err = StreamErrorUndefined;
-    const TagList& c = tag->children();
-    TagList::const_iterator it = c.begin();
+    const Tag::TagList& c = stanza->children();
+    Tag::TagList::const_iterator it = c.begin();
     for( ; it != c.end(); ++it )
     {
-      const std::string& name = (*it)->name();
-      if( name == "bad-format" )
+      if( (*it)->name() == "bad-format" )
         err = StreamErrorBadFormat;
-      else if( name == "bad-namespace-prefix" )
+      else if( (*it)->name() == "bad-namespace-prefix" )
         err = StreamErrorBadNamespacePrefix;
-      else if( name == "conflict" )
+      else if( (*it)->name() == "conflict" )
         err = StreamErrorConflict;
-      else if( name == "connection-timeout" )
+      else if( (*it)->name() == "connection-timeout" )
         err = StreamErrorConnectionTimeout;
-      else if( name == "host-gone" )
+      else if( (*it)->name() == "host-gone" )
         err = StreamErrorHostGone;
-      else if( name == "host-unknown" )
+      else if( (*it)->name() == "host-unknown" )
         err = StreamErrorHostUnknown;
-      else if( name == "improper-addressing" )
+      else if( (*it)->name() == "improper-addressing" )
         err = StreamErrorImproperAddressing;
-      else if( name == "internal-server-error" )
+      else if( (*it)->name() == "internal-server-error" )
         err = StreamErrorInternalServerError;
-      else if( name == "invalid-from" )
+      else if( (*it)->name() == "invalid-from" )
         err = StreamErrorInvalidFrom;
-      else if( name == "invalid-id" )
+      else if( (*it)->name() == "invalid-id" )
         err = StreamErrorInvalidId;
-      else if( name == "invalid-namespace" )
+      else if( (*it)->name() == "invalid-namespace" )
         err = StreamErrorInvalidNamespace;
-      else if( name == "invalid-xml" )
+      else if( (*it)->name() == "invalid-xml" )
         err = StreamErrorInvalidXml;
-      else if( name == "not-authorized" )
+      else if( (*it)->name() == "not-authorized" )
         err = StreamErrorNotAuthorized;
-      else if( name == "policy-violation" )
+      else if( (*it)->name() == "policy-violation" )
         err = StreamErrorPolicyViolation;
-      else if( name == "remote-connection-failed" )
+      else if( (*it)->name() == "remote-connection-failed" )
         err = StreamErrorRemoteConnectionFailed;
-      else if( name == "resource-constraint" )
+      else if( (*it)->name() == "resource-constraint" )
         err = StreamErrorResourceConstraint;
-      else if( name == "restricted-xml" )
+      else if( (*it)->name() == "restricted-xml" )
         err = StreamErrorRestrictedXml;
-      else if( name == "see-other-host" )
+      else if( (*it)->name() == "see-other-host" )
       {
         err = StreamErrorSeeOtherHost;
-        m_streamErrorCData = tag->findChild( "see-other-host" )->cdata();
+        m_streamErrorCData = stanza->findChild( "see-other-host" )->cdata();
       }
-      else if( name == "system-shutdown" )
+      else if( (*it)->name() == "system-shutdown" )
         err = StreamErrorSystemShutdown;
-      else if( name == "undefined-condition" )
+      else if( (*it)->name() == "undefined-condition" )
         err = StreamErrorUndefinedCondition;
-      else if( name == "unsupported-encoding" )
+      else if( (*it)->name() == "unsupported-encoding" )
         err = StreamErrorUnsupportedEncoding;
-      else if( name == "unsupported-stanza-type" )
+      else if( (*it)->name() == "unsupported-stanza-type" )
         err = StreamErrorUnsupportedStanzaType;
-      else if( name == "unsupported-version" )
+      else if( (*it)->name() == "unsupported-version" )
         err = StreamErrorUnsupportedVersion;
-      else if( name == "xml-not-well-formed" )
+      else if( (*it)->name() == "xml-not-well-formed" )
         err = StreamErrorXmlNotWellFormed;
-      else if( name == "text" )
+      else if( (*it)->name() == "text" )
       {
         const std::string& lang = (*it)->findAttribute( "xml:lang" );
         if( !lang.empty() )
@@ -1008,45 +817,45 @@ namespace gloox
       else
         m_streamErrorAppCondition = (*it);
 
-      if( err != StreamErrorUndefined && (*it)->hasAttribute( XMLNS, XMLNS_XMPP_STREAM ) )
+      if( err != StreamErrorUndefined && (*it)->hasAttribute( "xmlns", XMLNS_XMPP_STREAM ) )
         m_streamError = err;
     }
   }
 
-  const std::string& ClientBase::streamErrorText( const std::string& lang ) const
+  const std::string ClientBase::streamErrorText( const std::string& lang ) const
   {
     StringMap::const_iterator it = m_streamErrorText.find( lang );
-    return ( it != m_streamErrorText.end() ) ? (*it).second : EmptyString;
+    return ( it != m_streamErrorText.end() ) ? (*it).second : std::string();
   }
 
-  void ClientBase::registerMessageSessionHandler( MessageSessionHandler* msh, int types )
+  void ClientBase::registerMessageSessionHandler( MessageSessionHandler *msh, int types )
   {
-    if( types & Message::Chat || types == 0 )
+    if( types & StanzaMessageChat || types == 0 )
       m_messageSessionHandlerChat = msh;
 
-    if( types & Message::Normal || types == 0 )
+    if( types & StanzaMessageNormal || types == 0 )
       m_messageSessionHandlerNormal = msh;
 
-    if( types & Message::Groupchat || types == 0 )
+    if( types & StanzaMessageGroupchat || types == 0 )
       m_messageSessionHandlerGroupchat = msh;
 
-    if( types & Message::Headline || types == 0 )
+    if( types & StanzaMessageHeadline || types == 0 )
       m_messageSessionHandlerHeadline = msh;
   }
 
-  void ClientBase::registerPresenceHandler( PresenceHandler* ph )
+  void ClientBase::registerPresenceHandler( PresenceHandler *ph )
   {
     if( ph )
       m_presenceHandlers.push_back( ph );
   }
 
-  void ClientBase::removePresenceHandler( PresenceHandler* ph )
+  void ClientBase::removePresenceHandler( PresenceHandler *ph )
   {
     if( ph )
       m_presenceHandlers.remove( ph );
   }
 
-  void ClientBase::registerPresenceHandler( const JID& jid, PresenceHandler* ph )
+  void ClientBase::registerPresenceHandler( const JID& jid, PresenceHandler *ph )
   {
     if( ph && jid )
     {
@@ -1057,7 +866,7 @@ namespace gloox
     }
   }
 
-  void ClientBase::removePresenceHandler( const JID& jid, PresenceHandler* ph )
+  void ClientBase::removePresenceHandler( const JID& jid, PresenceHandler *ph )
   {
     PresenceJidHandlerList::iterator t;
     PresenceJidHandlerList::iterator it = m_presenceJidHandlers.begin();
@@ -1073,10 +882,20 @@ namespace gloox
     }
   }
 
-  void ClientBase::removeIDHandler( IqHandler* ih )
+  void ClientBase::trackID( IqHandler *ih, const std::string& id, int context )
+  {
+    if( ih && !id.empty() )
+    {
+      TrackStruct track;
+      track.ih = ih;
+      track.context = context;
+      m_iqIDHandlers[id] = track;
+    }
+  }
+
+  void ClientBase::removeIDHandler( IqHandler *ih )
   {
     IqTrackMap::iterator t;
-    m_iqHandlerMapMutex.lock();
     IqTrackMap::iterator it = m_iqIDHandlers.begin();
     while( it != m_iqIDHandlers.end() )
     {
@@ -1085,53 +904,32 @@ namespace gloox
       if( ih == (*t).second.ih )
         m_iqIDHandlers.erase( t );
     }
-    m_iqHandlerMapMutex.unlock();
   }
 
-  void ClientBase::registerIqHandler( IqHandler* ih, int exttype )
+  void ClientBase::registerIqHandler( IqHandler *ih, const std::string& xmlns )
   {
-    if( !ih )
-      return;
-
-    typedef IqHandlerMap::const_iterator IQci;
-    std::pair<IQci, IQci> g = m_iqExtHandlers.equal_range( exttype );
-    for( IQci it = g.first; it != g.second; ++it )
-      if( (*it).second == ih )
-        return;
-
-    m_iqExtHandlers.insert( std::make_pair( exttype, ih ) );
+    if( ih && !xmlns.empty() )
+      m_iqNSHandlers[xmlns] = ih;
   }
 
-  void ClientBase::removeIqHandler( IqHandler* ih, int exttype )
+  void ClientBase::removeIqHandler( const std::string& xmlns )
   {
-    if( !ih )
-      return;
-
-    typedef IqHandlerMap::iterator IQi;
-    std::pair<IQi, IQi> g = m_iqExtHandlers.equal_range( exttype );
-    IQi it2;
-    IQi it = g.first;
-    while( it != g.second )
-    {
-      it2 = it++;
-      if( (*it2).second == ih )
-        m_iqExtHandlers.erase( it2 );
-    }
+    if( !xmlns.empty() )
+      m_iqNSHandlers.erase( xmlns );
   }
 
-  void ClientBase::registerMessageSession( MessageSession* session )
+  void ClientBase::registerMessageSession( MessageSession *session )
   {
     if( session )
       m_messageSessions.push_back( session );
   }
 
-  void ClientBase::disposeMessageSession( MessageSession* session )
+  void ClientBase::disposeMessageSession( MessageSession *session )
   {
     if( !session )
       return;
 
-    MessageSessionList::iterator it = std::find( m_messageSessions.begin(),
-                                                 m_messageSessions.end(),
+    MessageSessionList::iterator it = std::find( m_messageSessions.begin(), m_messageSessions.end(),
                                                  session );
     if( it != m_messageSessions.end() )
     {
@@ -1140,31 +938,31 @@ namespace gloox
     }
   }
 
-  void ClientBase::registerMessageHandler( MessageHandler* mh )
+  void ClientBase::registerMessageHandler( MessageHandler *mh )
   {
     if( mh )
       m_messageHandlers.push_back( mh );
   }
 
-  void ClientBase::removeMessageHandler( MessageHandler* mh )
+  void ClientBase::removeMessageHandler( MessageHandler *mh )
   {
     if( mh )
       m_messageHandlers.remove( mh );
   }
 
-  void ClientBase::registerSubscriptionHandler( SubscriptionHandler* sh )
+  void ClientBase::registerSubscriptionHandler( SubscriptionHandler *sh )
   {
     if( sh )
       m_subscriptionHandlers.push_back( sh );
   }
 
-  void ClientBase::removeSubscriptionHandler( SubscriptionHandler* sh )
+  void ClientBase::removeSubscriptionHandler( SubscriptionHandler *sh )
   {
     if( sh )
       m_subscriptionHandlers.remove( sh );
   }
 
-  void ClientBase::registerTagHandler( TagHandler* th, const std::string& tag, const std::string& xmlns )
+  void ClientBase::registerTagHandler( TagHandler *th, const std::string& tag, const std::string& xmlns )
   {
     if( th && !tag.empty() )
     {
@@ -1176,7 +974,7 @@ namespace gloox
     }
   }
 
-  void ClientBase::removeTagHandler( TagHandler* th, const std::string& tag, const std::string& xmlns )
+  void ClientBase::removeTagHandler( TagHandler *th, const std::string& tag, const std::string& xmlns )
   {
     if( th )
     {
@@ -1189,7 +987,7 @@ namespace gloox
     }
   }
 
-  void ClientBase::registerStatisticsHandler( StatisticsHandler* sh )
+  void ClientBase::registerStatisticsHandler( StatisticsHandler *sh )
   {
     if( sh )
       m_statisticsHandler = sh;
@@ -1200,7 +998,7 @@ namespace gloox
     m_statisticsHandler = 0;
   }
 
-  void ClientBase::registerMUCInvitationHandler( MUCInvitationHandler* mih )
+  void ClientBase::registerMUCInvitationHandler( MUCInvitationHandler *mih )
   {
     if( mih )
     {
@@ -1215,13 +1013,13 @@ namespace gloox
     m_disco->removeFeature( XMLNS_MUC );
   }
 
-  void ClientBase::registerConnectionListener( ConnectionListener* cl )
+  void ClientBase::registerConnectionListener( ConnectionListener *cl )
   {
     if( cl )
       m_connectionListeners.push_back( cl );
   }
 
-  void ClientBase::removeConnectionListener( ConnectionListener* cl )
+  void ClientBase::removeConnectionListener( ConnectionListener *cl )
   {
     if( cl )
       m_connectionListeners.remove( cl );
@@ -1229,12 +1027,20 @@ namespace gloox
 
   void ClientBase::notifyOnConnect()
   {
-    util::ForEach( m_connectionListeners, &ConnectionListener::onConnect );
+    ConnectionListenerList::const_iterator it = m_connectionListeners.begin();
+    for( ; it != m_connectionListeners.end(); ++it )
+    {
+      (*it)->onConnect();
+    }
   }
 
   void ClientBase::notifyOnDisconnect( ConnectionError e )
   {
-    util::ForEach( m_connectionListeners, &ConnectionListener::onDisconnect, e );
+    ConnectionListenerList::const_iterator it = m_connectionListeners.begin();
+    for( ; it != m_connectionListeners.end(); ++it )
+    {
+      (*it)->onDisconnect( e );
+    }
     init();
   }
 
@@ -1246,27 +1052,34 @@ namespace gloox
     return m_stats.encryption = ( it == m_connectionListeners.end() );
   }
 
-  void ClientBase::notifyOnResourceBindError( const Error* error )
+  void ClientBase::notifyOnResourceBindError( ResourceBindError error )
   {
-    util::ForEach( m_connectionListeners, &ConnectionListener::onResourceBindError, error );
+    ConnectionListenerList::const_iterator it = m_connectionListeners.begin();
+    for( ; it != m_connectionListeners.end(); ++it )
+    {
+      (*it)->onResourceBindError( error );
+    }
   }
 
-  void ClientBase::notifyOnResourceBind( const std::string& resource )
+  void ClientBase::notifyOnSessionCreateError( SessionCreateError error )
   {
-    util::ForEach( m_connectionListeners, &ConnectionListener::onResourceBind, resource );
-  }
-
-  void ClientBase::notifyOnSessionCreateError( const Error* error )
-  {
-    util::ForEach( m_connectionListeners, &ConnectionListener::onSessionCreateError, error );
+    ConnectionListenerList::const_iterator it = m_connectionListeners.begin();
+    for( ; it != m_connectionListeners.end(); ++it )
+    {
+      (*it)->onSessionCreateError( error );
+    }
   }
 
   void ClientBase::notifyStreamEvent( StreamEvent event )
   {
-    util::ForEach( m_connectionListeners, &ConnectionListener::onStreamEvent, event );
+    ConnectionListenerList::const_iterator it = m_connectionListeners.begin();
+    for( ; it != m_connectionListeners.end(); ++it )
+    {
+      (*it)->onStreamEvent( event );
+    }
   }
 
-  void ClientBase::notifyPresenceHandlers( Presence& pres )
+  void ClientBase::notifyPresenceHandlers( Stanza *stanza )
   {
     bool match = false;
     PresenceJidHandlerList::const_iterator t;
@@ -1274,105 +1087,85 @@ namespace gloox
     while( itj != m_presenceJidHandlers.end() )
     {
       t = itj++;
-      if( (*t).jid->bare() == pres.from().bare() && (*t).ph )
+      if( (*t).jid->bare() == stanza->from().bare() && (*t).ph )
       {
-        (*t).ph->handlePresence( pres );
+        (*t).ph->handlePresence( stanza );
         match = true;
       }
     }
     if( match )
       return;
 
-    // FIXME remove this for() for 1.1:
     PresenceHandlerList::const_iterator it = m_presenceHandlers.begin();
     for( ; it != m_presenceHandlers.end(); ++it )
     {
-      (*it)->handlePresence( pres );
+      (*it)->handlePresence( stanza );
     }
-      // FIXME and reinstantiate this:
-//     util::ForEach( m_presenceHandlers, &PresenceHandler::handlePresence, pres );
   }
 
-  void ClientBase::notifySubscriptionHandlers( Subscription& s10n )
+  void ClientBase::notifySubscriptionHandlers( Stanza *stanza )
   {
-    // FIXME remove this for() for 1.1:
     SubscriptionHandlerList::const_iterator it = m_subscriptionHandlers.begin();
     for( ; it != m_subscriptionHandlers.end(); ++it )
     {
-      (*it)->handleSubscription( s10n );
+      (*it)->handleSubscription( stanza );
     }
-      // FIXME and reinstantiate this:
-//     util::ForEach( m_subscriptionHandlers, &SubscriptionHandler::handleSubscription, s10n );
   }
 
-  void ClientBase::notifyIqHandlers( IQ& iq )
+  void ClientBase::notifyIqHandlers( Stanza *stanza )
   {
-    m_iqHandlerMapMutex.lock();
-    IqTrackMap::iterator it_id = m_iqIDHandlers.find( iq.id() );
-    m_iqHandlerMapMutex.unlock();
-    if( it_id != m_iqIDHandlers.end() && iq.subtype() & ( IQ::Result | IQ::Error ) )
-    {
-      (*it_id).second.ih->handleIqID( iq, (*it_id).second.context );
-      if( (*it_id).second.del )
-        delete (*it_id).second.ih;
-      m_iqHandlerMapMutex.lock();
-      m_iqIDHandlers.erase( it_id );
-      m_iqHandlerMapMutex.unlock();
-      return;
-    }
-
-    if( iq.extensions().empty() )
-      return;
-
     bool res = false;
 
-    // FIXME remove for 1.1
-//     typedef IqHandlerMapXmlns::const_iterator IQciXmlns
-//     Tag *tag = iq.tag()->xmlns();
-//     std::pair<IQciXmlns, IQciXmlns> g = m_iqNSHandlers.equal_range( tag->xmlns() );
-//     for( IQciXmlns it = g.first; it != g.second; ++it )
-//     {
-//       if( (*it).second->handleIq( iq ) )
-//         res = true;
-//     }
-//     delete tag;
-
-    typedef IqHandlerMap::const_iterator IQci;
-    const StanzaExtensionList& sel = iq.extensions();
-    StanzaExtensionList::const_iterator itse = sel.begin();
-    for( ; itse != sel.end(); ++itse )
+    IqHandlerMap::const_iterator it = m_iqNSHandlers.begin();
+    for( ; it != m_iqNSHandlers.end(); ++it )
     {
-      std::pair<IQci, IQci> g = m_iqExtHandlers.equal_range( (*itse)->extensionType() );
-      for( IQci it = g.first; it != g.second; ++it )
+      if( stanza->hasChildWithAttrib( "xmlns", (*it).first ) )
       {
-        if( (*it).second->handleIq( iq ) )
+        if( (*it).second->handleIq( stanza ) )
           res = true;
       }
     }
 
-    if( !res && iq.subtype() & ( IQ::Get | IQ::Set ) )
+    IqTrackMap::iterator it_id = m_iqIDHandlers.find( stanza->id() );
+    if( it_id != m_iqIDHandlers.end() )
     {
-      IQ re( IQ::Error, iq.from(), iq.id() );
-      re.addExtension( new Error( StanzaErrorTypeCancel, StanzaErrorServiceUnavailable ) );
-      send( re );
+      if( (*it_id).second.ih->handleIqID( stanza, (*it_id).second.context ) )
+        res = true;
+      m_iqIDHandlers.erase( it_id );
+    }
+
+    if( !res && ( stanza->type() == StanzaIq ) &&
+         ( ( stanza->subtype() == StanzaIqGet ) || ( stanza->subtype() == StanzaIqSet ) ) )
+    {
+      Tag *iq = new Tag( "iq" );
+      iq->addAttribute( "type", "error" );
+      iq->addAttribute( "id", stanza->id() );
+      iq->addAttribute( "to", stanza->from().full() );
+      Tag *e = new Tag( iq, "error", "type", "cancel", false );
+      new Tag( e, "service-unavailable", "xmlns", XMLNS_XMPP_STANZAS );
+      send( iq );
     }
   }
 
-  void ClientBase::notifyMessageHandlers( Message& msg )
+  void ClientBase::notifyMessageHandlers( Stanza *stanza )
   {
     if( m_mucInvitationHandler )
     {
-      const MUCRoom::MUCUser* mu = msg.findExtension<MUCRoom::MUCUser>( ExtMUCUser );
-      if( mu && mu->operation() != MUCRoom::OpInviteTo )
+      Tag *x = stanza->findChild( "x", "xmlns", XMLNS_MUC_USER );
+      if( x && x->hasChild( "invite" ) )
       {
+        Tag *i = x->findChild( "invite" );
+        JID invitee( i->findAttribute( "from" ) );
 
-        m_mucInvitationHandler->handleMUCInvitation( msg.from(),
-            mu->jid() ? JID( *(mu->jid()) ) : JID(),
-            mu->reason() ? *(mu->reason()) : EmptyString,
-            msg.body(),
-            mu->password() ? *(mu->password()) : EmptyString,
-            mu->continued(),
-            mu->thread() ? *(mu->thread()) : EmptyString );
+        Tag * t = i->findChild( "reason" );
+        std::string reason ( t ? t->cdata() : "" );
+
+        t = x->findChild( "password" );
+        std::string password ( t ? t->cdata() : "" );
+
+        m_mucInvitationHandler->handleMUCInvitation( stanza->from(), invitee,
+                                              reason, stanza->body(), password,
+                                              i->hasChild( "continue" ) );
         return;
       }
     }
@@ -1380,14 +1173,11 @@ namespace gloox
     MessageSessionList::const_iterator it1 = m_messageSessions.begin();
     for( ; it1 != m_messageSessions.end(); ++it1 )
     {
-      if( (*it1)->target().full() == msg.from().full() &&
-            ( msg.thread().empty()
-              || (*it1)->threadID() == msg.thread()
-              || (*it1)->honorThreadID() ) &&
-// FIXME don't use '== 0' here
-            ( (*it1)->types() & msg.subtype() || (*it1)->types() == 0 ) )
+      if( (*it1)->target().full() == stanza->from().full() &&
+            ( stanza->thread().empty() || (*it1)->threadID() == stanza->thread() ) &&
+            ( (*it1)->types() & stanza->subtype() || (*it1)->types() == StanzaSubUndefined ) )
       {
-        (*it1)->handleMessage( msg );
+        (*it1)->handleMessage( stanza );
         return;
       }
     }
@@ -1395,32 +1185,29 @@ namespace gloox
     it1 = m_messageSessions.begin();
     for( ; it1 != m_messageSessions.end(); ++it1 )
     {
-      if( (*it1)->target().bare() == msg.from().bare() &&
-            ( msg.thread().empty()
-              || (*it1)->threadID() == msg.thread()
-              || (*it1)->honorThreadID() ) &&
-// FIXME don't use '== 0' here
-            ( (*it1)->types() & msg.subtype() || (*it1)->types() == 0 ) )
+      if( (*it1)->target().bare() == stanza->from().bare() &&
+            ( stanza->thread().empty() || (*it1)->threadID() == stanza->thread() ) &&
+            ( (*it1)->types() & stanza->subtype() || (*it1)->types() == StanzaSubUndefined ) )
       {
-        (*it1)->handleMessage( msg );
+        (*it1)->handleMessage( stanza );
         return;
       }
     }
 
-    MessageSessionHandler* msHandler = 0;
+    MessageSessionHandler *msHandler = 0;
 
-    switch( msg.subtype() )
+    switch( stanza->subtype() )
     {
-      case Message::Chat:
+      case StanzaMessageChat:
         msHandler = m_messageSessionHandlerChat;
         break;
-      case Message::Normal:
+      case StanzaMessageNormal:
         msHandler = m_messageSessionHandlerNormal;
         break;
-      case Message::Groupchat:
+      case StanzaMessageGroupchat:
         msHandler = m_messageSessionHandlerGroupchat;
         break;
-      case Message::Headline:
+      case StanzaMessageHeadline:
         msHandler = m_messageSessionHandlerHeadline;
         break;
       default:
@@ -1429,58 +1216,28 @@ namespace gloox
 
     if( msHandler )
     {
-      if( msg.subtype() == Message::Chat && msg.body().empty() )
-        return; // don't want a new MS for empty messages
-      MessageSession* session = new MessageSession( this, msg.from(), true, msg.subtype() );
+      MessageSession *session = new MessageSession( this, stanza->from(), true, stanza->subtype() );
       msHandler->handleMessageSession( session );
-      session->handleMessage( msg );
+      session->handleMessage( stanza );
     }
     else
     {
-      // FIXME remove this for() for 1.1:
       MessageHandlerList::const_iterator it = m_messageHandlers.begin();
       for( ; it != m_messageHandlers.end(); ++it )
       {
-        (*it)->handleMessage( msg );
+        (*it)->handleMessage( stanza );
       }
-      // FIXME and reinstantiate this:
-//       util::ForEach( m_messageHandlers, &MessageHandler::handleMessage, msg ); // FIXME remove for 1.1
     }
   }
 
-  void ClientBase::notifyTagHandlers( Tag* tag )
+  void ClientBase::notifyTagHandlers( Tag *tag )
   {
     TagHandlerList::const_iterator it = m_tagHandlers.begin();
     for( ; it != m_tagHandlers.end(); ++it )
     {
-      if( (*it).tag == tag->name() && tag->hasAttribute( XMLNS, (*it).xmlns ) )
+      if( (*it).tag == tag->name() && tag->hasAttribute( "xmlns", (*it).xmlns ) )
         (*it).th->handleTag( tag );
     }
-  }
-
-  void ClientBase::addPresenceExtension( StanzaExtension* se )
-  {
-    if( !se )
-      return;
-
-    removePresenceExtension( se->extensionType() );
-    m_presenceExtensions.push_back( se );
-  }
-
-  bool ClientBase::removePresenceExtension( int type )
-  {
-    StanzaExtensionList::iterator it = m_presenceExtensions.begin();
-    for( ; it != m_presenceExtensions.end(); ++it )
-    {
-      if( (*it)->extensionType() == type )
-      {
-        delete (*it);
-        m_presenceExtensions.erase( it );
-        return true;
-      }
-    }
-
-    return false;
   }
 
   CompressionBase* ClientBase::getDefaultCompression()
@@ -1489,13 +1246,10 @@ namespace gloox
       return 0;
 
 #ifdef HAVE_ZLIB
-    CompressionBase* cmp = new CompressionZlib( this );
-    if( cmp->init() )
-      return cmp;
-
-    delete cmp;
-#endif
+    return new CompressionZlib( this );
+#else
     return 0;
+#endif
   }
 
   TLSBase* ClientBase::getDefaultEncryption()
@@ -1503,14 +1257,7 @@ namespace gloox
     if( m_tls == TLSDisabled || !hasTls() )
       return 0;
 
-    TLSDefault* tls = new TLSDefault( this, m_server );
-    if( tls->init( m_clientKey, m_clientCerts, m_cacerts ) )
-      return tls;
-    else
-    {
-      delete tls;
-      return 0;
-    }
+    return new TLSDefault( this, m_server );
   }
 
 }

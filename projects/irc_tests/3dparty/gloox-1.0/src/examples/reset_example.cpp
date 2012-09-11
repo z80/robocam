@@ -10,8 +10,6 @@ using namespace gloox;
 #include <locale.h>
 #include <string>
 
-#include <cstdio> // [s]print[f]
-
 class RosterTest : public ConnectionListener, LogHandler
 {
   public:

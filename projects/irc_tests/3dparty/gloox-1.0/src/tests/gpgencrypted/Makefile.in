@@ -43,14 +43,14 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_gpgencrypted_test_OBJECTS = gpgencrypted_test.$(OBJEXT)
 gpgencrypted_test_OBJECTS = $(am_gpgencrypted_test_OBJECTS)
 gpgencrypted_test_DEPENDENCIES = ../../gpgencrypted.o ../../tag.o \
-	../../gloox.o ../../util.o
+	../../gloox.o
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -112,8 +112,6 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
-MAYBE_EXAMPLES = @MAYBE_EXAMPLES@
-MAYBE_TESTS = @MAYBE_TESTS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -192,9 +190,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual 
+AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual -ansi
 gpgencrypted_test_SOURCES = gpgencrypted_test.cpp
-gpgencrypted_test_LDADD = ../../gpgencrypted.o ../../tag.o ../../gloox.o ../../util.o
+gpgencrypted_test_LDADD = ../../gpgencrypted.o ../../tag.o ../../gloox.o
 gpgencrypted_test_CFLAGS = $(CPPFLAGS)
 all: all-am
 

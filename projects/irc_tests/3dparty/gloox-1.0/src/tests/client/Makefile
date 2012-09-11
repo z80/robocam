@@ -43,7 +43,7 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
@@ -53,20 +53,16 @@ client_test_DEPENDENCIES = ../../client.o ../../clientbase.o \
 	../../connectiontcpbase.o ../../connectiontcpclient.o \
 	../../disco.o ../../parser.o ../../tag.o ../../stanza.o \
 	../../base64.o ../../jid.o ../../md5.o ../../tlsgnutlsclient.o \
-	../../tlsopensslclient.o ../../tlsopensslbase.o \
-	../../tlsopensslserver.o ../../tlsschannel.o ../../logsink.o \
+	../../tlsopenssl.o ../../tlsschannel.o ../../logsink.o \
 	../../messagesession.o ../../prep.o ../../compressionzlib.o \
-	../../dns.o ../../stanzaextensionfactory.o \
+	../../dns.o ../../stanzaextensionfactory.o ../../oob.o \
+	../../gpgencrypted.o ../../gpgsigned.o ../../vcardupdate.o \
+	../../delayeddelivery.o ../../xdelayeddelivery.o \
 	../../rostermanager.o ../../nonsaslauth.o ../../sha.o \
-	../../dataform.o ../../dataformfieldcontainer.o \
-	../../dataformreported.o ../../dataformitem.o \
-	../../dataformfield.o ../../rosteritem.o ../../privatexml.o \
-	../../gloox.o ../../tlsgnutlsbase.o ../../tlsdefault.o \
+	../../rosteritem.o ../../privatexml.o ../../gloox.o \
+	../../tlsgnutlsbase.o ../../tlsdefault.o \
 	../../tlsgnutlsclientanon.o ../../tlsgnutlsserveranon.o \
-	../../mutex.o ../../iq.o ../../presence.o ../../message.o \
-	../../subscription.o ../../util.o ../../error.o \
-	../../capabilities.o ../../eventdispatcher.o \
-	../../softwareversion.o
+	../../mutex.o
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -100,7 +96,7 @@ CPPFLAGS =  -pthread
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -ansi
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -118,18 +114,16 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2012-09-10
+ISODATE = 2012-09-11
 LD = /usr/bin/ld
-LDFLAGS =  -pthread
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lresolv   -lssl -lcrypto -lz
+LIBS = -lresolv -lresolv   -lidn -lgnutls   -lz
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/missing --run makeinfo
-MAYBE_EXAMPLES = examples
-MAYBE_TESTS = tests
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -140,10 +134,10 @@ OTOOL64 =
 PACKAGE = gloox
 PACKAGE_BUGREPORT = js@camaya.net
 PACKAGE_NAME = gloox
-PACKAGE_STRING = gloox 1.0
+PACKAGE_STRING = gloox 0.9.9.12
 PACKAGE_TARNAME = gloox
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 0.9.9.12
 PATH_SEPARATOR = :
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -pthread
@@ -153,7 +147,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.0
+VERSION = 0.9.9.12
 abs_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/tests/client
 abs_srcdir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/tests/client
 abs_top_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
@@ -208,21 +202,18 @@ target_alias =
 top_build_prefix = ../../../
 top_builddir = ../../..
 top_srcdir = ../../..
-AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual 
+AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual -ansi
 client_test_SOURCES = client_test.cpp
 client_test_LDADD = ../../client.o ../../clientbase.o ../../connectiontcpbase.o ../../connectiontcpclient.o \
 			../../disco.o ../../parser.o ../../tag.o ../../stanza.o ../../base64.o ../../jid.o \
-			../../md5.o ../../tlsgnutlsclient.o ../../tlsopensslclient.o ../../tlsopensslbase.o ../../tlsopensslserver.o ../../tlsschannel.o \
+			../../md5.o ../../tlsgnutlsclient.o ../../tlsopenssl.o ../../tlsschannel.o \
 			../../logsink.o ../../messagesession.o ../../prep.o ../../compressionzlib.o \
-			../../dns.o ../../stanzaextensionfactory.o \
-			../../rostermanager.o ../../nonsaslauth.o ../../sha.o ../../dataform.o \
-			../../dataformfieldcontainer.o ../../dataformreported.o ../../dataformitem.o \
-			../../dataformfield.o \
+			../../dns.o ../../stanzaextensionfactory.o ../../oob.o ../../gpgencrypted.o \
+			../../gpgsigned.o ../../vcardupdate.o ../../delayeddelivery.o \
+			../../xdelayeddelivery.o ../../rostermanager.o ../../nonsaslauth.o ../../sha.o \
 			../../rosteritem.o ../../privatexml.o ../../gloox.o ../../tlsgnutlsbase.o \
 			../../tlsdefault.o ../../tlsgnutlsclientanon.o ../../tlsgnutlsserveranon.o \
-			../../mutex.o ../../iq.o ../../presence.o ../../message.o ../../subscription.o \
-			../../util.o ../../error.o ../../capabilities.o ../../eventdispatcher.o \
-			../../softwareversion.o
+			../../mutex.o
 
 client_test_CFLAGS = $(CPPFLAGS)
 all: all-am

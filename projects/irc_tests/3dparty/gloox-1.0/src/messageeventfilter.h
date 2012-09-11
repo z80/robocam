@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -21,7 +21,7 @@ namespace gloox
 {
 
   class Tag;
-  class Message;
+  class Stanza;
   class MessageEventHandler;
   class MessageSession;
 
@@ -41,8 +41,12 @@ namespace gloox
       /**
        * Contstructs a new Message Event filter for a MessageSession.
        * @param parent The MessageSession to decorate.
+       * @param defaultEvents Bit-wise ORed MessageEventType's which shall be requested
+       * for every message sent. Default: all.
        */
-      MessageEventFilter( MessageSession* parent );
+      MessageEventFilter( MessageSession *parent,
+                          int defaultEvents = MessageEventOffline | MessageEventDelivered
+                                              | MessageEventDisplayed | MessageEventComposing );
 
       /**
        * Virtual destructor.
@@ -66,7 +70,7 @@ namespace gloox
        * to XEP-0022.
        * @param meh The MessageEventHandler to register.
        */
-      void registerMessageEventHandler( MessageEventHandler* meh );
+      void registerMessageEventHandler( MessageEventHandler *meh );
 
       /**
        * This function clears the internal pointer to the MessageEventHandler.
@@ -76,15 +80,16 @@ namespace gloox
       void removeMessageEventHandler();
 
       // reimplemented from MessageFilter
-      virtual void decorate( Message& msg );
+      virtual void decorate( Tag *tag );
 
       // reimplemented from MessageFilter
-      virtual void filter( Message& msg );
+      virtual void filter( Stanza *stanza );
 
     private:
-      MessageEventHandler* m_messageEventHandler;
+      MessageEventHandler *m_messageEventHandler;
       std::string m_lastID;
       int m_requestedEvents;
+      int m_defaultEvents;
       MessageEventType m_lastSent;
       bool m_disable;
 

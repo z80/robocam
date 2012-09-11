@@ -1,20 +1,15 @@
 Building on Win32
 -----------------
 
-gloox compiles (at least) on:
+gloox compiles (at least) on
 - MinGW (http://mingw.org)
-- MS Visual C++ Express 2008
-
-As of 1.0-alpha1, gloox DOES NOT compile on:
 - MSVC 6
-
-No other compilers are officially supported at this point. Please let me know about
-your experiences with other compilers.
+No other compilers have been tested.
+However, successful compilation has been reported for VS2003, VS2005, and VS2005 .NET Express.
 
 See README.wince for info on building gloox for Win CE/Mobile
 
-Project files for Code::Blocks (gloox.cbp), Visual C++ Express 2008 (gloox.vcproj),
-and MSVC 6 (gloox.dsp) are included. The latter can be imported by other IDEs.
+Project files for Code::Blocks (gloox.cbp) and MSVC 6 (gloox.dsp) are included.
 
 - Edit config.h.win to suit your needs.
 - Add additional libs you have available to the project.
@@ -31,13 +26,14 @@ gloox should build out of the box on MinGW. If using MSys, you should run config
 the --with-schannel flag.
 
 
-Building gloox on MSVC++
-------------------------
+Building gloox on MSVC
+----------------------
 
 - use the included project file or create your own
-- adjust include + library paths if necessary
+- don't forget to switch 'include RTTI information' on
 - to receive any debug output you should use the LogSink facilities (this is not win32-specific)
 - build
+- if you get C4541 warnings, you forgot RTTI ;)
 
 
 Building libidn in Win32
@@ -46,11 +42,10 @@ Building libidn in Win32
 - install mingw + msys from http://www.mingw.org, including mingw-utils
 - build libidn 1.1 or above in msys/mingw
 
-If you want to use libidn in MSVC, type the following in a shell to create msvc import libs:
-  $ pexports libidn-11.dll > libidn-11.def
-  $ lib /def:libidn-11.def
-
-pexports is part of the mingw-utils package.
+if you want to use libidn in MSVC:
+- create msvc import libs:
+  pexports libidn-11.dll > libidn-11.def
+  lib /def:libidn-11.def
 
 
 Linking your application against gloox

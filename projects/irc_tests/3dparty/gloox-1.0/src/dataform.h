@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,8 +14,7 @@
 #ifndef DATAFORM_H__
 #define DATAFORM_H__
 
-#include "dataformfieldcontainer.h"
-#include "stanzaextension.h"
+#include "dataformbase.h"
 
 #include <string>
 #include <list>
@@ -24,26 +23,6 @@ namespace gloox
 {
 
   class Tag;
-  class DataFormItem;
-  class DataFormReported;
-
-  /**
-   * Describes the possible Form Types.
-   */
-  enum FormType
-  {
-    TypeForm,                     /**< The forms-processing entity is asking the forms-submitting
-                                    * entity to complete a form. */
-    TypeSubmit,                   /**< The forms-submitting entity is submitting data to the
-                                    * forms-processing entity. */
-    TypeCancel,                   /**< The forms-submitting entity has cancelled submission of data
-                                    * to the forms-processing entity. */
-    TypeResult,                   /**< The forms-processing entity is returning data (e.g., search
-                                    * results) to the forms-submitting entity, or the data is a
-                                    * generic data set. */
-    TypeInvalid                   /**< The form is invalid. Only possible if the form was created
-                                    * from an Tag which doesn't correctly describe a Data Form. */
-  };
 
   /**
    * @brief An abstraction of a XEP-0004 Data Form.
@@ -53,13 +32,25 @@ namespace gloox
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.7
    */
-  class GLOOX_API DataForm : public StanzaExtension, public DataFormFieldContainer
+  class GLOOX_API DataForm : public DataFormBase
   {
     public:
       /**
-       * A list of DataFormItems.
+       * Describes the possible Form Types.
        */
-      typedef std::list<DataFormItem*> ItemList;
+      enum DataFormType
+      {
+        FormTypeForm,        /**< The forms-processing entity is asking the forms-submitting entity to
+                              * complete a form. */
+        FormTypeSubmit,      /**< The forms-submitting entity is submitting data to the
+                              * forms-processing entity. */
+        FormTypeCancel,      /**< The forms-submitting entity has cancelled submission of data to the
+                              * forms-processing entity. */
+        FormTypeResult,      /**< The forms-processing entity is returning data (e.g., search results)
+                              * to the forms-submitting entity, or the data is a generic data set. */
+        FormTypeInvalid      /**< The form is invalid. Only possible if the form was created from an
+                              * Tag which doesn't correctly describe a Data Form. */
+      };
 
       /**
        * Constructs a new, empty form.
@@ -68,7 +59,7 @@ namespace gloox
        * newlines (\\n, \\r).
        * @param title The natural-language title of the form. Should not contain newlines (\\n, \\r).
        */
-      DataForm( FormType type, const StringList& instructions, const std::string& title = EmptyString );
+      DataForm( DataFormType type, const StringList& instructions, const std::string& title = "" );
 
       /**
        * Constructs a new, empty form without any instructions or title set. Probably best suited for
@@ -77,24 +68,31 @@ namespace gloox
        * @param title The natural-language title of the form. Should not contain newlines (\\n, \\r).
        * @since 0.9
        */
-      DataForm( FormType type, const std::string& title = EmptyString );
+      DataForm( DataFormType type, const std::string& title = "" );
 
       /**
        * Constructs a new DataForm from an existing Tag/XML representation.
        * @param tag The existing form to parse.
        */
-      DataForm( const Tag* tag );
+      DataForm( Tag *tag );
 
       /**
-       * Creates a new DataForm, copying the given one.
-       * @param form The form to copy.
+       * Constructs an empty DataForm. Its type is FormTypeInvalid.
        */
-      DataForm( const DataForm& form );
+      DataForm();
 
       /**
        * Virtual destructor.
        */
       virtual ~DataForm();
+
+      /**
+       * Use this function to create a Tag representation of the form.
+       * @return A Tag hierarchically describing the form, or NULL if the form is invalid (i.e.
+       * created from a Tag not correctly describing a Data Form).
+       * @note The caller is responsible for deleting the Tag.
+       */
+      Tag* tag() const;
 
       /**
        * Use this function to retrieve the title of the form.
@@ -125,29 +123,11 @@ namespace gloox
       void setInstructions( const StringList& instructions ) { m_instructions = instructions; }
 
       /**
-       * Returns the reported field list in a DataForm.
-       * @return The reported section, containing 0..n fields.
-       */
-      const DataFormReported* reported() const { return m_reported; }
-
-      /**
-       * Returns a list of items in a DataForm.
-       * @return A list of items.
-       */
-      const ItemList& items() const { return m_items; }
-
-      /**
        * Returns the form's type.
        * @return The form's type.
        * @since 0.9
        */
-      FormType type() const { return m_type; }
-
-      /**
-       * Sets the form's type.
-       * @param type The form's new type.
-       */
-      void setType( FormType type ) { m_type = type; }
+      DataForm::DataFormType type() const { return m_type; }
 
       /**
        * Parses the given Tag and creates an appropriate DataForm representation.
@@ -155,41 +135,13 @@ namespace gloox
        * @return @b True on success, @b false otherwise.
        * @since 0.9
        */
-      bool parse( const Tag* tag );
-
-      /**
-       * Converts to  @b true if the DataForm is valid, @b false otherwise.
-       */
-      operator bool() const { return m_type != TypeInvalid; }
-
-      // reimplemented from StanzaExtension
-      virtual const std::string& filterString() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* newInstance( const Tag* tag ) const
-      {
-        return new DataForm( tag );
-      }
-
-      // reimplemented from StanzaExtension
-      virtual Tag* tag() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* clone() const
-      {
-        return new DataForm( *this );
-      }
-
-    protected:
-      FormType m_type;
+      bool parse( Tag *tag );
 
     private:
       StringList m_instructions;
 
+      DataFormType m_type;
       std::string m_title;
-      DataFormReported* m_reported;
-      ItemList m_items;
-
   };
 
 }

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -69,14 +69,10 @@
   1999-05-03 lpd Original version.
  */
 
-#include "config.h"
-
 #include "md5.h"
 
 #include <cstdio>
 #include <string.h>
-
-#include <cstdio> // [s]print[f]
 
 namespace gloox
 {
@@ -175,7 +171,7 @@ namespace gloox
   {
   }
 
-  void MD5::process( const unsigned char* data /*[64]*/ )
+  void MD5::process( const unsigned char *data /*[64]*/ )
   {
     unsigned int a = m_state.abcd[0];
     unsigned int b = m_state.abcd[1];
@@ -230,7 +226,7 @@ namespace gloox
         * On big-endian machines, we must arrange the bytes in the
         * right order.
         */
-        const unsigned char* xp = data;
+        const unsigned char *xp = data;
         int i;
 
 #  if BYTE_ORDER == 0
@@ -372,12 +368,12 @@ namespace gloox
 
   void MD5::feed( const std::string& data )
   {
-    feed( (const unsigned char*)data.c_str(), (int)data.length() );
+    feed( (const unsigned char*)data.c_str(), data.length() );
   }
 
-  void MD5::feed( const unsigned char* data, int bytes )
+  void MD5::feed( const unsigned char *data, int bytes )
   {
-    const unsigned char* p = data;
+    const unsigned char *p = data;
     int left = bytes;
     int offset = ( m_state.count[0] >> 3 ) & 63;
     unsigned int nbits = (unsigned int)( bytes << 3 );
@@ -419,9 +415,10 @@ namespace gloox
       return;
 
     unsigned char data[8];
+    int i;
 
     /* Save the length before padding. */
-    for( int i = 0; i < 8; ++i )
+    for( i = 0; i < 8; ++i )
       data[i] = (unsigned char)( m_state.count[i >> 2] >> ( ( i & 3 ) << 3 ) );
 
     /* Pad to 56 bytes mod 64. */
@@ -443,7 +440,7 @@ namespace gloox
     for( int i = 0; i < 16; ++i )
       sprintf( buf + i * 2, "%02x", (unsigned char)( m_state.abcd[i >> 2] >> ( ( i & 3 ) << 3 ) ) );
 
-    return std::string( buf, 32 );
+    return buf;
   }
 
   const std::string MD5::binary()

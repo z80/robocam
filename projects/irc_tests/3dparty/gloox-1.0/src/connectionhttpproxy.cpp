@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -19,36 +19,35 @@
 #include "logsink.h"
 #include "prep.h"
 #include "base64.h"
-#include "util.h"
 
 #include <string>
+
+#ifndef _WIN32_WCE
+# include <sstream>
+#endif
 
 namespace gloox
 {
 
-  ConnectionHTTPProxy::ConnectionHTTPProxy( ConnectionBase* connection,
-                                            const LogSink& logInstance,
+  ConnectionHTTPProxy::ConnectionHTTPProxy( ConnectionBase *connection, const LogSink& logInstance,
                                             const std::string& server, int port )
     : ConnectionBase( 0 ), m_connection( connection ),
       m_logInstance( logInstance ), m_http11( false )
   {
-// FIXME check return value?
-    prep::idna( server, m_server );
+    m_server = prep::idna( server );
     m_port = port;
 
     if( m_connection )
       m_connection->registerConnectionDataHandler( this );
   }
 
-  ConnectionHTTPProxy::ConnectionHTTPProxy( ConnectionDataHandler* cdh,
-                                            ConnectionBase* connection,
+  ConnectionHTTPProxy::ConnectionHTTPProxy( ConnectionDataHandler *cdh, ConnectionBase *connection,
                                             const LogSink& logInstance,
                                             const std::string& server, int port )
     : ConnectionBase( cdh ), m_connection( connection ),
       m_logInstance( logInstance )
   {
-// FIXME check return value?
-    prep::idna( server, m_server );
+    m_server = prep::idna( server );
     m_port = port;
 
     if( m_connection )
@@ -57,7 +56,8 @@ namespace gloox
 
   ConnectionHTTPProxy::~ConnectionHTTPProxy()
   {
-    delete m_connection;
+    if( m_connection )
+      delete m_connection;
   }
 
   ConnectionBase* ConnectionHTTPProxy::newInstance() const
@@ -94,17 +94,26 @@ namespace gloox
 
   ConnectionError ConnectionHTTPProxy::recv( int timeout )
   {
-    return m_connection ? m_connection->recv( timeout ) : ConnNotConnected;
+    if( m_connection )
+      return m_connection->recv( timeout );
+    else
+      return ConnNotConnected;
   }
 
   ConnectionError ConnectionHTTPProxy::receive()
   {
-    return m_connection ? m_connection->receive() : ConnNotConnected;
+    if( m_connection )
+      return m_connection->receive();
+    else
+      return ConnNotConnected;
   }
 
   bool ConnectionHTTPProxy::send( const std::string& data )
   {
-    return m_connection && m_connection->send( data );
+    if( m_connection )
+      return m_connection->send( data );
+
+    return false;
   }
 
   void ConnectionHTTPProxy::cleanup()
@@ -115,12 +124,15 @@ namespace gloox
       m_connection->cleanup();
   }
 
-  void ConnectionHTTPProxy::getStatistics( long int& totalIn, long int& totalOut )
+  void ConnectionHTTPProxy::getStatistics( int &totalIn, int &totalOut )
   {
     if( m_connection )
       m_connection->getStatistics( totalIn, totalOut );
     else
-      totalIn = totalOut = 0;
+    {
+      totalIn = 0;
+      totalOut = 0;
+    }
   }
 
   void ConnectionHTTPProxy::handleReceivedData( const ConnectionBase* /*connection*/,
@@ -132,23 +144,23 @@ namespace gloox
     if( m_state == StateConnecting )
     {
       m_proxyHandshakeBuffer += data;
-      if( ( !m_proxyHandshakeBuffer.compare( 0, 12, "HTTP/1.0 200" )
-         || !m_proxyHandshakeBuffer.compare( 0, 12, "HTTP/1.1 200" ) )
-         && !m_proxyHandshakeBuffer.compare( m_proxyHandshakeBuffer.length() - 4, 4, "\r\n\r\n" ) )
+      if( ( m_proxyHandshakeBuffer.substr( 0, 12 ) == "HTTP/1.0 200"
+            || m_proxyHandshakeBuffer.substr( 0, 12 ) == "HTTP/1.1 200" )
+          && m_proxyHandshakeBuffer.substr( m_proxyHandshakeBuffer.length() - 4 ) == "\r\n\r\n" )
       {
-        m_proxyHandshakeBuffer = EmptyString;
+        m_proxyHandshakeBuffer = "";
         m_state = StateConnected;
-        m_logInstance.dbg( LogAreaClassConnectionHTTPProxy,
+        m_logInstance.log( LogLevelDebug, LogAreaClassConnectionHTTPProxy,
                            "http proxy connection established" );
         m_handler->handleConnect( this );
       }
-      else if( !m_proxyHandshakeBuffer.compare( 9, 3, "407" ) )
+      else if( m_proxyHandshakeBuffer.substr( 9, 3 ) == "407" )
       {
         m_handler->handleDisconnect( this, ConnProxyAuthRequired );
         m_connection->disconnect();
       }
-      else if( !m_proxyHandshakeBuffer.compare( 9, 3, "403" )
-            || !m_proxyHandshakeBuffer.compare( 9, 3, "404" ) )
+      else if( m_proxyHandshakeBuffer.substr( 9, 3 ) == "403" ||
+               m_proxyHandshakeBuffer.substr( 9, 3 ) == "404" )
       {
         m_handler->handleDisconnect( this, ConnProxyAuthFailed );
         m_connection->disconnect();
@@ -166,34 +178,32 @@ namespace gloox
       int port = m_port;
       if( port == -1 )
       {
-        const DNS::HostMap& servers = DNS::resolve( m_server, m_logInstance );
-        if( !servers.empty() )
+        DNS::HostMap servers = DNS::resolve( m_server, m_logInstance );
+        if( servers.size() )
         {
-          const std::pair< std::string, int >& host = *servers.begin();
-          server = host.first;
-          port = host.second;
+          server = (*(servers.begin())).first;
+          port = (*(servers.begin())).second;
         }
       }
-      std::string message = "Requesting http proxy connection to " + server + ":"
-          + util::int2string( port );
-      m_logInstance.dbg( LogAreaClassConnectionHTTPProxy, message );
-
-      std::string os = "CONNECT " + server + ":" + util::int2string( port ) + " HTTP/1."
-          + util::int2string( m_http11 ? 1 : 0 ) + "\r\n"
-          "Host: " + server + "\r\n"
-          "Content-Length: 0\r\n"
-          "Proxy-Connection: Keep-Alive\r\n"
-          "Pragma: no-cache\r\n"
-          "User-Agent: gloox/" + GLOOX_VERSION + "\r\n";
-
-      if( !m_proxyUser.empty() && !m_proxyPwd.empty() )
+#ifndef _WIN32_WCE
+    std::ostringstream oss;
+    oss << "requesting http proxy connection to " << server << ":" << port;
+    m_logInstance.log( LogLevelDebug, LogAreaClassConnectionHTTPProxy, oss.str() );
+#endif
+      std::ostringstream os;
+      os << "CONNECT " << server << ":" << port << ( m_http11 ? " HTTP/1.1" : " HTTP/1.0" ) << "\r\n";
+      os << "Host: " << server << "\r\n";
+      os << "Content-Length: 0\r\n";
+      os << "Proxy-Connection: Keep-Alive\r\n";
+      os << "Pragma: no-cache\r\n";
+      if( !m_proxyUser.empty() && !m_proxyPassword.empty() )
       {
-        os += "Proxy-Authorization: Basic " + Base64::encode64( m_proxyUser + ":" + m_proxyPwd )
-            + "\r\n";
+        os << "Proxy-Authorization: Basic " << Base64::encode64( m_proxyUser + ":" + m_proxyPassword )
+            << "\r\n";
       }
-      os += "\r\n";
+      os << "\r\n";
 
-      if( !m_connection->send( os ) )
+      if( !m_connection->send( os.str() ) )
       {
         m_state = StateDisconnected;
         if( m_handler )
@@ -206,7 +216,7 @@ namespace gloox
                                               ConnectionError reason )
   {
     m_state = StateDisconnected;
-    m_logInstance.dbg( LogAreaClassConnectionHTTPProxy, "HTTP Proxy connection closed" );
+    m_logInstance.log( LogLevelDebug, LogAreaClassConnectionHTTPProxy, "http proxy connection closed" );
 
     if( m_handler )
       m_handler->handleDisconnect( this, reason );

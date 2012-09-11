@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,6 @@
 #ifndef GPGSIGNED_H__
 #define GPGSIGNED_H__
 
-#include "gloox.h"
 #include "stanzaextension.h"
 
 #include <string>
@@ -49,7 +48,7 @@ namespace gloox
        * have a name of 'x' in the @c jabber:x:signed namespace.
        * @param tag The Tag to parse.
        */
-      GPGSigned( const Tag* tag );
+      GPGSigned( Tag *tag );
 
       /**
        * Virtual destructor.
@@ -63,22 +62,7 @@ namespace gloox
       const std::string& signature() const { return m_signature; }
 
       // reimplemented from StanzaExtension
-      virtual const std::string& filterString() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* newInstance( const Tag* tag ) const
-      {
-        return new GPGSigned( tag );
-      }
-
-      // reimplemented from StanzaExtension
       Tag* tag() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* clone() const
-      {
-        return new GPGSigned( *this );
-      }
 
     private:
       std::string m_signature;

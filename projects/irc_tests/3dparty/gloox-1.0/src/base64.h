@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -27,24 +27,30 @@ namespace gloox
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.8
    */
-  namespace Base64
+  class GLOOX_API Base64
   {
 
+    public:
       /**
        * Base64-encodes the input according to RFC 3548.
        * @param input The data to encode.
        * @return The encoded string.
        */
-      GLOOX_API const std::string encode64( const std::string& input );
+      static const std::string encode64( const std::string& input );
 
       /**
        * Base64-decodes the input according to RFC 3548.
        * @param input The encoded data.
        * @return The decoded data.
        */
-      GLOOX_API const std::string decode64( const std::string& input );
+      static const std::string decode64( const std::string& input );
 
-  }
+    private:
+      static const std::string alphabet64;
+      static const std::string::size_type table64[];
+      static const char pad;
+      static const std::string::size_type np;
+  };
 
 }
 

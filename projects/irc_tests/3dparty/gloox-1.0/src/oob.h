@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,8 +14,8 @@
 #ifndef OOB_H__
 #define OOB_H__
 
-#include "gloox.h"
 #include "stanzaextension.h"
+#include "macros.h"
 
 #include <string>
 
@@ -36,21 +36,21 @@ namespace gloox
   {
     public:
       /**
-       * Constructs an OOB StanzaExtension from teh given URL and description.
+       * Constructs an empty OOB object.
        * @param url The out-of-band URL.
        * @param description The URL's optional description.
-       * @param iqext Whether this object extends an IQ or a Presence/Message stanza (results in
-       * either jabber:iq:oob or jabber:x:oob namespaced element).
+       * @param iqext Whether this object extends an IQ or a Presence stanza (results in
+       * either jabber:x:oob or jabber:iq:oob namespaced element).
        */
       OOB( const std::string& url, const std::string& description, bool iqext );
 
       /**
-       * Constructs an OOB object from the given Tag. To be recognized properly, the Tag must
-       * have either a name of 'x' in the jabber:x:oob namespace, or a name of 'query' in the
+       * Constructs an OOB object from the given Tag. To be recognized properly, the Tag should
+       * either have a name 'x' of in the jabber:x:oob namespace, or a name of 'query' in the
        * jabber:iq:oob namespace.
        * @param tag The Tag to parse.
        */
-      OOB( const Tag* tag );
+      OOB( Tag *tag );
 
       /**
        * Virtual destructor.
@@ -70,22 +70,7 @@ namespace gloox
       const std::string& desc() const { return m_desc; }
 
       // reimplemented from StanzaExtension
-      virtual const std::string& filterString() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* newInstance( const Tag* tag ) const
-      {
-        return new OOB( tag );
-      }
-
-      // reimplemented from StanzaExtension
       Tag* tag() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* clone() const
-      {
-        return new OOB( *this );
-      }
 
     private:
       std::string m_xmlns;

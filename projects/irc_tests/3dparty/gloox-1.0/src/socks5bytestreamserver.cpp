@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,6 @@
 #include "socks5bytestreamserver.h"
 #include "connectiontcpserver.h"
 #include "mutexguard.h"
-#include "util.h"
 
 namespace gloox
 {
@@ -61,7 +60,15 @@ namespace gloox
       (*it2).first->recv( timeout );
     }
 
-    util::clearList( m_oldConnections );
+    ConnectionList::iterator it3 = m_oldConnections.begin();
+    ConnectionList::iterator it4;
+    while( it3 != m_oldConnections.end() )
+    {
+      it4 = it3++;
+      delete (*it4);
+      m_oldConnections.erase( it4 );
+    }
+
     return ConnNoError;
   }
 
@@ -74,25 +81,9 @@ namespace gloox
     }
   }
 
-  int SOCKS5BytestreamServer::localPort() const
-  {
-    if( m_tcpServer )
-      return m_tcpServer->localPort();
-
-    return m_port;
-  }
-
-  const std::string SOCKS5BytestreamServer::localInterface() const
-  {
-    if( m_tcpServer )
-      return m_tcpServer->localInterface();
-
-    return m_ip;
-  }
-
   ConnectionBase* SOCKS5BytestreamServer::getConnection( const std::string& hash )
   {
-    util::MutexGuard mg( m_mutex );
+    MutexGuard mg( m_mutex );
 
     ConnectionMap::iterator it = m_connections.begin();
     for( ; it != m_connections.end(); ++it )
@@ -111,17 +102,17 @@ namespace gloox
 
   void SOCKS5BytestreamServer::registerHash( const std::string& hash )
   {
-    util::MutexGuard mg( m_mutex );
+    MutexGuard mg( m_mutex );
     m_hashes.push_back( hash );
   }
 
   void SOCKS5BytestreamServer::removeHash( const std::string& hash )
   {
-    util::MutexGuard mg( m_mutex );
+    MutexGuard mg( m_mutex );
     m_hashes.remove( hash );
   }
 
-  void SOCKS5BytestreamServer::handleIncomingConnection( ConnectionBase* /*server*/, ConnectionBase* connection )
+  void SOCKS5BytestreamServer::handleIncomingConnection( ConnectionBase* connection )
   {
     connection->registerConnectionDataHandler( this );
     ConnectionInfo ci;
@@ -145,14 +136,14 @@ namespace gloox
       {
         char c[2];
         c[0] = 0x05;
-        c[1] = (char)(unsigned char)0xFF;
+        c[1] = (char)0xFF;
         (*it).second.state = StateDisconnected;
 
         if( data.length() >= 3 && data[0] == 0x05 )
         {
-          unsigned int sz = ( data.length() - 2 < static_cast<unsigned int>( data[1] ) )
-                              ? static_cast<unsigned int>( data.length() - 2 )
-                              : static_cast<unsigned int>( data[1] );
+          unsigned int sz = ( data.length() - 2 < (unsigned int)data[1] )
+                              ? ( data.length() - 2 )
+                              : ( (unsigned int)data[1] );
           for( unsigned int i = 2; i < sz + 2; ++i )
           {
             if( data[i] == 0x00 )

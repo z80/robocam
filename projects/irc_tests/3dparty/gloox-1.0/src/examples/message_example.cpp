@@ -6,7 +6,7 @@
 #include "../chatstatefilter.h"
 #include "../connectionlistener.h"
 #include "../disco.h"
-#include "../message.h"
+#include "../stanza.h"
 #include "../gloox.h"
 #include "../lastactivity.h"
 #include "../loghandler.h"
@@ -23,8 +23,6 @@ using namespace gloox;
 
 #include <stdio.h>
 #include <string>
-
-#include <cstdio> // [s]print[f]
 
 #if defined( WIN32 ) || defined( _WIN32 )
 # include <windows.h>
@@ -102,26 +100,24 @@ class MessageTest : public MessageSessionHandler, ConnectionListener, LogHandler
 
     virtual bool onTLSConnect( const CertInfo& info )
     {
-      time_t from( info.date_from );
-      time_t to( info.date_to );
-
       printf( "status: %d\nissuer: %s\npeer: %s\nprotocol: %s\nmac: %s\ncipher: %s\ncompression: %s\n"
               "from: %s\nto: %s\n",
               info.status, info.issuer.c_str(), info.server.c_str(),
               info.protocol.c_str(), info.mac.c_str(), info.cipher.c_str(),
-              info.compression.c_str(), ctime( &from ), ctime( &to ) );
+              info.compression.c_str(), ctime( (const time_t*)&info.date_from ),
+              ctime( (const time_t*)&info.date_to ) );
       return true;
     }
 
-    virtual void handleMessage( const Message& msg, MessageSession * /*session*/ )
+    virtual void handleMessage( Stanza *stanza, MessageSession * /*session*/ )
     {
-      printf( "type: %d, subject: %s, message: %s, thread id: %s\n", msg.subtype(),
-              msg.subject().c_str(), msg.body().c_str(), msg.thread().c_str() );
+      printf( "type: %d, subject: %s, message: %s, thread id: %s\n", stanza->subtype(),
+              stanza->subject().c_str(), stanza->body().c_str(), stanza->thread().c_str() );
 
-      std::string re = "You said:\n> " + msg.body() + "\nI like that statement.";
+      std::string msg = "You said:\n> " + stanza->body() + "\nI like that statement.";
       std::string sub;
-      if( !msg.subject().empty() )
-        sub = "Re: " +  msg.subject();
+      if( !stanza->subject().empty() )
+        sub = "Re: " +  stanza->subject();
 
       m_messageEventFilter->raiseMessageEvent( MessageEventDisplayed );
 #if defined( WIN32 ) || defined( _WIN32 )
@@ -136,9 +132,9 @@ class MessageTest : public MessageSessionHandler, ConnectionListener, LogHandler
 #else
       sleep( 2 );
 #endif
-      m_session->send( re, sub );
+      m_session->send( msg, sub );
 
-      if( msg.body() == "quit" )
+      if( stanza->body() == "quit" )
         j->disconnect();
     }
 

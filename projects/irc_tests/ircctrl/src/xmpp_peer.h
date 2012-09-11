@@ -11,14 +11,14 @@
 #include "messagesessionhandler.h"
 #include "messageeventhandler.h"
 #include "messagehandler.h"
-#include "message.h"
+//#include "message.h"
 #include "connectionlistener.h"
 #include "registrationhandler.h"
 #include "registration.h"
 #include "siprofileft.h"
 #include "siprofilefthandler.h"
-#include "bytestreamdatahandler.h"
-#include "socks5bytestreamserver.h"
+//#include "bytestreamdatahandler.h"
+//#include "socks5bytestreamserver.h"
 
 class XmppPeer: public gloox::MessageSessionHandler,
                 public gloox::MessageEventHandler,

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -34,13 +34,13 @@ namespace gloox
       /**
        * Constructs an empty JID.
        */
-      JID() : m_valid( false ) {}
+      JID() {}
 
       /**
        * Constructs a new JID from a string.
        * @param jid The string containing the JID.
        */
-      JID( const std::string& jid ) : m_valid( true ) { setJID( jid ); }
+      JID( const std::string& jid ) { setJID( jid ); }
 
       /**
        * Destructor.
@@ -50,9 +50,8 @@ namespace gloox
       /**
        * Sets the JID from a string.
        * @param jid The string containing the JID.
-       * @return @b True if the given JID was valid, @b false otherwise.
        */
-      bool setJID( const std::string& jid );
+      void setJID( const std::string& jid );
 
       /**
        * Returns the full (prepped) JID (user\@host/resource).
@@ -74,22 +73,30 @@ namespace gloox
       JID bareJID() const { return JID( bare() ); }
 
       /**
+       * Creates and returns a JID from this JID's node, server and resource parts.
+       * @return The full JID.
+       * @since 0.9
+       * @deprecated
+       */
+      GLOOX_DEPRECATED JID fullJID() const { return JID( full() ); }
+
+      /**
        * Sets the username.
        * @param username The new username.
        */
-      bool setUsername( const std::string& username );
+      void setUsername( const std::string& username );
 
       /**
        * Sets the server.
        * @param server The new server.
        */
-      bool setServer( const std::string& server );
+      void setServer( const std::string& server );
 
       /**
        * Sets the resource.
        * @param resource The new resource.
        */
-      bool setResource( const std::string& resource );
+      void setResource( const std::string& resource );
 
       /**
        * Returns the prepped username.
@@ -116,16 +123,11 @@ namespace gloox
       const std::string& resource() const { return m_resource; }
 
       /**
-       * Compares a JID with a string.
-       * @param right The second JID in string representation.
+       * A JID is empty as long as no server is set.
+       * @return @b True if the JID is empty, @b false otherwise.
+       * @deprecated Use operator bool() instead
        */
-      bool operator==( const std::string& right ) const { return full() == right; }
-
-      /**
-       * Compares a JID with a string.
-       * @param right The second JID in string representation.
-       */
-      bool operator!=( const std::string& right ) const { return full() != right; }
+      GLOOX_DEPRECATED bool empty() const { return m_server.empty(); }
 
       /**
        * Compares two JIDs.
@@ -140,25 +142,18 @@ namespace gloox
       bool operator!=( const JID& right ) const { return full() != right.full(); }
 
       /**
-       * Converts to  @b true if the JID is valid, @b false otherwise.
+       * Returns @b true if the Tag is valid, @b false otherwise.
        */
-      operator bool() const { return m_valid; }
-
-      /**
-       * XEP-0106: JID Escaping
-       * @param node The node to escape.
-       * @return The escaped node.
-       */
-      static std::string escapeNode( const std::string& node );
-
-      /**
-       * XEP-0106: JID Escaping
-       * @param node The node to unescape.
-       * @return The unescaped node.
-       */
-      static std::string unescapeNode( const std::string& node );
+      operator bool() const { return !m_server.empty(); }
 
     private:
+      std::string m_resource;
+      std::string m_username;
+      std::string m_server;
+      std::string m_serverRaw;
+      std::string m_bare;
+      std::string m_full;
+
       /**
        * Utility function to rebuild both the bare and full jid.
        */
@@ -166,7 +161,7 @@ namespace gloox
 
       /**
        * Utility function rebuilding the bare jid.
-       * @note Do not use this function directly, instead use setStrings.
+       * \note Do not use this function directly, instead use setStrings.
        */
       void setBare();
 
@@ -174,15 +169,6 @@ namespace gloox
        * Utility function rebuilding the full jid.
        */
       void setFull();
-
-      std::string m_resource;
-      std::string m_username;
-      std::string m_server;
-      std::string m_serverRaw;
-      std::string m_bare;
-      std::string m_full;
-      bool m_valid;
-
   };
 
 }

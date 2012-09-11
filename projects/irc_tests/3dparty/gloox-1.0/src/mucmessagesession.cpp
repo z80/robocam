@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -13,16 +13,15 @@
 
 #include "mucmessagesession.h"
 #include "clientbase.h"
-#include "message.h"
+#include "stanza.h"
 #include "messagehandler.h"
 
 namespace gloox
 {
 
-  MUCMessageSession::MUCMessageSession( ClientBase* parent, const JID& jid )
-    : MessageSession( parent, jid, false, Message::Groupchat | Message::Chat
-                                          | Message::Normal | Message::Error,
-                      false )
+  MUCMessageSession::MUCMessageSession( ClientBase *parent, const JID& jid )
+    : MessageSession( parent, jid, false, StanzaMessageGroupchat | StanzaMessageChat
+                                          | StanzaMessageNormal | StanzaMessageError )
   {
   }
 
@@ -30,15 +29,20 @@ namespace gloox
   {
   }
 
-  void MUCMessageSession::handleMessage( Message& msg )
+  void MUCMessageSession::handleMessage( Stanza *stanza )
   {
     if( m_messageHandler )
-      m_messageHandler->handleMessage( msg );
+      m_messageHandler->handleMessage( stanza );
   }
 
   void MUCMessageSession::send( const std::string& message )
   {
-    Message m( Message::Groupchat, m_target, message );
+    Tag *m = new Tag( "message" );
+    m->addAttribute( "type", "groupchat" );
+    new Tag( m, "body", message );
+
+    m->addAttribute( "from", m_parent->jid().full() );
+    m->addAttribute( "to", m_target.full() );
 
 //     decorate( m );
 
@@ -47,7 +51,11 @@ namespace gloox
 
   void MUCMessageSession::setSubject( const std::string& subject )
   {
-    Message m( Message::Groupchat, m_target.bareJID(), EmptyString, subject );
+    Tag *m = new Tag( "message" );
+    m->addAttribute( "to", m_target.bare() );
+    m->addAttribute( "type", "groupchat" );
+    new Tag( m, "subject", subject );
+
     m_parent->send( m );
   }
 

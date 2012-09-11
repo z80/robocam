@@ -4,14 +4,14 @@
 #include "../../compressiondatahandler.h"
 using namespace gloox;
 
-#include "../../config.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <locale.h>
-#include <cstdlib>
 #include <string>
 #include <sys/time.h>
-#include <cstdio> // [s]print[f]
+
+#include <cstdlib>
 
 #ifdef HAVE_ZLIB
 

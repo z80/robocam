@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,154 +17,112 @@
 #include "sihandler.h"
 #include "clientbase.h"
 #include "disco.h"
-#include "error.h"
 
 namespace gloox
 {
 
-  // ---- SIManager::SI ----
-  SIManager::SI::SI( const Tag* tag )
-    : StanzaExtension( ExtSI ), m_tag1( 0 ), m_tag2( 0 )
-  {
-    if( !tag || tag->name() != "si" || tag->xmlns() != XMLNS_SI )
-      return;
-
-    m_valid = true;
-
-    m_id = tag->findAttribute( "id" );
-    m_mimetype = tag->findAttribute( "mime-type" );
-    m_profile = tag->findAttribute( "profile" );
-
-    Tag* c = tag->findChild( "file", "xmlns", XMLNS_SI_FT );
-    if ( c )
-      m_tag1 = c->clone();
-    c = tag->findChild( "feature", "xmlns", XMLNS_FEATURE_NEG );
-    if( c )
-      m_tag2 = c->clone();
-  }
-
-  SIManager::SI::SI( Tag* tag1, Tag* tag2, const std::string& id,
-                     const std::string& mimetype, const std::string& profile )
-    : StanzaExtension( ExtSI ), m_tag1( tag1 ), m_tag2( tag2 ),
-      m_id( id ), m_mimetype( mimetype ), m_profile( profile )
-  {
-    m_valid = true;
-  }
-
-  SIManager::SI::~SI()
-  {
-    delete m_tag1;
-    delete m_tag2;
-  }
-
-  const std::string& SIManager::SI::filterString() const
-  {
-    static const std::string filter = "/iq/si[@xmlns='" + XMLNS_SI + "']";
-    return filter;
-  }
-
-  Tag* SIManager::SI::tag() const
-  {
-    if( !m_valid )
-      return 0;
-
-    Tag* t = new Tag( "si" );
-    t->setXmlns( XMLNS_SI );
-    if( !m_id.empty() )
-      t->addAttribute( "id", m_id );
-    if( !m_mimetype.empty() )
-      t->addAttribute( "mime-type", m_mimetype.empty() ? "binary/octet-stream" : m_mimetype );
-    if( !m_profile.empty() )
-      t->addAttribute( "profile", m_profile );
-    if( m_tag1 )
-      t->addChildCopy( m_tag1 );
-    if( m_tag2 )
-      t->addChildCopy( m_tag2 );
-
-    return t;
-  }
-  // ---- ~SIManager::SI ----
-
-  // ---- SIManager ----
   SIManager::SIManager( ClientBase* parent, bool advertise )
     : m_parent( parent ), m_advertise( advertise )
   {
-    if( m_parent )
+    if( m_parent && m_advertise )
     {
-      m_parent->registerStanzaExtension( new SI() );
-      m_parent->registerIqHandler( this, ExtSI );
-      if( m_parent->disco() && m_advertise )
+      m_parent->registerIqHandler( this, XMLNS_SI );
+      if( m_parent->disco() )
         m_parent->disco()->addFeature( XMLNS_SI );
     }
   }
 
   SIManager::~SIManager()
   {
-    if( m_parent )
+    if( m_parent && m_advertise )
     {
-      m_parent->removeIqHandler( this, ExtSI );
+      m_parent->removeIqHandler( XMLNS_SI );
       m_parent->removeIDHandler( this );
-      if( m_parent->disco() && m_advertise )
+      if( m_parent->disco() )
         m_parent->disco()->removeFeature( XMLNS_SI );
     }
   }
 
   const std::string SIManager::requestSI( SIHandler* sih, const JID& to, const std::string& profile,
-                                          Tag* child1, Tag* child2, const std::string& mimetype,
-                                          const JID& from, const std::string& sid )
+                                          Tag* child1, Tag* child2, const std::string& mimetype )
   {
     if( !m_parent || !sih )
-      return EmptyString;
+      return std::string();
 
     const std::string& id = m_parent->getID();
-    const std::string& sidToUse = sid.empty() ? m_parent->getID() : sid;
+    const std::string& id2 = m_parent->getID();
 
-    IQ iq( IQ::Set, to, id );
-    iq.addExtension( new SI( child1, child2, sidToUse, mimetype, profile ) );
-    if( from )
-      iq.setFrom( from );
+    Tag* iq = new Tag( "iq" );
+    iq->addAttribute( "type", "set" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "to", to.full() );
+    Tag* si = new Tag( iq, "si" );
+    si->addAttribute( "xmlns", XMLNS_SI );
+    si->addAttribute( "id", id2 );
+    if( mimetype.empty() )
+      si->addAttribute( "mime-type", "binary/octet-stream" );
+    else
+      si->addAttribute( "mime-type", mimetype );
+    si->addAttribute( "profile", profile );
+
+    si->addChild( child1 );
+    si->addChild( child2 );
 
     TrackStruct t;
-    t.sid = sidToUse;
+    t.sid = id2;
     t.profile = profile;
     t.sih = sih;
     m_track[id] = t;
-    m_parent->send( iq, this, OfferSI );
+    m_parent->trackID( this, id, OfferSI );
+    m_parent->send( iq );
 
-    return sidToUse;
+    return id2;
   }
 
-  void SIManager::acceptSI( const JID& to, const std::string& id, Tag* child1, Tag* child2, const JID& from )
+  void SIManager::acceptSI( const JID& to, const std::string& id, Tag* child1, Tag* child2 )
   {
-    IQ iq( IQ::Result, to, id );
-    iq.addExtension( new SI( child1, child2 ) );
-    if( from )
-      iq.setFrom( from );
+    Tag* iq = new Tag( "iq" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "to", to.full() );
+    iq->addAttribute( "type", "result" );
+    Tag* si = new Tag( iq, "si" );
+    si->addAttribute( "xmlns", XMLNS_SI );
+
+    si->addChild( child1 );
+    si->addChild( child2 );
 
     m_parent->send( iq );
   }
 
   void SIManager::declineSI( const JID& to, const std::string& id, SIError reason, const std::string& text )
   {
-    IQ iq( IQ::Error, to, id );
-    Error* error;
+    Tag* iq = new Tag( "iq" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "to", to.full() );
+    iq->addAttribute( "type", "error" );
+    Tag* error = new Tag( iq, "error" );
     if( reason == NoValidStreams || reason == BadProfile )
     {
-      Tag* appError = 0;
+      error->addAttribute( "code", "400" );
+      error->addAttribute( "type", "cancel" );
+      new Tag( error, "bad-request", "xmlns", XMLNS_XMPP_STANZAS );
       if( reason == NoValidStreams )
-        appError = new Tag( "no-valid-streams", XMLNS, XMLNS_SI );
+        new Tag( error, "no-valid-streams", "xmlns", XMLNS_SI );
       else if( reason == BadProfile )
-        appError = new Tag( "bad-profile", XMLNS, XMLNS_SI );
-      error = new Error( StanzaErrorTypeCancel, StanzaErrorBadRequest, appError );
+        new Tag( error, "bad-profile", "xmlns", XMLNS_SI );
     }
     else
     {
-      error = new Error( StanzaErrorTypeCancel, StanzaErrorForbidden );
+      error->addAttribute( "code", "403" );
+      error->addAttribute( "type", "cancel" );
+      new Tag( error, "forbidden", "xmlns", XMLNS_XMPP_STANZAS );
       if( !text.empty() )
-        error->text( text );
+      {
+        Tag* t = new Tag( error, "text", "xmlns", XMLNS_XMPP_STANZAS );
+        t->setCData( text );
+      }
     }
 
-    iq.addExtension( error );
     m_parent->send( iq );
   }
 
@@ -190,70 +148,70 @@ namespace gloox
       m_parent->disco()->removeFeature( profile );
   }
 
-  bool SIManager::handleIq( const IQ& iq )
+  bool SIManager::handleIq( Stanza *stanza )
   {
-    TrackMap::iterator itt = m_track.find( iq.id() );
-    if( itt != m_track.end() )
+    TrackMap::iterator it = m_track.find( stanza->id() );
+    if( it != m_track.end() )
       return false;
 
-    const SI* si = iq.findExtension<SI>( ExtSI );
-    if( !si || si->profile().empty() )
-      return false;
-
-    HandlerMap::const_iterator it = m_handlers.find( si->profile() );
-    if( it != m_handlers.end() && (*it).second )
+    Tag *si = stanza->findChild( "si", "xmlns", XMLNS_SI );
+    if( si && si->hasAttribute( "profile" ) )
     {
-      (*it).second->handleSIRequest( iq.from(), iq.to(), iq.id(), *si );
-      return true;
+      const std::string& profile = si->findAttribute( "profile" );
+      HandlerMap::const_iterator it = m_handlers.find( profile );
+      if( it != m_handlers.end() && (*it).second )
+      {
+        Tag* p = si->findChildWithAttrib( "xmlns", profile );
+        Tag* f = si->findChild( "feature", "xmlns", XMLNS_FEATURE_NEG );
+        (*it).second->handleSIRequest( stanza->from(), stanza->id(), profile, si, p, f );
+        return true;
+      }
     }
 
     return false;
   }
 
-  void SIManager::handleIqID( const IQ& iq, int context )
+  bool SIManager::handleIqID( Stanza *stanza, int context )
   {
-    switch( iq.subtype() )
+    switch( stanza->subtype() )
     {
-      case IQ::Result:
+      case StanzaIqResult:
         if( context == OfferSI )
         {
-          TrackMap::iterator it = m_track.find( iq.id() );
+          TrackMap::iterator it = m_track.find( stanza->id() );
           if( it != m_track.end() )
           {
-            const SI* si = iq.findExtension<SI>( ExtSI );
-            if( !si /*|| si->profile().empty()*/ )
-              return;
-
-//             Tag* si = iq.query();
-//             Tag* ptag = 0;
-//             Tag* fneg = 0;
-//             if( si && si->name() == "si" && si->xmlns() == XMLNS_SI )
-//             {
-//               ptag = si->findChildWithAttrib( XMLNS, (*it).second.profile );
-//               fneg = si->findChild( "feature", XMLNS, XMLNS_FEATURE_NEG );
-//             }
-
-            // FIXME: remove above commented code and
-            // check corectness of last 3 params!
-            (*it).second.sih->handleSIRequestResult( iq.from(), iq.to(), (*it).second.sid, *si );
+            Tag* si = stanza->findChild( "si", "xmlns", XMLNS_SI );
+            Tag* ptag = 0;
+            Tag* fneg = 0;
+            if( si )
+            {
+              ptag = si->findChildWithAttrib( "xmlns", (*it).second.profile );
+              fneg = si->findChild( "feature", "xmlns", XMLNS_FEATURE_NEG );
+            }
+            (*it).second.sih->handleSIRequestResult( stanza->from(), (*it).second.sid, si, ptag, fneg );
             m_track.erase( it );
           }
+          return true;
         }
         break;
-      case IQ::Error:
+      case StanzaIqError:
         if( context == OfferSI )
         {
-          TrackMap::iterator it = m_track.find( iq.id() );
+          TrackMap::iterator it = m_track.find( stanza->id() );
           if( it != m_track.end() )
           {
-            (*it).second.sih->handleSIRequestError( iq, (*it).second.sid );
+            (*it).second.sih->handleSIRequestError( stanza, (*it).second.sid );
             m_track.erase( it );
           }
+          return true;
         }
         break;
       default:
         break;
     }
+
+    return false;
   }
 
 }

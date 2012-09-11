@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -16,12 +16,11 @@
 
 #include "iqhandler.h"
 #include "jid.h"
-#include "stanzaextension.h"
 
 namespace gloox
 {
 
-  class BytestreamHandler;
+  class SOCKS5BytestreamHandler;
   class SOCKS5BytestreamServer;
   class SOCKS5Bytestream;
   class ClientBase;
@@ -60,9 +59,8 @@ namespace gloox
        */
       enum S5BMode
       {
-        S5BTCP,                     /**< Use TCP on the transport layer. */
-        S5BUDP,                     /**< Use UDP on the transport layer. Not currently supported. */
-        S5BInvalid                  /**< Invalid mode. */
+        S5BTCP/*,*/                     /**< Use TCP on the transport layer. */
+        /*S5BUDP*/                      /**< Use UDP on the transport layer. */
       };
 
       /**
@@ -71,7 +69,7 @@ namespace gloox
        * @param s5bh A SOCKS5BytestreamManager -derived object that will receive
        * incoming and outgoing SOCKS5Bytestreams.
        */
-      SOCKS5BytestreamManager( ClientBase* parent, BytestreamHandler* s5bh );
+      SOCKS5BytestreamManager( ClientBase *parent, SOCKS5BytestreamHandler* s5bh );
 
       /**
        * Virtual destructor.
@@ -97,54 +95,50 @@ namespace gloox
        * This function requests a bytestream with the remote entity.
        * Data can only be sent over an open stream. Use isOpen() to find out what the stream's
        * current state is. However, successful opening/initiation will be announced by means of the
-       * BytestreamHandler interface. Multiple bytestreams (even per JID) can be initiated
+       * SOCKS5BytestreamHandler interface. Multiple bytestreams (even per JID) can be initiated
        * without waiting for success.
        * @param to The recipient of the requested bytestream.
        * @param mode The desired transport layer protocol.
-       * @param sid The bytestream's stream ID, if previously negotiated e.g. using SI (XEP-0095).
-       * @param from An optional 'from' address to stamp outgoing
-       * requests with. Only useful in component scenarios. Defaults to empty JID.
+       * @param sid The bytestreakm's stream ID, if previously negotiated e.g. using SI (XEP-0095).
        * @return @b False in case of an error, @b true otherwise. A return value of @b true does
        * @b not indicate that the bytestream has been opened. This is announced by means of the
-       * BytestreamHandler.
+       * SOCKS5BytestreamHandler.
        */
-      bool requestSOCKS5Bytestream( const JID& to, S5BMode mode, const std::string& sid = EmptyString,
-                                    const JID& from = JID() );
+      bool requestSOCKS5Bytestream( const JID& to, S5BMode mode, const std::string& sid = "" );
 
       /**
        * To get rid of a bytestream (i.e., close and delete it), call this function. You
-       * should then not use the bytestream any more.
-       * The remote entity will be notified of the closing of the stream.
+       * should not use the bytestream any more.
+       * The remote entity will be notified about the closing of the stream.
        * @param s5b The bytestream to dispose. It will be deleted here.
        */
-      bool dispose( SOCKS5Bytestream* s5b );
+      bool dispose( SOCKS5Bytestream *s5b );
 
       /**
        * Use this function to accept an incoming bytestream.
-       * @param sid The stream's id as passed to BytestreamHandler::handleIncomingSOCKS5Bytestream().
+       * @param sid The stream's id as passed to SOCKS5BytestreamHandler::handleIncomingSOCKS5Bytestream().
        */
       void acceptSOCKS5Bytestream( const std::string& sid );
 
       /**
        * Use this function to reject an incoming bytestream.
-       * @param sid The stream's id as passed to BytestreamHandler::handleIncomingSOCKS5Bytestream().
-       * @param reason The reason for the reject.
+       * @param sid The stream's id as passed to SOCKS5BytestreamHandler::handleIncomingSOCKS5Bytestream().
        */
-      void rejectSOCKS5Bytestream( const std::string& sid, StanzaError reason = StanzaErrorNotAcceptable );
+      void rejectSOCKS5Bytestream( const std::string& sid );
 
       /**
        * Use this function to register an object that will receive new @b incoming bytestream
-       * requests from the SOCKS5BytestreamManager. Only one BytestreamHandler can be
+       * requests from the SOCKS5BytestreamManager. Only one SOCKS5BytestreamHandler can be
        * registered at any one time.
-       * @param s5bh The BytestreamHandler derived object to receive notifications.
+       * @param s5bh The SOCKS5BytestreamHandler derived object to receive notifications.
        */
-      void registerBytestreamHandler( BytestreamHandler* s5bh )
+      void registerSOCKS5BytestreamHandler( SOCKS5BytestreamHandler *s5bh )
         { m_socks5BytestreamHandler = s5bh; }
 
       /**
-       * Removes the registered BytestreamHandler.
+       * Removes the registered SOCKS5BytestreamHandler.
        */
-      void removeBytestreamHandler()
+      void removeSOCKS5BytestreamHandler()
         { m_socks5BytestreamHandler = 0; }
 
       /**
@@ -159,115 +153,14 @@ namespace gloox
        */
       void removeSOCKS5BytestreamServer() { m_server = 0; }
 
-      // reimplemented from IqHandler.
-      virtual bool handleIq( const IQ& iq );
+      // reimplemented from IqHandler
+      virtual bool handleIq( Stanza *stanza );
 
-      // reimplemented from IqHandler.
-      virtual void handleIqID( const IQ& iq, int context );
+      // reimplemented from IqHandler
+      virtual bool handleIqID( Stanza *stanza, int context );
 
     private:
-#ifdef SOCKS5BYTESTREAMMANAGER_TEST
-    public:
-#endif
-
-      class Query : public StanzaExtension
-      {
-        public:
-          /**
-           * Constructs a new empty Query object.
-           */
-          Query();
-
-          /**
-           * Constructs a new Query (streamhost) object from the given parameters.
-           * @param sid The stream ID.
-           * @param mode The stream mode (TCP or UDP).
-           * @param hosts A list of stream hosts.
-           */
-          Query( const std::string& sid, S5BMode mode,
-                 const StreamHostList& hosts );
-
-          /**
-           * Constructs a new Query (streamhost-used or activate) object, including the given JID.
-           * @param jid The JID.
-           * @param sid The stream ID.
-           * @param activate Determines whether the object will be an &apos;activate&apos; (@b true) or
-           * &apos;streamhost-used&apos; (@b false) one.
-           */
-          Query( const JID& jid, const std::string& sid, bool activate );
-
-          /**
-           * Constructs a new Query object from the given Tag.
-           * @param tag The Tag to parse.
-           */
-          Query( const Tag* tag );
-
-          /**
-           * Virtual destructor.
-           */
-          virtual ~Query();
-
-          /**
-           * Returns the current stream ID.
-           * @return The current stream ID.
-           */
-          const std::string& sid() const { return m_sid; }
-
-          /**
-           * Returns the current JID.
-           * @return The current JID.
-           */
-          const JID& jid() const { return m_jid; }
-
-          /**
-           * Returns the current mode.
-           * @return The current mode.
-           */
-          S5BMode mode() const { return m_mode; }
-
-          /**
-           * Returns the current list of stream hosts.
-           * @return The current list of stream hosts.
-           */
-          const StreamHostList& hosts() const { return m_hosts; }
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            return new Query( tag );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-          {
-            return new Query( *this );
-          }
-
-        private:
-          enum QueryType
-          {
-            TypeSH,
-            TypeSHU,
-            TypeA,
-            TypeInvalid
-          };
-
-          std::string m_sid;
-          JID m_jid;
-          SOCKS5BytestreamManager::S5BMode m_mode;
-          StreamHostList m_hosts;
-          QueryType m_type;
-
-      };
-
-      SOCKS5BytestreamManager& operator=( const SOCKS5BytestreamManager&);
-      void rejectSOCKS5Bytestream( const JID& from, const std::string& id, StanzaError reason = StanzaErrorNotAcceptable );
+      void rejectSOCKS5Bytestream( const JID& from, const std::string& id, StanzaError reason );
       bool haveStream( const JID& from );
       const StreamHost* findProxy( const JID& from, const std::string& hostjid, const std::string& sid );
 
@@ -286,7 +179,6 @@ namespace gloox
       struct AsyncS5BItem
       {
         JID from;
-        JID to;
         std::string id;
         StreamHostList sHosts;
         bool incoming;
@@ -294,8 +186,8 @@ namespace gloox
       typedef std::map<std::string, AsyncS5BItem> AsyncTrackMap;
       AsyncTrackMap m_asyncTrackMap;
 
-      ClientBase* m_parent;
-      BytestreamHandler* m_socks5BytestreamHandler;
+      ClientBase *m_parent;
+      SOCKS5BytestreamHandler* m_socks5BytestreamHandler;
       SOCKS5BytestreamServer* m_server;
       StreamHostList m_hosts;
       StringMap m_trackMap;

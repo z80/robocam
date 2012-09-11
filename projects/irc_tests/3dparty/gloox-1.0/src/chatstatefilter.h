@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -23,7 +23,7 @@ namespace gloox
   class Tag;
   class ChatStateHandler;
   class MessageSession;
-  class Message;
+  class Stanza;
 
   /**
    * @brief This class adds Chat State Notifications (XEP-0085) support to a MessageSession.
@@ -44,7 +44,7 @@ namespace gloox
        * Contstructs a new Chat State filter for a MessageSession.
        * @param parent The MessageSession to decorate.
        */
-      ChatStateFilter( MessageSession* parent );
+      ChatStateFilter( MessageSession *parent );
 
       /**
        * Virtual destructor.
@@ -68,31 +68,24 @@ namespace gloox
        * to XEP-0085.
        * @param csh The ChatStateHandler to register.
        */
-      void registerChatStateHandler( ChatStateHandler* csh )
-        { m_chatStateHandler = csh; }
+      void registerChatStateHandler( ChatStateHandler *csh );
 
       /**
        * This function clears the internal pointer to the ChatStateHandler.
        * Chat States will not be delivered anymore after calling this function until another
        * ChatStateHandler is registered.
        */
-      void removeChatStateHandler()
-        { m_chatStateHandler = 0; }
+      void removeChatStateHandler();
 
       // reimplemented from MessageFilter
-      virtual void decorate( Message& msg );
+      virtual void decorate( Tag *tag );
 
       // reimplemented from MessageFilter
-      virtual void filter( Message& msg );
+      virtual void filter( Stanza *stanza );
 
     protected:
-      /** A handler for incoming chat state changes. */
-      ChatStateHandler* m_chatStateHandler;
-
-      /** Holds the state sent last. */
+      ChatStateHandler *m_chatStateHandler;
       ChatStateType m_lastSent;
-
-      /** Indicates whether or not chat states are currently enabled. */
       bool m_enableChatStates;
 
   };

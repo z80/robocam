@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,73 +14,25 @@
 #include "flexoff.h"
 #include "dataform.h"
 #include "disco.h"
-#include "error.h"
 
 #include <cstdlib>
 
 namespace gloox
 {
 
-  // ---- FlexibleOffline::Offline ----
-  FlexibleOffline::Offline::Offline( const Tag* /*tag*/ )
-    : StanzaExtension( ExtFlexOffline )
-  {
-    // FIXME what to do here?
-  }
-
-  FlexibleOffline::Offline::Offline( int context, const StringList& msgs )
-    : StanzaExtension( ExtFlexOffline ), m_context( context ), m_msgs( msgs )
-  {
-  }
-
-  FlexibleOffline::Offline::~Offline()
-  {
-  }
-
-  const std::string& FlexibleOffline::Offline::filterString() const
-  {
-    static const std::string filter = "/iq/offline[@xmlns='" + XMLNS_OFFLINE + "']";
-    return filter;
-  }
-
-  Tag* FlexibleOffline::Offline::tag() const
-  {
-    Tag* t = new Tag( "offline" );
-    t->setXmlns( XMLNS_OFFLINE );
-
-    if( m_msgs.empty() )
-      new Tag( t, m_context == FORequestMsgs ? "fetch" : "purge" );
-    else
-    {
-      const std::string action = m_context == FORequestMsgs ? "view" : "remove";
-      StringList::const_iterator it = m_msgs.begin();
-      for( ; it != m_msgs.end(); ++it )
-      {
-        Tag* i = new Tag( t, "item", "action", action );
-        i->addAttribute( "node", (*it) );
-      }
-    }
-    return t;
-  }
-  // ---- ~FlexibleOffline::Offline ----
-
-  // ---- FlexibleOffline ----
-  FlexibleOffline::FlexibleOffline( ClientBase* parent )
+  FlexibleOffline::FlexibleOffline( ClientBase *parent )
     : m_parent( parent ), m_flexibleOfflineHandler( 0 )
   {
-    if( m_parent )
-      m_parent->registerStanzaExtension( new Offline() );
   }
 
   FlexibleOffline::~FlexibleOffline()
   {
-    if( m_parent )
-      m_parent->removeIDHandler( this );
+    m_parent->removeIDHandler( this );
   }
 
   void FlexibleOffline::checkSupport()
   {
-    m_parent->disco()->getDiscoInfo( m_parent->jid().server(), EmptyString, this, FOCheckSupport );
+    m_parent->disco()->getDiscoInfo( m_parent->jid().server(), "", this, FOCheckSupport );
   }
 
   void FlexibleOffline::getMsgCount()
@@ -93,16 +45,59 @@ namespace gloox
     m_parent->disco()->getDiscoItems( m_parent->jid().server(), XMLNS_OFFLINE, this, FORequestHeaders );
   }
 
-  void FlexibleOffline::messageOperation( int context, const StringList& msgs )
+  void FlexibleOffline::fetchMessages( const StringList& msgs )
   {
     const std::string& id = m_parent->getID();
-    IQ::IqType iqType = context == FORequestMsgs ? IQ::Get : IQ::Set;
-    IQ iq( iqType, JID(), id );
-    iq.addExtension( new Offline( context, msgs ) );
-    m_parent->send( iq, this, context );
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "get" );
+    iq->addAttribute( "id", id );
+    Tag *o = new Tag( iq, "offline" );
+    o->addAttribute( "xmlns", XMLNS_OFFLINE );
+
+    if( msgs.size() == 0 )
+      new Tag( o, "fetch" );
+    else
+    {
+      StringList::const_iterator it = msgs.begin();
+      for( ; it != msgs.end(); ++it )
+      {
+        Tag *i = new Tag( o, "item" );
+        i->addAttribute( "action", "view" );
+        i->addAttribute( "node", (*it) );
+      }
+    }
+
+    m_parent->trackID( this, id, FORequestMsgs );
+    m_parent->send( iq );
   }
 
-  void FlexibleOffline::registerFlexibleOfflineHandler( FlexibleOfflineHandler* foh )
+  void FlexibleOffline::removeMessages( const StringList& msgs )
+  {
+    const std::string& id = m_parent->getID();
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "type", "get" );
+    iq->addAttribute( "id", id );
+    Tag *o = new Tag( iq, "offline" );
+    o->addAttribute( "xmlns", XMLNS_OFFLINE );
+
+    if( msgs.size() == 0 )
+      new Tag( o, "purge" );
+    else
+    {
+      StringList::const_iterator it = msgs.begin();
+      for( ; it != msgs.end(); ++it )
+      {
+        Tag *i = new Tag( o, "item" );
+        i->addAttribute( "action", "remove" );
+        i->addAttribute( "node", (*it) );
+      }
+    }
+
+    m_parent->trackID( this, id, FORemoveMsgs );
+    m_parent->send( iq );
+  }
+
+  void FlexibleOffline::registerFlexibleOfflineHandler( FlexibleOfflineHandler *foh )
   {
     m_flexibleOfflineHandler = foh;
   }
@@ -112,7 +107,7 @@ namespace gloox
     m_flexibleOfflineHandler = 0;
   }
 
-  void FlexibleOffline::handleDiscoInfo( const JID& /*from*/, const Disco::Info& info, int context )
+  void FlexibleOffline::handleDiscoInfoResult( Stanza *stanza, int context )
   {
     if( !m_flexibleOfflineHandler )
       return;
@@ -120,47 +115,59 @@ namespace gloox
     switch( context )
     {
       case FOCheckSupport:
-        m_flexibleOfflineHandler->handleFlexibleOfflineSupport( info.hasFeature( XMLNS_OFFLINE ) );
+        m_flexibleOfflineHandler->handleFlexibleOfflineSupport(
+            stanza->findChild( "query" )->hasChild( "feature", "var", XMLNS_OFFLINE ) );
         break;
 
       case FORequestNum:
         int num = -1;
-        if( info.form() && info.form()->hasField( "number_of_messages" ) )
-          num = atoi( info.form()->field( "number_of_messages" )->value().c_str() );
+        DataForm f( stanza->findChild( "query" )->findChild( "x" ) );
+        if( f.hasField( "number_of_messages" ) )
+          num = atoi( f.field( "number_of_messages" )->value().c_str() );
 
         m_flexibleOfflineHandler->handleFlexibleOfflineMsgNum( num );
         break;
     }
   }
 
-  void FlexibleOffline::handleDiscoItems( const JID& /*from*/, const Disco::Items& items, int context )
+  void FlexibleOffline::handleDiscoItemsResult( Stanza *stanza, int context )
   {
     if( context == FORequestHeaders && m_flexibleOfflineHandler )
     {
-      if( items.node() == XMLNS_OFFLINE )
-        m_flexibleOfflineHandler->handleFlexibleOfflineMessageHeaders( items.items() );
+      Tag *q = stanza->findChild( "query" );
+      if( q && q->hasAttribute( "xmlns", XMLNS_DISCO_ITEMS ) && q->hasAttribute( "node", XMLNS_OFFLINE ) )
+      {
+        StringMap m;
+        const Tag::TagList& l = q->children();
+        Tag::TagList::const_iterator it = l.begin();
+        for( ; it != l.end(); ++it )
+        {
+          m[(*it)->findAttribute( "node" )] = (*it)->findAttribute( "name" );
+        }
+        m_flexibleOfflineHandler->handleFlexibleOfflineMessageHeaders( m );
+      }
     }
   }
 
-  void FlexibleOffline::handleDiscoError( const JID& /*from*/, const Error* /*error*/, int /*context*/ )
+  void FlexibleOffline::handleDiscoError( Stanza * /*stanza*/, int /*context*/ )
   {
   }
 
-  void FlexibleOffline::handleIqID( const IQ& iq, int context )
+  bool FlexibleOffline::handleIqID( Stanza *stanza, int context )
   {
     if( !m_flexibleOfflineHandler )
-      return;
+      return false;
 
     switch( context )
     {
       case FORequestMsgs:
-        switch( iq.subtype() )
+        switch( stanza->subtype() )
         {
-          case IQ::Result:
+          case StanzaIqResult:
             m_flexibleOfflineHandler->handleFlexibleOfflineResult( FomrRequestSuccess );
             break;
-          case IQ::Error:
-            switch( iq.error()->error() )
+          case StanzaIqError:
+            switch( stanza->error() )
             {
               case StanzaErrorForbidden:
                 m_flexibleOfflineHandler->handleFlexibleOfflineResult( FomrForbidden );
@@ -178,13 +185,13 @@ namespace gloox
         }
         break;
       case FORemoveMsgs:
-        switch( iq.subtype() )
+        switch( stanza->subtype() )
         {
-          case IQ::Result:
+          case StanzaIqResult:
             m_flexibleOfflineHandler->handleFlexibleOfflineResult( FomrRemoveSuccess );
             break;
-          case IQ::Error:
-            switch( iq.error()->error() )
+          case StanzaIqError:
+            switch( stanza->error() )
             {
               case StanzaErrorForbidden:
                 m_flexibleOfflineHandler->handleFlexibleOfflineResult( FomrForbidden );
@@ -202,6 +209,13 @@ namespace gloox
         }
         break;
     }
+
+    return false;
+  }
+
+  bool FlexibleOffline::handleIq( Stanza * /*stanza*/ )
+  {
+    return false;
   }
 
 }

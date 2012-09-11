@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,15 +14,12 @@
 #ifndef SIHANDLER_H__
 #define SIHANDLER_H__
 
-#include "macros.h"
-#include "simanager.h"
-
 #include <string>
 
 namespace gloox
 {
 
-  class IQ;
+  class Stanza;
   class Tag;
   class JID;
 
@@ -48,20 +45,21 @@ namespace gloox
       /**
        * This function is called to handle results of outgoing SI requests, i.e. you requested a stream
        * (using SIManager::requestSI()) to send a file to a remote entity.
-       * @param from The remote SI receiver.
-       * @param to The SI requestor. Usually oneself. Used in component scenario.
+       * @param from The SI receiver.
        * @param sid The stream ID.
-       * @param si The request's complete SI.
+       * @param si The request's complete &lt;si/&gt; Tag.
+       * @param ptag The profile-specific child of the SI request. May be 0.
+       * @param fneg The &lt;feature/&gt; child of the SI request. May be 0 (but should not be).
        */
-      virtual void handleSIRequestResult( const JID& from, const JID& to, const std::string& sid,
-                                          const SIManager::SI& si ) = 0;
+      virtual void handleSIRequestResult( const JID& from, const std::string& sid,
+                                          Tag* si, Tag* ptag, Tag* fneg ) = 0;
 
       /**
        * This function is called to handle a request error or decline.
-       * @param iq The complete error stanza.
+       * @param stanza The complete error stanza.
        * @param sid The request's SID.
        */
-      virtual void handleSIRequestError( const IQ& iq, const std::string& sid ) = 0;
+      virtual void handleSIRequestError( Stanza* stanza, const std::string& sid ) = 0;
 
   };
 

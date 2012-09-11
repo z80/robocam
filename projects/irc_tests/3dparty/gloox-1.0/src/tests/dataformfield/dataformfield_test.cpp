@@ -5,7 +5,6 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 int main( int /*argc*/, char** /*argv*/ )
 {
@@ -16,7 +15,7 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "empty field";
   f = new DataFormField();
-  if( f->type() != DataFormField::TypeTextSingle )
+  if( f->type() != DataFormField::FieldTypeTextSingle )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
@@ -25,9 +24,9 @@ int main( int /*argc*/, char** /*argv*/ )
   f = 0;
 
   // -------
-  name = "TypeBoolean field";
-  f = new DataFormField( DataFormField::TypeBoolean );
-  if( f->type() != DataFormField::TypeBoolean )
+  name = "FieldTypeBoolean field";
+  f = new DataFormField( DataFormField::FieldTypeBoolean );
+  if( f->type() != DataFormField::FieldTypeBoolean )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
@@ -37,8 +36,8 @@ int main( int /*argc*/, char** /*argv*/ )
 
   // -------
   name = "2nd ctor";
-  f = new DataFormField( "fieldName", "fieldValue", "fieldLabel", DataFormField::TypeBoolean );
-  if( f->type() != DataFormField::TypeBoolean || f->name() != "fieldName" ||
+  f = new DataFormField( "fieldName", "fieldValue", "fieldLabel", DataFormField::FieldTypeBoolean );
+  if( f->type() != DataFormField::FieldTypeBoolean || f->name() != "fieldName" ||
       f->value() != "fieldValue" || f->label() != "fieldLabel" )
   {
     ++fail;
@@ -50,7 +49,7 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "parse 0";
   f = new DataFormField( 0 );
-  if( f->type() != DataFormField::TypeInvalid )
+  if( f->type() != DataFormField::FieldTypeInvalid )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
@@ -127,10 +126,10 @@ int main( int /*argc*/, char** /*argv*/ )
   // -------
   name = "set values";
   f = new DataFormField();
-  StringMultiMap opt;
-  opt.insert( std::make_pair( "lock", "1" ) );
-  opt.insert( std::make_pair( "stock", "1" ) );
-  opt.insert( std::make_pair( "smoking barrel", "2" ) );
+  StringMap opt;
+  opt["lock"] = "1";
+  opt["stock"] = "1";
+  opt["smoking barrel"] = "2";
   f->setOptions( opt );
   if( f->options() != opt )
   {
@@ -147,7 +146,7 @@ int main( int /*argc*/, char** /*argv*/ )
   new Tag( t, "value", "abc" );
   f = new DataFormField( t );
   Tag *ft = f->tag();
-  if( *ft != *t )
+  if( ft->xml() != t->xml() )
   {
     ++fail;
     printf( "test '%s' failed\n", name.c_str() );
@@ -241,8 +240,8 @@ int main( int /*argc*/, char** /*argv*/ )
   }
 
   name = "parse Tag 2.8";
-  TagList l = r->children();
-  TagList::const_iterator it = l.begin();
+  Tag::TagList l = r->children();
+  Tag::TagList::const_iterator it = l.begin();
   for( ; it != l.end(); ++it )
   {
     if( (*it)->name() == "option" && ( !(*it)->hasChildWithCData( "value", "lock" ) &&
@@ -273,7 +272,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   // -------
   name = "boolean duplicate <value/>";
-  f = new DataFormField( DataFormField::TypeBoolean );
+  f = new DataFormField( DataFormField::FieldTypeBoolean );
   f->setName( "name" );
   f->setValue( "1" );
   f->setLabel( "label" );
@@ -299,7 +298,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "DataFormField: OK\n" );
+    printf( "DataFormField: all tests passed\n" );
     return 0;
   }
   else

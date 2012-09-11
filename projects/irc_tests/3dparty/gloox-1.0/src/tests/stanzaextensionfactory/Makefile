@@ -34,8 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = i686-pc-linux-gnu
 host_triplet = i686-pc-linux-gnu
-noinst_PROGRAMS = stanzaextensionfactory_test$(EXEEXT) \
-	stanzaextensionfactory_perf$(EXEEXT)
+noinst_PROGRAMS = stanzaextensionfactory_test$(EXEEXT)
 subdir = src/tests/stanzaextensionfactory
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -44,26 +43,19 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_stanzaextensionfactory_perf_OBJECTS =  \
-	stanzaextensionfactory_perf.$(OBJEXT)
-stanzaextensionfactory_perf_OBJECTS =  \
-	$(am_stanzaextensionfactory_perf_OBJECTS)
-stanzaextensionfactory_perf_DEPENDENCIES = ../../tag.o ../../stanza.o \
-	../../jid.o ../../prep.o ../../stanzaextensionfactory.o \
-	../../gloox.o ../../util.o ../../sha.o ../../base64.o \
-	../../iq.o
 am_stanzaextensionfactory_test_OBJECTS =  \
 	stanzaextensionfactory_test.$(OBJEXT)
 stanzaextensionfactory_test_OBJECTS =  \
 	$(am_stanzaextensionfactory_test_OBJECTS)
 stanzaextensionfactory_test_DEPENDENCIES = ../../tag.o ../../stanza.o \
 	../../jid.o ../../prep.o ../../stanzaextensionfactory.o \
-	../../gloox.o ../../util.o ../../sha.o ../../base64.o \
-	../../iq.o
+	../../oob.o ../../vcardupdate.o ../../delayeddelivery.o \
+	../../xdelayeddelivery.o ../../gpgsigned.o \
+	../../gpgencrypted.o ../../gloox.o
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -77,10 +69,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(stanzaextensionfactory_perf_SOURCES) \
-	$(stanzaextensionfactory_test_SOURCES)
-DIST_SOURCES = $(stanzaextensionfactory_perf_SOURCES) \
-	$(stanzaextensionfactory_test_SOURCES)
+SOURCES = $(stanzaextensionfactory_test_SOURCES)
+DIST_SOURCES = $(stanzaextensionfactory_test_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -99,7 +89,7 @@ CPPFLAGS =  -pthread
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -ansi
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -117,18 +107,16 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2012-09-10
+ISODATE = 2012-09-11
 LD = /usr/bin/ld
-LDFLAGS =  -pthread
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lresolv   -lssl -lcrypto -lz
+LIBS = -lresolv -lresolv   -lidn -lgnutls   -lz
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/missing --run makeinfo
-MAYBE_EXAMPLES = examples
-MAYBE_TESTS = tests
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -139,10 +127,10 @@ OTOOL64 =
 PACKAGE = gloox
 PACKAGE_BUGREPORT = js@camaya.net
 PACKAGE_NAME = gloox
-PACKAGE_STRING = gloox 1.0
+PACKAGE_STRING = gloox 0.9.9.12
 PACKAGE_TARNAME = gloox
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 0.9.9.12
 PATH_SEPARATOR = :
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -pthread
@@ -152,7 +140,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.0
+VERSION = 0.9.9.12
 abs_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/tests/stanzaextensionfactory
 abs_srcdir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/tests/stanzaextensionfactory
 abs_top_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
@@ -207,19 +195,14 @@ target_alias =
 top_build_prefix = ../../../
 top_builddir = ../../..
 top_srcdir = ../../..
-AM_CPPFLAGS = -g3 -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual
+AM_CPPFLAGS = -g3 -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual -ansi
 stanzaextensionfactory_test_SOURCES = stanzaextensionfactory_test.cpp
-stanzaextensionfactory_test_LDADD = ../../tag.o ../../stanza.o ../../jid.o ../../prep.o \
-                                    ../../stanzaextensionfactory.o ../../gloox.o ../../util.o ../../sha.o \
-                                    ../../base64.o ../../iq.o
+stanzaextensionfactory_test_LDADD = ../../tag.o ../../stanza.o \
+ 			../../jid.o ../../prep.o ../../stanzaextensionfactory.o ../../oob.o \
+ 			../../vcardupdate.o ../../delayeddelivery.o ../../xdelayeddelivery.o \
+ 			../../gpgsigned.o ../../gpgencrypted.o ../../gloox.o
 
 stanzaextensionfactory_test_CFLAGS = $(CPPFLAGS)
-stanzaextensionfactory_perf_SOURCES = stanzaextensionfactory_perf.cpp
-stanzaextensionfactory_perf_LDADD = ../../tag.o ../../stanza.o ../../jid.o ../../prep.o \
-                                    ../../stanzaextensionfactory.o ../../gloox.o ../../util.o ../../sha.o \
-                                    ../../base64.o ../../iq.o
-
-stanzaextensionfactory_perf_CFLAGS = $(CPPFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -263,9 +246,6 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-stanzaextensionfactory_perf$(EXEEXT): $(stanzaextensionfactory_perf_OBJECTS) $(stanzaextensionfactory_perf_DEPENDENCIES) 
-	@rm -f stanzaextensionfactory_perf$(EXEEXT)
-	$(CXXLINK) $(stanzaextensionfactory_perf_OBJECTS) $(stanzaextensionfactory_perf_LDADD) $(LIBS)
 stanzaextensionfactory_test$(EXEEXT): $(stanzaextensionfactory_test_OBJECTS) $(stanzaextensionfactory_test_DEPENDENCIES) 
 	@rm -f stanzaextensionfactory_test$(EXEEXT)
 	$(CXXLINK) $(stanzaextensionfactory_test_OBJECTS) $(stanzaextensionfactory_test_LDADD) $(LIBS)
@@ -276,7 +256,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/stanzaextensionfactory_perf.Po
 include ./$(DEPDIR)/stanzaextensionfactory_test.Po
 
 .cpp.o:

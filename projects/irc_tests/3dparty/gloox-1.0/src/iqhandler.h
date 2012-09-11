@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,7 @@
 #ifndef IQHANDLER_H__
 #define IQHANDLER_H__
 
-#include "iq.h"
+#include "stanza.h"
 
 namespace gloox
 {
@@ -25,7 +25,6 @@ namespace gloox
    *
    * Derived classes can be registered as IqHandlers with the Client.
    * Upon an incoming IQ packet @ref handleIq() will be called.
-   *
    * @author Jakob Schroeter <js@camaya.net>
    */
   class GLOOX_API IqHandler
@@ -38,12 +37,11 @@ namespace gloox
 
       /**
        * Reimplement this function if you want to be notified about incoming IQs.
-       * @param iq The complete IQ stanza.
+       * @param stanza The complete Stanza.
        * @return Indicates whether a request of type 'get' or 'set' has been handled. This includes
        * the obligatory 'result' answer. If you return @b false, a 'error' will be sent.
-       * @since 1.0
        */
-      virtual bool handleIq( const IQ& iq ) = 0;
+      virtual bool handleIq( Stanza *stanza ) = 0;
 
       /**
        * Reimplement this function if you want to be notified about
@@ -52,13 +50,12 @@ namespace gloox
        * This is usually useful for IDs that generate a positive reply, i.e.
        * &lt;iq type='result' id='reg'/&gt; where a namespace filter wouldn't
        * work.
-       * @param iq The complete IQ stanza.
+       * @param stanza The complete Stanza.
        * @param context A value to restore context, stored with ClientBase::trackID().
-       * @note Only IQ stanzas of type 'result' or 'error' can arrive here.
-       * @since 1.0
+       * @return Indicates whether a request of type 'get' or 'set' has been handled. This includes
+       * the obligatory 'result' answer. If you return @b false, a 'error' will be sent.
        */
-      virtual void handleIqID( const IQ& iq, int context ) = 0;
-
+      virtual bool handleIqID( Stanza *stanza, int context ) = 0;
   };
 
 }

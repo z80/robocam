@@ -4,7 +4,7 @@
 
 SUBDIRS = src
 
-EXTRA_DIST = LICENSE Doxyfile gloox.pc.in gloox.cbp gloox.dsp gloox.vcproj README README.win32 README.wince README.symbian INSTALL config.h.win config.h.symbian UPGRADING bld.inf gloox.mmp
+EXTRA_DIST = LICENSE Doxyfile gloox.pc.in gloox.cbp gloox.dsp README README.win32 README.wince INSTALL config.h.win
 
 pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA = gloox.pc
@@ -24,5 +24,5 @@ leakcheck: leaktest
 leaktest:
 	make -C src leaktest
 
-includetest:
-	make -C src includetest
+examples:
+	make -C src examples

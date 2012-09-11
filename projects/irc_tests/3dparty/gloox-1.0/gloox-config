@@ -4,7 +4,7 @@
 
 prefix="/usr/local"
 exec_prefix="/usr/local/bin"
-version="1.0"
+version="0.9.9.12"
 
 include_dir="/usr/local/include"
 lib_dir="/usr/local/lib"
@@ -70,7 +70,7 @@ else
   libs=""
 fi
 
-libs="$libs -lresolv -lresolv   -lssl -lcrypto -lz -lgloox"
+libs="$libs -lresolv -lresolv   -lidn -lgnutls   -lz"
 
 if test "$echo_cflags" = "yes"; then
   echo $cflags

@@ -1,5 +1,6 @@
 
 #include "xmpp_peer.h"
+#include "disco.h"
 
 XmppPeer::XmppPeer()
     : m_session( 0 ), 
@@ -255,12 +256,17 @@ void XmppPeer::run()
 		gloox::JID jid( out.str() );
 		m_client = new gloox::Client( jid, m_password );
 		m_client->setServer( m_host );
+	    m_client->disco()->setVersion( "messageTest", gloox::GLOOX_VERSION, "Linux" );
+	    m_client->disco()->setIdentity( "client", "bot" );
+	    m_client->disco()->addFeature( gloox::XMLNS_CHAT_STATES );
 	}
 	else
+	{
 		m_client = new gloox::Client( m_host );
+		m_client->disableRoster();
+	}
 	if ( m_port > 0 )
 		m_client->setPort( m_port );
-	//m_client->disableRoster();
 	m_client->registerConnectionListener( this );
 	m_client->registerMessageSessionHandler( this, 0 );
 	if ( m_doRegister )

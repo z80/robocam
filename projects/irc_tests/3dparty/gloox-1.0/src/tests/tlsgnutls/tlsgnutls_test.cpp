@@ -7,9 +7,14 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
-#include "../../config.h"
+#ifdef WIN32
+# include "../../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #ifdef HAVE_GNUTLS
 
@@ -44,9 +49,7 @@ GnuTLSTest::GnuTLSTest()
    m_serverHandshake( false ), m_serverHandshakeResult( false )
 {
   m_client = new GnuTLSClientAnon( this );
-  m_client->init();
   m_server = new GnuTLSServerAnon( this );
-  m_server->init();
 }
 
 GnuTLSTest::~GnuTLSTest()
@@ -165,13 +168,13 @@ void GnuTLSTest::printfCert( CertInfo &certinfo )
 
 std::string GnuTLSTest::send( const std::string& txt )
 {
-//   printf( "sending %d\n", txt.length() );
+  printf( "sending %d\n", txt.length() );
 
   m_client->encrypt( txt );
   while( m_clientDecrypted.empty() )
     loop();
 
-//   printf( "recv'ed %d\n", m_clientDecrypted.length() );
+  printf( "recv'ed %d\n", m_clientDecrypted.length() );
   const std::string t = m_clientDecrypted;
   m_clientDecrypted = "";
   return t;
@@ -247,7 +250,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "TLSGnuTLS: OK\n" );
+    printf( "TLSGnuTLS: all tests passed\n" );
     return 0;
   }
   else

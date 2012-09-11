@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -50,39 +50,11 @@ namespace gloox
 
       /**
        * Use this function to log a message with given LogLevel and LogIdentifier.
-       * dbg(), warn(), and err() are alternative shortcuts.
        * @param level The severity of the logged event.
        * @param area The part of the program/library the message comes from.
        * @param message The actual log message.
        */
       void log( LogLevel level, LogArea area, const std::string& message ) const;
-
-      /**
-       * Use this function to log a debug message with given LogIdentifier.
-       * This is a convenience wrapper around log().
-       * @param area The part of the program/library the message comes from.
-       * @param message The actual log message.
-       */
-      void dbg( LogArea area, const std::string& message ) const
-        { log( LogLevelDebug, area, message ); }
-
-      /**
-       * Use this function to log a warning message with given LogIdentifier.
-       * This is a convenience wrapper around log().
-       * @param area The part of the program/library the message comes from.
-       * @param message The actual log message.
-       */
-      void warn( LogArea area, const std::string& message ) const
-        { log( LogLevelWarning, area, message ); }
-
-      /**
-       * Use this function to log a error message with given LogIdentifier.
-       * This is a convenience wrapper around log().
-       * @param area The part of the program/library the message comes from.
-       * @param message The actual log message.
-       */
-      void err( LogArea area, const std::string& message ) const
-        { log( LogLevelError, area, message ); }
 
       /**
        * Registers @c lh as object that receives all debug messages of the specified type.
@@ -91,13 +63,13 @@ namespace gloox
        * @param areas Bit-wise ORed LogAreas the LogHandler wants to be informed about.
        * @param lh The object to receive exchanged data.
        */
-      void registerLogHandler( LogLevel level, int areas, LogHandler* lh );
+      void registerLogHandler( LogLevel level, int areas, LogHandler *lh );
 
       /**
        * Removes the given object from the list of log handlers.
        * @param lh The object to remove from the list.
        */
-      void removeLogHandler( LogHandler* lh );
+      void removeLogHandler( LogHandler *lh );
 
     private:
       struct LogInfo
@@ -106,10 +78,12 @@ namespace gloox
         int areas;
       };
 
-      LogSink( const LogSink& /*copy*/ );
+      LogSink( const LogSink& /*copy*/ ) {}
 
       typedef std::map<LogHandler*, LogInfo> LogHandlerMap;
       LogHandlerMap m_logHandlers;
+
+      int m_fileFilter;
 
   };
 

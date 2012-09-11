@@ -41,7 +41,7 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
@@ -130,8 +130,6 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
-MAYBE_EXAMPLES = @MAYBE_EXAMPLES@
-MAYBE_TESTS = @MAYBE_TESTS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -210,34 +208,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = adhoc adhoccommand adhoccommandnote amprule amp base64 \
-          capabilities chatstatefilter client clientbase connectionbosh \
-          dataform dataformfield \
-          dataformreported dataformitem delayeddelivery discoinfo discoitems disco \
-          error \
-          featureneg flexoffline flexofflineoffline \
-          gpgencrypted gpgsigned \
-          inbandbytestreamibb inbandbytestream iq \
-          jid \
-          lastactivity lastactivityquery \
-          md5 message messageeventfilter \
-          mucroommuc mucroommucadmin mucroommucowner mucroommucuser \
-          nickname nonsaslauthquery nonsaslauth \
-          oob \
-          parser prep presence privacymanager privacymanagerquery \
-          privatexml \
-          pubsubmanagerpubsub pubsubmanager pubsubevent\
-          receipt \
-          registrationquery registration \
-          rostermanagerquery rostermanager \
-          searchquery search \
-          sha shim \
-          simanager simanagersi stanzaextensionfactory subscription \
-          tag tlsgnutls \
-          uniquemucroomunique \
-          vcard vcardupdate \
-          xpath \
-          zlib util
+SUBDIRS = base64 chatstatefilter client clientbase dataform dataformfield delayeddelivery gpgencrypted \
+	  gpgsigned jid md5 messageeventfilter oob parser prep search sha simanager stanza \
+	  stanzaextensionfactory tag tlsgnutls vcardupdate xdelayeddelivery xpath zlib
 
 all: all-recursive
 
@@ -590,7 +563,7 @@ check: test
 
 test: ${SUBDIRS}
 	@for i in $?; do \
-	  ${MAKE} -C $$i all || exit; \
+	  ${MAKE} -C $$i all; \
 	done;
 	@for i in $?; do \
 	  $$i/$${i}_test;    \
@@ -600,7 +573,7 @@ leaktest: leakcheck
 
 leakcheck: ${SUBDIRS}
 	@for i in $?; do \
-	  ${MAKE} -C $$i all || exit; \
+	  ${MAKE} -C $$i all; \
 	done;
 	@for i in $?; do \
 	  valgrind -q --leak-check=full --show-reachable=yes $$i/$${i}_test;    \

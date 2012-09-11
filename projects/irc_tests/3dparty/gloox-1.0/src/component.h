@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -57,13 +57,8 @@ namespace gloox
       void disconnect() { ClientBase::disconnect( ConnUserDisconnected ); }
 
     protected:
-      // reimplemented from ClientBase
       virtual void handleStartNode();
-
-      // reimplemented from ClientBase
-      virtual bool handleNormalNode( Tag* tag );
-
-      // reimplemented from ClientBase
+      virtual bool handleNormalNode( Stanza *stanza );
       virtual bool checkStreamVersion( const std::string& /*version*/ ) { return true; }
 
     private:

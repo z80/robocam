@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -22,9 +22,9 @@
 namespace gloox
 {
 
+  class DataForm;
   class OOB;
   class JID;
-  class DataForm;
 
   /**
    * Possible results of a XEP-0077 operation.
@@ -65,7 +65,7 @@ namespace gloox
   };
 
   /**
-   * @brief A virtual interface that receives events from an Registration object.
+   * @brief A virtual interface that receives events from an @ref Registration object.
    *
    * Derived classes can be registered as RegistrationHandlers with an
    * Registration object. Incoming results for operations initiated through
@@ -111,7 +111,7 @@ namespace gloox
        * @param from The server or service the data form came from.
        * @param form The DataForm containing registration information.
        */
-      virtual void handleDataForm( const JID& from, const DataForm& form ) = 0;
+      virtual void handleDataForm( const JID& from, const DataForm &form ) = 0;
 
       /**
        * This function is called if the server does not offer in-band registration

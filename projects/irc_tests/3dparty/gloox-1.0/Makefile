@@ -37,7 +37,7 @@ build_triplet = i686-pc-linux-gnu
 host_triplet = i686-pc-linux-gnu
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/config.h.unix.in \
+	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/gloox-config.in $(srcdir)/gloox.pc.in \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
 	TODO config.guess config.sub depcomp install-sh ltmain.sh \
@@ -50,7 +50,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = config.h.unix
+CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = gloox.pc gloox-config
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -145,7 +145,7 @@ CPPFLAGS =  -pthread
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -ansi
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -163,18 +163,16 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2012-09-10
+ISODATE = 2012-09-11
 LD = /usr/bin/ld
-LDFLAGS =  -pthread
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lresolv   -lssl -lcrypto -lz
+LIBS = -lresolv -lresolv   -lidn -lgnutls   -lz
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/missing --run makeinfo
-MAYBE_EXAMPLES = examples
-MAYBE_TESTS = tests
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -185,10 +183,10 @@ OTOOL64 =
 PACKAGE = gloox
 PACKAGE_BUGREPORT = js@camaya.net
 PACKAGE_NAME = gloox
-PACKAGE_STRING = gloox 1.0
+PACKAGE_STRING = gloox 0.9.9.12
 PACKAGE_TARNAME = gloox
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 0.9.9.12
 PATH_SEPARATOR = :
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -pthread
@@ -198,7 +196,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.0
+VERSION = 0.9.9.12
 abs_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
 abs_srcdir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
 abs_top_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
@@ -254,11 +252,11 @@ top_build_prefix =
 top_builddir = .
 top_srcdir = .
 SUBDIRS = src
-EXTRA_DIST = LICENSE Doxyfile gloox.pc.in gloox.cbp gloox.dsp gloox.vcproj README README.win32 README.wince README.symbian INSTALL config.h.win config.h.symbian UPGRADING bld.inf gloox.mmp
+EXTRA_DIST = LICENSE Doxyfile gloox.pc.in gloox.cbp gloox.dsp README README.win32 README.wince INSTALL config.h.win
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gloox.pc
 bin_SCRIPTS = gloox-config
-all: config.h.unix
+all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
@@ -297,22 +295,22 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 
-config.h.unix: stamp-h1
+config.h: stamp-h1
 	@if test ! -f $@; then \
 	  rm -f stamp-h1; \
 	  $(MAKE) $(AM_MAKEFLAGS) stamp-h1; \
 	else :; fi
 
-stamp-h1: $(srcdir)/config.h.unix.in $(top_builddir)/config.status
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status config.h.unix
-$(srcdir)/config.h.unix.in:  $(am__configure_deps) 
+	cd $(top_builddir) && $(SHELL) ./config.status config.h
+$(srcdir)/config.h.in:  $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
 
 distclean-hdr:
-	-rm -f config.h.unix stamp-h1
+	-rm -f config.h stamp-h1
 gloox.pc: $(top_builddir)/config.status $(srcdir)/gloox.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 gloox-config: $(top_builddir)/config.status $(srcdir)/gloox-config.in
@@ -461,7 +459,7 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	set x; \
 	here=`pwd`; \
@@ -478,7 +476,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES)
 	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
 	  fi; \
 	done; \
-	list='$(SOURCES) $(HEADERS) config.h.unix.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -496,9 +494,9 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES)
 	  fi; \
 	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES) config.h.unix.in $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
-	list='$(SOURCES) $(HEADERS) config.h.unix.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -692,7 +690,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(SCRIPTS) $(DATA) config.h.unix
+all-am: Makefile $(SCRIPTS) $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgconfigdir)"; do \
@@ -828,8 +826,8 @@ leakcheck: leaktest
 leaktest:
 	make -C src leaktest
 
-includetest:
-	make -C src includetest
+examples:
+	make -C src examples
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

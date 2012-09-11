@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,7 +14,7 @@
 #ifndef SUBSCRIPTIONHANDLER_H__
 #define SUBSCRIPTIONHANDLER_H__
 
-#include "subscription.h"
+#include "stanza.h"
 
 namespace gloox
 {
@@ -37,11 +37,9 @@ namespace gloox
       /**
        * Reimplement this function if you want to be notified about incoming
        * subscriptions/subscription requests.
-       * @param subscription The complete Subscription stanza.
-       * @since 1.0
+       * @param stanza The complete Stanza.
        */
-      virtual void handleSubscription( const Subscription& subscription ) = 0;
-
+      virtual void handleSubscription( Stanza *stanza ) = 0;
   };
 
 }

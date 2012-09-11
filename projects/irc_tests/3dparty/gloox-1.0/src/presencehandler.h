@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,7 @@
 #ifndef PRESENCEHANDLER_H__
 #define PRESENCEHANDLER_H__
 
-#include "presence.h"
+#include "stanza.h"
 
 namespace gloox
 {
@@ -38,11 +38,9 @@ namespace gloox
       /**
        * Reimplement this function if you want to be updated on
        * incoming presence notifications.
-       * @param presence The complete stanza.
-       * @since 1.0
+       * @param stanza The complete stanza.
        */
-      virtual void handlePresence( const Presence& presence ) = 0;
-
+      virtual void handlePresence( Stanza *stanza ) = 0;
   };
 
 }

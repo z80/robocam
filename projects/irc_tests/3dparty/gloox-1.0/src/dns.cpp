@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -11,19 +11,25 @@
 */
 
 
-#include "config.h"
+#ifdef _WIN32
+# include "../config.h.win"
+#elif defined( _WIN32_WCE )
+# include "../config.h.win"
+#else
+# include "config.h"
+#endif
 
 #include "gloox.h"
 #include "dns.h"
-#include "util.h"
 
 #ifndef _WIN32_WCE
 # include <sys/types.h>
+# include <sstream>
 #endif
 
 #include <stdio.h>
 
-#if ( !defined( _WIN32 ) && !defined( _WIN32_WCE ) ) || defined( __SYMBIAN32__ )
+#if !defined( _WIN32 ) && !defined( _WIN32_WCE )
 # include <netinet/in.h>
 # include <arpa/nameser.h>
 # include <resolv.h>
@@ -32,10 +38,9 @@
 # include <sys/socket.h>
 # include <sys/un.h>
 # include <unistd.h>
-# include <errno.h>
 #endif
 
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
+#ifdef _WIN32
 # include <winsock.h>
 #elif defined( _WIN32_WCE )
 # include <winsock2.h>
@@ -58,10 +63,6 @@
 // mingw
 #ifndef DNS_TYPE_SRV
 # define DNS_TYPE_SRV 33
-#endif
-
-#ifndef NS_CMPRSFLGS
-# define NS_CMPRSFLGS 0xc0
 #endif
 
 #ifndef C_IN
@@ -111,15 +112,15 @@ namespace gloox
       error = true;
 
     int cnt;
-    for( cnt = ntohs( hdr->qdcount ); cnt > 0; --cnt )
+    for( cnt = ntohs( hdr->qdcount ); cnt>0; --cnt )
     {
       int strlen = dn_skipname( here, srvbuf.buf + srvbuf.len );
       here += strlen + NS_QFIXEDSZ;
     }
 
-    unsigned char* srv[NS_PACKETSZ];
+    unsigned char *srv[NS_PACKETSZ];
     int srvnum = 0;
-    for( cnt = ntohs( hdr->ancount ); cnt > 0; --cnt )
+    for( cnt = ntohs( hdr->ancount ); cnt>0; --cnt )
     {
       int strlen = dn_skipname( here, srvbuf.buf + srvbuf.len );
       here += strlen;
@@ -136,22 +137,17 @@ namespace gloox
     // (q)sort here
 
     HostMap servers;
-    for( cnt = 0; cnt < srvnum; ++cnt )
+    for( cnt=0; cnt<srvnum; ++cnt )
     {
-      char srvname[NS_MAXDNAME];
-      srvname[0] = '\0';
+      name srvname;
 
-      if( dn_expand( srvbuf.buf, srvbuf.buf + NS_PACKETSZ,
-                     srv[cnt] + SRV_SERVER, srvname, NS_MAXDNAME ) < 0
-          || !(*srvname) )
-        continue;
+      if( ns_name_ntop( srv[cnt] + SRV_SERVER, (char*)srvname, NS_MAXDNAME ) < 0 )
+        printf( "handle this error!\n" );
 
       unsigned char* c = srv[cnt] + SRV_PORT;
+
       servers.insert( std::make_pair( (char*)srvname, ntohs( c[1] << 8 | c[0] ) ) );
     }
-
-    if( !servers.size() )
-      return defaultHostMap( domain, logInstance );
 
     return servers;
   }
@@ -164,11 +160,10 @@ namespace gloox
     bool error = false;
 
     DNS::HostMap servers;
-    DNS_RECORD* pRecord = NULL;
-    DNS_STATUS status = DnsQuery_UTF8( dname.c_str(), DNS_TYPE_SRV, DNS_QUERY_STANDARD, NULL, &pRecord, NULL );
-    if( status == ERROR_SUCCESS )
+    DNS_RECORD *pRecord;
+    if( DnsQuery( dname.c_str(), DNS_TYPE_SRV, DNS_QUERY_STANDARD, NULL, &pRecord, NULL ) == ERROR_SUCCESS )
     {
-      DNS_RECORD* pRec = pRecord;
+      DNS_RECORD *pRec = pRecord;
       do
       {
         if( pRec->wType == DNS_TYPE_SRV )
@@ -181,10 +176,7 @@ namespace gloox
       DnsRecordListFree( pRecord, DnsFreeRecordList );
     }
     else
-    {
-      logInstance.warn( LogAreaClassDns, "DnsQuery_UTF8() failed: " + util::int2string( status ) );
       error = true;
-    }
 
     if( error || !servers.size() )
     {
@@ -198,8 +190,8 @@ namespace gloox
   DNS::HostMap DNS::resolve( const std::string& /*service*/, const std::string& /*proto*/,
                              const std::string& domain, const LogSink& logInstance )
   {
-    logInstance.warn( LogAreaClassDns, "Notice: gloox does not support SRV "
-                        "records on this platform. Using A records instead." );
+    logInstance.log( LogLevelWarning, LogAreaClassDns,
+                    "notice: gloox does not support SRV records on this platform. Using A records instead." );
     return defaultHostMap( domain, logInstance );
   }
 #endif
@@ -208,8 +200,8 @@ namespace gloox
   {
     HostMap server;
 
-    logInstance.warn( LogAreaClassDns, "Notice: no SRV record found for "
-                                          + domain + ", using default port." );
+    logInstance.log( LogLevelWarning, LogAreaClassDns, "notice: no SRV record found for " + domain
+                                                       + ", using default port." );
 
     if( !domain.empty() )
       server[domain] = XMPP_PORT;
@@ -217,103 +209,9 @@ namespace gloox
     return server;
   }
 
-#ifdef HAVE_GETADDRINFO
-  void DNS::resolve( struct addrinfo** res, const std::string& service, const std::string& proto,
-                     const std::string& domain, const LogSink& logInstance )
+  int DNS::connect( const std::string& domain, const LogSink& logInstance )
   {
-    logInstance.dbg( LogAreaClassDns, "Resolving: _" +  service + "._" + proto + "." + domain );
-    struct addrinfo hints;
-    if( proto == "tcp" )
-      hints.ai_socktype = SOCK_STREAM;
-    else if( proto == "udp" )
-      hints.ai_socktype = SOCK_DGRAM;
-    else
-    {
-      logInstance.err( LogAreaClassDns, "Unknown/Invalid protocol: " + proto );
-    }
-    memset( &hints, '\0', sizeof( hints ) );
-    hints.ai_flags = AI_ADDRCONFIG | AI_CANONNAME;
-    hints.ai_socktype = SOCK_STREAM;
-    int e = getaddrinfo( domain.c_str(), service.c_str(), &hints, res );
-    if( e )
-      logInstance.err( LogAreaClassDns, "getaddrinfo() failed" );
-  }
-
-  int DNS::connect( const std::string& host, const LogSink& logInstance )
-  {
-    struct addrinfo* results = 0;
-
-    resolve( &results, host, logInstance );
-    if( !results )
-    {
-      logInstance.err( LogAreaClassDns, "host not found: " + host );
-      return -ConnDnsError;
-    }
-
-    struct addrinfo* runp = results;
-    while( runp )
-    {
-      int fd = DNS::connect( runp, logInstance );
-      if( fd >= 0 )
-        return fd;
-
-      runp = runp->ai_next;
-    }
-
-    freeaddrinfo( results );
-
-    return -ConnConnectionRefused;
-  }
-
-  int DNS::connect( struct addrinfo* res, const LogSink& logInstance )
-  {
-    if( !res )
-      return -1;
-
-    int fd = getSocket( res->ai_family, res->ai_socktype, res->ai_protocol, logInstance );
-    if( fd < 0 )
-      return fd;
-
-    if( ::connect( fd, res->ai_addr, res->ai_addrlen ) == 0 )
-    {
-      char ip[NI_MAXHOST];
-      char port[NI_MAXSERV];
-
-      if( getnameinfo( res->ai_addr, sizeof( sockaddr ),
-                       ip, sizeof( ip ),
-                       port, sizeof( port ),
-                       NI_NUMERICHOST | NI_NUMERICSERV ) )
-      {
-        //FIXME do we need to handle this? How? Can it actually happen at all?
-//         printf( "could not get numeric hostname");
-      }
-
-      if( res->ai_canonname )
-        logInstance.dbg( LogAreaClassDns, "Connecting to " + std::string( res->ai_canonname )
-                                          + " (" + ip + "), port " + port );
-      else
-        logInstance.dbg( LogAreaClassDns, "Connecting to " + ip + ":" + port );
-
-      return fd;
-    }
-
-    std::string message = "connect() failed. "
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-        "WSAGetLastError: " + util::int2string( ::WSAGetLastError() );
-#else
-        "errno: " + util::int2string( errno );
-#endif
-    logInstance.dbg( LogAreaClassDns, message );
-
-    closeSocket( fd, logInstance );
-    return -ConnConnectionRefused;
-  }
-
-#else
-
-  int DNS::connect( const std::string& host, const LogSink& logInstance )
-  {
-    HostMap hosts = resolve( host, logInstance );
+    HostMap hosts = resolve( domain, logInstance );
     if( hosts.size() == 0 )
       return -ConnDnsError;
 
@@ -327,99 +225,57 @@ namespace gloox
 
     return -ConnConnectionRefused;
   }
-#endif
 
-  int DNS::getSocket( const LogSink& logInstance )
+  int DNS::getSocket()
   {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
+#ifdef _WIN32
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 1, 1 ), &wsaData ) != 0 )
+      return -ConnDnsError;
+#endif
+
+    struct protoent* prot;
+    if( ( prot = getprotobyname( "tcp" ) ) == 0 )
     {
-      logInstance.dbg( LogAreaClassDns, "WSAStartup() failed. WSAGetLastError: "
-                                        + util::int2string( ::WSAGetLastError() ) );
+      cleanup();
       return -ConnDnsError;
     }
-#endif
 
-    int protocol = IPPROTO_TCP;
-    struct protoent* prot;
-    if( ( prot = getprotobyname( "tcp" ) ) != 0 )
-    {
-      protocol = prot->p_proto;
-    }
-    else
-    {
-      std::string message = "getprotobyname( \"tcp\" ) failed. "
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-          "WSAGetLastError: " + util::int2string( ::WSAGetLastError() )
-#else
-          "errno: " + util::int2string( errno );
-#endif
-          + ". Falling back to IPPROTO_TCP: " + util::int2string( IPPROTO_TCP );
-      logInstance.dbg( LogAreaClassDns, message );
-
-      // Do not return an error. We'll fall back to IPPROTO_TCP.
-    }
-
-    return getSocket( PF_INET, SOCK_STREAM, protocol, logInstance );
-  }
-
-  int DNS::getSocket( int af, int socktype, int proto, const LogSink& logInstance )
-  {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-    SOCKET fd;
-#else
     int fd;
-#endif
-    if( ( fd = socket( af, socktype, proto ) ) == INVALID_SOCKET )
+    if( ( fd = socket( PF_INET, SOCK_STREAM, prot->p_proto ) ) == INVALID_SOCKET )
     {
-      std::string message = "getSocket( "
-          + util::int2string( af ) + ", "
-          + util::int2string( socktype ) + ", "
-          + util::int2string( proto )
-          + " ) failed. "
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-          "WSAGetLastError: " + util::int2string( ::WSAGetLastError() );
-#else
-          "errno: " + util::int2string( errno );
-#endif
-      logInstance.dbg( LogAreaClassDns, message );
-
-      cleanup( logInstance );
+      cleanup();
       return -ConnConnectionRefused;
     }
 
 #ifdef HAVE_SETSOCKOPT
-    int timeout = 5000;
-    setsockopt( fd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof( timeout ) );
-    setsockopt( fd, SOL_SOCKET, SO_REUSEADDR, (char*)&timeout, sizeof( timeout ) );
+    int val = 1;
+    setsockopt( fd, SOL_SOCKET, SO_REUSEADDR, (char*)&val, sizeof( val ) );
 #endif
 
-    return (int)fd;
+    return fd;
   }
 
-  int DNS::connect( const std::string& host, int port, const LogSink& logInstance )
+  int DNS::connect( const std::string& domain, unsigned short port, const LogSink& logInstance )
   {
-    int fd = getSocket( logInstance );
+    int fd = getSocket();
     if( fd < 0 )
       return fd;
 
-    struct hostent* h;
-    if( ( h = gethostbyname( host.c_str() ) ) == 0 )
+    struct hostent *h;
+    if( ( h = gethostbyname( domain.c_str() ) ) == 0 )
     {
-      logInstance.dbg( LogAreaClassDns, "gethostbyname() failed for " + host + "." );
-      cleanup( logInstance );
+      cleanup();
       return -ConnDnsError;
     }
 
     struct sockaddr_in target;
     target.sin_family = AF_INET;
-    target.sin_port = htons( static_cast<unsigned short int>( port ) );
+    target.sin_port = htons( port );
 
     if( h->h_length != sizeof( struct in_addr ) )
     {
-      logInstance.dbg( LogAreaClassDns, "gethostbyname() returned unexpected structure." );
-      cleanup( logInstance );
+      cleanup();
       return -ConnDnsError;
     }
     else
@@ -427,60 +283,44 @@ namespace gloox
       memcpy( &target.sin_addr, h->h_addr, sizeof( struct in_addr ) );
     }
 
-    logInstance.dbg( LogAreaClassDns, "Connecting to " + host
-        + " (" + inet_ntoa( target.sin_addr ) + ":" + util::int2string( port ) + ")" );
+#ifndef _WIN32_WCE
+    std::ostringstream oss;
+#endif
 
     memset( target.sin_zero, '\0', 8 );
     if( ::connect( fd, (struct sockaddr *)&target, sizeof( struct sockaddr ) ) == 0 )
     {
-      logInstance.dbg( LogAreaClassDns, "Connected to " + host + " ("
-          + inet_ntoa( target.sin_addr ) + ":" + util::int2string( port ) + ")" );
+#ifndef _WIN32_WCE
+      oss << "connecting to " << domain.c_str()
+          << " (" << inet_ntoa( target.sin_addr ) << ":" << port << ")";
+      logInstance.log( LogLevelDebug, LogAreaClassDns, oss.str() );
+#endif
       return fd;
     }
 
-    std::string message = "Connection to " + host + " ("
-        + inet_ntoa( target.sin_addr ) + ":" + util::int2string( port ) + ") failed. "
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-        "WSAGetLastError: " + util::int2string( ::WSAGetLastError() );
-#else
-        "errno: " + util::int2string( errno );
+#ifndef _WIN32_WCE
+    oss << "connection to " << domain.c_str()
+         << " (" << inet_ntoa( target.sin_addr ) << ":" << port << ") failed";
+    logInstance.log( LogLevelDebug, LogAreaClassDns, oss.str() );
 #endif
-    logInstance.dbg( LogAreaClassDns, message );
 
-    closeSocket( fd, logInstance );
+    closeSocket( fd );
     return -ConnConnectionRefused;
   }
 
-  void DNS::closeSocket( int fd, const LogSink& logInstance )
+  void DNS::closeSocket( int fd )
   {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-    int result = closesocket( fd );
+#ifndef _WIN32
+    close( fd );
 #else
-    int result = close( fd );
+    closesocket( fd );
 #endif
-
-    if( result != 0 )
-    {
-      std::string message = "closeSocket() failed. "
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-          "WSAGetLastError: " + util::int2string( ::WSAGetLastError() );
-#else
-          "errno: " + util::int2string( errno );
-#endif
-      logInstance.dbg( LogAreaClassDns, message );
-    }
   }
 
-  void DNS::cleanup( const LogSink& logInstance )
+  void DNS::cleanup()
   {
-#if defined( _WIN32 ) && !defined( __SYMBIAN32__ )
-    if( WSACleanup() != 0 )
-    {
-      logInstance.dbg( LogAreaClassDns, "WSACleanup() failed. WSAGetLastError: "
-          + util::int2string( ::WSAGetLastError() ) );
-    }
-#else
-    (void)logInstance;
+#ifdef _WIN32
+    WSACleanup();
 #endif
   }
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -23,17 +23,21 @@
 # include <winsock.h>
 #endif
 
-#if ( !defined( _WIN32 ) && !defined( _WIN32_WCE ) ) || defined( __SYMBIAN32__ )
+#if !defined( _WIN32 ) && !defined( _WIN32_WCE )
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <sys/select.h>
 # include <unistd.h>
-#elif ( defined( _WIN32 ) || defined( _WIN32_WCE ) ) && !defined( __SYMBIAN32__ )
+#else
 # include <winsock.h>
 #endif
 
 #include <cstdlib>
 #include <string>
+
+#ifndef _WIN32_WCE
+# include <sstream>
+#endif
 
 namespace gloox
 {
@@ -44,7 +48,7 @@ namespace gloox
   {
   }
 
-  ConnectionTCPClient::ConnectionTCPClient( ConnectionDataHandler* cdh, const LogSink& logInstance,
+  ConnectionTCPClient::ConnectionTCPClient( ConnectionDataHandler *cdh, const LogSink& logInstance,
                                             const std::string& server, int port )
     : ConnectionTCPBase( cdh, logInstance, server, port )
   {
@@ -63,14 +67,14 @@ namespace gloox
   ConnectionError ConnectionTCPClient::connect()
   {
     m_sendMutex.lock();
-// FIXME CHECKME
-    if( !m_handler )
+
+    if( !m_handler || m_socket >= 0 )
     {
       m_sendMutex.unlock();
       return ConnNotConnected;
     }
 
-    if( m_socket >= 0 && m_state > StateDisconnected )
+    if( m_state > StateDisconnected )
     {
       m_sendMutex.unlock();
       return ConnNoError;
@@ -93,15 +97,15 @@ namespace gloox
       switch( m_socket )
       {
         case -ConnConnectionRefused:
-          m_logInstance.err( LogAreaClassConnectionTCPClient,
+          m_logInstance.log( LogLevelError, LogAreaClassConnectionTCPClient,
                              m_server + ": connection refused" );
           break;
         case -ConnDnsError:
-          m_logInstance.err( LogAreaClassConnectionTCPClient,
+          m_logInstance.log( LogLevelError, LogAreaClassConnectionTCPClient,
                              m_server + ": host not found" );
           break;
         default:
-          m_logInstance.err( LogAreaClassConnectionTCPClient,
+          m_logInstance.log( LogLevelError, LogAreaClassConnectionTCPClient,
                              "Unknown error condition" );
           break;
       }
@@ -134,7 +138,12 @@ namespace gloox
       return ConnNoError;
     }
 
-    int size = static_cast<int>( ::recv( m_socket, m_buf, m_bufsize, 0 ) );
+#ifdef SKYOS
+    int size = ::recv( m_socket, (unsigned char*)m_buf, m_bufsize, 0 );
+#else
+    int size = ::recv( m_socket, m_buf, m_bufsize, 0 );
+#endif
+
     if( size > 0 )
       m_totalBytesIn += size;
 

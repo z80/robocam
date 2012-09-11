@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2005-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -17,7 +17,7 @@
 namespace gloox
 {
 
-  MessageFilter::MessageFilter( MessageSession* parent )
+  MessageFilter::MessageFilter( MessageSession *parent )
     : m_parent( 0 )
   {
     if( parent )
@@ -28,7 +28,7 @@ namespace gloox
   {
   }
 
-  void MessageFilter::attachTo( MessageSession* session )
+  void MessageFilter::attachTo( MessageSession *session )
   {
     if( m_parent )
       m_parent->removeMessageFilter( this );

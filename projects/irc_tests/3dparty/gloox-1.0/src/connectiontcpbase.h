@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -24,10 +24,7 @@
 namespace gloox
 {
 
-  namespace util
-  {
-    class Mutex;
-  }
+  class Mutex;
 
   /**
    * @brief This is a base class for a simple TCP connection.
@@ -60,7 +57,7 @@ namespace gloox
        * @param port The port to connect to. The default of -1 means that SRV records will be used
        * to find out about the actual host:port.
        */
-      ConnectionTCPBase( ConnectionDataHandler* cdh, const LogSink& logInstance,
+      ConnectionTCPBase( ConnectionDataHandler *cdh, const LogSink& logInstance,
                          const std::string& server, int port = -1 );
 
       /**
@@ -81,7 +78,7 @@ namespace gloox
       virtual void cleanup();
 
       // reimplemented from ConnectionBase
-      virtual void getStatistics( long int &totalIn, long int &totalOut );
+      virtual void getStatistics( int &totalIn, int &totalOut );
 
       /**
        * Gives access to the raw socket of this connection. Use it wisely. You can
@@ -96,34 +93,22 @@ namespace gloox
        * negotiate the XMPP stream. You should not set a new socket after having called connect().
        * @param socket The existing socket.
        */
-      void setSocket( int socket ) { m_cancel = false; m_state = StateConnected; m_socket = socket; }
-
-      /**
-       * Returns the local port.
-       * @return The local port.
-       */
-      virtual int localPort() const;
-
-      /**
-       * Returns the locally bound IP address.
-       * @return The locally bound IP address.
-       */
-      virtual const std::string localInterface() const;
+      void setSocket( int socket ) { m_cancel = false; m_socket = socket; }
 
     protected:
-      ConnectionTCPBase& operator=( const ConnectionTCPBase& );
+      ConnectionTCPBase &operator=( const ConnectionTCPBase & );
       void init( const std::string& server, int port );
       bool dataAvailable( int timeout = -1 );
       void cancel();
 
       const LogSink& m_logInstance;
-      util::Mutex m_sendMutex;
-      util::Mutex m_recvMutex;
+      Mutex m_sendMutex;
+      Mutex m_recvMutex;
 
-      char* m_buf;
+      char *m_buf;
       int m_socket;
-      long int m_totalBytesIn;
-      long int m_totalBytesOut;
+      int m_totalBytesIn;
+      int m_totalBytesOut;
       const int m_bufsize;
       bool m_cancel;
 

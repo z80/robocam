@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -18,8 +18,6 @@
 
 namespace gloox
 {
-
-  class Error;
 
   /**
    * @brief Derived classes can be registered as ConnectionListeners with the Client.
@@ -58,29 +56,17 @@ namespace gloox
       virtual void onDisconnect( ConnectionError e ) = 0;
 
       /**
-       * This function will be called when a resource has been bound to the stream. It
-       * will be called for any bound resource, including the main one.
-       * @note The bound resource may be different from the one requested. The server
-       * has the authority to change/overwrite the requested resource.
-       * @param resource The resource string.
-       * @since 1.0
-       */
-      virtual void onResourceBind( const std::string& resource ) { (void)resource; }
-
-      /**
        * This function is called (by a Client object) if an error occurs while trying to bind a resource.
-       * @param error A pointer to an Error object that contains more
-       * information. May be 0.
+       * @param error Describes the error condition.
        */
-      virtual void onResourceBindError( const Error* error ) { (void) (error); }
+      virtual void onResourceBindError( ResourceBindError error ) { (void) (error); }
 
       /**
        * This function is called (by a Client object) if an error occurs while trying to establish
        * a session.
-       * @param error A pointer to an Error object that contains more
-       * information. May be 0.
+       * @param error Describes the error condition.
        */
-      virtual void onSessionCreateError( const Error* error ) { (void) (error); }
+      virtual void onSessionCreateError( SessionCreateError error ) { (void) (error); }
 
       /**
        * This function is called when the connection was TLS/SSL secured.

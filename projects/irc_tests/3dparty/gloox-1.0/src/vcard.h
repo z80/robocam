@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -15,7 +15,6 @@
 #define VCARD_H__
 
 #include "gloox.h"
-#include "stanzaextension.h"
 
 namespace gloox
 {
@@ -31,7 +30,7 @@ namespace gloox
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.8
    */
-  class GLOOX_API VCard : public StanzaExtension
+  class GLOOX_API VCard
   {
     public:
       /**
@@ -217,12 +216,18 @@ namespace gloox
        * Constructs a new VCard from a given Tag containing appropriate fields.
        * @param vcard The VCard-Tag.
        */
-      VCard( const Tag* vcard );
+      VCard( Tag* vcard );
 
       /**
        * Virtual destructor.
        */
       virtual ~VCard() {}
+
+      /**
+       * Returns a Tag representation of the VCard. The caller becomes the owner of the Tag.
+       * @return A Tag containing the VCard, or @b 0 if the VCard data is invalid.
+       */
+      Tag* tag() const;
 
       /**
        * Sets the formatted name.
@@ -244,10 +249,8 @@ namespace gloox
        * @param prefix A name prefix.
        * @param suffix A name suffix.
        */
-      void setName( const std::string& family, const std::string& given,
-                    const std::string& middle = EmptyString,
-                    const std::string& prefix = EmptyString,
-                    const std::string& suffix = EmptyString );
+      void setName( const std::string& family, const std::string& given, const std::string& middle = "",
+                    const std::string& prefix = "", const std::string& suffix = "" );
 
       /**
        * Returns a full name.
@@ -388,7 +391,7 @@ namespace gloox
       const std::string& uid() const { return m_uid; }
 
       /**
-       * Sets the Time zone's Standard Time UTC offset. Value must be an ISO 8601
+       * Sets the "Time zone's Standard Time UTC offset. Value must be an ISO 8601
        * formatted UTC offset.
        * @param tz The timezone offset.
        */
@@ -434,9 +437,8 @@ namespace gloox
        * Sets the photo directly.
        * @param type Format type parameter.
        * @param binval The binary photo data.
-       * @note To remove the photo from the VCard call this function without any parameters.
        */
-      void setPhoto( const std::string& type = EmptyString, const std::string& binval = EmptyString );
+      void setPhoto( const std::string& type, const std::string& binval );
 
       /**
        * Returns photo information.
@@ -454,9 +456,8 @@ namespace gloox
        * Sets the organization logo directly.
        * @param type Format type parameter.
        * @param binval The binary logo data.
-       * @note To remove the logo from the VCard call this function without any parameters.
        */
-      void setLogo( const std::string& type = EmptyString, const std::string& binval = EmptyString );
+      void setLogo( const std::string& type, const std::string& binval );
 
       /**
        * Returns logo information.
@@ -564,29 +565,12 @@ namespace gloox
        */
       VCardClassification classification() const { return m_class; }
 
-      // reimplemented from StanzaExtension
-      virtual const std::string& filterString() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* newInstance( const Tag* tag ) const
-      {
-        return new VCard( tag );
-      }
-
-      // reimplemented from StanzaExtension
-      virtual Tag* tag() const;
-
-      // reimplemented from StanzaExtension
-      virtual StanzaExtension* clone() const
-      {
-        return new VCard( *this );
-      }
 
     private:
+      void checkField( Tag *vcard, const std::string& field, std::string& var );
+      void insertField( Tag *vcard, const std::string& field, const std::string& var ) const;
+      void insertField( Tag *vcard, const std::string& field, bool var ) const;
 
-      static void insertField( Tag* vcard, const char* field, const std::string& var );
-      static void insertField( Tag* vcard, const char* field, bool var );
-      static void checkField ( const Tag* vcard, const char* field, std::string& var );
 
       EmailList m_emailList;
       TelephoneList m_telephoneList;

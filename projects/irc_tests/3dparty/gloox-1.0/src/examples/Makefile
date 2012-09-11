@@ -39,10 +39,10 @@ noinst_PROGRAMS = register_example$(EXEEXT) disco_example$(EXEEXT) \
 	privatexml_example$(EXEEXT) component_example$(EXEEXT) \
 	bookmarkstorage_example$(EXEEXT) annotations_example$(EXEEXT) \
 	privacylist_example$(EXEEXT) message_example$(EXEEXT) \
-	flexoff_example$(EXEEXT) vcard_example$(EXEEXT) \
-	reset_example$(EXEEXT) muc_example$(EXEEXT) \
-	e2ee_client$(EXEEXT) e2ee_server$(EXEEXT) ft_recv$(EXEEXT) \
-	ft_send$(EXEEXT) pubsub_example$(EXEEXT) bosh_example$(EXEEXT)
+	flexoff_example$(EXEEXT) ibb_example$(EXEEXT) \
+	vcard_example$(EXEEXT) reset_example$(EXEEXT) \
+	muc_example$(EXEEXT) e2ee_client$(EXEEXT) e2ee_server$(EXEEXT) \
+	ft_recv$(EXEEXT) ft_send$(EXEEXT)
 subdir = src/examples
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -51,7 +51,7 @@ am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h.unix
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
@@ -69,9 +69,6 @@ bookmarkstorage_example_OBJECTS =  \
 	$(am_bookmarkstorage_example_OBJECTS)
 bookmarkstorage_example_DEPENDENCIES = ../libgloox.la \
 	$(am__DEPENDENCIES_1)
-am_bosh_example_OBJECTS = bosh_example.$(OBJEXT)
-bosh_example_OBJECTS = $(am_bosh_example_OBJECTS)
-bosh_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
 am_component_example_OBJECTS = component_example.$(OBJEXT)
 component_example_OBJECTS = $(am_component_example_OBJECTS)
 component_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
@@ -93,6 +90,9 @@ ft_recv_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
 am_ft_send_OBJECTS = ft_send.$(OBJEXT)
 ft_send_OBJECTS = $(am_ft_send_OBJECTS)
 ft_send_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
+am_ibb_example_OBJECTS = ibb_example.$(OBJEXT)
+ibb_example_OBJECTS = $(am_ibb_example_OBJECTS)
+ibb_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
 am_message_example_OBJECTS = message_example.$(OBJEXT)
 message_example_OBJECTS = $(am_message_example_OBJECTS)
 message_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
@@ -106,9 +106,6 @@ privacylist_example_DEPENDENCIES = ../libgloox.la \
 am_privatexml_example_OBJECTS = privatexml_example.$(OBJEXT)
 privatexml_example_OBJECTS = $(am_privatexml_example_OBJECTS)
 privatexml_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
-am_pubsub_example_OBJECTS = pubsub_example.$(OBJEXT)
-pubsub_example_OBJECTS = $(am_pubsub_example_OBJECTS)
-pubsub_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
 am_register_example_OBJECTS = register_example.$(OBJEXT)
 register_example_OBJECTS = $(am_register_example_OBJECTS)
 register_example_DEPENDENCIES = ../libgloox.la $(am__DEPENDENCIES_1)
@@ -135,23 +132,23 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(adhoc_example_SOURCES) $(annotations_example_SOURCES) \
-	$(bookmarkstorage_example_SOURCES) $(bosh_example_SOURCES) \
+	$(bookmarkstorage_example_SOURCES) \
 	$(component_example_SOURCES) $(disco_example_SOURCES) \
 	$(e2ee_client_SOURCES) $(e2ee_server_SOURCES) \
 	$(flexoff_example_SOURCES) $(ft_recv_SOURCES) \
-	$(ft_send_SOURCES) $(message_example_SOURCES) \
-	$(muc_example_SOURCES) $(privacylist_example_SOURCES) \
-	$(privatexml_example_SOURCES) $(pubsub_example_SOURCES) \
+	$(ft_send_SOURCES) $(ibb_example_SOURCES) \
+	$(message_example_SOURCES) $(muc_example_SOURCES) \
+	$(privacylist_example_SOURCES) $(privatexml_example_SOURCES) \
 	$(register_example_SOURCES) $(reset_example_SOURCES) \
 	$(roster_example_SOURCES) $(vcard_example_SOURCES)
 DIST_SOURCES = $(adhoc_example_SOURCES) $(annotations_example_SOURCES) \
-	$(bookmarkstorage_example_SOURCES) $(bosh_example_SOURCES) \
+	$(bookmarkstorage_example_SOURCES) \
 	$(component_example_SOURCES) $(disco_example_SOURCES) \
 	$(e2ee_client_SOURCES) $(e2ee_server_SOURCES) \
 	$(flexoff_example_SOURCES) $(ft_recv_SOURCES) \
-	$(ft_send_SOURCES) $(message_example_SOURCES) \
-	$(muc_example_SOURCES) $(privacylist_example_SOURCES) \
-	$(privatexml_example_SOURCES) $(pubsub_example_SOURCES) \
+	$(ft_send_SOURCES) $(ibb_example_SOURCES) \
+	$(message_example_SOURCES) $(muc_example_SOURCES) \
+	$(privacylist_example_SOURCES) $(privatexml_example_SOURCES) \
 	$(register_example_SOURCES) $(reset_example_SOURCES) \
 	$(roster_example_SOURCES) $(vcard_example_SOURCES)
 ETAGS = etags
@@ -172,7 +169,7 @@ CPPFLAGS =  -pthread
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -ansi
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -190,18 +187,16 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2012-09-10
+ISODATE = 2012-09-11
 LD = /usr/bin/ld
-LDFLAGS =  -pthread
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lresolv   -lssl -lcrypto -lz
+LIBS = -lresolv -lresolv   -lidn -lgnutls   -lz
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/missing --run makeinfo
-MAYBE_EXAMPLES = examples
-MAYBE_TESTS = tests
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -212,10 +207,10 @@ OTOOL64 =
 PACKAGE = gloox
 PACKAGE_BUGREPORT = js@camaya.net
 PACKAGE_NAME = gloox
-PACKAGE_STRING = gloox 1.0
+PACKAGE_STRING = gloox 0.9.9.12
 PACKAGE_TARNAME = gloox
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 0.9.9.12
 PATH_SEPARATOR = :
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -pthread
@@ -225,7 +220,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.0
+VERSION = 0.9.9.12
 abs_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/examples
 abs_srcdir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0/src/examples
 abs_top_builddir = /home/z80/projects/robocam.git/projects/irc_tests/3dparty/gloox-1.0
@@ -280,10 +275,7 @@ target_alias =
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
-AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare \
-              -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef \
-              -Wcast-qual -Wno-long-long -DGLOOX_IMPORTS
-
+AM_CPPFLAGS = -pedantic -Wall -pipe -W -Wfloat-equal -Wcast-align -Wsign-compare -Wpointer-arith -Wswitch -Wunknown-pragmas -Wconversion -Wundef -Wcast-qual -ansi -DGLOOX_IMPORTS
 register_example_SOURCES = register_example.cpp
 register_example_LDADD = ../libgloox.la $(LDFLAGS)
 register_example_CFLAGS = $(CPPFLAGS)
@@ -317,6 +309,9 @@ message_example_CFLAGS = $(CPPFLAGS)
 flexoff_example_SOURCES = flexoff_example.cpp
 flexoff_example_LDADD = ../libgloox.la $(LDFLAGS)
 flexoff_example_CFLAGS = $(CPPFLAGS)
+ibb_example_SOURCES = ibb_example.cpp
+ibb_example_LDADD = ../libgloox.la $(LDFLAGS)
+ibb_example_CFLAGS = $(CPPFLAGS)
 vcard_example_SOURCES = vcard_example.cpp
 vcard_example_LDADD = ../libgloox.la $(LDFLAGS)
 vcard_example_CFLAGS = $(CPPFLAGS)
@@ -338,12 +333,6 @@ ft_recv_CFLAGS = $(CPPFLAGS)
 ft_send_SOURCES = ft_send.cpp
 ft_send_LDADD = ../libgloox.la $(LDFLAGS)
 ft_send_CFLAGS = $(CPPFLAGS)
-pubsub_example_SOURCES = pubsub_example.cpp
-pubsub_example_LDADD = ../libgloox.la $(LDFLAGS)
-pubsub_example_CFLAGS = $(CPPFLAGS)
-bosh_example_SOURCES = bosh_example.cpp
-bosh_example_LDADD = ../libgloox.la $(LDFLAGS)
-bosh_example_CFLAGS = $(CPPFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -396,9 +385,6 @@ annotations_example$(EXEEXT): $(annotations_example_OBJECTS) $(annotations_examp
 bookmarkstorage_example$(EXEEXT): $(bookmarkstorage_example_OBJECTS) $(bookmarkstorage_example_DEPENDENCIES) 
 	@rm -f bookmarkstorage_example$(EXEEXT)
 	$(CXXLINK) $(bookmarkstorage_example_OBJECTS) $(bookmarkstorage_example_LDADD) $(LIBS)
-bosh_example$(EXEEXT): $(bosh_example_OBJECTS) $(bosh_example_DEPENDENCIES) 
-	@rm -f bosh_example$(EXEEXT)
-	$(CXXLINK) $(bosh_example_OBJECTS) $(bosh_example_LDADD) $(LIBS)
 component_example$(EXEEXT): $(component_example_OBJECTS) $(component_example_DEPENDENCIES) 
 	@rm -f component_example$(EXEEXT)
 	$(CXXLINK) $(component_example_OBJECTS) $(component_example_LDADD) $(LIBS)
@@ -420,6 +406,9 @@ ft_recv$(EXEEXT): $(ft_recv_OBJECTS) $(ft_recv_DEPENDENCIES)
 ft_send$(EXEEXT): $(ft_send_OBJECTS) $(ft_send_DEPENDENCIES) 
 	@rm -f ft_send$(EXEEXT)
 	$(CXXLINK) $(ft_send_OBJECTS) $(ft_send_LDADD) $(LIBS)
+ibb_example$(EXEEXT): $(ibb_example_OBJECTS) $(ibb_example_DEPENDENCIES) 
+	@rm -f ibb_example$(EXEEXT)
+	$(CXXLINK) $(ibb_example_OBJECTS) $(ibb_example_LDADD) $(LIBS)
 message_example$(EXEEXT): $(message_example_OBJECTS) $(message_example_DEPENDENCIES) 
 	@rm -f message_example$(EXEEXT)
 	$(CXXLINK) $(message_example_OBJECTS) $(message_example_LDADD) $(LIBS)
@@ -432,9 +421,6 @@ privacylist_example$(EXEEXT): $(privacylist_example_OBJECTS) $(privacylist_examp
 privatexml_example$(EXEEXT): $(privatexml_example_OBJECTS) $(privatexml_example_DEPENDENCIES) 
 	@rm -f privatexml_example$(EXEEXT)
 	$(CXXLINK) $(privatexml_example_OBJECTS) $(privatexml_example_LDADD) $(LIBS)
-pubsub_example$(EXEEXT): $(pubsub_example_OBJECTS) $(pubsub_example_DEPENDENCIES) 
-	@rm -f pubsub_example$(EXEEXT)
-	$(CXXLINK) $(pubsub_example_OBJECTS) $(pubsub_example_LDADD) $(LIBS)
 register_example$(EXEEXT): $(register_example_OBJECTS) $(register_example_DEPENDENCIES) 
 	@rm -f register_example$(EXEEXT)
 	$(CXXLINK) $(register_example_OBJECTS) $(register_example_LDADD) $(LIBS)
@@ -457,7 +443,6 @@ distclean-compile:
 include ./$(DEPDIR)/adhoc_example.Po
 include ./$(DEPDIR)/annotations_example.Po
 include ./$(DEPDIR)/bookmarkstorage_example.Po
-include ./$(DEPDIR)/bosh_example.Po
 include ./$(DEPDIR)/component_example.Po
 include ./$(DEPDIR)/disco_example.Po
 include ./$(DEPDIR)/e2ee_client.Po
@@ -465,11 +450,11 @@ include ./$(DEPDIR)/e2ee_server.Po
 include ./$(DEPDIR)/flexoff_example.Po
 include ./$(DEPDIR)/ft_recv.Po
 include ./$(DEPDIR)/ft_send.Po
+include ./$(DEPDIR)/ibb_example.Po
 include ./$(DEPDIR)/message_example.Po
 include ./$(DEPDIR)/muc_example.Po
 include ./$(DEPDIR)/privacylist_example.Po
 include ./$(DEPDIR)/privatexml_example.Po
-include ./$(DEPDIR)/pubsub_example.Po
 include ./$(DEPDIR)/register_example.Po
 include ./$(DEPDIR)/reset_example.Po
 include ./$(DEPDIR)/roster_example.Po

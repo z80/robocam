@@ -5,7 +5,6 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 int main( int /*argc*/, char** /*argv*/ )
 {
@@ -90,7 +89,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "GPGSigned: OK\n" );
+    printf( "GPGSigned: all tests passed\n" );
     return 0;
   }
   else

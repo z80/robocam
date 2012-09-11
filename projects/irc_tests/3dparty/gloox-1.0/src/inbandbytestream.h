@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,36 +14,31 @@
 #ifndef INBANDBYTESTREAM_H__
 #define INBANDBYTESTREAM_H__
 
-#include "bytestream.h"
+#include "messagefilter.h"
 #include "iqhandler.h"
-#include "messagehandler.h"
 #include "gloox.h"
+#include "inbandbytestreammanager.h"
 
 namespace gloox
 {
 
-  class BytestreamDataHandler;
   class ClientBase;
-  class Message;
+  class InBandBytestreamDataHandler;
 
   /**
    * @brief An implementation of a single In-Band Bytestream (XEP-0047).
    *
-   * One instance of this class handles a single byte stream.
+   * One instance of this class handles one byte stream. You can attach as many InBandBytestream
+   * objects to a MessageSession as you like.
    *
-   * See SIProfileFT for a detailed description on how to implement file transfer.
-   *
-   * @note This class can @b receive data wrapped in Message stanzas. This will only work if you
-   * are not using MessageSessions. However, it will always send
-   * data using IQ stanzas (which will always work).
+   * See InBandBytestreamManager for a detailed description on how to implement In-Band Bytestreams.
    *
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.8
    */
-  class GLOOX_API InBandBytestream : public Bytestream, public IqHandler, public MessageHandler
+  class GLOOX_API InBandBytestream : public MessageFilter
   {
-
-    friend class SIProfileFT;
+    friend class InBandBytestreamManager;
 
     public:
       /**
@@ -52,160 +47,69 @@ namespace gloox
       virtual ~InBandBytestream();
 
       /**
+       * Returns whether the bytestream is open, that is, accepted by both parties.
+       * @return Whether the bytestream is open or not.
+       */
+      bool isOpen() const { return m_open; }
+
+      /**
+       * Use this function to send a chunk of data over an open byte stream.
+       * The negotiated block size is enforced. If the block is larger, nothing is sent
+       * and @b false is returned. If the stream is not open or has been closed again
+       * (by the remote entity or locally), nothing is sent and @b false is returned.
+       * This function does the necessary base64 encoding for you.
+       * @param data The block of data to send.
+       * @return @b True if the data has been sent (no guarantee of receipt), @b false
+       * in case of an error.
+       */
+      bool sendBlock( const std::string& data );
+
+      /**
+       * Lets you retrieve the stream's ID.
+       * @return The stream's ID.
+       */
+      const std::string& sid() const { return m_sid; }
+
+      /**
        * Lets you retrieve this bytestream's block-size.
        * @return The bytestream's block-size.
        */
-      int blockSize() const { return m_blockSize; }
+      int blockSize() const { return (int)m_blockSize; }
 
       /**
-       * Sets the stream's block-size. Default: 4096
-       * @param blockSize The new block size.
-       * @note You should not change the block size once connect() has been called.
+       * Use this function to register an object that will receive any notifications from
+       * the InBandBytestream instance. Only one InBandBytestreamDataHandler can be registered
+       * at any one time.
+       * @param ibbdh The InBandBytestreamDataHandler-derived object to receive notifications.
        */
-      void setBlockSize( int blockSize ) { m_blockSize = blockSize; }
+      void registerInBandBytestreamDataHandler( InBandBytestreamDataHandler *ibbdh );
 
-      // reimplemented from Bytestream
-      virtual ConnectionError recv( int timeout = -1 ) { (void)timeout; return ConnNoError; }
+      /**
+       * Removes the registered InBandBytestreamDataHandler.
+       */
+      void removeInBandBytestreamDataHandler();
 
-      // reimplemented from Bytestream
-      bool send( const std::string& data );
+      // reimplemented from MessageFilter
+      virtual void decorate( Tag *tag );
 
-      // reimplemented from Bytestream
-      virtual bool connect();
-
-      // reimplemented from Bytestream
-      virtual void close();
-
-      // reimplemented from IqHandler
-      virtual bool handleIq( const IQ& iq );
-
-      // reimplemented from IqHandler
-      virtual void handleIqID( const IQ& iq, int context );
-
-      // reimplemented from MessageHandler
-      virtual void handleMessage( const Message& msg, MessageSession* session = 0 );
+      // reimplemented from MessageFilter
+      virtual void filter( Stanza *stanza );
 
     private:
-#ifdef INBANDBYTESTREAM_TEST
-    public:
-#endif
-      enum IBBType
-      {
-        IBBOpen,
-        IBBData,
-        IBBClose,
-        IBBInvalid
-      };
-
-      /**
-       * @brief An abstraction of IBB elements, implemented as as StanzaExtension.
-       *
-       * @author Jakob Schroeter <js@camaya.net>
-       * @since 1.0
-       */
-      class IBB : public StanzaExtension
-      {
-        public:
-          /**
-           * Constructs a new IBB object that opens an IBB, using the given SID and block size.
-           * @param sid The SID of the IBB to open.
-           * @param blocksize The streams block size.
-           */
-          IBB( const std::string& sid, int blocksize );
-
-          /**
-           * Constructs a new IBB object that can be used to send a single block of data,
-           * using the given SID and sequence number.
-           * @param sid The SID of the IBB.
-           * @param seq The block's sequence number.
-           * @param data The block data, not base64 encoded.
-           */
-          IBB( const std::string& sid, int seq, const std::string& data );
-
-          /**
-           * Constructs a new IBB object that closes an IBB, using the given SID.
-           * @param sid The SID of the IBB to close.
-           */
-          IBB( const std::string& sid );
-
-          /**
-           * Constructs a new IBB object from the given Tag.
-           * @param tag The Tag to parse.
-           */
-          IBB( const Tag* tag = 0 );
-
-          /**
-           * Virtual destructor.
-           */
-          virtual ~IBB();
-
-          /**
-           * Returns the IBB's type.
-           * @return The IBB's type.
-           */
-          IBBType type() const { return m_type; }
-
-          /**
-           * Returns the IBB's block size. Only meaningful if the IBB is of type() IBBOpen.
-           * @return The IBB's block size.
-           */
-          int blocksize() const { return m_blockSize; }
-
-          /**
-           * Returns the current block's sequence number.
-           * @return The current block's sequence number.
-           */
-          int seq() const { return m_seq; }
-
-          /**
-           * Returns the current block's SID.
-           * @return The current block's SID.
-           */
-          const std::string sid() const { return m_sid; }
-
-          /**
-           * Returns the current block's data (not base64 encoded).
-           * @return The current block's data.
-           */
-          const std::string& data() const { return m_data; }
-
-          // reimplemented from StanzaExtension
-          virtual const std::string& filterString() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* newInstance( const Tag* tag ) const
-          {
-            return new IBB( tag );
-          }
-
-          // reimplemented from StanzaExtension
-          virtual Tag* tag() const;
-
-          // reimplemented from StanzaExtension
-          virtual StanzaExtension* clone() const
-          {
-            return new IBB( *this );
-          }
-
-        private:
-          std::string m_sid;
-          int m_seq;
-          int m_blockSize;
-          std::string m_data;
-          IBBType m_type;
-      };
-
-      InBandBytestream( ClientBase* clientbase, LogSink& logInstance, const JID& initiator,
-                        const JID& target, const std::string& sid );
-      InBandBytestream& operator=( const InBandBytestream& );
+      InBandBytestream( MessageSession *session, ClientBase *clientbase );
+      void setBlockSize( int blockSize ) { m_blockSize = blockSize; }
+      void close();  // locally
       void closed(); // by remote entity
-      void returnResult( const JID& to, const std::string& id );
-      void returnError( const JID& to, const std::string& id, StanzaErrorType type, StanzaError error );
+      void setSid( const std::string& sid ) { m_sid = sid; }
 
-      ClientBase* m_clientbase;
-      int m_blockSize;
+      ClientBase *m_clientbase;
+      InBandBytestreamManager *m_manager;
+      InBandBytestreamDataHandler *m_inbandBytestreamDataHandler;
+      std::string m_sid;
+      std::string::size_type m_blockSize;
       int m_sequence;
       int m_lastChunkReceived;
+      bool m_open;
 
   };
 

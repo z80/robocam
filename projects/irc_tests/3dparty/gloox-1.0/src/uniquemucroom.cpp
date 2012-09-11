@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2007-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2007-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -20,49 +20,14 @@
 namespace gloox
 {
 
-  // ---- UniqueMUCRoom::Unique ----
-  UniqueMUCRoom::Unique::Unique( const Tag* tag )
-    : StanzaExtension( ExtMUCUnique )
-  {
-    if( !tag || tag->name() != "unique" || tag->xmlns() != XMLNS_MUC_UNIQUE )
-      return;
-
-    m_name = tag->cdata();
-  }
-
-  const std::string& UniqueMUCRoom::Unique::filterString() const
-  {
-    static const std::string filter = "/iq/unique[@xmlns='" + XMLNS_MUC_UNIQUE + "']";
-    return filter;
-  }
-
-  Tag* UniqueMUCRoom::Unique::tag() const
-  {
-    Tag* t = new Tag( "unique" );
-    t->setXmlns( XMLNS_MUC_UNIQUE );
-    if( !m_name.empty() )
-      t->setCData( m_name );
-    return t;
-  }
-  // ---- ~UniqueMUCRoom::Unique ----
-
-  // ---- UniqueMUCRoom ----
-  UniqueMUCRoom::UniqueMUCRoom( ClientBase* parent, const JID& nick, MUCRoomHandler* mrh )
+  UniqueMUCRoom::UniqueMUCRoom( ClientBase *parent, const JID& nick, MUCRoomHandler *mrh )
     : InstantMUCRoom( parent, nick, mrh )
   {
-    if( m_parent )
-    {
-      m_parent->registerStanzaExtension( new Unique() );
-    }
   }
 
   UniqueMUCRoom::~UniqueMUCRoom()
   {
-    if( m_parent )
-    {
-      m_parent->removeIDHandler( this );
-//       m_parent->removeStanzaExtension( ExtMUCUnique ); // don't remove, other rooms might need it
-    }
+    m_parent->removeIDHandler( this );
   }
 
   void UniqueMUCRoom::join()
@@ -70,27 +35,35 @@ namespace gloox
     if( !m_parent || m_joined )
       return;
 
-    IQ iq( IQ::Get, m_nick.server() );
-    iq.addExtension( new Unique() );
-    m_parent->send( iq, this, RequestUniqueName );
+    const std::string& id = m_parent->getID();
+    Tag *iq = new Tag( "iq" );
+    iq->addAttribute( "id", id );
+    iq->addAttribute( "to", m_nick.server() );
+    iq->addAttribute( "type", "get" );
+    Tag *u = new Tag( iq, "unique" );
+    u->addAttribute( "xmlns", XMLNS_MUC_UNIQUE );
+
+    m_parent->trackID( this, id, RequestUniqueName );
+    m_parent->send( iq );
   }
 
-  void UniqueMUCRoom::handleIqID( const IQ& iq, int context )
+  bool UniqueMUCRoom::handleIqID( Stanza *stanza, int context )
   {
-    switch( iq.subtype() )
+    switch( stanza->subtype() )
     {
-      case IQ::Result:
+      case StanzaIqResult:
         if( context == RequestUniqueName )
         {
-          const Unique* u = iq.findExtension<Unique>( ExtMUCUnique );
+          Tag *u = stanza->findChild( "unique", "xmlns", XMLNS_MUC_UNIQUE );
           if( u )
           {
-            if( !u->name().empty() )
-              setName( u->name() );
+            const std::string& name = u->cdata();
+            if( !name.empty() )
+              setName( name );
           }
         }
         break;
-      case IQ::Error:
+      case StanzaIqError:
         if( context == RequestUniqueName )
         {
           SHA s;
@@ -104,6 +77,8 @@ namespace gloox
     }
 
     MUCRoom::join();
+
+    return false;
   }
 
 }

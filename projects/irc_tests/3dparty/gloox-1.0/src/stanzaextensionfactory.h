@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2006-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2006-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -14,74 +14,35 @@
 #ifndef STANZAEXTENSIONFACTORY_H__
 #define STANZAEXTENSIONFACTORY_H__
 
-#include <list>
+#include "macros.h"
+
+#include <string>
 
 namespace gloox
 {
 
-  class Tag;
-  class Stanza;
   class StanzaExtension;
+  class Tag;
 
   /**
    * @brief A Factory that creates StanzaExtensions from Tags.
    *
-   * To supply a custom StanzaExtension, reimplement StanzaExtension's
-   * virtuals and pass an instance to registerExtension().
-   *
-   * You should not need to use this class directly. Use ClientBase::registerStanzaExtension()
-   * instead. See StanzaExtension for more information about adding protocol implementations
-   * to gloox.
+   * You should not need to use this class directly.
    *
    * @author Jakob Schroeter <js@camaya.net>
    * @since 0.9
    */
   class StanzaExtensionFactory
   {
-
-    friend class ClientBase;
-
     public:
       /**
-       * Use this function to inform StanzaExtensionFactory about available StanzaExtensions.
-       * By default, StanzaExtensionFactory does not know about any extensions.
-       * gloox-built-in extensions will usually be registered by their respective protocol
-       * implementations unless otherwise noted in the extension's API docs.
-       * @param ext An extension to register.
-       * @note The supplied StanzaExtension will be deleted in StanzaExtensionFactory's destructor.
-       * @note Only one instance per extension type can be registered. In case an extension is
-       * registered that is of the same type as an already registered extension, the new extension
-       * will replace the previously registered one.
-       */
-      void registerExtension( StanzaExtension* ext );
-
-      /**
-       * Removes the given extension type.
-       * @param ext The extension type.
-       * @return @b True if the given type was found (and removed), @b false otherwise.
-       */
-      bool removeExtension( int ext );
-
-      /**
-       * Creates a new StanzaExtensionFactory.
-       */
-      StanzaExtensionFactory();
-
-      /**
-       * Non-virtual destructor.
-       */
-      ~StanzaExtensionFactory();
-
-      /**
-       * This function creates StanzaExtensions from the given Tag and attaches them to the given Stanza.
-       * @param stanza The Stanza to attach the extensions to.
+       * This function tries to create a valid StanzaExtension (i.e., an object derived from
+       * StanzaExtension) from the given Tag.
        * @param tag The Tag to parse and create the StanzaExtension from.
+       * @return A StanzaExtension-derived object if the Tag was recognized, or 0.
+       * @note To get rif of a StanzaExtension easily, you may use dispose().
        */
-      void addExtensions( Stanza& stanza, Tag* tag );
-
-    private:
-      typedef std::list<StanzaExtension*> SEList;
-      SEList m_extensions;
+      static StanzaExtension* create( Tag* tag );
 
   };
 

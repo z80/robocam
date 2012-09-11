@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2004-2009 by Jakob Schroeter <js@camaya.net>
+  Copyright (c) 2004-2008 by Jakob Schroeter <js@camaya.net>
   This file is part of the gloox library. http://camaya.net/gloox
 
   This software is distributed under a license. The full license
@@ -20,7 +20,7 @@ namespace gloox
 {
 
   class MessageSession;
-  class Message;
+  class Stanza;
 
   /**
    * @brief A virtual interface which can be reimplemented to receive incoming message stanzas.
@@ -44,13 +44,11 @@ namespace gloox
       /**
        * Reimplement this function if you want to be notified about
        * incoming messages.
-       * @param msg The complete Message.
+       * @param stanza The complete Stanza.
        * @param session If this MessageHandler is used with a MessageSession, this parameter
        * holds a pointer to that MessageSession.
-       * @since 1.0
        */
-      virtual void handleMessage( const Message& msg, MessageSession* session = 0 ) = 0;
-
+      virtual void handleMessage( Stanza *stanza, MessageSession *session = 0 ) = 0;
   };
 
 }

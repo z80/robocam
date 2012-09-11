@@ -1,4 +1,3 @@
-#define CLIENTBASE_TEST
 #include "../../client.h"
 #include "../../jid.h"
 #include "../../connectionbase.h"
@@ -11,18 +10,16 @@ using namespace gloox;
 #include <stdio.h>
 #include <locale.h>
 #include <string>
-#include <cstdio> // [s]print[f]
 
 class ClientTest : public Client, /*LogHandler,*/ ConnectionListener
 {
   public:
     ClientTest( const JID& jid, const std::string& password, int port = -1 )
-      : Client( jid, password, port ), m_idCount( 0 ), m_connected( 0 ), m_disconnected( 0 )
+      : Client( jid, password, port ), m_connected( 0 ), m_disconnected( 0 )
     {
 //       logInstance().registerLogHandler( LogLevelDebug, LogAreaAll, this );
       registerConnectionListener( this );
     }
-    virtual ~ClientTest() {}
 //     virtual void handleLog( LogLevel level, LogArea area, const std::string& message )
 //     {
 //       printf("log: level: %d, area: %d, %s\n", level, area, message.c_str() );
@@ -44,8 +41,6 @@ class ClientTest : public Client, /*LogHandler,*/ ConnectionListener
     int disconnected() const { return m_disconnected; }
     ConnectionError disconnectReason() const { return m_disconnect; }
     StreamError streamErrorReason() const { return m_streamerror; }
-
-    int m_idCount;
 
   protected:
 
@@ -96,7 +91,7 @@ class ConnectionImpl : public ConnectionBase
       m_state = StateDisconnected;
       m_pos = 0;
     }
-    virtual void getStatistics( long int& /*totalIn*/, long int& /*totalOut*/ ) {}
+    virtual void getStatistics( int& /*totalIn*/, int& /*totalOut*/ ) {}
     virtual ConnectionBase* newInstance() const { return 0; }
 
   private:
@@ -110,7 +105,7 @@ class ConnectionImpl : public ConnectionBase
 const char* ConnectionImpl::m_msgs[4][9] =
   {
     { // connection/auth goes ok.
-      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0' "
+      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0'"
         "xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       "<stream:features xmlns:stream='http://etherx.jabber.org/streams'>"
         "<mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
@@ -127,23 +122,23 @@ const char* ConnectionImpl::m_msgs[4][9] =
         "cnNwYXV0aD1mNGFhZTM0YWY0N2I1MmM0MmQ2NWQzY2NjMGNjN2YyNA=="
       "</challenge>",
       "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>",
-      "<stream:stream from='jabber.cc' id='1o4p1gz2h0m1wvqutohs24d439nbv9zxx4nykm11' version='1.0' "
+      "<stream:stream from='jabber.cc' id='1o4p1gz2h0m1wvqutohs24d439nbv9zxx4nykm11' version='1.0'"
         "xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       "<stream:features xmlns:stream='http://etherx.jabber.org/streams'>"
         "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/>"
         "<session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>"
       "</stream:features>",
-      "<iq id='uid1' type='result' xmlns='jabber:client'>"
+      "<iq id='bind' type='result' xmlns='jabber:client'>"
         "<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
         "<jid>hurkhurk@jabber.cc/gloox</jid></bind></iq>",
-      "<iq id='uid2' type='result' xmlns='jabber:client'/>",
-      "<iq id='uid3' type='result' xmlns='jabber:client'><query xmlns='jabber:iq:private'>"
+      "<iq id='session' type='result' xmlns='jabber:client'/>",
+      "<iq id='uid1' type='result' xmlns='jabber:client'><query xmlns='jabber:iq:private'>"
         "<roster xmlns='roster:delimiter'>::</roster></query></iq>"
-      "<iq id='uid4' type='result' xmlns='jabber:client'><query xmlns='jabber:iq:roster'/></iq>",
+      "<iq id='uid2' type='result' xmlns='jabber:client'><query xmlns='jabber:iq:roster'/></iq>",
       0
     },
     { // auth failure
-      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0' "
+      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0'"
         "xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       "<stream:features xmlns:stream='http://etherx.jabber.org/streams'>"
         "<mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
@@ -160,7 +155,7 @@ const char* ConnectionImpl::m_msgs[4][9] =
       0,
     },
     { // chokes in the middle
-      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0' "
+      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0'"
         "xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       "<stream:features xmlns:stream='http://etherx.jabber.org/streams'>"
         "<mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
@@ -176,7 +171,7 @@ const char* ConnectionImpl::m_msgs[4][9] =
       0,
     },
     { // chokes on the xml
-      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0' "
+      "<stream:stream from='jabber.cc' id='6kpid3u736sqjwd65n25wm57mzz10wz7hopvsj2w' version='1.0'"
         "xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       "<stream:features xmlns:stream='http://etherx.jabber.org/streams'>"
         "<mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
@@ -307,8 +302,6 @@ int main( int /*argc*/, char** /*argv*/ )
               c->disconnectReason() );
       break;
     }
-    c->m_idCount = 0; // FIXME re-using this variable in subsequent connection attempts
-                      // causes inconsistencies with the hard-coded replies.
   }
   delete c;
   c = 0;
@@ -332,7 +325,7 @@ int main( int /*argc*/, char** /*argv*/ )
 
   if( fail == 0 )
   {
-    printf( "Client: OK\n" );
+    printf( "Client: all tests passed\n" );
     return 0;
   }
   else
