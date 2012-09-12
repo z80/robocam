@@ -30,8 +30,8 @@ class XmppPeer: public gloox::MessageSessionHandler,
                 public gloox::ConnectionListener,
                 public gloox::LogHandler,
                 public gloox::RegistrationHandler, 
-                public InBandBytestreamHandler, 
-                public InBandBytestreamDataHandler
+                public gloox::InBandBytestreamHandler,
+                public gloox::InBandBytestreamDataHandler
 
 {
 public:
@@ -55,6 +55,7 @@ public:
     void sendFile( const std::string & to, const char * data, int sz );
     bool isFileFinished() const;
     bool isFileSucceeded() const;
+    void reserveFileBuffer( int size );
 
     const std::string lastError() const;
 
@@ -108,11 +109,12 @@ private:
     gloox::InBandBytestream        * m_ibb;
     gloox::MessageSession          * m_fileSession;
     int m_filePieceSize;
-    bool m_isFileSent, 
+    bool m_isFileFinished,
          m_isFileSucceeded;
-    char * m_fileData;
+    const char * m_fileData;
     int    m_fileSize, 
            m_filePointer;
+    std::basic_string<char> m_fileReceived;
 };
 
 

@@ -12,7 +12,7 @@ XmppPeer::XmppPeer()
       m_ibb( 0 ), 
       m_fileSession( 0 ), 
       m_filePieceSize( 2048 ), 
-      m_isFileSent( false ), 
+      m_isFileFinished( false ),
       m_isFileSucceeded( false )
 {
     
@@ -118,35 +118,39 @@ void XmppPeer::setPieceSize( int bytes )
 
 void XmppPeer::sendFile( const std::string & to, const char * data, int sz )
 {
+    //boost::mutex::scoped_lock lock( m_mutex );
+    std::ostringstream out;
+    out << to << "@" << m_host;
+    gloox::JID jid( out.str() );
+    if ( !m_ibbManager )
     {
-        boost::mutex::scoped_lock lock( m_mutex );
-        std::ostringstream out;
-	    out << to << "@" << m_host;
-        gloox::JID jid( out.str() );
-        if ( !m_ibbManager )
-        {
-            m_ibbManager = new InBandBytestreamManager( m_client );
-            m_ibbManager->registerInBandBytestreamHandler( this );
-        }
-        m_isFileSent      = false;
-        m_isFileSucceeded = false;
-        m_fileData = data;
-        m_fileSize = sz;
-        m_filePointer = 0;
+        m_ibbManager = new gloox::InBandBytestreamManager( m_client );
+        m_ibbManager->registerInBandBytestreamHandler( this );
     }
+    m_isFileFinished  = false;
+    m_isFileSucceeded = false;
+    m_fileData = data;
+    m_fileSize = sz;
+    m_filePointer = 0;
     m_ibbManager->requestInBandBytestream( jid, this );
 }
 
 bool XmppPeer::isFileFinished() const
 {
     boost::mutex::scoped_lock lock( m_mutex );
-    return m_isFileSent;
+    return m_isFileFinished;
 }
 
 bool XmppPeer::isFileSucceeded() const
 {
     boost::mutex::scoped_lock lock( m_mutex );
     return m_isFileSucceeded;
+}
+
+void XmppPeer::reserveFileBuffer( int size )
+{
+	boost::mutex::scoped_lock lock( m_mutex );
+	m_fileReceived.reserve( size );
 }
 
 const std::string XmppPeer::lastError() const
@@ -318,22 +322,26 @@ void XmppPeer::handleLog( gloox::LogLevel level, gloox::LogArea area, const std:
 
 bool XmppPeer::handleIncomingInBandBytestream( const gloox::JID & from, gloox::InBandBytestream * ibb )
 {
+	boost::mutex::scoped_lock lock( m_mutex );
     m_ibb = ibb;
-    if( !m_fileSession )
-        m_fileSession = new MessageSession( m_client, from );
+    if ( m_fileSession )
+    	delete m_fileSession;
+    m_fileSession = new gloox::MessageSession( m_client, from );
     m_ibb->attachTo( m_fileSession );
     m_ibb->registerInBandBytestreamDataHandler( this );
+    m_fileReceived.clear();
     return true;
 }
 
 void XmppPeer::handleOutgoingInBandBytestream( const gloox::JID & to,   gloox::InBandBytestream * ibb )
 {
     m_ibb = ibb;
-    if( !m_fileSession )
-        m_fileSession = new MessageSession( m_client, to );
+    if ( m_fileSession )
+    	delete m_fileSession;
+    m_fileSession = new gloox::MessageSession( m_client, to );
     m_ibb->attachTo( m_fileSession );
     m_ibb->registerInBandBytestreamDataHandler( this );
-    std::strinf stri;
+    std::string stri;
     stri.resize( m_filePieceSize );
     for ( int i=0; i<m_fileSize; i+=m_filePieceSize )
     {
@@ -343,31 +351,62 @@ void XmppPeer::handleOutgoingInBandBytestream( const gloox::JID & to,   gloox::I
         memcpy( const_cast<char *>( stri.c_str() ), m_fileData+i, sizeof( char ) * sz );
         if ( !m_ibb->sendBlock( stri ) )
         {
-            m_fileFinished = true;
-            m_fileSucceeded = false;
+        	boost::mutex::scoped_lock lock( m_mutex );
+            m_isFileFinished = true;
+            m_isFileSucceeded = false;
             return;
         }
     }
-    m_fileFinished = true;
-    m_fileSucceeded = true;
+    m_ibbManager->dispose( m_ibb );
+    m_ibb = 0;
+    boost::mutex::scoped_lock lock( m_mutex );
+    m_isFileFinished = true;
+    m_isFileSucceeded = true;
 }
 
 void XmppPeer::handleInBandBytestreamError( const gloox::JID& /*remote*/, gloox::StanzaError /*se*/ )
 {
-    m_fileFinished = true;
-    m_fileSucceeded = false;
+	boost::mutex::scoped_lock lock( m_mutex );
+    m_isFileFinished = true;
+    m_isFileSucceeded = false;
+    m_ibbManager->dispose( m_ibb );
+    m_ibb = 0;
 }
 
 void XmppPeer::handleInBandData( const std::string& data, const std::string& sid )
 {
+	boost::mutex::scoped_lock lock( m_mutex );
+	m_fileReceived.append( data );
 }
 
-void XmppPeer::handleInBandError( const std::string& /*sid*/, const gloox::JID& /*remote*/, StanzaError /*se*/ )
+void XmppPeer::handleInBandError( const std::string& /*sid*/, const gloox::JID& /*remote*/, gloox::StanzaError /*se*/ )
 {
+    boost::mutex::scoped_lock lock( m_mutex );
+    m_isFileFinished = true;
+    m_isFileSucceeded = false;
+    m_ibbManager->dispose( m_ibb );
+    m_ibb = 0;
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "In band error";
+        m_logHandler( out.str() );
+    }
 }
 
 void XmppPeer::handleInBandClose( const std::string& /*sid*/, const gloox::JID& /*from*/ )
 {
+    boost::mutex::scoped_lock lock( m_mutex );
+    m_ibbManager->dispose( m_ibb );
+    m_ibb = 0;
+    m_isFileFinished = true;
+    m_isFileSucceeded = true;
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "In band close";
+        m_logHandler( out.str() );
+    }
 }
 
 
