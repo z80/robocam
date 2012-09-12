@@ -8,13 +8,14 @@ Wgt::Wgt( QWidget * parent )
 : QWidget( parent )
 {
     ui.setupUi( this );
-    connect( ui.connect,      SIGNAL(clicked()), this, SLOT(connectHost()) );
-    connect( ui.send,         SIGNAL(clicked()), this, SLOT(send()) );
-    connect( ui.sendFile,     SIGNAL(clicked()), this, SLOT(sendFile()) );
-    connect( ui.status,       SIGNAL(clicked()), this, SLOT(status()) );
-    connect( ui.clear,        SIGNAL(clicked()), this, SLOT(clear()) );
+    connect( ui.connect,        SIGNAL(clicked()), this, SLOT(connectHost()) );
+    connect( ui.registerClient, SIGNAL(clicked()), this, SLOT(registerClient()) );
+    connect( ui.send,           SIGNAL(clicked()), this, SLOT(send()) );
+    connect( ui.sendFile,       SIGNAL(clicked()), this, SLOT(sendFile()) );
+    connect( ui.status,         SIGNAL(clicked()), this, SLOT(status()) );
+    connect( ui.clear,          SIGNAL(clicked()), this, SLOT(clear()) );
 
-    connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)) );
+    connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
 
     xmpp.setMessageHandler( boost::bind( &Wgt::messageHandler, this, _1, _2 ) );
     xmpp.setLogHandler( boost::bind( &Wgt::logHandler, this, _1 ) );
@@ -24,9 +25,9 @@ Wgt::~Wgt()
 {
 }
 
-void Wgt::log( const QString & stri )
+void Wgt::log( const std::string & stri )
 {
-    ui.log->appendPlainText( stri );
+    emit sigLog( QString::fromStdString( stri ) );
 }
 
 void Wgt::connectHost()
@@ -35,17 +36,27 @@ void Wgt::connectHost()
 	int         port     = ui.port->value();
 	std::string nick     = ui.nick->text().toStdString();
 	std::string password = ui.password->text().toStdString();
-	bool reg             = ui.reg->isChecked();
 	xmpp.setHost( host, port );
 	xmpp.setNick( nick, password );
-	xmpp.setRegistering( reg );
 	bool res = xmpp.connect();
-	log( QString( "%1" ).arg( res ? "succeeded" : "failed" ) );
+	log( res ? "succeeded" : "failed" );
     if ( !res )
-    	log( QString::fromStdString( xmpp.lastError() ) );
+    	log( xmpp.lastError() );
 }
 
-
+void Wgt::registerClient()
+{
+	std::string host     = ui.host->text().toStdString();
+	int         port     = ui.port->value();
+	std::string nick     = ui.nick->text().toStdString();
+	std::string password = ui.password->text().toStdString();
+	xmpp.setHost( host, port );
+	xmpp.setNick( nick, password );
+	bool res = xmpp.registerClient();
+	log( res ? "succeeded" : "failed" );
+    if ( !res )
+    	log( xmpp.lastError() );
+}
 
 void Wgt::send()
 {
@@ -70,7 +81,7 @@ void Wgt::sendFile()
 void Wgt::status()
 {
     bool conn   = xmpp.isConnected();
-    log( QString( "%1" ).arg( conn ?   "connected" : "NOT connected" ) );
+    log( conn ?   "connected" : "NOT connected" );
 }
 
 void Wgt::clear()
@@ -80,18 +91,19 @@ void Wgt::clear()
 
 void Wgt::slotLog( const QString & stri )
 {
-	log( stri );
+	ui.log->appendPlainText( stri );
 }
 
 void Wgt::messageHandler( const std::string & client, const std::string & stri )
 {
 	QString msg = QString( "%1: \"%2\"" ).arg( client.c_str() ).arg( stri.c_str() );
-	emit sigLog( msg );
+    std::string smsg = msg.toStdString();
+    log( smsg );
 }
 
 void Wgt::logHandler( const std::string & stri )
 {
-	log( QString::fromStdString( stri ) );
+	log( stri );
 }
 
 

@@ -13,11 +13,12 @@ public:
    Wgt( QWidget * parent = 0 );
    ~Wgt();
    
-   void log( const QString & stri );
+   void log( const std::string & stri );
 signals:
     void sigLog( const QString & stri );
 private slots:
     void connectHost();
+    void registerClient();
     void send();
     void sendFile();
     void status();

@@ -4,7 +4,10 @@ set( QT_USE_QTCORE     True )
 set( QT_USE_QTGUI      True )
 include( ${QT_USE_FILE} )
 
-find_package( Boost )
+set( Boost_USE_STATIC_LIBS True )
+set( Boost_USE_MULTITHREADED True )
+find_package( Boost COMPONENTS thread filesystem date_time REQUIRED )
+find_package( Threads )
 
 include_directories( "./src" 
                      ${ROOT}/ircctrl/src 
@@ -29,13 +32,16 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( xmpp_test ${src} )
-#find_library( libresolv NAMES libresolv.a PATHS $ENV{PATH} )
-#find_library( libssl    NAMES libssl.a    PATHS $ENV{PATH} )
-#find_library( libcrypto NAMES libcrypto.a PATHS $ENV{PATH} )
-#find_library( libz      NAMES libz.a      PATHS $ENV{PATH} )
-find_library( libgloox NAMES libgloox.so libgloox.lib PATHS ${ROOT}/3dparty/gloox-1.0/src/.libs )
-target_link_libraries( xmpp_test ${libgloox} ${QT_LIBRARIES} )
-#${libresolv} ${libresolv} ${libssl} ${libcrypto} ${libz} )
+set( libs ${QT_LIBRARIES} ${Boost_LIBRARIES} )
+if ( WIN32 )
+    find_library( libglooxd NAMES gloox.lib PATHS ${ROOT}/3dparty/gloox-1.0/Debug )
+    find_library( libglooxr NAMES gloox.lib PATHS ${ROOT}/3dparty/gloox-1.0/Release )
+    set( libs ${libs} debug ${libglooxd} optimized ${libglooxr} )
+else ( WIN32 )
+    find_library( libgloox NAMES libgloox.so PATHS ${ROOT}/3dparty/gloox-1.0/src/.libs )
+    set( libs ${libs} ${libgloox} )
+endif ( WIN32 )
+target_link_libraries( xmpp_test ${libs} )
 
 
 

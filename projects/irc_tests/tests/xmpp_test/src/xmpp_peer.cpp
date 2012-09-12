@@ -7,7 +7,13 @@ XmppPeer::XmppPeer()
       m_client( 0 ), 
       m_reg( 0 ), 
       m_connected( false ), 
-      m_doRegister( false )
+      m_registered( false ), 
+      m_ibbManager( 0 ), 
+      m_ibb( 0 ), 
+      m_fileSession( 0 ), 
+      m_filePieceSize( 2048 ), 
+      m_isFileSent( false ), 
+      m_isFileSucceeded( false )
 {
     
 }
@@ -43,19 +49,25 @@ void XmppPeer::setNick( const std::string & jid, const std::string & password )
     m_password = password;
 }
 
-void XmppPeer::setRegistering( bool reg )
-{
-    boost::mutex::scoped_lock lock( m_mutex );
-    m_doRegister = reg;
-}
-
 bool XmppPeer::connect()
 {
     //terminate();
     boost::mutex::scoped_lock lock( m_mutex );
-    m_thread = boost::thread( boost::bind( &XmppPeer::run, this ) );
-    //m_cond.wait( lock );
+    m_connected = false;
+    m_doRegister = false;
+    m_thread = boost::thread( boost::bind( &XmppPeer::run, this, false ) );
+    m_cond.wait( lock );
     return m_connected;
+}
+
+bool XmppPeer::registerClient()
+{
+    boost::mutex::scoped_lock lock( m_mutex );
+    m_registered = false;
+    m_doRegister = true;
+    m_thread = boost::thread( boost::bind( &XmppPeer::run, this, true ) );
+    m_cond.wait( lock );
+    return m_registered;
 }
 
 bool XmppPeer::isConnected() const
@@ -72,22 +84,69 @@ void XmppPeer::terminate()
 
 bool XmppPeer::send( const std::string & to, const std::string & msg )
 {
+    //boost::mutex::scoped_lock lock( m_mutex );
     if ( m_session )
     {
         if ( m_session->target().bare() != to )
         {
             m_client->disposeMessageSession( m_session );
-            gloox::JID jid( to );
-            m_session = new gloox::MessageSession( m_client, jid );
-            m_session->registerMessageHandler( this );
+            m_session = 0;
         }
     }
+    if ( !m_session )
+    {
+		std::ostringstream out;
+		out << to << "@" << m_host;
+        gloox::JID jid( out.str() );
+        m_session = new gloox::MessageSession( m_client, jid );
+        m_session->registerMessageHandler( this );
+    }
+
     if ( m_session )
     {
         m_session->send( msg );
         return true;
     }
     return false;
+}
+
+void XmppPeer::setPieceSize( int bytes )
+{
+    boost::mutex::scoped_lock lock( m_mutex );
+    m_filePieceSize = bytes;
+}
+
+void XmppPeer::sendFile( const std::string & to, const char * data, int sz )
+{
+    {
+        boost::mutex::scoped_lock lock( m_mutex );
+        std::ostringstream out;
+	    out << to << "@" << m_host;
+        gloox::JID jid( out.str() );
+        if ( !m_ibbManager )
+        {
+            m_ibbManager = new InBandBytestreamManager( m_client );
+            m_ibbManager->registerInBandBytestreamHandler( this );
+        }
+        m_isFileSent      = false;
+        m_isFileSucceeded = false;
+        m_fileData = data;
+        m_fileSize = sz;
+        m_filePointer = 0;
+    }
+    m_ibbManager->requestInBandBytestream( jid, this );
+}
+
+bool XmppPeer::isFileFinished() const
+{
+    boost::mutex::scoped_lock lock( m_mutex );
+    return m_isFileSent;
+}
+
+bool XmppPeer::isFileSucceeded() const
+{
+    boost::mutex::scoped_lock lock( m_mutex );
+    return m_isFileSucceeded;
 }
 
 const std::string XmppPeer::lastError() const
@@ -98,11 +157,14 @@ const std::string XmppPeer::lastError() const
 
 void XmppPeer::onConnect()
 {
-    boost::mutex::scoped_lock lock( m_mutex );
     if ( m_doRegister )
     	m_reg->fetchRegistrationFields();
-    m_connected = true;
-    //m_cond.notify_one();
+    else
+    {
+        boost::mutex::scoped_lock lock( m_mutex );
+        m_connected = true;
+        m_cond.notify_one();
+    }
     if ( !m_logHandler.empty() )
         m_logHandler( "Connected" );
 }
@@ -111,7 +173,7 @@ void XmppPeer::onDisconnect( gloox::ConnectionError e )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     m_connected = false;
-    //m_cond.notify_one();
+    m_cond.notify_one();
     if ( !m_logHandler.empty() )
     {
         std::ostringstream out;
@@ -130,11 +192,11 @@ bool XmppPeer::onTLSConnect( const gloox::CertInfo & info )
     return true;
 }
 
-void XmppPeer::handleMessage( const gloox::Message & msg, gloox::MessageSession * s )
+void XmppPeer::handleMessage( gloox::Stanza *stanza, gloox::MessageSession * )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_messageHandler.empty() )
-        m_messageHandler( s->target().bare(), msg.body() );
+        m_messageHandler( stanza->from().bare(), stanza->body() );
 }
 
 void XmppPeer::handleMessageEvent( const gloox::JID & from, gloox::MessageEventType type )
@@ -171,31 +233,36 @@ void XmppPeer::handleMessageSession( gloox::MessageSession * s )
 
 void XmppPeer::handleRegistrationFields( const gloox::JID & from, int fields, std::string instructions )
 {
-    boost::mutex::scoped_lock lock( m_mutex );
-    if ( !m_logHandler.empty() )
-    {
-        std::ostringstream out;
-        out << "fields: " << fields;
-        out << ", instructions: \"" << instructions << "\"";
-        m_logHandler( out.str() );
-    }
     gloox::RegistrationFields vals;
-    vals.username = m_jid;
-    vals.password = m_password;
+    {
+        boost::mutex::scoped_lock lock( m_mutex );
+        if ( !m_logHandler.empty() )
+        {
+            std::ostringstream out;
+            out << "fields: " << fields;
+            out << ", instructions: \"" << instructions << "\"";
+            m_logHandler( out.str() );
+        }
+        vals.username = m_jid;
+        vals.password = m_password;
+    }
     m_reg->createAccount( fields, vals );
 }
 
 void XmppPeer::handleRegistrationResult( const gloox::JID & from, gloox::RegistrationResult result )
 {
-    boost::mutex::scoped_lock lock( m_mutex );
-    if ( !m_logHandler.empty() )
     {
-        std::ostringstream out;
-        out << "result: " << result;
-        m_logHandler( out.str() );
+        boost::mutex::scoped_lock lock( m_mutex );
+        if ( !m_logHandler.empty() )
+        {
+            std::ostringstream out;
+            out << "result: " << result;
+            m_logHandler( out.str() );
+        }
+        m_registered = (result == gloox::RegistrationSuccess);
+        m_cond.notify_one();
     }
-//    if ( result != gloox::RegistrationSuccess )
-//    	m_client->disconnect();
+  	m_client->disconnect();
 }
 
 void XmppPeer::handleAlreadyRegistered( const gloox::JID & from )
@@ -207,6 +274,9 @@ void XmppPeer::handleAlreadyRegistered( const gloox::JID & from )
         out << "The account already exists";
         m_logHandler( out.str() );
     }
+    m_registered = true;
+  	m_client->disconnect();
+    m_cond.notify_one();
 }
 
 void XmppPeer::handleDataForm( const gloox::JID & from, const gloox::DataForm & form )
@@ -233,7 +303,7 @@ void XmppPeer::handleOOB( const gloox::JID & from, const gloox::OOB & oob )
     }
 }
 
-void XmppPeer::handleLog( gloox::LogLevel level,gloox:: LogArea area, const std::string & msg )
+void XmppPeer::handleLog( gloox::LogLevel level, gloox::LogArea area, const std::string & msg )
 {
     boost::mutex::scoped_lock lock( m_mutex );
     if ( !m_logHandler.empty() )
@@ -246,19 +316,83 @@ void XmppPeer::handleLog( gloox::LogLevel level,gloox:: LogArea area, const std:
     }
 }
 
-void XmppPeer::run()
+bool XmppPeer::handleIncomingInBandBytestream( const gloox::JID & from, gloox::InBandBytestream * ibb )
+{
+    m_ibb = ibb;
+    if( !m_fileSession )
+        m_fileSession = new MessageSession( m_client, from );
+    m_ibb->attachTo( m_fileSession );
+    m_ibb->registerInBandBytestreamDataHandler( this );
+    return true;
+}
+
+void XmppPeer::handleOutgoingInBandBytestream( const gloox::JID & to,   gloox::InBandBytestream * ibb )
+{
+    m_ibb = ibb;
+    if( !m_fileSession )
+        m_fileSession = new MessageSession( m_client, to );
+    m_ibb->attachTo( m_fileSession );
+    m_ibb->registerInBandBytestreamDataHandler( this );
+    std::strinf stri;
+    stri.resize( m_filePieceSize );
+    for ( int i=0; i<m_fileSize; i+=m_filePieceSize )
+    {
+        int sz = m_fileSize - i;
+        sz = ( m_filePieceSize <= sz ) ? m_filePieceSize : sz;
+        stri.resize( sz );
+        memcpy( const_cast<char *>( stri.c_str() ), m_fileData+i, sizeof( char ) * sz );
+        if ( !m_ibb->sendBlock( stri ) )
+        {
+            m_fileFinished = true;
+            m_fileSucceeded = false;
+            return;
+        }
+    }
+    m_fileFinished = true;
+    m_fileSucceeded = true;
+}
+
+void XmppPeer::handleInBandBytestreamError( const gloox::JID& /*remote*/, gloox::StanzaError /*se*/ )
+{
+    m_fileFinished = true;
+    m_fileSucceeded = false;
+}
+
+void XmppPeer::handleInBandData( const std::string& data, const std::string& sid )
+{
+}
+
+void XmppPeer::handleInBandError( const std::string& /*sid*/, const gloox::JID& /*remote*/, StanzaError /*se*/ )
+{
+}
+
+void XmppPeer::handleInBandClose( const std::string& /*sid*/, const gloox::JID& /*from*/ )
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+void XmppPeer::run( bool reg )
 {
 	//boost::mutex::scoped_lock lock( m_mutex );
-	if ( !m_doRegister )
+	if ( !reg )
 	{
 		std::ostringstream out;
 		out << m_jid << "@" << m_host;
 		gloox::JID jid( out.str() );
 		m_client = new gloox::Client( jid, m_password );
 		m_client->setServer( m_host );
-	    m_client->disco()->setVersion( "messageTest", gloox::GLOOX_VERSION, "Linux" );
-	    m_client->disco()->setIdentity( "client", "bot" );
-	    m_client->disco()->addFeature( gloox::XMLNS_CHAT_STATES );
+	    //m_client->disco()->setVersion( "messageTest", gloox::GLOOX_VERSION, "Linux" );
+	    //m_client->disco()->setIdentity( "client", "bot" );
+	    //m_client->disco()->addFeature( gloox::XMLNS_CHAT_STATES );
 	}
 	else
 	{
@@ -269,7 +403,7 @@ void XmppPeer::run()
 		m_client->setPort( m_port );
 	m_client->registerConnectionListener( this );
 	m_client->registerMessageSessionHandler( this, 0 );
-	if ( m_doRegister )
+	if ( reg )
 	{
 		m_reg = new gloox::Registration( m_client );
 		m_reg->registerRegistrationHandler( this );

@@ -1,5 +1,5 @@
 
-/*#include <QtGui>
+#include <QtGui>
 #include "wgt.h"
 
 int main( int argc, char * argv[] )
@@ -9,8 +9,9 @@ int main( int argc, char * argv[] )
     w->show();
     int res = app.exec();
     return res;
-}*/
+}
 
+/*
 #include "client.h"
 #include "messagesessionhandler.h"
 #include "messageeventhandler.h"
@@ -56,9 +57,9 @@ class MessageTest : public MessageSessionHandler, ConnectionListener, LogHandler
       j = new Client( jid, "12345" );
       j->registerConnectionListener( this );
       j->registerMessageSessionHandler( this, 0 );
-      j->disco()->setVersion( "messageTest", GLOOX_VERSION, "Linux" );
-      j->disco()->setIdentity( "client", "bot" );
-      j->disco()->addFeature( XMLNS_CHAT_STATES );
+      //j->disco()->setVersion( "messageTest", GLOOX_VERSION, "Linux" );
+      //j->disco()->setIdentity( "client", "bot" );
+      //j->disco()->addFeature( XMLNS_CHAT_STATES );
       //StringList ca;
       //ca.push_back( "/path/to/cacert.crt" );
       //j->setCACerts( ca );
@@ -122,7 +123,7 @@ class MessageTest : public MessageSessionHandler, ConnectionListener, LogHandler
       return true;
     }
 
-    virtual void handleMessage( Stanza *stanza, MessageSession * /*session*/ )
+    virtual void handleMessage( Stanza *stanza, MessageSession * )
     {
       printf( "type: %d, subject: %s, message: %s, thread id: %s\n", stanza->subtype(),
               stanza->subject().c_str(), stanza->body().c_str(), stanza->thread().c_str() );
@@ -186,10 +187,11 @@ class MessageTest : public MessageSessionHandler, ConnectionListener, LogHandler
     ChatStateFilter *m_chatStateFilter;
 };
 
-int main( int /*argc*/, char** /*argv*/ )
+int main( int argc, char** argv )
 {
   MessageTest *r = new MessageTest();
   r->start();
   delete( r );
   return 0;
 }
+*/

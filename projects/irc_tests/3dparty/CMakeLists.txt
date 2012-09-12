@@ -1,5 +1,6 @@
 add_subdirectory( "./lua-5.1.5" )
-if ( WIN32 )
-    add_subdirectory( "./libircclient-1.6" )
-    add_subdirectory( "./gloox-1.0" )
-endif ( WIN32 )
+#if ( WIN32 )
+#    add_subdirectory( "./libircclient-1.6" )
+#    add_subdirectory( "./gloox-1.0" )
+#endif ( WIN32 )
+
