@@ -428,7 +428,8 @@ void XmppPeer::run( bool reg )
 		out << m_jid << "@" << m_host;
 		gloox::JID jid( out.str() );
 		m_client = new gloox::Client( jid, m_password );
-		m_client->setServer( m_host );
+		//m_client->setServer( m_host );
+        //m_client->setForceNonSasl();
 	    //m_client->disco()->setVersion( "messageTest", gloox::GLOOX_VERSION, "Linux" );
 	    //m_client->disco()->setIdentity( "client", "bot" );
 	    //m_client->disco()->addFeature( gloox::XMLNS_CHAT_STATES );
