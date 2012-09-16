@@ -31,7 +31,7 @@ set( src ${src} ${uiSrc} )
 QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
-add_library( peer_qxmpp STATIC ${src} )
+add_executable( qxmpp_test STATIC ${src} )
 set( libs ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
 if ( WIN32 )
     find_library( qxmppd NAMES libqxmpp_d.lib PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
@@ -41,7 +41,7 @@ else ( WIN32 )
     find_library( qxmpp NAMES  libqxmpp.a PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
     set( libs ${libs} ${qxmpp} )
 endif ( WIN32 )
-target_link_libraries( peer_qxmpp ${libs} )
+target_link_libraries( qxmpp_test ${libs} )
 
 
 
