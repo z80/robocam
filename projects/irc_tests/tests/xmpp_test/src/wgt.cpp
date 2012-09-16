@@ -72,7 +72,15 @@ void Wgt::sendFile()
 	if ( fileName.length() > 0 )
 	{
 		std::string to   = ui.to->text().toStdString();
-		std::string f = fileName.toStdString();
+        QFile f( fileName );
+        if ( f.open( QIODevice::ReadOnly ) )
+        {
+            m_data = f.readAll();
+            xmpp.sendFile( to, m_data.data(), m_data.size() );
+        }
+        else
+            log( "ERROR: failed to open file!" );
+		//std::string f = fileName.toStdString();
 		//bool res = xmpp.sendDccFile( to, f );
 		//log( QString( "Sending \'%1\' to %2" ).arg( f.c_str() ).arg( to.c_str() ) );
 	}

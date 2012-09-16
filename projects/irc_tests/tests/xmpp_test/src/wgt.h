@@ -31,6 +31,7 @@ public:
 private:
     Ui_Wgt ui;
     XmppPeer xmpp;
+    QByteArray m_data;
 };
 
 
