@@ -4,6 +4,8 @@ QT += network xml
 QXMPP_VERSION = 0.7.3
 QXMPP_INCLUDEPATH = $$PWD/src/base $$PWD/src/client $$PWD/src/server
 
+CONFIG += debug
+
 # Determine library name
 CONFIG(debug, debug|release) {
     QXMPP_LIBRARY_NAME = qxmpp_d
