@@ -14,11 +14,17 @@ class QxmppPeer: QXmppClient
 {
     Q_OBJECT
 public:
+    typedef boost::function<void (const std::string &)> TLogHandler;
+    typedef boost::function<void (const std::string &, const std::string &)> TMessageHandler;
+
     QxmppPeer( QObject * parent = 0 );
     ~QxmppPeer();
 
-    bool connect( const std::string & jid, const std::string & password );
-    bool isConnected() const;
+    void setLogHandler( TLogHandler handler );
+    void setMessageHandler( TMessageHandler handler );
+
+    void connect( const std::string & jid, const std::string & password );
+    void terminate();
     void send( const std::string & jid, const std::string & stri );
 
 public slots:
@@ -28,7 +34,8 @@ public slots:
     void messageReceived( const QXmppMessage & );
 
 private:
-
+    TLogHandler     m_logHandler;
+    TMessageHandler m_messageHandler;
 };
 
 
