@@ -19,7 +19,7 @@ class QxmppPeer: QXmppClient
 public:
     typedef boost::function<void (const std::string &)> TLogHandler;
     typedef boost::function<void (const std::string &, const std::string &)> TMessageHandler;
-    typedef boost::function<void (const std::string &, QBuffer &)> TFileHandler;
+    typedef boost::function<void (const std::string &, QIODevice &)> TFileHandler;
 
     QxmppPeer( QObject * parent = 0 );
     ~QxmppPeer();
@@ -36,6 +36,7 @@ public:
     void sendFile( const std::string & jid, const std::string fileName, QIODevice * dev );
 
 public slots:
+    void logMessage( QXmppLogger::MessageType type, const QString & text );
     void connected();
     void disconnected();
     void error( QXmppClient::Error );
@@ -43,6 +44,7 @@ public slots:
     // File transfer slots.
     void trError(QXmppTransferJob::Error error);
     void trFileReceived(QXmppTransferJob *job);
+    void trJobStarted(QXmppTransferJob * job);
     void trFinished();
     void trPresenceReceived(const QXmppPresence &presence);
     void trProgress(qint64 done, qint64 total);
@@ -52,7 +54,7 @@ private:
     TMessageHandler m_messageHandler;
     TFileHandler    m_fileHandler;
     QXmppTransferManager * m_trManager;
-    QHash<QXmppTransferJob *, QBuffer *> m_hash;
+    QHash<QXmppTransferJob *, QIODevice *> m_hash;
 };
 
 

@@ -19,6 +19,7 @@ Wgt::Wgt( QWidget * parent )
 
     xmpp.setMessageHandler( boost::bind( &Wgt::messageHandler, this, _1, _2 ) );
     xmpp.setLogHandler( boost::bind( &Wgt::logHandler, this, _1 ) );
+    xmpp.setFileHandler( boost::bind( &Wgt::fileHandler, this, _1, _2 ) );
 }
 
 Wgt::~Wgt()
@@ -68,20 +69,22 @@ void Wgt::send()
 
 void Wgt::sendFile()
 {
-	//QString fileName = QFileDialog::getOpenFileName( this,
-	//     tr("Open File"), "", "" );
-	//if ( fileName.length() > 0 )
-	//{
-	//	std::string to   = ui.to->text().toStdString();
- //       QFile f( fileName );
- //       if ( f.open( QIODevice::ReadOnly ) )
- //       {
- //           m_data = f.readAll();
- //           xmpp.sendFile( to, m_data.data(), m_data.size() );
- //       }
- //       else
- //           log( "ERROR: failed to open file!" );
-	//}
+	QString fileName = QFileDialog::getOpenFileName( this,
+	     tr("Open File"), "", "" );
+	if ( fileName.length() > 0 )
+	{
+		std::string to   = ui.to->text().toStdString();
+        QFile f( fileName );
+        if ( f.open( QIODevice::ReadOnly ) )
+        {
+            m_data = f.readAll();
+            QBuffer * buf = new QBuffer( &m_data );
+            f.close();
+            xmpp.sendFile( to, fileName.toStdString(), buf );
+        }
+        else
+            log( "ERROR: failed to open file!" );
+	}
 }
 
 void Wgt::status()
@@ -112,6 +115,12 @@ void Wgt::logHandler( const std::string & stri )
 	log( stri );
 }
 
+void Wgt::fileHandler( const std::string & fileName, QIODevice & dev )
+{
+    QString msg = QString( "%1, size: %2" ).arg( fileName.c_str() ).arg( static_cast<int>( dev.size() ) );
+    std::string smsg = msg.toStdString();
+    log( smsg );
+}
 
 
 

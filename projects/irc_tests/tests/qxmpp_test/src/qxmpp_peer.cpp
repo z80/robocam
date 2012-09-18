@@ -1,13 +1,20 @@
 
 #include "qxmpp_peer.h"
 #include "QXmppMessage.h"
-#include "QXmppMessage.h"
+#include "QXmppLogger.h"
 #include <sstream>
 
 QxmppPeer::QxmppPeer( QObject * parent )
 {
-    bool check = QObject::connect( this, SIGNAL( connected() ), 
-                                         SLOT( connected() ) );
+    QXmppLogger::getLogger()->setLoggingType( QXmppLogger::SignalLogging );
+
+    bool check;
+
+    check = QObject::connect( QXmppLogger::getLogger(), SIGNAL(message(QXmppLogger::MessageType, const QString &)), 
+                              this,                     SLOT(logMessage(QXmppLogger::MessageType, const QString &)) );
+
+    check = QObject::connect( this, SIGNAL( connected() ), 
+                                    SLOT( connected() ) );
     Q_ASSERT(check);
 
     check = QObject::connect( this, SIGNAL( disconnected() ), 
@@ -27,6 +34,10 @@ QxmppPeer::QxmppPeer( QObject * parent )
 
     check = connect(this, SIGNAL( presenceReceived(QXmppPresence) ),
                     this, SLOT( trPresenceReceived(QXmppPresence) ) );
+    Q_ASSERT(check);
+
+    check = connect( m_trManager, SIGNAL(jobStarted(QXmppTransferJob*) ),
+                     this, SLOT( trJobStarted(QXmppTransferJob*) ) );
     Q_ASSERT(check);
 
     check = connect( m_trManager, SIGNAL(fileReceived(QXmppTransferJob*) ),
@@ -63,9 +74,40 @@ void QxmppPeer::send( const std::string & jid, const std::string & stri )
 
 void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, QIODevice * dev )
 {
+    if ( !dev->isOpen() )
+    {
+        bool res = dev->open( QIODevice::ReadOnly );
+        if ( !res )
+        {
+            if ( !m_logHandler.empty() )
+            {
+                std::ostringstream out;
+                out << "Error: failed to open QIODevice for reading";
+                m_logHandler( out.str() );
+            }
+        }
+    }
     QXmppTransferFileInfo info;
-    info.setName( QString::fromStdString( fileName ) );
+    info.setName( /*QString::fromStdString( fileName )*/ "aaa.txt" );
+    info.setSize( dev->size() );
     QXmppTransferJob * job = m_trManager->sendFile( QString::fromStdString( jid ), dev, info );
+
+    bool check;
+    check = connect(job, SIGNAL( error(QXmppTransferJob::Error) ),
+                    this, SLOT( trError(QXmppTransferJob::Error) ) );
+    Q_ASSERT(check);
+
+    check = connect(job, SIGNAL( finished() ),
+                    this, SLOT( trFinished() ) );
+    Q_ASSERT(check);
+
+    check = connect(job, SIGNAL( progress(qint64,qint64) ),
+                    this, SLOT( trProgress(qint64,qint64) ) );
+    Q_ASSERT( check );
+
+    Q_UNUSED( check );
+
+    m_hash[ job ] = dev;
 }
 
 void QxmppPeer::connectHost( const std::string & jid, const std::string & password )
@@ -82,6 +124,17 @@ bool QxmppPeer::isConnected() const
 void QxmppPeer::terminate()
 {
     disconnectFromServer();
+}
+
+void QxmppPeer::logMessage( QXmppLogger::MessageType type, const QString & text )
+{
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "Log(" << type << "): ";
+        out << text.toStdString();
+        m_logHandler( out.str() );
+    }
 }
 
 void QxmppPeer::connected()
@@ -133,10 +186,10 @@ void QxmppPeer::trError( QXmppTransferJob::Error error )
     QXmppTransferJob * job = qobject_cast<QXmppTransferJob *>( sender() );
     if ( job )
     {
-        QHash<QXmppTransferJob *, QBuffer *>::iterator iter = m_hash.find( job );
+        QHash<QXmppTransferJob *, QIODevice *>::iterator iter = m_hash.find( job );
         if ( iter != m_hash.end() )
         {
-            QBuffer * buf = iter.value();
+            QIODevice * buf = iter.value();
             buf->deleteLater();
             m_hash.erase( iter );
         }
@@ -177,6 +230,17 @@ void QxmppPeer::trFileReceived( QXmppTransferJob * job )
     m_hash[ job ] = buffer;
 }
 
+void QxmppPeer::trJobStarted(QXmppTransferJob * job)
+{
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "Job started: ";
+        out << job->jid().toStdString();
+        m_logHandler( out.str() );
+    }
+}
+
 /// A file transfer finished.
 void QxmppPeer::trFinished()
 {
@@ -190,11 +254,11 @@ void QxmppPeer::trFinished()
     QXmppTransferJob * job = qobject_cast<QXmppTransferJob *>( sender() );
     if ( job )
     {
-        QHash<QXmppTransferJob *, QBuffer *>::iterator iter = m_hash.find( job );
+        QHash<QXmppTransferJob *, QIODevice *>::iterator iter = m_hash.find( job );
         if ( iter != m_hash.end() )
         {
             std::string fileName = job->fileInfo().name().toStdString();
-            QBuffer * buf = iter.value();
+            QIODevice * buf = iter.value();
             if ( !m_fileHandler.empty() )
                 m_fileHandler( fileName, *buf );
             buf->deleteLater();

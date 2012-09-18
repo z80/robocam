@@ -28,6 +28,7 @@ public:
     // Message and event handlers...
     void messageHandler( const std::string & client, const std::string & stri );
     void logHandler( const std::string & stri );
+    void fileHandler( const std::string & fileName, QIODevice & dev );
 private:
     Ui_Wgt ui;
     QxmppPeer xmpp;
