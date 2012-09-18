@@ -219,7 +219,7 @@ void QxmppPeer::trFileReceived( QXmppTransferJob * job )
     Q_ASSERT(check);
 
     check = connect( job, SIGNAL( progress(qint64,qint64) ),
-                     this, SLOT( slotProgress(qint64,qint64) ) );
+                     this, SLOT( trProgress(qint64,qint64) ) );
     Q_ASSERT(check);
 
     // allocate a buffer to receive the file
