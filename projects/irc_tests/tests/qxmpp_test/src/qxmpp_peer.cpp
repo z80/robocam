@@ -1,28 +1,44 @@
 
 #include "qxmpp_peer.h"
 #include "QXmppMessage.h"
+#include "QXmppMessage.h"
 #include <sstream>
 
 QxmppPeer::QxmppPeer( QObject * parent )
 {
-    bool check = QObject::connect( this, SIGNAL(connected()), SLOT(connected()) );
+    bool check = QObject::connect( this, SIGNAL( connected() ), 
+                                         SLOT( connected() ) );
     Q_ASSERT(check);
 
-    check = QObject::connect( this, SIGNAL(disconnected()), SLOT(disconnected()) );
+    check = QObject::connect( this, SIGNAL( disconnected() ), 
+                                    SLOT( disconnected() ) );
     Q_ASSERT(check);
 
-    check = QObject::connect( this, SIGNAL(error(QXmppClient::Error)), SLOT(error(QXmppClient::Error)) );
+    check = QObject::connect( this, SIGNAL( error(QXmppClient::Error) ), 
+                                    SLOT( error(QXmppClient::Error) ) );
     Q_ASSERT(check);
 
-    check = QObject::connect(this, SIGNAL(messageReceived(QXmppMessage)),
-        SLOT(messageReceived(QXmppMessage)));
+    check = QObject::connect(this, SIGNAL( messageReceived(QXmppMessage) ),
+                                     SLOT( messageReceived(QXmppMessage) ) );
     Q_ASSERT(check);
+
+    m_trManager = new QXmppTransferManager();
+    addExtension( m_trManager );
+
+    check = connect(this, SIGNAL( presenceReceived(QXmppPresence) ),
+                    this, SLOT( trPresenceReceived(QXmppPresence) ) );
+    Q_ASSERT(check);
+
+    check = connect( m_trManager, SIGNAL(fileReceived(QXmppTransferJob*) ),
+                     this, SLOT( trFileReceived(QXmppTransferJob*) ) );
+    Q_ASSERT(check);
+
     Q_UNUSED(check);
 }
 
 QxmppPeer::~QxmppPeer()
 {
-
+    m_trManager->deleteLater();
 }
 
 void QxmppPeer::setLogHandler( TLogHandler handler )
@@ -35,14 +51,32 @@ void QxmppPeer::setMessageHandler( TMessageHandler handler )
     m_messageHandler = handler;
 }
 
+void QxmppPeer::setFileHandler( TFileHandler handler )
+{
+    m_fileHandler = handler;
+}
+
 void QxmppPeer::send( const std::string & jid, const std::string & stri )
 {
     sendMessage( QString::fromStdString( jid ), QString::fromStdString( stri ) );
 }
 
-void QxmppPeer::connect( const std::string & jid, const std::string & password )
+void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, QIODevice * dev )
+{
+    QXmppTransferFileInfo info;
+    info.setName( QString::fromStdString( fileName ) );
+    QXmppTransferJob * job = m_trManager->sendFile( QString::fromStdString( jid ), dev, info );
+}
+
+void QxmppPeer::connectHost( const std::string & jid, const std::string & password )
 {
 	connectToServer( QString::fromStdString( jid ), QString::fromStdString( password ) );
+}
+
+bool QxmppPeer::isConnected() const
+{
+    bool res = QXmppClient::isConnected();
+    return res;
 }
 
 void QxmppPeer::terminate()
@@ -84,5 +118,136 @@ void QxmppPeer::messageReceived(const QXmppMessage& message)
     if ( !m_messageHandler.empty() )
         m_messageHandler( from.toStdString(), msg.toStdString() );
 }
+
+/// A file transfer failed.
+void QxmppPeer::trError( QXmppTransferJob::Error error )
+{
+    //qDebug() << "Transmission failed:" << error;
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "Transmission failed: ";
+        out << error;
+        m_logHandler( out.str() );
+    }
+    QXmppTransferJob * job = qobject_cast<QXmppTransferJob *>( sender() );
+    if ( job )
+    {
+        QHash<QXmppTransferJob *, QBuffer *>::iterator iter = m_hash.find( job );
+        if ( iter != m_hash.end() )
+        {
+            QBuffer * buf = iter.value();
+            buf->deleteLater();
+            m_hash.erase( iter );
+        }
+    }
+}
+
+/// A file transfer request was received.
+void QxmppPeer::trFileReceived( QXmppTransferJob * job )
+{
+    bool check;
+    Q_UNUSED(check);
+
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "Got transfer request from: ";
+        out << job->jid().toStdString();
+        m_logHandler( out.str() );
+    }
+
+    check = connect( job, SIGNAL( error(QXmppTransferJob::Error) ),
+                     this, SLOT( trError(QXmppTransferJob::Error) ) );
+    Q_ASSERT(check);
+
+    check = connect(job, SIGNAL( finished() ),
+                    this, SLOT( trFinished()) );
+    Q_ASSERT(check);
+
+    check = connect( job, SIGNAL( progress(qint64,qint64) ),
+                     this, SLOT( slotProgress(qint64,qint64) ) );
+    Q_ASSERT(check);
+
+    // allocate a buffer to receive the file
+    QBuffer * buffer = new QBuffer( this );
+    buffer->open( QIODevice::WriteOnly );
+    job->accept( buffer );
+
+    m_hash[ job ] = buffer;
+}
+
+/// A file transfer finished.
+void QxmppPeer::trFinished()
+{
+    //qDebug() << "Transmission finished";
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "Transmission finished";
+        m_logHandler( out.str() );
+    }
+    QXmppTransferJob * job = qobject_cast<QXmppTransferJob *>( sender() );
+    if ( job )
+    {
+        QHash<QXmppTransferJob *, QBuffer *>::iterator iter = m_hash.find( job );
+        if ( iter != m_hash.end() )
+        {
+            std::string fileName = job->fileInfo().name().toStdString();
+            QBuffer * buf = iter.value();
+            if ( !m_fileHandler.empty() )
+                m_fileHandler( fileName, *buf );
+            buf->deleteLater();
+            m_hash.erase( iter );
+        }
+    }
+}
+
+/// A presence was received
+void QxmppPeer::trPresenceReceived(const QXmppPresence &presence)
+{
+    //bool check;
+    //Q_UNUSED(check);
+
+    //const QLatin1String recipient("qxmpp.test2@gmail.com");
+
+    //// if we are the recipient, or if the presence is not from the recipient,
+    //// do nothing
+    //if (QXmppUtils::jidToBareJid(configuration().jid()) == recipient ||
+    //    QXmppUtils::jidToBareJid(presence.from()) != recipient ||
+    //    presence.type() != QXmppPresence::Available)
+    //    return;
+
+    //// send the file and connect to the job's signals
+    //QXmppTransferJob * job = transferManager->sendFile( presence.from(), "xmppClient.cpp" );
+
+    //check = connect(job, SIGNAL( error(QXmppTransferJob::Error) ),
+    //                this, SLOT( trError(QXmppTransferJob::Error) ) );
+    //Q_ASSERT(check);
+
+    //check = connect(job, SIGNAL( finished() ),
+    //                this, SLOT( trFinished() ) );
+    //Q_ASSERT(check);
+
+    //check = connect(job, SIGNAL( progress(qint64,qint64) ),
+    //                this, SLOT( trProgress(qint64,qint64) ) );
+    //Q_ASSERT( check );
+}
+
+/// A file transfer has made progress.
+void QxmppPeer::trProgress(qint64 done, qint64 total)
+{
+    //qDebug() << "Transmission progress:" << done << "/" << total;
+    if ( !m_logHandler.empty() )
+    {
+        std::ostringstream out;
+        out << "Transmission progress: ";
+        out << done << " of " << total;
+        m_logHandler( out.str() );
+    }
+}
+
+
+
 
 

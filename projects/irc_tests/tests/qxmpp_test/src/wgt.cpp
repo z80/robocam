@@ -36,26 +36,27 @@ void Wgt::connectHost()
 	int         port     = ui.port->value();
 	std::string nick     = ui.nick->text().toStdString();
 	std::string password = ui.password->text().toStdString();
-	xmpp.setHost( host, port );
-	xmpp.setNick( nick, password );
-	bool res = xmpp.connect();
-	log( res ? "succeeded" : "failed" );
-    if ( !res )
-    	log( xmpp.lastError() );
+	//xmpp.setHost( host, port );
+	//xmpp.setNick( nick, password );
+    std::ostringstream out;
+    out << nick << "@" << host;
+    if ( port > 0 )
+        out << ":" << port;
+	xmpp.connectHost( out.str(), password );
 }
 
 void Wgt::registerClient()
 {
-	std::string host     = ui.host->text().toStdString();
-	int         port     = ui.port->value();
-	std::string nick     = ui.nick->text().toStdString();
-	std::string password = ui.password->text().toStdString();
-	xmpp.setHost( host, port );
-	xmpp.setNick( nick, password );
-	bool res = xmpp.registerClient();
-	log( res ? "succeeded" : "failed" );
-    if ( !res )
-    	log( xmpp.lastError() );
+	//std::string host     = ui.host->text().toStdString();
+	//int         port     = ui.port->value();
+	//std::string nick     = ui.nick->text().toStdString();
+	//std::string password = ui.password->text().toStdString();
+	//xmpp.setHost( host, port );
+	//xmpp.setNick( nick, password );
+	//bool res = xmpp.registerClient();
+	//log( res ? "succeeded" : "failed" );
+ //   if ( !res )
+ //   	log( xmpp.lastError() );
 }
 
 void Wgt::send()
@@ -67,23 +68,20 @@ void Wgt::send()
 
 void Wgt::sendFile()
 {
-	QString fileName = QFileDialog::getOpenFileName( this,
-	     tr("Open File"), "", "" );
-	if ( fileName.length() > 0 )
-	{
-		std::string to   = ui.to->text().toStdString();
-        QFile f( fileName );
-        if ( f.open( QIODevice::ReadOnly ) )
-        {
-            m_data = f.readAll();
-            xmpp.sendFile( to, m_data.data(), m_data.size() );
-        }
-        else
-            log( "ERROR: failed to open file!" );
-		//std::string f = fileName.toStdString();
-		//bool res = xmpp.sendDccFile( to, f );
-		//log( QString( "Sending \'%1\' to %2" ).arg( f.c_str() ).arg( to.c_str() ) );
-	}
+	//QString fileName = QFileDialog::getOpenFileName( this,
+	//     tr("Open File"), "", "" );
+	//if ( fileName.length() > 0 )
+	//{
+	//	std::string to   = ui.to->text().toStdString();
+ //       QFile f( fileName );
+ //       if ( f.open( QIODevice::ReadOnly ) )
+ //       {
+ //           m_data = f.readAll();
+ //           xmpp.sendFile( to, m_data.data(), m_data.size() );
+ //       }
+ //       else
+ //           log( "ERROR: failed to open file!" );
+	//}
 }
 
 void Wgt::status()

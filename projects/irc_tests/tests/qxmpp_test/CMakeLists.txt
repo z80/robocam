@@ -3,11 +3,12 @@ find_package( Qt4 )
 set( QT_USE_QTCORE     True )
 set( QT_USE_QTGUI      True )
 set( QT_USE_QTNETWORK  True )
+set( QT_USE_QTXML      True )
 include( ${QT_USE_FILE} )
 
 set( Boost_USE_STATIC_LIBS True )
 set( Boost_USE_MULTITHREADED True )
-find_package( Boost COMPONENTS thread filesystem REQUIRED )
+find_package( Boost COMPONENTS thread filesystem date_time REQUIRED )
 find_package( Threads )
 
 include_directories( "./src" 
@@ -35,16 +36,18 @@ set( src ${src} ${qrcSrc} )
 
 add_executable( qxmpp_test ${src} )
 set( libs ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
+set( defs QXMPP_STATIC )
 if ( WIN32 )
     find_library( qxmpp_d NAMES qxmpp_d.lib PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
     find_library( qxmpp   NAMES qxmpp.lib   PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
-    set( libs ${libs} debug ${qxmpp_d} optimized ${qxmpp} )
+    set( libs ${libs} debug ${qxmpp_d} optimized ${qxmpp} dnsapi.lib ws2_32.lib )
 else ( WIN32 )
-    find_library( qxmpp NAMES  libqxmpp.a PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
+    find_library( qxmpp   NAMES  libqxmpp.a PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
     find_library( qxmpp_d NAMES libqxmpp_d.a PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
-    set( libs ${libs} debug ${qxmpp_d} optimized ${qxmpp} )
+    set( libs ${libs} debug ${qxmpp_d} optimized ${qxmpp} libesock.o )
 endif ( WIN32 )
 target_link_libraries( qxmpp_test ${libs} )
+set_property( TARGET qxmpp_test PROPERTY COMPILE_DEFINITIONS ${defs} )
 
 
 
