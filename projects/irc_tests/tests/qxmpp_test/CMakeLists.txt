@@ -12,6 +12,7 @@ find_package( Boost COMPONENTS thread filesystem date_time REQUIRED )
 find_package( Threads )
 
 include_directories( "./src" 
+                     "${ROOT}/peer_abst/src" 
                      ${ROOT}/3dparty/qxmpp-0.7.3/src/base 
                      ${ROOT}/3dparty/qxmpp-0.7.3/src/client 
                      ${ROOT}/3dparty/qxmpp-0.7.3/src/server 
@@ -35,7 +36,7 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( qxmpp_test ${src} )
-set( libs ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
+set( libs ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} peer_abst )
 set( defs QXMPP_STATIC )
 if ( WIN32 )
     find_library( qxmpp_d NAMES qxmpp_d.lib PATHS ${ROOT}/3dparty/qxmpp-0.7.3/src )
