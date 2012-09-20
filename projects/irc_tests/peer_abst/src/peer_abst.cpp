@@ -213,6 +213,32 @@ void PeerAbst::invokeCmd( const std::string & cmd )
 	pd->invokeCmd( cmd );
 }
 
+void PeerAbst::setInFileHandler( TInFileHandler handler )
+{
+    pd->inFileHandler = handler;
+}
+
+void PeerAbst::setAccFileHandler( TAccFileHandler handler )
+{
+    pd->accFileHandler = handler;
+}
+
+QIODevice * PeerAbst::acceptFile( const std::string & fileName )
+{
+    if ( !pd->inFileHandler.empty() )
+        return pd->inFileHandler( fileName );
+    return 0;
+}
+
+void PeerAbst::fileDownloaded( const std::string & fileName, QIODevice * fileData )
+{
+    if ( !pd->accFileHandler.empty() )
+        pd->accFileHandler( fileName, fileData );
+    else
+        fileData->deleteLater();
+}
+
+
 
 
 

@@ -25,6 +25,10 @@ public:
 	// File io handlers;
 	void setInFileHandler( TInFileHandler handler );
 	void setAccFileHandler( TAccFileHandler handler );
+protected:
+    // Should be called in appropriate places when file comes in and when it is downoaded.
+    QIODevice * acceptFile( const std::string & fileName );
+    void fileDownloaded( const std::string & fileName, QIODevice * );
 
 public:
 	virtual bool isConnected() = 0;
