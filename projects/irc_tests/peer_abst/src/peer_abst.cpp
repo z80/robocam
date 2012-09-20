@@ -1,5 +1,6 @@
 
 #include "peer_abst.h"
+#include <QtCore>
 
 #include <queue>
 #include "lua.hpp"
@@ -27,6 +28,9 @@ public:
 	boost::condition luaCond;
 	std::queue<std::string> luaCommands;
 	bool do_stop, do_terminate;
+	
+	TInFileHandler  inFileHandler;
+	TAccFileHandler accFileHandler;
 
 	void luaLoop( TInit init );
 	void stop();
