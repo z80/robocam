@@ -110,7 +110,7 @@ PeerQxmpp::PeerQxmpp( const std::string & iniFile, PeerAbst::TInit init )
 		boost::property_tree::read_ini( iniFile, config );
         
 		//const boost::property_tree::ptree & sect = config.get_child( "main" );
-        for ( boost::property_tree::ptree::iterator & i=config.begin(); i!=config.end(); i++ )
+        for ( boost::property_tree::ptree::iterator i=config.begin(); i!=config.end(); i++ )
         {
             std::string key = i->first;
             boost::property_tree::ptree sect = config.get_child( key );
