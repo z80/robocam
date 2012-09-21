@@ -35,7 +35,8 @@ static int print( lua_State * L )
 	lua_gettable( L, LUA_REGISTRYINDEX );
 	Wgt * w = reinterpret_cast<Wgt *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
 	lua_pop( L, 1 );
-	w->print( L );
+	int res = w->print( L );
+    return res;
 }
 
 void Wgt::init( lua_State * L )
@@ -55,6 +56,7 @@ int Wgt::print( lua_State * L )
 		QString stri = lua_tostring( L, i );
 		log( stri.toStdString() );
 	}
+    return 0;
 }
 
 void Wgt::log( const std::string & stri )

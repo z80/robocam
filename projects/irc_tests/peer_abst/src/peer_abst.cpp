@@ -82,9 +82,10 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 		{
 			pd->pendingCmd = lua_tostring( L, -1 );
 			// Send back an error message.
-            std::ostringstream out;
-            out << "print( [[" << pd->pendingCmd << "]] )";
-			pd->peer->send( out.str() );
+            //std::ostringstream out;
+            //out << "print( [[" << pd->pendingCmd << "]] )";
+			//pd->peer->send( out.str() );
+            pd->peer->send( pd->pendingCmd );
 			// And pop that message.
 			lua_pop( L, 2 );
 		}
@@ -95,9 +96,10 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 			{
 				pd->pendingCmd = lua_tostring( L, -1 );
 				// Send back an error message.
-                std::ostringstream out;
-                out << "print( [[" << pd->pendingCmd << "]] )";
-				pd->peer->send( out.str() );
+                //std::ostringstream out;
+                //out << "print( [[" << pd->pendingCmd << "]] )";
+				//pd->peer->send( out.str() );
+                pd->peer->send( pd->pendingCmd );
 				// And pop that message.
 				lua_pop( L, 1 );
 			}
@@ -137,10 +139,11 @@ void PeerAbst::PD::luaLoop( TInit init )
 		{ 0,             0 }
 	};
 	luaL_register( L, 0, reg );*/
-	lua_register( L, "msleep", ::msleep );
+	lua_register( L, "msleep",      ::msleep );
 	lua_register( L, "isConnected", ::isConnected );
-	lua_register( L, "send", ::send );
-	lua_register( L, "stop", ::stop );
+	lua_register( L, "send",        ::send );
+    lua_register( L, "sendFile",    ::sendFile );
+	lua_register( L, "stop",        ::stop );
 
 	if ( !init.empty() )
 		init( L );
