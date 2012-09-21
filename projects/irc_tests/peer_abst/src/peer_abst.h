@@ -26,15 +26,16 @@ public:
 	void setInFileHandler( TInFileHandler handler );
 	void setAccFileHandler( TAccFileHandler handler );
 protected:
-    // Should be called in appropriate places when file comes in and when it is downoaded.
-    QIODevice * acceptFile( const std::string & fileName );
-    void fileDownloaded( const std::string & fileName, QIODevice * );
+    // Should be called in appropriate places when file comes in and when it is downloaded.
+    QIODevice * inFile( const std::string & fileName );
+    void accFile( const std::string & fileName, QIODevice * );
 
 public:
 	virtual bool isConnected() = 0;
 	// Send cmd to another peer.
 	virtual bool send( const std::string & cmd ) = 0;
 	virtual bool sendFile( const std::string fileName, QIODevice * dev ) = 0;
+    bool sendFileInternal( const std::string fileName, const std::string & filePath );
 	//virtual bool sendBinary( const std::string & desc, const std::basic_string<char> & data ) = 0;
 public:
 	class PD;

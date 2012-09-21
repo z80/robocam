@@ -13,20 +13,22 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
-class QxmppPeer: QXmppClient
+class QxmppPeer: public QXmppClient
 {
     Q_OBJECT
 public:
     typedef boost::function<void (const std::string &)> TLogHandler;
     typedef boost::function<void (const std::string &, const std::string &)> TMessageHandler;
-    typedef boost::function<void (const std::string &, QIODevice &)> TFileHandler;
+    typedef boost::function<QIODevice * (const std::string &)> TInFileHandler;
+    typedef boost::function<void (const std::string &, QIODevice &)> TAccFileHandler;
 
     QxmppPeer( QObject * parent = 0 );
     ~QxmppPeer();
 
     void setLogHandler( TLogHandler handler );
     void setMessageHandler( TMessageHandler handler );
-    void setFileHandler( TFileHandler handler );
+    void setInFileHandler( TInFileHandler handler );
+    void setAccFileHandler( TAccFileHandler handler );
 
     void connectHost( const std::string & jid, const std::string & password );
     bool isConnected() const;
@@ -52,7 +54,8 @@ public slots:
 private:
     TLogHandler     m_logHandler;
     TMessageHandler m_messageHandler;
-    TFileHandler    m_fileHandler;
+    TInFileHandler    m_inFileHandler;
+    TAccFileHandler   m_accFileHandler;
     QXmppTransferManager * m_trManager;
     QHash<QXmppTransferJob *, QIODevice *> m_hash;
 };

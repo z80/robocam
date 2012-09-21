@@ -19,7 +19,8 @@ Wgt::Wgt( QWidget * parent )
 
     xmpp.setMessageHandler( boost::bind( &Wgt::messageHandler, this, _1, _2 ) );
     xmpp.setLogHandler( boost::bind( &Wgt::logHandler, this, _1 ) );
-    xmpp.setFileHandler( boost::bind( &Wgt::fileHandler, this, _1, _2 ) );
+    xmpp.setInFileHandler( boost::bind<QIODevice *>( &Wgt::inFileHandler, this, _1 ) );
+    xmpp.setAccFileHandler( boost::bind( &Wgt::accFileHandler, this, _1, _2 ) );
 }
 
 Wgt::~Wgt()
@@ -115,12 +116,23 @@ void Wgt::logHandler( const std::string & stri )
 	log( stri );
 }
 
-void Wgt::fileHandler( const std::string & fileName, QIODevice & dev )
+QIODevice * Wgt::inFileHandler( const std::string & fileName )
 {
-    QString msg = QString( "%1, size: %2" ).arg( fileName.c_str() ).arg( static_cast<int>( dev.size() ) );
+    QString msg = QString( "Incoming file: %1" ).arg( fileName.c_str() );
+    std::string smsg = msg.toStdString();
+    log( smsg );
+    QBuffer * b = new QBuffer();
+    b->open( QIODevice::WriteOnly );
+    return b;
+}
+
+void Wgt::accFileHandler( const std::string & fileName, QIODevice & device )
+{
+    QString msg = QString( "file \"%1\" finished, size: " ).arg( fileName.c_str() ).arg( device.size() );
     std::string smsg = msg.toStdString();
     log( smsg );
 }
+
 
 
 

@@ -12,6 +12,7 @@ static void luaHook( lua_State * L, lua_Debug * ar );
 static int msleep( lua_State * L );
 static int isConnected( lua_State * L );
 static int send( lua_State * L );
+static int sendFile( lua_State * L );
 static int stop( lua_State * L );
 
 class PeerAbst::PD
@@ -92,7 +93,9 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 			{
 				pd->pendingCmd = lua_tostring( L, -1 );
 				// Send back an error message.
-				pd->peer->send( pd->pendingCmd );
+                std::ostringstream out;
+                out << "print( \"" << pd->pendingCmd << "\" )";
+				pd->peer->send( out.str() );
 				// And pop that message.
 				lua_pop( L, 1 );
 			}
@@ -223,19 +226,26 @@ void PeerAbst::setAccFileHandler( TAccFileHandler handler )
     pd->accFileHandler = handler;
 }
 
-QIODevice * PeerAbst::acceptFile( const std::string & fileName )
+QIODevice * PeerAbst::inFile( const std::string & fileName )
 {
     if ( !pd->inFileHandler.empty() )
         return pd->inFileHandler( fileName );
     return 0;
 }
 
-void PeerAbst::fileDownloaded( const std::string & fileName, QIODevice * fileData )
+void PeerAbst::accFile( const std::string & fileName, QIODevice * fileData )
 {
     if ( !pd->accFileHandler.empty() )
         pd->accFileHandler( fileName, fileData );
     else
         fileData->deleteLater();
+}
+
+bool PeerAbst::sendFileInternal( const std::string fileName, const std::string & filePath )
+{
+    QFile * file = new QFile( filePath.c_str() );
+    bool res = sendFile( fileName, file );
+    return res;
 }
 
 
@@ -274,6 +284,19 @@ static int send( lua_State * L )
 	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
 	lua_pop( L, 1 );
 	bool res = pd->peer->send( stri );
+	lua_pushboolean( L, res ? 1 : 0 );
+	return 1;
+}
+
+static int sendFile( lua_State * L )
+{
+	std::string fileName = lua_tostring( L, 1 );
+	std::string filePath = lua_tostring( L, 2 );
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
+	bool res = pd->peer->sendFileInternal( fileName, filePath );
 	lua_pushboolean( L, res ? 1 : 0 );
 	return 1;
 }

@@ -62,9 +62,14 @@ void QxmppPeer::setMessageHandler( TMessageHandler handler )
     m_messageHandler = handler;
 }
 
-void QxmppPeer::setFileHandler( TFileHandler handler )
+void QxmppPeer::setInFileHandler( TInFileHandler handler )
 {
-    m_fileHandler = handler;
+    m_inFileHandler = handler;
+}
+
+void QxmppPeer::setAccFileHandler( TAccFileHandler handler )
+{
+    m_accFileHandler = handler;
 }
 
 void QxmppPeer::send( const std::string & jid, const std::string & stri )
@@ -88,7 +93,7 @@ void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, Q
         }
     }
     QXmppTransferFileInfo info;
-    info.setName( /*QString::fromStdString( fileName )*/ "aaa.txt" );
+    info.setName( QString::fromStdString( fileName ) );
     info.setSize( dev->size() );
     QXmppTransferJob * job = m_trManager->sendFile( QString::fromStdString( jid ), dev, info );
 
@@ -189,8 +194,8 @@ void QxmppPeer::trError( QXmppTransferJob::Error error )
         QHash<QXmppTransferJob *, QIODevice *>::iterator iter = m_hash.find( job );
         if ( iter != m_hash.end() )
         {
-            QIODevice * buf = iter.value();
-            buf->deleteLater();
+            QIODevice * device = iter.value();
+            //device->deleteLater(); // It will be removed as job's child.
             m_hash.erase( iter );
         }
     }
@@ -199,8 +204,6 @@ void QxmppPeer::trError( QXmppTransferJob::Error error )
 /// A file transfer request was received.
 void QxmppPeer::trFileReceived( QXmppTransferJob * job )
 {
-    bool check;
-    Q_UNUSED(check);
 
     if ( !m_logHandler.empty() )
     {
@@ -210,6 +213,19 @@ void QxmppPeer::trFileReceived( QXmppTransferJob * job )
         m_logHandler( out.str() );
     }
 
+    if ( m_inFileHandler.empty() )
+    {
+        job->abort();
+        return;
+    }
+    std::string fileName = job->fileInfo().name().toStdString();
+    QIODevice * device = m_inFileHandler( fileName );
+    if ( !device )
+        return;
+    job->accept( device );
+
+    bool check;
+    Q_UNUSED(check);
     check = connect( job, SIGNAL( error(QXmppTransferJob::Error) ),
                      this, SLOT( trError(QXmppTransferJob::Error) ) );
     Q_ASSERT(check);
@@ -222,12 +238,7 @@ void QxmppPeer::trFileReceived( QXmppTransferJob * job )
                      this, SLOT( trProgress(qint64,qint64) ) );
     Q_ASSERT(check);
 
-    // allocate a buffer to receive the file
-    QBuffer * buffer = new QBuffer( this );
-    buffer->open( QIODevice::WriteOnly );
-    job->accept( buffer );
-
-    m_hash[ job ] = buffer;
+    m_hash[ job ] = device;
 }
 
 void QxmppPeer::trJobStarted(QXmppTransferJob * job)
@@ -258,10 +269,10 @@ void QxmppPeer::trFinished()
         if ( iter != m_hash.end() )
         {
             std::string fileName = job->fileInfo().name().toStdString();
-            QIODevice * buf = iter.value();
-            if ( !m_fileHandler.empty() )
-                m_fileHandler( fileName, *buf );
-            buf->deleteLater();
+            QIODevice * device = iter.value();
+            if ( !m_accFileHandler.empty() )
+                m_accFileHandler( fileName, *device );
+            //device->deleteLater();
             m_hash.erase( iter );
         }
     }
