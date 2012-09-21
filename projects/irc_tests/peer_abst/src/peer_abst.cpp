@@ -82,7 +82,9 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 		{
 			pd->pendingCmd = lua_tostring( L, -1 );
 			// Send back an error message.
-			pd->peer->send( pd->pendingCmd );
+            std::ostringstream out;
+            out << "print( [[" << pd->pendingCmd << "]] )";
+			pd->peer->send( out.str() );
 			// And pop that message.
 			lua_pop( L, 2 );
 		}
@@ -94,7 +96,7 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 				pd->pendingCmd = lua_tostring( L, -1 );
 				// Send back an error message.
                 std::ostringstream out;
-                out << "print( \"" << pd->pendingCmd << "\" )";
+                out << "print( [[" << pd->pendingCmd << "]] )";
 				pd->peer->send( out.str() );
 				// And pop that message.
 				lua_pop( L, 1 );
@@ -241,7 +243,7 @@ void PeerAbst::accFile( const std::string & fileName, QIODevice * fileData )
         fileData->deleteLater();
 }
 
-bool PeerAbst::sendFileInternal( const std::string fileName, const std::string & filePath )
+bool PeerAbst::sendFileInternal( const std::string & fileName, const std::string & filePath )
 {
     QFile * file = new QFile( filePath.c_str() );
     bool res = sendFile( fileName, file );

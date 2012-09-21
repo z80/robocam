@@ -4,7 +4,9 @@
 
 #include <QtGui>
 #include "ui_wgt.h"
-#include "qxmpp_peer.h"
+#include "peer_qxmpp.h"
+
+struct lua_State;
 
 class Wgt: public QWidget
 {
@@ -13,6 +15,9 @@ public:
    Wgt( QWidget * parent = 0 );
    ~Wgt();
    
+   void init( lua_State * L );
+   int  print( lua_State * L );
+
    void log( const std::string & stri );
 signals:
     void sigLog( const QString & stri );
@@ -32,8 +37,9 @@ public:
     void accFileHandler( const std::string & fileName, QIODevice * device );
 private:
     Ui_Wgt ui;
-    QxmppPeer xmpp;
-    QByteArray m_data;
+    PeerQxmpp * xmpp;
+public:
+    static const std::string WGT_ID;
 };
 
 

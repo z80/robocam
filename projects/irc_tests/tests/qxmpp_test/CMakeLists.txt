@@ -13,6 +13,8 @@ find_package( Threads )
 
 include_directories( "./src" 
                      "${ROOT}/peer_abst/src" 
+                     ${ROOT}/3dparty/lua-5.1.5/src 
+                     ${ROOT}/3dparty/lua-5.1.5/etc 
                      ${ROOT}/3dparty/qxmpp-0.7.3/src/base 
                      ${ROOT}/3dparty/qxmpp-0.7.3/src/client 
                      ${ROOT}/3dparty/qxmpp-0.7.3/src/server 
@@ -36,7 +38,7 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( qxmpp_test ${src} )
-set( libs peer_abst )
+set( libs peer_abst liblua-5.1.5 )
 message( STATUS "LIBS0 = ${libs}" )
 #set( defs QXMPP_STATIC )
 if ( WIN32 )

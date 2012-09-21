@@ -35,8 +35,8 @@ public:
 	virtual bool isConnected() = 0;
 	// Send cmd to another peer.
 	virtual bool send( const std::string & cmd ) = 0;
-	virtual bool sendFile( const std::string fileName, QIODevice * dev ) = 0;
-    bool sendFileInternal( const std::string fileName, const std::string & filePath );
+	virtual bool sendFile( const std::string & fileName, QIODevice * dev ) = 0;
+    bool sendFileInternal( const std::string & fileName, const std::string & filePath );
 	//virtual bool sendBinary( const std::string & desc, const std::basic_string<char> & data ) = 0;
 public:
 	class PD;

@@ -66,7 +66,7 @@ void PeerDesc::messageHandler( const std::string & from, const std::string & msg
 void PeerDesc::logHandler( const std::string & msg )
 {
     std::ostringstream out;
-    out << "print( \"" << msg << "\" )";
+    out << "print( [[" << msg << "]] )";
     self->invokeCmd( out.str() );
 }
 
@@ -82,7 +82,7 @@ public:
     ~PD();
 
     // Here it should be several peers to protect from XMPP server being down.
-    std::list<PeerDesc> peers;
+    std::list<PeerDesc *> peers;
 };
 
 PeerQxmpp::PD::PD()
@@ -91,10 +91,11 @@ PeerQxmpp::PD::PD()
 
 PeerQxmpp::PD::~PD()
 {
-    for ( std::list<PeerDesc>::iterator i=peers.begin(); i!=peers.end(); i++ )
+    for ( std::list<PeerDesc*>::iterator i=peers.begin(); i!=peers.end(); i++ )
     {
-        PeerDesc & p = *i;
-        p.peer->deleteLater();
+        PeerDesc * p = *i;
+        p->peer->deleteLater();
+        delete p;
     }
     peers.clear();
 }
@@ -114,14 +115,16 @@ PeerQxmpp::PeerQxmpp( const std::string & iniFile, PeerAbst::TInit init )
         {
             std::string key = i->first;
             boost::property_tree::ptree sect = config.get_child( key );
-            PeerDesc p( this );
-		    p.jidDest            = sect.get<std::string>( "jid_dest", "bashkirov.sergey@gmail.com" );
-		    p.updateDest         = sect.get<bool>( "update_target", true );
+            PeerDesc * p = new PeerDesc( this );
+		    p->jidDest           = sect.get<std::string>( "jid_dest", "bashkirov.sergey@gmail.com" );
+		    p->updateDest        = sect.get<bool>( "update_dest", true );
 		    std::string jidSelf  = sect.get<std::string>( "jid_self", "litedictteam@gmail.com" );
             std::string password = sect.get<std::string>( "password", "ba-ba-ba" );
             QxmppPeer * peer = new QxmppPeer();
-            p.peer = peer;
+            p->peer = peer;
 
+            peer->setMessageHandler( boost::bind( &PeerDesc::messageHandler, p, _1, _2 ) );
+            peer->setLogHandler( boost::bind( &PeerDesc::logHandler, p, _1 ) );
             peer->setInFileHandler( boost::bind<QIODevice *>( &PeerAbst::inFile, this, _1 ) );
             peer->setAccFileHandler( boost::bind( &PeerAbst::accFile, this, _1, _2 ) );
             peer->connectHost( jidSelf, password );
@@ -142,10 +145,10 @@ PeerQxmpp::~PeerQxmpp()
 
 bool PeerQxmpp::isConnected()
 {
-    for ( std::list<PeerDesc>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
+    for ( std::list<PeerDesc*>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
     {
-        PeerDesc & p = *i;
-        if( p.peer->isConnected() )
+        PeerDesc * p = *i;
+        if( p->peer->isConnected() )
             return true;
     }
     return false;
@@ -153,12 +156,12 @@ bool PeerQxmpp::isConnected()
 
 bool PeerQxmpp::send( const std::string & cmd )
 {
-    for ( std::list<PeerDesc>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
+    for ( std::list<PeerDesc*>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
     {
-        PeerDesc & p = *i;
-        if ( p.peer->isConnected() )
+        PeerDesc * p = *i;
+        if ( p->peer->isConnected() )
         {
-            p.peer->send( p.jidDest, cmd );
+            p->peer->send( p->jidDest, cmd );
             return true;
         }
     }
@@ -167,12 +170,12 @@ bool PeerQxmpp::send( const std::string & cmd )
 
 bool PeerQxmpp::sendFile( const std::string & fileName, QIODevice * file )
 {
-    for ( std::list<PeerDesc>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
+    for ( std::list<PeerDesc*>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
     {
-        PeerDesc & p = *i;
-        if ( p.peer->isConnected() )
+        PeerDesc * p = *i;
+        if ( p->peer->isConnected() )
         {
-            p.peer->sendFile( p.jidDest, fileName, file );
+            p->peer->sendFile( p->jidDest, fileName, file );
             return true;
         }
     }
