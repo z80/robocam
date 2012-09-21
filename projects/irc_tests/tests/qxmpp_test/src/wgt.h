@@ -29,7 +29,7 @@ public:
     void messageHandler( const std::string & client, const std::string & stri );
     void logHandler( const std::string & stri );
     QIODevice * inFileHandler( const std::string & fileName );
-    void accFileHandler( const std::string & fileName, QIODevice & device );
+    void accFileHandler( const std::string & fileName, QIODevice * device );
 private:
     Ui_Wgt ui;
     QxmppPeer xmpp;

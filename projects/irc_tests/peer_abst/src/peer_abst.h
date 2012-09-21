@@ -25,8 +25,9 @@ public:
 	// File io handlers;
 	void setInFileHandler( TInFileHandler handler );
 	void setAccFileHandler( TAccFileHandler handler );
-protected:
+public:
     // Should be called in appropriate places when file comes in and when it is downloaded.
+    // E.i. in file io realization part.
     QIODevice * inFile( const std::string & fileName );
     void accFile( const std::string & fileName, QIODevice * );
 

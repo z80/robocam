@@ -20,7 +20,7 @@ public:
     typedef boost::function<void (const std::string &)> TLogHandler;
     typedef boost::function<void (const std::string &, const std::string &)> TMessageHandler;
     typedef boost::function<QIODevice * (const std::string &)> TInFileHandler;
-    typedef boost::function<void (const std::string &, QIODevice &)> TAccFileHandler;
+    typedef boost::function<void (const std::string &, QIODevice * )> TAccFileHandler;
 
     QxmppPeer( QObject * parent = 0 );
     ~QxmppPeer();

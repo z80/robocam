@@ -271,7 +271,7 @@ void QxmppPeer::trFinished()
             std::string fileName = job->fileInfo().name().toStdString();
             QIODevice * device = iter.value();
             if ( !m_accFileHandler.empty() )
-                m_accFileHandler( fileName, *device );
+                m_accFileHandler( fileName, device );
             //device->deleteLater();
             m_hash.erase( iter );
         }

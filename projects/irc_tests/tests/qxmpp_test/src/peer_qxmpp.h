@@ -7,7 +7,7 @@
 class PeerQxmpp: public PeerAbst
 {
 public:
-    PeerQxmpp( PeerAbst::TInit );
+    PeerQxmpp( const std::string & iniFile, PeerAbst::TInit );
     ~PeerQxmpp();
 
 	bool isConnected();

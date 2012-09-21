@@ -126,9 +126,9 @@ QIODevice * Wgt::inFileHandler( const std::string & fileName )
     return b;
 }
 
-void Wgt::accFileHandler( const std::string & fileName, QIODevice & device )
+void Wgt::accFileHandler( const std::string & fileName, QIODevice * device )
 {
-    QString msg = QString( "file \"%1\" finished, size: " ).arg( fileName.c_str() ).arg( device.size() );
+    QString msg = QString( "file \"%1\" finished, size: " ).arg( fileName.c_str() ).arg( device->size() );
     std::string smsg = msg.toStdString();
     log( smsg );
 }
