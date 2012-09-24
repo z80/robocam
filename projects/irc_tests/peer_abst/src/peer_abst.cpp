@@ -151,6 +151,9 @@ void PeerAbst::PD::luaLoop( TInit init )
 		init( L );
 
 	boost::mutex::scoped_lock lock( luaTaskMutex );
+	// There is expected to be "main" function which may not return.
+	// If not there just will be an error message but the rest should work!
+	// luaCommands.push_back( "main()" )
 	while ( 1 )
 	{
 		int cnt = luaCommands.size();

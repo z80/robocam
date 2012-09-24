@@ -33,6 +33,8 @@ static void init( lua_State * L )
 	luaopen_luamcuctrl( L );
 	// QProcess management.
 	luaopen_luaprocess( L );
+	// File acceptance function registration.
+	lua_register( L, "setAcceptFiles", ::setAcceptFiles );
 }
 
 static int setAcceptFiles( lua_State * L )
