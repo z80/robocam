@@ -3,6 +3,7 @@
 #include "lua.hpp"
 #include "peer_qxmpp.h"
 #include "luamcuctrl.h"
+#include "luaprocess.h"
 #include <boost/bind.hpp>
 
 static void init( lua_State * L );
@@ -22,5 +23,7 @@ static void init( lua_State * L )
 {
 	// Board USB io.
 	luaopen_luamcuctrl( L );
+	// QProcess management.
+	luaopen_luaprocess( L );
 }
 
