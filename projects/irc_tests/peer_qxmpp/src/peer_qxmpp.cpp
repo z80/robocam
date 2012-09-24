@@ -82,6 +82,7 @@ public:
     ~PD();
 
     // Here it should be several peers to protect from XMPP server being down.
+    std::string iniFile;
     std::list<PeerDesc *> peers;
 };
 
@@ -104,12 +105,31 @@ PeerQxmpp::PeerQxmpp( const std::string & iniFile, PeerAbst::TInit init )
 : PeerAbst( init )
 {
 	pd = new PD();
+	pd->iniFile = iniFile;
+
+	connect();
+}
+
+PeerQxmpp::~PeerQxmpp()
+{
+    delete pd;
+}
+
+void PeerQxmpp::connect()
+{
+    for ( std::list<PeerDesc*>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
+    {
+        PeerDesc * p = *i;
+        p->peer->deleteLater();
+        delete p;
+    }
+    pd->peers.clear();
 
 	boost::property_tree::ptree config;
 	try
 	{
-		boost::property_tree::read_ini( iniFile, config );
-        
+		boost::property_tree::read_ini( pd->iniFile, config );
+
 		//const boost::property_tree::ptree & sect = config.get_child( "main" );
         for ( boost::property_tree::ptree::iterator i=config.begin(); i!=config.end(); i++ )
         {
@@ -136,11 +156,6 @@ PeerQxmpp::PeerQxmpp( const std::string & iniFile, PeerAbst::TInit init )
 		std::cout << error.message() << ": " << error.filename() << ", line "
 			<< error.line() << std::endl;
 	}
-}
-
-PeerQxmpp::~PeerQxmpp()
-{
-    delete pd;
 }
 
 bool PeerQxmpp::isConnected()

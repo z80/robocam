@@ -37,10 +37,17 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( app_host ${src} )
-set( libs liblua-5.1.5 peer_qxmpp luamcuctrl )
-set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )
+set( libs liblua-5.1.5 
+          peer_qxmpp 
+          luamcuctrl 
+          liblua-5.1.5 
+          ${QT_LIBRARIES} 
+          ${CMAKE_THREAD_LIBS_INIT} 
+          ${Boost_LIBRARIES} 
+          liblua-5.1.5 )
 target_link_libraries( app_host ${libs} )
-
+install( TARGETS app_host DESTINATION "./" )
+install( DIRECTORY "./src_lua/" DESTINATION "./" )
 
 
 

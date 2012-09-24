@@ -10,6 +10,7 @@ public:
     PeerQxmpp( const std::string & iniFile, PeerAbst::TInit );
     ~PeerQxmpp();
 
+    void connect();
 	bool isConnected();
 	bool send( const std::string & cmd );
     bool sendFile( const std::string & fileName, QIODevice * file );

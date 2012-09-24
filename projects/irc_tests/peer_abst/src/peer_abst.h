@@ -35,6 +35,7 @@ public:
     void accFile( const std::string & fileName, QIODevice * );
 
 public:
+    virtual void connect() = 0;
 	virtual bool isConnected() = 0;
 	// Send cmd to another peer.
 	virtual bool send( const std::string & cmd ) = 0;

@@ -18,7 +18,7 @@ set_property( TARGET luamcuctrl PROPERTY OUTPUT_NAME "luamcuctrl" )
 set_target_properties( luamcuctrl PROPERTIES PREFIX "" )
 target_link_libraries( luamcuctrl liblua-5.1.5 mcuctrl )
 
-install( TARGETS luamcuctrl DESTINATION "./" )
+#install( TARGETS luamcuctrl DESTINATION "./" )
 
 
 

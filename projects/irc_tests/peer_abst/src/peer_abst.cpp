@@ -10,6 +10,7 @@
 
 static void luaHook( lua_State * L, lua_Debug * ar );
 static int msleep( lua_State * L );
+static int connect( lua_State * L );
 static int isConnected( lua_State * L );
 static int send( lua_State * L );
 static int sendFile( lua_State * L );
@@ -140,6 +141,7 @@ void PeerAbst::PD::luaLoop( TInit init )
 	};
 	luaL_register( L, 0, reg );*/
 	lua_register( L, "msleep",      ::msleep );
+	lua_register( L, "connect",     ::connect );
 	lua_register( L, "isConnected", ::isConnected );
 	lua_register( L, "send",        ::send );
     lua_register( L, "sendFile",    ::sendFile );
@@ -273,6 +275,15 @@ static int msleep( lua_State * L )
 		ms = 1;
 	boost::this_thread::sleep( boost::posix_time::milliseconds( ms ) );
 	return 0;
+}
+
+static int connect( lua_State * L )
+{
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
+	pd->peer->connect();
 }
 
 static int isConnected( lua_State * L )

@@ -2,7 +2,7 @@
 cmake_minimum_required( VERSION 2.6 )
 project( "ircio" )
 set( ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
-set( CMAKE_INSTALL_DIR ${ROOT}/build.app )
+set( CMAKE_INSTALL_PREFIX ${ROOT}/build.app )
 if ( WIN32 )
     include( "./config-win.cmake" )
 endif ( WIN32 )
