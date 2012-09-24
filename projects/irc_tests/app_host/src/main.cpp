@@ -35,6 +35,8 @@ static void init( lua_State * L )
 	luaopen_luaprocess( L );
 	// File acceptance function registration.
 	lua_register( L, "setAcceptFiles", ::setAcceptFiles );
+	// Execute file.
+	luaL_dofile( L, "./main.lua" );
 }
 
 static int setAcceptFiles( lua_State * L )

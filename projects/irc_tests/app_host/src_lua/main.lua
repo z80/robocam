@@ -4,7 +4,7 @@ require( "mcuctrl" )
 function main()
     local client = nil
     local timeoutToConnect = 10
-    local timeToGetClient  = 180
+    local timeToGetClient  = 300
     local triesLeft = 3
     local connected
     for ttt = 1, triesLeft do
@@ -42,6 +42,20 @@ function main()
     ps = luaprocess.create()
     ps:start( "halt", "-p" )
     ps:waitForFinished()
+end
+
+function image( resX, resY, dev, file )
+    resX, resY = resX or 640, resY or 480
+    dev = dev or "/dev/video0"
+    file = file or "/tmp/image.png"
+    local ps = luaprocess.create()
+    ps.start( "fswebcam", "-q", "-d", dev, 
+              "-r", string.format( "%ix%i", resX, resY ), 
+              "-S", "5", "-F", "5", file )
+    ps.waitForFinished()
+    local stri = ps.readAll()
+    send( string.format( "print( [[$s]] )", stri ) )
+    sendFile( file, file )
 end
 
 main()
