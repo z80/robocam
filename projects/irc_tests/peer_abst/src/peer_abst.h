@@ -19,7 +19,7 @@ public:
 	PeerAbst( TInit init );
 	virtual ~PeerAbst();
 
-	// Block current thread till undergwound thread exit.
+	// Block current thread till undergound thread exit.
 	void join();
 
 	// Local command invocation.
