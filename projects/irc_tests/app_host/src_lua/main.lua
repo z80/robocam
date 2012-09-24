@@ -12,11 +12,12 @@ function main()
         local t1 = t0
         while ( t1 - t0 < timeoutToConnect ) do
             t1 = os.time()
-            msleep( 1 )
-            local connected = isConnected()
+            msleep( 1000 )
+            connected = isConnected()
             if ( connected ) then
                 break
             end
+            print( 'waiting for connection.' )
         end
         if ( connected ) then
             break
@@ -24,12 +25,13 @@ function main()
     end
     -- Connection with server established.
     if ( connected ) then
-        send( "print( \'Online!\' )" )
+        print( 'Online!' )
+        --send( "print( \'Online!\' )" )
         t0 = os.time()
         t1 = t0
         while ( t1 - t0 < timeToClient ) do
             t1 = os.time()
-            msleep( 1 )
+            msleep( 1000 )
             -- If there was timer reset by client
             -- the "client" variable is set.
             -- Then reset timeout to shutdown.
@@ -37,24 +39,28 @@ function main()
                 t0 = t1
                 client = nil
             end
+            print( 'waiting for client command' )
         end
     end
+    print( "Leave!" )
+    --[[
     ps = luaprocess.create()
     ps:start( "halt", "-p" )
-    ps:waitForFinished()
+    ps:waitForFinished()]]
 end
 
 function image( resX, resY, dev, file )
     resX, resY = resX or 640, resY or 480
     dev = dev or "/dev/video0"
     file = file or "/tmp/image.png"
+    client = true
     local ps = luaprocess.create()
-    ps.start( "fswebcam", "-q", "-d", dev, 
+    ps:start( "fswebcam", "-q", "-d", dev, 
               "-r", string.format( "%ix%i", resX, resY ), 
               "-S", "5", "-F", "5", file )
-    ps.waitForFinished()
-    local stri = ps.readAll()
-    send( string.format( "print( [[$s]] )", stri ) )
+    ps:waitForFinished()
+    local stri = ps:readAll()
+    --send( string.format( "print( '$s' )", stri ) )
     sendFile( file, file )
 end
 
