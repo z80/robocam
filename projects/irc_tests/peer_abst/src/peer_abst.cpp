@@ -216,6 +216,11 @@ PeerAbst::~PeerAbst()
 	delete pd;
 }
 
+void PeerAbst::join()
+{
+	pd->luaThread.join();
+}
+
 void PeerAbst::invokeCmd( const std::string & cmd )
 {
 	pd->invokeCmd( cmd );

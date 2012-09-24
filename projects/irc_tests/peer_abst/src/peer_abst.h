@@ -19,6 +19,9 @@ public:
 	PeerAbst( TInit init );
 	virtual ~PeerAbst();
 
+	// Block current thread till undergwound thread exit.
+	void join();
+
 	// Local command invocation.
 	// It is also should be called by remote peer.
 	void invokeCmd( const std::string & cmd );
