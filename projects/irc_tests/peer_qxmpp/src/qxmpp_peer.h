@@ -30,7 +30,7 @@ public:
     void setInFileHandler( TInFileHandler handler );
     void setAccFileHandler( TAccFileHandler handler );
 
-    void connectHost( const std::string & jid, const std::string & password );
+    void connectHost( const std::string & jid, const std::string & password, int port = -1 );
     bool isConnected() const;
     void terminate();
     void send( const std::string & jid, const std::string & stri );

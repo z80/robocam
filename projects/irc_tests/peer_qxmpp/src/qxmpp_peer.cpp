@@ -115,9 +115,16 @@ void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, Q
     m_hash[ job ] = dev;
 }
 
-void QxmppPeer::connectHost( const std::string & jid, const std::string & password )
+void QxmppPeer::connectHost( const std::string & jid, const std::string & password, int port )
 {
-	connectToServer( QString::fromStdString( jid ), QString::fromStdString( password ) );
+    QXmppConfiguration conf;
+    conf.setJid( jid.c_str() );
+    conf.setPassword( password.c_str() );
+    if ( port > 0 )
+        conf.setPort( port );
+    conf.setAutoReconnectionEnabled( true );
+    //conf.setUseNonSASLAuthentication (bool)
+    connectToServer( conf );
 }
 
 bool QxmppPeer::isConnected() const
