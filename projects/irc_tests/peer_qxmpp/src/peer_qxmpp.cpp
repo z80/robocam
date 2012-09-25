@@ -140,6 +140,7 @@ void PeerQxmpp::connect()
 		    p->updateDest        = sect.get<bool>( "update_dest", true );
 		    std::string jidSelf  = sect.get<std::string>( "jid_self", "litedictteam@gmail.com" );
             std::string password = sect.get<std::string>( "password", "ba-ba-ba" );
+            int         port     = sect.get<int>( "port", -1 );
             QxmppPeer * peer = new QxmppPeer();
             p->peer = peer;
 
@@ -147,7 +148,7 @@ void PeerQxmpp::connect()
             peer->setLogHandler( boost::bind( &PeerDesc::logHandler, p, _1 ) );
             peer->setInFileHandler( boost::bind<QIODevice *>( &PeerAbst::inFile, this, _1 ) );
             peer->setAccFileHandler( boost::bind( &PeerAbst::accFile, this, _1, _2 ) );
-            peer->connectHost( jidSelf, password );
+            peer->connectHost( jidSelf, password, port );
             pd->peers.push_back( p );
         }
 	}
