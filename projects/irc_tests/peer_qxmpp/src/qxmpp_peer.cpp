@@ -123,7 +123,7 @@ void QxmppPeer::connectHost( const std::string & jid, const std::string & passwo
     if ( port > 0 )
         conf.setPort( port );
     conf.setAutoReconnectionEnabled( true );
-    //conf.setUseNonSASLAuthentication (bool)
+    //conf.setUseNonSASLAuthentication( true );
     connectToServer( conf );
 }
 
