@@ -1,0 +1,11 @@
+<map id="G" name="G">
+<area shape="rect" href="qt.tag$qdatetime.html" title="QDateTime" alt="" coords="315,31,403,60"/>
+<area shape="rect" href="qt.tag$qstring.html" title="QString" alt="" coords="327,137,391,167"/>
+<area shape="rect" href="qt.tag$qbytearray.html" title="QByteArray" alt="" coords="315,221,403,251"/>
+<area shape="rect" href="$classQCA_1_1CertificateInfoOrdered.html" title="Ordered certificate properties type." alt="" coords="267,289,451,319"/>
+<area shape="rect" href="qt.tag$qlist.html" title="QList\&lt; CertificateInfoPair \&gt;" alt="" coords="19,289,197,319"/>
+<area shape="rect" href="qt.tag$qlist.html" title="QList\&lt; ConstraintType \&gt;" alt="" coords="277,475,440,504"/>
+<area shape="rect" href="$classQCA_1_1BigInteger.html" title="Arbitrary precision integer." alt="" coords="301,528,416,557"/>
+<area shape="rect" href="qt.tag$qshareddatapointer.html" title="QSharedDataPointer\&lt; Private \&gt;" alt="" coords="7,528,209,557"/>
+<area shape="rect" href="qt.tag$qstringlist.html" title="QStringList" alt="" coords="316,684,401,713"/>
+</map>

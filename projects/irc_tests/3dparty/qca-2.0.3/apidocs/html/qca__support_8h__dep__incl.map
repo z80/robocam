@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" href="$qca__core_8h.html" title="Header file for core QCA infrastructure." alt="" coords="405,83,491,112"/>
+<area shape="rect" href="$qca_8h.html" title="Summary header file for QCA." alt="" coords="225,392,279,421"/>
+<area shape="rect" href="$qca__basic_8h.html" title="Header file for classes for cryptographic primitives (basic operations)." alt="" coords="23,315,113,344"/>
+<area shape="rect" href="$qcaprovider_8h.html" title="Header file for provider implementation classes (plugins)." alt="" coords="572,392,671,421"/>
+<area shape="rect" href="$qca__cert_8h.html" title="Header file for PGP key and X.509 certificate related classes." alt="" coords="488,237,571,267"/>
+<area shape="rect" href="$qca__keystore_8h.html" title="Header file for classes that provide and manage keys." alt="" coords="567,315,676,344"/>
+<area shape="rect" href="$qca__securelayer_8h.html" title="Header file for SecureLayer and its subclasses." alt="" coords="188,315,316,344"/>
+<area shape="rect" href="$qca__securemessage_8h.html" title="Header file for secure message (PGP, CMS) classes." alt="" coords="340,315,492,344"/>
+<area shape="rect" href="$qca__publickey_8h.html" title="Header file for PublicKey and PrivateKey related classes." alt="" coords="391,160,505,189"/>
+<area shape="rect" href="$qca__textfilter_8h.html" title="Header file for text encoding/decoding classes." alt="" coords="852,160,959,189"/>
+</map>

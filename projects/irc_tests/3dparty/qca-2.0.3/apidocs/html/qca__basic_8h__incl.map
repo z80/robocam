@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$qca__core_8h.html" title="Header file for core QCA infrastructure." alt="" coords="236,83,321,112"/>
+<area shape="rect" href="$qca__export_8h.html" title="Preprocessor magic to allow export of library symbols." alt="" coords="469,315,565,344"/>
+<area shape="rect" href="$qca__support_8h.html" title="Header file for &quot;support&quot; classes used in QCA." alt="" coords="559,160,663,189"/>
+<area shape="rect" href="$qca__tools_8h.html" title="Header file for &quot;tool&quot; classes used in QCA." alt="" coords="375,237,463,267"/>
+</map>

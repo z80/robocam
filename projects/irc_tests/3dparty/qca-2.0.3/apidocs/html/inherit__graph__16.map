@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$classQCA_1_1MemoryRegion.html" title="Array of bytes that may be optionally secured." alt="" coords="5,32,149,61"/>
+<area shape="rect" href="$classQCA_1_1SecureArray.html" title="Secure array of bytes." alt="" coords="197,32,325,61"/>
+<area shape="rect" href="$classQCA_1_1InitializationVector.html" title="Container for initialisation vectors and nonces." alt="" coords="373,5,536,35"/>
+<area shape="rect" href="$classQCA_1_1SymmetricKey.html" title="Container for keys for symmetric encryption algorithms." alt="" coords="385,59,524,88"/>
+</map>
