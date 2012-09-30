@@ -27,6 +27,7 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "usb_ctrl.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
 #define ADC_GRP1_BUF_DEPTH      8
@@ -130,6 +131,7 @@ int main(void) {
    */
   halInit();
   chSysInit();
+  initUsb();
 
   /*
    * Setting up analog inputs used by the demo.
