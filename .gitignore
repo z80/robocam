@@ -10,6 +10,9 @@ projects/irc_tests/build
 projects/irc_tests/build.app
 projects/irc_tests/build.eclipse
 projects/irc_tests/app
+projects/chibios_test/test/build/lst
+projects/chibios_test/test/build/lst
+projects/chibios_test/test/.dep
 *.swp
 *.o
 .libs
