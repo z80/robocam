@@ -106,10 +106,12 @@ static msg_t Thread1(void *arg) {
   (void)arg;
   chRegSetThreadName("blinker");
   while (TRUE) {
-    palClearPad(IOPORT3, GPIOC_LED);
-    chThdSleepMilliseconds(500);
-    palSetPad(IOPORT3, GPIOC_LED);
-    chThdSleepMilliseconds(500);
+    palClearPad( IOPORT2, 10 );
+    palSetPad( GPIOB, 11 );   
+    chThdSleepMilliseconds( 500 );
+    palSetPad( IOPORT2, 10 );
+    palClearPad( GPIOB, 11 );
+    chThdSleepMilliseconds( 500 );
   }
   return 0;
 }
@@ -143,25 +145,25 @@ int main(void) {
   /*
    * Activates the ADC1 driver and the thermal sensor.
    */
-  adcStart(&ADCD1, NULL);
+  //adcStart(&ADCD1, NULL);
 
   /*
    * Linear conversion.
    */
-  adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
-  chThdSleepMilliseconds(1000);
+  //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+  //chThdSleepMilliseconds(1000);
 
   /*
    * Starts an ADC continuous conversion.
    */
-  adcStartConversion(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
+  //adcStartConversion(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
   /*
    * Normal main() thread activity, in this demo it does nothing.
    */
   while (TRUE) {
-    if (palReadPad(GPIOA, GPIOA_BUTTON))
-      adcStopConversion(&ADCD1);
+    //if (palReadPad(GPIOA, GPIOA_BUTTON))
+    //  adcStopConversion(&ADCD1);
     chThdSleepMilliseconds(500);
   }
   return 0;
