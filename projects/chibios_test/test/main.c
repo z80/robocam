@@ -28,6 +28,8 @@
 #include "ch.h"
 #include "hal.h"
 #include "usb_ctrl.h"
+#include "light_ctrl.h"
+#include "power_ctrl.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
 #define ADC_GRP1_BUF_DEPTH      8
