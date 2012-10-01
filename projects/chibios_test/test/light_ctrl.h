@@ -5,7 +5,7 @@
 #include "ch.h"
 #include "shell.h"
 
-void setLight( BOOL en );
+void setLight( bool_t en );
 void cmd_light( BaseChannel *chp, int argc, char * argv [] );
 
 #endif

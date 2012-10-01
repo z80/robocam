@@ -7,10 +7,10 @@
 
 void initPower( void );
 
-void setPowerOnTimeout( int sec );
-void setPowerOffTimeout( int sec );
+void powerConfig( int offFirst, int offRegular, int on );
 void powerOffReset( void );
-void cmd_power( BaseChannel *chp, int argc, char * argv [] );
+void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] );
+void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] );
 
 #endif
 

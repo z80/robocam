@@ -1,52 +1,79 @@
 
 #include "power_ctrl.h"
+#include "ch.h"
+#include "hal.h"
+#include "light_ctrl.h"
+#include "hdw_cfg.h"
 
+#include <stdlib.h>
 
 Mutex g_mutex;
 int g_firstOnDelay = (60 * 60 * 2);
 int g_onDelay      = (60 * 60 * 2);
 int g_offDelay     = ( 30 );
+int g_nextOnDelay;
 int g_timer        = 0;
 
-void setPowerOnTimeout( int sec )
+void powerConfig( int onFirst, int on, int off )
 {
     chMtxLock( &g_mutex );
-    g_onDelay = sec;
-    chMtxUnlock( &g_mutex );
-}
+    g_firstOnDelay = onFirst;
+    g_onDelay      = on;
+    g_offDelay     = off;
+    chMtxUnlock();
 
-void setPowerOffTimeout( int sec )
-{
-    chMtxLock( &g_mutex );
-    g_offDelay = sec;
-    chMtxUnlock( &g_mutex );
 }
 
 void powerOffReset( void )
 {
     chMtxLock( &g_mutex );
     g_timer = g_offDelay;
-    chMtxUnlock( &g_mutex );
+    // Of it was reset at least once, means computer performed something.
+    // And it most probably means we need more recharge time.
+    g_nextOnDelay = g_firstOnDelay;
+    chMtxUnlock();
 }
 
-static void setPower( BOOL en )
+static void setPower( bool_t en )
 {
    if ( en )
-       palSetPad( POWER_PORT, POWER_PIN );
+       palSetPad( PWR_PORT, PWR_PIN );
    else
-       palClearPad( POWER_PORT, POWER_PIN );
-   palSetPadMode( POWER_PORT, POWER_PIN, PAL_MODE_OUTPUT_PUSHPULL );
+   {
+       palClearPad( PWR_PORT, PWR_PIN );
+       setLight( 0 );
+   }
+   palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
 
-void cmd_power( BaseChannel *chp, int argc, char * argv [] )
+void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] )
 {
-    if ( argc > 0 )
-    {
-        if ( argv[0][0] != '0' )
-            setPower( 1 );
-        else
-            setPower( 0 );
-    }
+	(void)chp;
+	(void)argc;
+	(void)argv;
+	powerOffReset();
+}
+
+void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
+{
+	(void)chp;
+	if ( argc > 0 )
+	{
+		chMtxLock( &g_mutex );
+		int res = atoi( argv[0] );
+		g_firstOnDelay = res;
+		if ( argc > 1 )
+		{
+			res = atoi( argv[1] );
+			g_onDelay = res;
+			if ( argc > 2 )
+			{
+				res = atoi( argv[2] );
+				g_offDelay = res;
+			}
+		}
+		chMtxUnlock();
+	}
 }
 
 
@@ -64,22 +91,23 @@ static msg_t Power( void *arg )
             chThdSleepSeconds( 1 );
         // Power on.
 POWER_LOOP:
+        g_nextOnDelay = g_offDelay;
         setPower( 1 );
         chMtxLock( &g_mutex );
         g_timer = g_offDelay;
         int t = g_timer;
-        chMtxUnlock( &g_mutex );
+        chMtxUnlock();
         while ( t > 0 )
         {
             chThdSleepSeconds( 1 );
             chMtxLock( &g_mutex );
             g_timer--;
             t = g_timer;
-            chMtxUnlock( &g_mutex );
+            chMtxUnlock();
         }
         setPower( 0 );
         // Wait for next power on.
-        g_timer = g_onDelay;
+        g_timer = g_nextOnDelay;
         while ( g_timer-- > 0 )
             chThdSleepSeconds( 1 );
         goto POWER_LOOP;

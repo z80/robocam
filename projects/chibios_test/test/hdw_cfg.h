@@ -6,7 +6,8 @@
 #define LED_PIN       11
 #define LED_PORT      GPIOB
 
-#define PWR_CMD       "pwr"
+#define PWR_RST_CMD   "pwrrst"
+#define PWR_CFG       "pwrcfg"
 #define PWR_PIN       10
 #define PWR_PORT      GPIOB
 

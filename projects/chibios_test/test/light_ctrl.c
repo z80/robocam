@@ -3,9 +3,10 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
+#include "hdw_cfg.h"
 
 
-void setLight( BOOL en )
+void setLight( bool_t en )
 {
     if ( en )
         palSetPad( LED_PORT, LED_PIN );
@@ -17,6 +18,7 @@ void setLight( BOOL en )
 
 void cmd_light( BaseChannel *chp, int argc, char * argv [] )
 {
+	(void)chp;
     if ( argc > 0 )
     {
         if ( argv[0][0] != '0' )
