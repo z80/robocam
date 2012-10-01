@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-Mutex g_mutex;
+static Mutex g_mutex;
 int g_firstOnDelay = (60 * 60 * 2);
 int g_onDelay      = (60 * 60 * 2);
 int g_offDelay     = ( 30 );
@@ -117,8 +117,8 @@ POWER_LOOP:
 
 void initPower( void )
 {
-    setPower( 0 );
     chMtxInit( &g_mutex );
+    setPower( 0 );
 
     chThdCreateStatic( waPower, sizeof(waPower), NORMALPRIO, Power, NULL );
 }

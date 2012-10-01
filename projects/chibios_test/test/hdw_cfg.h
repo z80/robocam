@@ -12,7 +12,7 @@
 #define PWR_PORT      GPIOB
 
 #define MOTO_EN_CMD   "moto"
-#define MOTO_EN_BIT   9
+#define MOTO_EN_PIN   9
 #define MOTO_EN_PORT  GPIOB
 
 #define MOTO_SET_CMD "motoset"
