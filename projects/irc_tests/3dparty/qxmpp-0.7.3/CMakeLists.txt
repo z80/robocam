@@ -124,7 +124,11 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_library( qxmpp STATIC ${src} )
-target_link_libraries( qxmpp ${QT_LIBRARIES} )
+set( libs ${QT_LIBRARIES} )
+if ( WIN32 )
+    set( libs ${libs} dnsapi.lib ws2_32.lib )
+endif ( WIN32 )
+target_link_libraries( qxmpp ${libs} )
 set_property( TARGET qxmpp PROPERTY COMPILE_DEFINITIONS QXMPP_BUILD )
 
 

@@ -287,6 +287,7 @@ static int connect( lua_State * L )
 	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
 	lua_pop( L, 1 );
 	pd->peer->connect();
+    return 0;
 }
 
 static int isConnected( lua_State * L )
