@@ -30,6 +30,8 @@
 #include "usb_ctrl.h"
 #include "light_ctrl.h"
 #include "power_ctrl.h"
+#include "moto_ctrl.h"
+#include "adc_ctrl.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
 #define ADC_GRP1_BUF_DEPTH      8
@@ -134,17 +136,19 @@ int main(void) {
   halInit();
   chSysInit();
   initUsb();
+  initPower();
+  initMoto();
 
   /*
    * Setting up analog inputs used by the demo.
    */
-  palSetGroupMode(GPIOC, PAL_PORT_BIT(0) | PAL_PORT_BIT(1),
-                  0, PAL_MODE_INPUT_ANALOG);
+  //palSetGroupMode(GPIOC, PAL_PORT_BIT(0) | PAL_PORT_BIT(1),
+  //                0, PAL_MODE_INPUT_ANALOG);
 
   /*
    * Creates the blinker thread.
    */
-  chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
+  //chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
 
   /*
    * Activates the ADC1 driver and the thermal sensor.

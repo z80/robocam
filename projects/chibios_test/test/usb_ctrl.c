@@ -36,6 +36,11 @@
 #include "chprintf.h"
 
 #include "usb_ctrl.h"
+#include "power_ctrl.h"
+#include "light_ctrl.h"
+#include "moto_ctrl.h"
+#include "adc_ctrl.h"
+#include "hdw_cfg.h"
 
 /*===========================================================================*/
 /* USB related stuff.                                                        */
@@ -323,10 +328,10 @@ static const SerialUSBConfig serusbcfg = {
 /*===========================================================================*/
 
 #define SHELL_WA_SIZE   THD_WA_SIZE(2048)
-uint8_t                 SHELL_PTR[SHELL_WA_SIZE];
+uint8_t                  SHELL_PTR[SHELL_WA_SIZE];
 #define TEST_WA_SIZE    THD_WA_SIZE(256)
 
-static void cmd_mem(BaseChannel *chp, int argc, char *argv[]) {
+/*static void cmd_mem(BaseChannel *chp, int argc, char *argv[]) {
   size_t n, size;
 
   (void)argv;
@@ -338,47 +343,16 @@ static void cmd_mem(BaseChannel *chp, int argc, char *argv[]) {
   chprintf(chp, "core free memory : %u bytes\r\n", chCoreStatus());
   chprintf(chp, "heap fragments   : %u\r\n", n);
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
-}
-
-static void cmd_threads(BaseChannel *chp, int argc, char *argv[]) {
-  static const char *states[] = {THD_STATE_NAMES};
-  Thread *tp;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: threads\r\n");
-    return;
-  }
-  chprintf(chp, "    addr    stack prio refs     state time\r\n");
-  tp = chRegFirstThread();
-  do {
-    chprintf(chp, "%.8lx %.8lx %4lu %4lu %9s %lu\r\n",
-            (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
-            (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
-            states[tp->p_state], (uint32_t)tp->p_time);
-    tp = chRegNextThread(tp);
-  } while (tp != NULL);
-}
-
-static void cmd_test(BaseChannel *chp, int argc, char *argv[]) {
-  Thread *tp;
-
-  (void)argv;
-  /*if (argc > 0) {
-    chprintf(chp, "Usage: test\r\n");
-    return;
-  }
-  tp = chThdCreateFromHeap(NULL, TEST_WA_SIZE, chThdGetPriority(),
-                           TestThread, chp);
-  if (tp == NULL) {
-    chprintf(chp, "out of memory\r\n");
-    return;
-  }
-  chThdWait(tp);*/
-}
+}*/
 
 static const ShellCommand commands[] = {
-  {"mem", cmd_mem},
+  //{"mem", cmd_mem},
+  { PWR_RST_CMD, cmd_pwr_rst },
+  { PWR_CFG_CMD, cmd_pwr_cfg },
+  { LED_CMD,     cmd_light },
+  { MOTO_CFG_CMD, cmd_moto_cfg },
+  { MOTO_RST_CMD, cmd_moto_rst },
+  { MOTO_SET_CMD, cmd_moto_set },
   //{"threads", cmd_threads},
   //{"test", cmd_test},
   {NULL, NULL}

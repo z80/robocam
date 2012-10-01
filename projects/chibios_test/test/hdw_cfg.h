@@ -7,15 +7,16 @@
 #define LED_PORT      GPIOB
 
 #define PWR_RST_CMD   "pwrrst"
-#define PWR_CFG       "pwrcfg"
+#define PWR_CFG_CMD   "pwrcfg"
 #define PWR_PIN       10
 #define PWR_PORT      GPIOB
 
-#define MOTO_EN_CMD   "moto"
-#define MOTO_EN_PIN   9
-#define MOTO_EN_PORT  GPIOB
+#define MOTO_RST_CMD   "motorst"
+#define MOTO_CFG_CMD   "motocfg"
+#define MOTO_SET_CMD   "motoset"
+#define MOTO_EN_PIN    9
+#define MOTO_EN_PORT   GPIOB
 
-#define MOTO_SET_CMD "motoset"
 #define MOTO_1_PIN   1
 #define MOTO_1_PORT  GPIOB
 #define MOTO_2_PIN   0
