@@ -373,7 +373,6 @@ Thread * shelltp = NULL;
  */
 void initUsb( void )
 {
-
   //*
   //* Activates the USB driver and then the USB bus pull-up on D+.
   //*
@@ -386,7 +385,9 @@ void initUsb( void )
   //* Shell manager initialization.
   //*
   shellInit();
-  shelltp = shellCreateStatic( &shell_cfg1, SHELL_PTR, SHELL_WA_SIZE, NORMALPRIO );
+  if ( !shelltp )
+	  //shelltp = shellCreateStatic( &shell_cfg1, SHELL_PTR, SHELL_WA_SIZE, NORMALPRIO );
+	  shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
 }
 
 void finitUsb( void )

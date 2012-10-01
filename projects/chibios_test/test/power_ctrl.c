@@ -3,6 +3,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "light_ctrl.h"
+#include "moto_ctrl.h"
 #include "hdw_cfg.h"
 
 #include <stdlib.h>
@@ -21,7 +22,6 @@ void powerConfig( int onFirst, int on, int off )
     g_onDelay      = on;
     g_offDelay     = off;
     chMtxUnlock();
-
 }
 
 void powerOffReset( void )
@@ -38,10 +38,13 @@ static void setPower( bool_t en )
 {
    if ( en )
        palSetPad( PWR_PORT, PWR_PIN );
+       // initUsb();
    else
    {
        palClearPad( PWR_PORT, PWR_PIN );
        setLight( 0 );
+       motoConfig( 0, 3 );
+       // finitUsb();
    }
    palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
