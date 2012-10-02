@@ -118,8 +118,9 @@ void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, Q
 void QxmppPeer::connectHost( const std::string & jid, const std::string & password )
 {
     QXmppConfiguration config;
-    config.setJid( "z80@10.8.0.1" );
+    config.setJid( "z80@xmpp" );
     config.setPassword( "12345" );
+    config.setHost( "10.8.0.1" );
     config.setStreamSecurityMode(QXmppConfiguration::TLSDisabled);
 	connectToServer( config );
     //connectToServer( jid.c_str(), password.c_str() );

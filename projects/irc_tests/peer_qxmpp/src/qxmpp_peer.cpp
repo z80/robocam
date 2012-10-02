@@ -115,11 +115,14 @@ void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, Q
     m_hash[ job ] = dev;
 }
 
-void QxmppPeer::connectHost( const std::string & jid, const std::string & password, int port )
+void QxmppPeer::connectHost( const std::string & jid, const std::string & password, 
+                             const std::string & host, int port )
 {
     QXmppConfiguration conf;
     conf.setJid( jid.c_str() );
     conf.setPassword( password.c_str() );
+    if ( host.size() > 0 )
+        conf.setHost( host.c_str() );
     if ( port > 0 )
         conf.setPort( port );
     conf.setAutoReconnectionEnabled( true );
