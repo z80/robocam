@@ -11,8 +11,9 @@ projects/irc_tests/build.app
 projects/irc_tests/build.eclipse
 projects/irc_tests/app
 projects/chibios_test/test/build/lst
-projects/chibios_test/test/build/lst
 projects/chibios_test/test/.dep
+projects/chibios_test/usb_cdc/build/lst
+projects/chibios_test/usb_cdc/.dep
 *.swp
 *.o
 .libs
