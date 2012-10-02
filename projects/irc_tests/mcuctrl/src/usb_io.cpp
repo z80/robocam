@@ -8,11 +8,8 @@
     #include <windows.h>
     #define  delay( arg ) Sleep( arg )
 #else
-    #include <unistd.h>  /* UNIX standard function definitions */
-    #include <fcntl.h>   /* File control definitions */
-    #include <errno.h>   /* Error number definitions */
-    #include <termios.h> /* POSIX terminal control definitions */
-    #define delay( arg ) msleep( arg )
+    #include <unistd.h>
+    #define delay( arg ) usleep( 1000 * (arg) )
 #endif
 
 class UsbIo::PD
@@ -92,8 +89,9 @@ bool UsbIo::isOpen() const
 int UsbIo::write( const std::string & stri )
 {
     int actual_length;
+    unsigned char * data = reinterpret_cast<unsigned char *>( const_cast<char *>( stri.data() ) );
     int res = libusb_bulk_transfer( pd->handle,
-                      PD::EP_OUT, stri.data(), stri.size(),
+                      PD::EP_OUT, data, stri.size(),
                       &actual_length, pd->timeout );
     if ( res != LIBUSB_SUCCESS )
         return 0;
@@ -103,12 +101,12 @@ int UsbIo::write( const std::string & stri )
 int UsbIo::read( std::string & stri )
 {
 	int len = 0;
-	int timout = pd->timout;
+	int timeout = pd->timeout;
 	if ( stri.size() < PD::STRI_MIN_LEN )
 		stri.resize( PD::STRI_MIN_LEN );
 	while ( ( timeout > 0 ) && ( len < stri.size() ) )
 	{
-		char * data = const_cast<chat *>( stri.data() ) + len;
+		unsigned char * data = reinterpret_cast<unsigned char *>( const_cast<char *>( stri.data() ) + len );
 		int actual_length;
 		int res = libusb_bulk_transfer( pd->handle,
 						  PD::EP_IN, data, stri.size(),
@@ -118,7 +116,7 @@ int UsbIo::read( std::string & stri )
 		len += actual_length;
 		if ( ( len > 0) && ( stri.at( len-1 ) == '\n' ) )
 			break;
-		dleay( 1 );
+		delay( 1 );
 		timeout--;
 	}
     return len;

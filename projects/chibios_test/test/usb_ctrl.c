@@ -328,25 +328,28 @@ static const SerialUSBConfig serusbcfg = {
 /*===========================================================================*/
 
 #define SHELL_WA_SIZE   THD_WA_SIZE(2048)
-uint8_t                  SHELL_PTR[SHELL_WA_SIZE];
+uint8_t                 SHELL_PTR[SHELL_WA_SIZE];
 #define TEST_WA_SIZE    THD_WA_SIZE(256)
 
-/*static void cmd_mem(BaseChannel *chp, int argc, char *argv[]) {
+static void cmd_mem(BaseChannel *chp, int argc, char *argv[])
+{
   size_t n, size;
 
   (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: mem\r\n");
+  if (argc > 0)
+  {
+    chprintf(chp, "Usage: mem\n");
     return;
   }
   n = chHeapStatus(NULL, &size);
-  chprintf(chp, "core free memory : %u bytes\r\n", chCoreStatus());
-  chprintf(chp, "heap fragments   : %u\r\n", n);
-  chprintf(chp, "heap free total  : %u bytes\r\n", size);
-}*/
+  chprintf(chp, "core free memory : %u bytes\n", chCoreStatus());
+  chprintf(chp, "heap fragments   : %u\n", n);
+  chprintf(chp, "heap free total  : %u bytes\n", size);
+}
 
-static const ShellCommand commands[] = {
-  //{"mem", cmd_mem},
+static const ShellCommand commands[] = 
+{
+  {"mem", cmd_mem},
   { PWR_RST_CMD, cmd_pwr_rst },
   { PWR_CFG_CMD, cmd_pwr_cfg },
   { LED_CMD,     cmd_light },
@@ -358,7 +361,8 @@ static const ShellCommand commands[] = {
   {NULL, NULL}
 };
 
-static const ShellConfig shell_cfg1 = {
+static const ShellConfig shell_cfg1 = 
+{
   (BaseChannel *)&SDU1,
   commands
 };
