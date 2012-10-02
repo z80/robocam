@@ -105,7 +105,7 @@ static const ADCConversionGroup adcgrpcfg2 = {
 /*
  * Red LEDs blinker thread, times are in milliseconds.
  */
-static WORKING_AREA(waThread1, 128);
+/*static WORKING_AREA(waThread1, 128);
 static msg_t Thread1(void *arg) {
 
   (void)arg;
@@ -119,7 +119,7 @@ static msg_t Thread1(void *arg) {
     chThdSleepMilliseconds( 500 );
   }
   return 0;
-}
+}*/
 
 /*
  * Application entry point.
@@ -136,7 +136,7 @@ int main(void) {
   halInit();
   chSysInit();
   initUsb();
-  initPower();
+  //initPower();
   initMoto();
 
   /*

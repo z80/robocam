@@ -356,8 +356,6 @@ static const ShellCommand commands[] =
   { MOTO_CFG_CMD, cmd_moto_cfg },
   { MOTO_RST_CMD, cmd_moto_rst },
   { MOTO_SET_CMD, cmd_moto_set },
-  //{"threads", cmd_threads},
-  //{"test", cmd_test},
   {NULL, NULL}
 };
 

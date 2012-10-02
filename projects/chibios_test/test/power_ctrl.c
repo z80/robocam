@@ -98,7 +98,8 @@ POWER_LOOP:
         setPower( 1 );
         chMtxLock( &g_mutex );
         g_timer = g_offDelay;
-        int t = g_timer;
+        static int t;
+        t = g_timer;
         chMtxUnlock();
         while ( t > 0 )
         {

@@ -494,8 +494,17 @@ Discarded input sections
  .text          0x00000000        0x0 build/obj/power_ctrl.o
  .data          0x00000000        0x0 build/obj/power_ctrl.o
  .bss           0x00000000        0x0 build/obj/power_ctrl.o
+ .text.setPower
+                0x00000000       0x40 build/obj/power_ctrl.o
+ .text.Power    0x00000000       0xc0 build/obj/power_ctrl.o
  .text.powerConfig
                 0x00000000       0x40 build/obj/power_ctrl.o
+ .text.initPower
+                0x00000000       0x40 build/obj/power_ctrl.o
+ .bss.waPower   0x00000000      0x1b0 build/obj/power_ctrl.o
+ .rodata.str1.4
+                0x00000000        0x8 build/obj/power_ctrl.o
+ .bss.t.6805    0x00000000        0x4 build/obj/power_ctrl.o
  .text          0x00000000        0x0 build/obj/moto_ctrl.o
  .data          0x00000000        0x0 build/obj/moto_ctrl.o
  .bss           0x00000000        0x0 build/obj/moto_ctrl.o
@@ -636,7 +645,7 @@ destructors     0x080000ec        0x0
  *(SORT(.fini_array.*))
                 0x080000ec                PROVIDE (__fini_array_end, .)
 
-.text           0x080000f0     0x4b64
+.text           0x080000f0     0x4a14
  *(.text.startup.*)
  *(.text)
  .text          0x080000f0       0x10 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
@@ -1130,204 +1139,194 @@ destructors     0x080000ec        0x0
  .text.cmd_light
                 0x08003c00       0x20 build/obj/light_ctrl.o
                 0x08003c00                cmd_light
- .text.setPower
-                0x08003c20       0x40 build/obj/power_ctrl.o
- .text.Power    0x08003c60       0xc0 build/obj/power_ctrl.o
  .text.powerOffReset
-                0x08003d20       0x40 build/obj/power_ctrl.o
-                0x08003d20                powerOffReset
+                0x08003c20       0x40 build/obj/power_ctrl.o
+                0x08003c20                powerOffReset
  .text.cmd_pwr_rst
-                0x08003d60       0x10 build/obj/power_ctrl.o
-                0x08003d60                cmd_pwr_rst
+                0x08003c60       0x10 build/obj/power_ctrl.o
+                0x08003c60                cmd_pwr_rst
  .text.cmd_pwr_cfg
-                0x08003d70       0x50 build/obj/power_ctrl.o
-                0x08003d70                cmd_pwr_cfg
- .text.initPower
-                0x08003dc0       0x40 build/obj/power_ctrl.o
-                0x08003dc0                initPower
+                0x08003c70       0x50 build/obj/power_ctrl.o
+                0x08003c70                cmd_pwr_cfg
  .text.motoReset
-                0x08003e00       0x30 build/obj/moto_ctrl.o
-                0x08003e00                motoReset
- .text.motoSet  0x08003e30       0xb0 build/obj/moto_ctrl.o
-                0x08003e30                motoSet
+                0x08003cc0       0x30 build/obj/moto_ctrl.o
+                0x08003cc0                motoReset
+ .text.motoSet  0x08003cf0       0xb0 build/obj/moto_ctrl.o
+                0x08003cf0                motoSet
  .text.motoConfig
-                0x08003ee0       0x50 build/obj/moto_ctrl.o
-                0x08003ee0                motoConfig
- .text.Moto     0x08003f30       0x70 build/obj/moto_ctrl.o
+                0x08003da0       0x50 build/obj/moto_ctrl.o
+                0x08003da0                motoConfig
+ .text.Moto     0x08003df0       0x70 build/obj/moto_ctrl.o
  .text.cmd_moto_cfg
-                0x08003fa0       0x50 build/obj/moto_ctrl.o
-                0x08003fa0                cmd_moto_cfg
+                0x08003e60       0x50 build/obj/moto_ctrl.o
+                0x08003e60                cmd_moto_cfg
  .text.cmd_moto_rst
-                0x08003ff0       0x10 build/obj/moto_ctrl.o
-                0x08003ff0                cmd_moto_rst
+                0x08003eb0       0x10 build/obj/moto_ctrl.o
+                0x08003eb0                cmd_moto_rst
  .text.cmd_moto_set
-                0x08004000       0x40 build/obj/moto_ctrl.o
-                0x08004000                cmd_moto_set
+                0x08003ec0       0x40 build/obj/moto_ctrl.o
+                0x08003ec0                cmd_moto_set
  .text.initMoto
-                0x08004040       0x40 build/obj/moto_ctrl.o
-                0x08004040                initMoto
+                0x08003f00       0x40 build/obj/moto_ctrl.o
+                0x08003f00                initMoto
  *(.rodata)
- .rodata        0x08004080        0x4 build/obj/shell.o
- *fill*         0x08004084        0xc 00
- .rodata        0x08004090      0x104 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
-                0x08004090                _ctype_
+ .rodata        0x08003f40        0x4 build/obj/shell.o
+ *fill*         0x08003f44        0xc 00
+ .rodata        0x08003f50      0x104 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
+                0x08003f50                _ctype_
  *(.rodata.*)
- *fill*         0x08004194        0xc 00
+ *fill*         0x08004054        0xc 00
  .rodata.str1.4
-                0x080041a0        0xd build/obj/chsys.o
+                0x08004060        0xd build/obj/chsys.o
                                  0x10 (size before relaxing)
- *fill*         0x080041ad        0x3 00
+ *fill*         0x0800406d        0x3 00
  .rodata.str1.4
-                0x080041b0       0x56 build/obj/chdebug.o
+                0x08004070       0x56 build/obj/chdebug.o
                                  0x58 (size before relaxing)
- *fill*         0x08004206        0xa 00
+ *fill*         0x080040c6        0xa 00
  .rodata.str1.4
-                0x08004210       0x31 build/obj/chvt.o
+                0x080040d0       0x31 build/obj/chvt.o
                                  0x34 (size before relaxing)
- *fill*         0x08004241        0xf 00
+ *fill*         0x08004101        0xf 00
  .rodata.str1.4
-                0x08004250       0x23 build/obj/chschd.o
+                0x08004110       0x23 build/obj/chschd.o
                                  0x24 (size before relaxing)
- *fill*         0x08004273        0xd 00
+ *fill*         0x08004133        0xd 00
  .rodata.str1.4
-                0x08004280       0x94 build/obj/chthreads.o
- *fill*         0x08004314        0xc 00
+                0x08004140       0x94 build/obj/chthreads.o
+ *fill*         0x080041d4        0xc 00
  .rodata.str1.4
-                0x08004320       0xab build/obj/chmtx.o
+                0x080041e0       0xab build/obj/chmtx.o
                                  0xac (size before relaxing)
- *fill*         0x080043cb        0x5 00
+ *fill*         0x0800428b        0x5 00
  .rodata.str1.4
-                0x080043d0       0x90 build/obj/chevents.o
+                0x08004290       0x90 build/obj/chevents.o
  .rodata.str1.4
-                0x08004460       0x29 build/obj/chqueues.o
+                0x08004320       0x29 build/obj/chqueues.o
                                  0x2c (size before relaxing)
- *fill*         0x08004489        0x7 00
+ *fill*         0x08004349        0x7 00
  .rodata.zero_status
-                0x08004490        0x4 build/obj/usb.o
- *fill*         0x08004494        0xc 00
+                0x08004350        0x4 build/obj/usb.o
+ *fill*         0x08004354        0xc 00
  .rodata.active_status
+                0x08004360        0x4 build/obj/usb.o
+ *fill*         0x08004364        0xc 00
+ .rodata.str1.4
+                0x08004370      0x122 build/obj/usb.o
+                                0x124 (size before relaxing)
+ *fill*         0x08004492        0xe 00
+ .rodata.halted_status
                 0x080044a0        0x4 build/obj/usb.o
  *fill*         0x080044a4        0xc 00
  .rodata.str1.4
-                0x080044b0      0x122 build/obj/usb.o
-                                0x124 (size before relaxing)
- *fill*         0x080045d2        0xe 00
- .rodata.halted_status
-                0x080045e0        0x4 build/obj/usb.o
- *fill*         0x080045e4        0xc 00
- .rodata.str1.4
-                0x080045f0       0x3a build/obj/serial_usb.o
+                0x080044b0       0x3a build/obj/serial_usb.o
                                  0x3c (size before relaxing)
- *fill*         0x0800462a        0x6 00
- .rodata.vmt    0x08004630       0x24 build/obj/serial_usb.o
- *fill*         0x08004654        0xc 00
+ *fill*         0x080044ea        0x6 00
+ .rodata.vmt    0x080044f0       0x24 build/obj/serial_usb.o
+ *fill*         0x08004514        0xc 00
  .rodata._stm32_dma_streams
-                0x08004660       0x54 build/obj/stm32_dma.o
-                0x08004660                _stm32_dma_streams
- *fill*         0x080046b4        0xc 00
+                0x08004520       0x54 build/obj/stm32_dma.o
+                0x08004520                _stm32_dma_streams
+ *fill*         0x08004574        0xc 00
  .rodata.cfgtab.6123
-                0x080046c0       0x14 build/obj/pal_lld.o
- *fill*         0x080046d4        0xc 00
+                0x08004580       0x14 build/obj/pal_lld.o
+ *fill*         0x08004594        0xc 00
  .rodata.CSWTCH.7
-                0x080046e0        0x8 build/obj/usb_lld.o
- *fill*         0x080046e8        0x8 00
+                0x080045a0        0x8 build/obj/usb_lld.o
+ *fill*         0x080045a8        0x8 00
  .rodata.CSWTCH.10
-                0x080046f0       0x14 build/obj/usb_lld.o
- *fill*         0x08004704        0xc 00
+                0x080045b0       0x14 build/obj/usb_lld.o
+ *fill*         0x080045c4        0xc 00
  .rodata.str1.4
-                0x08004710        0xf build/obj/usb_lld.o
+                0x080045d0        0xf build/obj/usb_lld.o
                                  0x10 (size before relaxing)
- *fill*         0x0800471f        0x1 00
+ *fill*         0x080045df        0x1 00
  .rodata.ep0config
-                0x08004720       0x1c build/obj/usb_lld.o
- *fill*         0x0800473c        0x4 00
+                0x080045e0       0x1c build/obj/usb_lld.o
+ *fill*         0x080045fc        0x4 00
  .rodata.pal_default_config
-                0x08004740       0x3c build/obj/board.o
-                0x08004740                pal_default_config
- *fill*         0x0800477c        0x4 00
+                0x08004600       0x3c build/obj/board.o
+                0x08004600                pal_default_config
+ *fill*         0x0800463c        0x4 00
  .rodata.str1.4
-                0x08004780      0x1e5 build/obj/shell.o
+                0x08004640      0x1e5 build/obj/shell.o
                                 0x1ec (size before relaxing)
- *fill*         0x08004965        0xb 00
+ *fill*         0x08004825        0xb 00
  .rodata.str1.4
-                0x08004970        0x7 build/obj/chprintf.o
+                0x08004830        0x7 build/obj/chprintf.o
                                   0x8 (size before relaxing)
- *fill*         0x08004977        0x9 00
+ *fill*         0x08004837        0x9 00
  .rodata.ep1config
-                0x08004980       0x1c build/obj/usb_ctrl.o
- *fill*         0x0800499c        0x4 00
+                0x08004840       0x1c build/obj/usb_ctrl.o
+ *fill*         0x0800485c        0x4 00
  .rodata.vcom_configuration_descriptor
-                0x080049a0        0x8 build/obj/usb_ctrl.o
- *fill*         0x080049a8        0x8 00
+                0x08004860        0x8 build/obj/usb_ctrl.o
+ *fill*         0x08004868        0x8 00
  .rodata.ep2config
-                0x080049b0       0x1c build/obj/usb_ctrl.o
- *fill*         0x080049cc        0x4 00
+                0x08004870       0x1c build/obj/usb_ctrl.o
+ *fill*         0x0800488c        0x4 00
  .rodata.commands
-                0x080049d0       0x40 build/obj/usb_ctrl.o
+                0x08004890       0x40 build/obj/usb_ctrl.o
  .rodata.str1.4
-                0x08004a10       0x94 build/obj/usb_ctrl.o
- *fill*         0x08004aa4        0xc 00
+                0x080048d0       0x94 build/obj/usb_ctrl.o
+ *fill*         0x08004964        0xc 00
  .rodata.vcom_device_descriptor_data
-                0x08004ab0       0x14 build/obj/usb_ctrl.o
- *fill*         0x08004ac4        0xc 00
+                0x08004970       0x14 build/obj/usb_ctrl.o
+ *fill*         0x08004984        0xc 00
  .rodata.ep3config
-                0x08004ad0       0x1c build/obj/usb_ctrl.o
- *fill*         0x08004aec        0x4 00
+                0x08004990       0x1c build/obj/usb_ctrl.o
+ *fill*         0x080049ac        0x4 00
  .rodata.shell_cfg1
-                0x08004af0        0x8 build/obj/usb_ctrl.o
- *fill*         0x08004af8        0x8 00
+                0x080049b0        0x8 build/obj/usb_ctrl.o
+ *fill*         0x080049b8        0x8 00
  .rodata.vcom_configuration_descriptor_data
-                0x08004b00       0x44 build/obj/usb_ctrl.o
- *fill*         0x08004b44        0xc 00
+                0x080049c0       0x44 build/obj/usb_ctrl.o
+ *fill*         0x08004a04        0xc 00
  .rodata.vcom_string0
-                0x08004b50        0x4 build/obj/usb_ctrl.o
- *fill*         0x08004b54        0xc 00
+                0x08004a10        0x4 build/obj/usb_ctrl.o
+ *fill*         0x08004a14        0xc 00
  .rodata.vcom_string1
-                0x08004b60       0x28 build/obj/usb_ctrl.o
- *fill*         0x08004b88        0x8 00
+                0x08004a20       0x28 build/obj/usb_ctrl.o
+ *fill*         0x08004a48        0x8 00
  .rodata.vcom_string2
-                0x08004b90       0x38 build/obj/usb_ctrl.o
- *fill*         0x08004bc8        0x8 00
+                0x08004a50       0x38 build/obj/usb_ctrl.o
+ *fill*         0x08004a88        0x8 00
  .rodata.vcom_string3
-                0x08004bd0        0x8 build/obj/usb_ctrl.o
- *fill*         0x08004bd8        0x8 00
+                0x08004a90        0x8 build/obj/usb_ctrl.o
+ *fill*         0x08004a98        0x8 00
  .rodata.vcom_strings
-                0x08004be0       0x20 build/obj/usb_ctrl.o
+                0x08004aa0       0x20 build/obj/usb_ctrl.o
  .rodata.serusbcfg
-                0x08004c00       0x14 build/obj/usb_ctrl.o
- *fill*         0x08004c14        0xc 00
+                0x08004ac0       0x14 build/obj/usb_ctrl.o
+ *fill*         0x08004ad4        0xc 00
  .rodata.vcom_device_descriptor
-                0x08004c20        0x8 build/obj/usb_ctrl.o
- *fill*         0x08004c28        0x8 00
+                0x08004ae0        0x8 build/obj/usb_ctrl.o
+ *fill*         0x08004ae8        0x8 00
  .rodata.str1.4
-                0x08004c30        0x6 build/obj/power_ctrl.o
+                0x08004af0        0x5 build/obj/moto_ctrl.o
                                   0x8 (size before relaxing)
- *fill*         0x08004c36        0xa 00
+ *fill*         0x08004af5        0xb 00
  .rodata.str1.4
-                0x08004c40        0x5 build/obj/moto_ctrl.o
-                                  0x8 (size before relaxing)
- *fill*         0x08004c45        0xb 00
- .rodata.str1.4
-                0x08004c50        0x4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
+                0x08004b00        0x4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.gcc*)
 
-.vfp11_veneer   0x08004c54        0x0
+.vfp11_veneer   0x08004b04        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08004c54        0x0
+.v4_bx          0x08004b04        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM.exidx      0x08004c54        0x0
-                0x08004c54                PROVIDE (__exidx_start, .)
+.ARM.exidx      0x08004b04        0x0
+                0x08004b04                PROVIDE (__exidx_start, .)
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x08004c54                PROVIDE (__exidx_end, .)
+                0x08004b04                PROVIDE (__exidx_end, .)
 
 .eh_frame_hdr
  *(.eh_frame_hdr)
@@ -1335,11 +1334,11 @@ destructors     0x080000ec        0x0
 .eh_frame
  *(.eh_frame)
 
-.textalign      0x08004c54        0x4
-                0x08004c58                . = ALIGN (0x8)
- *fill*         0x08004c54        0x4 00
-                0x08004c58                _etext = .
-                0x08004c58                _textdata = _etext
+.textalign      0x08004b04        0x4
+                0x08004b08                . = ALIGN (0x8)
+ *fill*         0x08004b04        0x4 00
+                0x08004b08                _etext = .
+                0x08004b08                _textdata = _etext
 
 .stacks         0x20000000      0x800
                 0x20000000                . = ALIGN (0x8)
@@ -1356,7 +1355,7 @@ destructors     0x080000ec        0x0
                 0x20000800                __process_stack_end__ = .
                 0x20000800                __main_thread_stack_end__ = .
 
-.data           0x20000800      0x128 load address 0x08004c58
+.data           0x20000800      0x128 load address 0x08004b08
                 0x20000800                . = ALIGN (0x4)
                 0x20000800                PROVIDE (_data, .)
  *(.data)
@@ -1387,7 +1386,7 @@ destructors     0x080000ec        0x0
                 0x20000928                . = ALIGN (0x4)
                 0x20000928                PROVIDE (_edata, .)
 
-.bss            0x20000928      0xabc load address 0x08004d80
+.bss            0x20000928      0x90c load address 0x08004c30
                 0x20000928                . = ALIGN (0x4)
                 0x20000928                PROVIDE (_bss_start, .)
  *(.bss)
@@ -1438,29 +1437,28 @@ destructors     0x080000ec        0x0
  .bss.SDU1      0x20000f80       0xd4 build/obj/usb_ctrl.o
  .bss.shelltp   0x20001054        0x4 build/obj/usb_ctrl.o
                 0x20001054                shelltp
- .bss.waPower   0x20001058      0x1b0 build/obj/power_ctrl.o
- .bss.g_timer   0x20001208        0x4 build/obj/power_ctrl.o
-                0x20001208                g_timer
- .bss.g_mutex   0x2000120c       0x10 build/obj/power_ctrl.o
+ .bss.g_timer   0x20001058        0x4 build/obj/power_ctrl.o
+                0x20001058                g_timer
+ .bss.g_mutex   0x2000105c       0x10 build/obj/power_ctrl.o
  .bss.g_nextOnDelay
-                0x2000121c        0x4 build/obj/power_ctrl.o
-                0x2000121c                g_nextOnDelay
- .bss.waMoto    0x20001220      0x1b0 build/obj/moto_ctrl.o
- .bss.g_mutex   0x200013d0       0x10 build/obj/moto_ctrl.o
+                0x2000106c        0x4 build/obj/power_ctrl.o
+                0x2000106c                g_nextOnDelay
+ .bss.waMoto    0x20001070      0x1b0 build/obj/moto_ctrl.o
+ .bss.g_mutex   0x20001220       0x10 build/obj/moto_ctrl.o
  .bss.g_timeout
-                0x200013e0        0x4 build/obj/moto_ctrl.o
-                0x200013e0                g_timeout
-                0x200013e4                . = ALIGN (0x4)
+                0x20001230        0x4 build/obj/moto_ctrl.o
+                0x20001230                g_timeout
+                0x20001234                . = ALIGN (0x4)
  *(COMMON)
-                0x200013e4                . = ALIGN (0x4)
-                0x200013e4                PROVIDE (_bss_end, .)
-                0x200013e4                PROVIDE (end, .)
-                0x200013e4                _end = .
-                0x200013e4                __heap_base__ = _end
+                0x20001234                . = ALIGN (0x4)
+                0x20001234                PROVIDE (_bss_end, .)
+                0x20001234                PROVIDE (end, .)
+                0x20001234                _end = .
+                0x20001234                __heap_base__ = _end
                 0x20002800                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
-.debug_abbrev   0x00000000     0x5181
+.debug_abbrev   0x00000000     0x517f
  .debug_abbrev  0x00000000      0x121 build/obj/crt0.o
  .debug_abbrev  0x00000121       0x74 build/obj/vectors.o
  .debug_abbrev  0x00000195       0x41 build/obj/chcore.o
@@ -1525,14 +1523,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_abbrev  0x00004215      0x1b5 build/obj/syscalls.o
  .debug_abbrev  0x000043ca      0x2f5 build/obj/shell.o
  .debug_abbrev  0x000046bf      0x153 build/obj/chprintf.o
- .debug_abbrev  0x00004812      0x192 build/obj/main.o
- .debug_abbrev  0x000049a4      0x242 build/obj/usb_ctrl.o
- .debug_abbrev  0x00004be6      0x121 build/obj/light_ctrl.o
- .debug_abbrev  0x00004d07      0x224 build/obj/power_ctrl.o
- .debug_abbrev  0x00004f2b      0x22b build/obj/moto_ctrl.o
- .debug_abbrev  0x00005156       0x2b build/obj/adc_ctrl.o
+ .debug_abbrev  0x00004812      0x181 build/obj/main.o
+ .debug_abbrev  0x00004993      0x242 build/obj/usb_ctrl.o
+ .debug_abbrev  0x00004bd5      0x121 build/obj/light_ctrl.o
+ .debug_abbrev  0x00004cf6      0x233 build/obj/power_ctrl.o
+ .debug_abbrev  0x00004f29      0x22b build/obj/moto_ctrl.o
+ .debug_abbrev  0x00005154       0x2b build/obj/adc_ctrl.o
 
-.debug_info     0x00000000    0x1533f
+.debug_info     0x00000000    0x1528b
  .debug_info    0x00000000      0x37b build/obj/crt0.o
  .debug_info    0x0000037b       0xb5 build/obj/vectors.o
  .debug_info    0x00000430       0x8b build/obj/chcore.o
@@ -1597,14 +1595,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00010459      0xc31 build/obj/syscalls.o
  .debug_info    0x0001108a      0xcdf build/obj/shell.o
  .debug_info    0x00011d69      0x3fc build/obj/chprintf.o
- .debug_info    0x00012165      0x9d3 build/obj/main.o
- .debug_info    0x00012b38     0x118b build/obj/usb_ctrl.o
- .debug_info    0x00013cc3      0x38b build/obj/light_ctrl.o
- .debug_info    0x0001404e      0x928 build/obj/power_ctrl.o
- .debug_info    0x00014976      0x98b build/obj/moto_ctrl.o
- .debug_info    0x00015301       0x3e build/obj/adc_ctrl.o
+ .debug_info    0x00012165      0x91d build/obj/main.o
+ .debug_info    0x00012a82     0x118b build/obj/usb_ctrl.o
+ .debug_info    0x00013c0d      0x38b build/obj/light_ctrl.o
+ .debug_info    0x00013f98      0x92a build/obj/power_ctrl.o
+ .debug_info    0x000148c2      0x98b build/obj/moto_ctrl.o
+ .debug_info    0x0001524d       0x3e build/obj/adc_ctrl.o
 
-.debug_line     0x00000000     0x86c0
+.debug_line     0x00000000     0x86b3
  .debug_line    0x00000000      0x15b build/obj/crt0.o
  .debug_line    0x0000015b       0x63 build/obj/vectors.o
  .debug_line    0x000001be       0x58 build/obj/chcore.o
@@ -1669,14 +1667,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x00006f6c      0x1e8 build/obj/syscalls.o
  .debug_line    0x00007154      0x39d build/obj/shell.o
  .debug_line    0x000074f1      0x32b build/obj/chprintf.o
- .debug_line    0x0000781c      0x263 build/obj/main.o
- .debug_line    0x00007a7f      0x381 build/obj/usb_ctrl.o
- .debug_line    0x00007e00      0x237 build/obj/light_ctrl.o
- .debug_line    0x00008037      0x323 build/obj/power_ctrl.o
- .debug_line    0x0000835a      0x32d build/obj/moto_ctrl.o
- .debug_line    0x00008687       0x39 build/obj/adc_ctrl.o
+ .debug_line    0x0000781c      0x256 build/obj/main.o
+ .debug_line    0x00007a72      0x381 build/obj/usb_ctrl.o
+ .debug_line    0x00007df3      0x237 build/obj/light_ctrl.o
+ .debug_line    0x0000802a      0x323 build/obj/power_ctrl.o
+ .debug_line    0x0000834d      0x32d build/obj/moto_ctrl.o
+ .debug_line    0x0000867a       0x39 build/obj/adc_ctrl.o
 
-.debug_loc      0x00000000     0x82d9
+.debug_loc      0x00000000     0x82ac
  .debug_loc     0x00000000       0x72 build/obj/crt0.o
  .debug_loc     0x00000072      0x11b build/obj/chcore_v7m.o
  .debug_loc     0x0000018d      0x10a build/obj/nvic.o
@@ -1715,8 +1713,8 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_loc     0x00007b48       0x20 build/obj/main.o
  .debug_loc     0x00007b68      0x1af build/obj/usb_ctrl.o
  .debug_loc     0x00007d17       0x8e build/obj/light_ctrl.o
- .debug_loc     0x00007da5      0x230 build/obj/power_ctrl.o
- .debug_loc     0x00007fd5      0x304 build/obj/moto_ctrl.o
+ .debug_loc     0x00007da5      0x203 build/obj/power_ctrl.o
+ .debug_loc     0x00007fa8      0x304 build/obj/moto_ctrl.o
 
 .debug_pubnames
                 0x00000000     0x16d4
@@ -1810,7 +1808,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
                 0x000016b6       0x1e build/obj/adc_ctrl.o
 
 .debug_pubtypes
-                0x00000000     0x3904
+                0x00000000     0x38ec
  .debug_pubtypes
                 0x00000000       0x44 build/obj/crt0.o
  .debug_pubtypes
@@ -1940,15 +1938,15 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_pubtypes
                 0x00002e5e       0xb5 build/obj/chprintf.o
  .debug_pubtypes
-                0x00002f13      0x244 build/obj/main.o
+                0x00002f13      0x22c build/obj/main.o
  .debug_pubtypes
-                0x00003157      0x3e7 build/obj/usb_ctrl.o
+                0x0000313f      0x3e7 build/obj/usb_ctrl.o
  .debug_pubtypes
-                0x0000353e       0xaa build/obj/light_ctrl.o
+                0x00003526       0xaa build/obj/light_ctrl.o
  .debug_pubtypes
-                0x000035e8      0x18e build/obj/power_ctrl.o
+                0x000035d0      0x18e build/obj/power_ctrl.o
  .debug_pubtypes
-                0x00003776      0x18e build/obj/moto_ctrl.o
+                0x0000375e      0x18e build/obj/moto_ctrl.o
 
 .debug_aranges  0x00000000      0xd40
  .debug_aranges
@@ -2086,7 +2084,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_ranges  0x000016a8       0x78 build/obj/moto_ctrl.o
  .debug_ranges  0x00001720       0x10 build/obj/adc_ctrl.o
 
-.debug_str      0x00000000     0x33d0
+.debug_str      0x00000000     0x33c6
  .debug_str     0x00000000      0x1e1 build/obj/crt0.o
                                 0x226 (size before relaxing)
  .debug_str     0x000001e1       0x51 build/obj/vectors.o
@@ -2215,17 +2213,17 @@ OUTPUT(build/ch.elf elf32-littlearm)
                                 0x4db (size before relaxing)
  .debug_str     0x00003059       0x8d build/obj/chprintf.o
                                 0x1f1 (size before relaxing)
- .debug_str     0x000030e6       0x3e build/obj/main.o
-                                0x502 (size before relaxing)
- .debug_str     0x00003124      0x153 build/obj/usb_ctrl.o
+ .debug_str     0x000030e6       0x34 build/obj/main.o
+                                0x4a9 (size before relaxing)
+ .debug_str     0x0000311a      0x153 build/obj/usb_ctrl.o
                                 0x8fe (size before relaxing)
- .debug_str     0x00003277       0x20 build/obj/light_ctrl.o
+ .debug_str     0x0000326d       0x20 build/obj/light_ctrl.o
                                 0x1b0 (size before relaxing)
- .debug_str     0x00003297       0xaf build/obj/power_ctrl.o
+ .debug_str     0x0000328d       0xaf build/obj/power_ctrl.o
                                 0x3e6 (size before relaxing)
- .debug_str     0x00003346       0x77 build/obj/moto_ctrl.o
+ .debug_str     0x0000333c       0x77 build/obj/moto_ctrl.o
                                 0x3bd (size before relaxing)
- .debug_str     0x000033bd       0x13 build/obj/adc_ctrl.o
+ .debug_str     0x000033b3       0x13 build/obj/adc_ctrl.o
                                  0x59 (size before relaxing)
 
 .comment        0x00000000       0x2a
@@ -3067,7 +3065,6 @@ initAdc                                           build/obj/adc_ctrl.o
 initMoto                                          build/obj/moto_ctrl.o
                                                   build/obj/main.o
 initPower                                         build/obj/power_ctrl.o
-                                                  build/obj/main.o
 initUsb                                           build/obj/usb_ctrl.o
                                                   build/obj/main.o
 main                                              build/obj/main.o
