@@ -4,22 +4,16 @@
 #include <string.h>
 #include <libusb.h>
 
-#include <unistd.h>  /* UNIX standard function definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <errno.h>   /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
-
-inline static bool LSB()
-{
-    int i = 1;
-    unsigned char * p = reinterpret_cast<unsigned char *>( &i );
-    bool res = (p[0] != 0);
-    return res;
-}
-
-// Low level functions.
-#define CMD_DATA    0
-#define CMD_FUNC    1
+#ifdef WIN32
+    #include <windows.h>
+    #define  delay( arg ) Sleep( arg )
+#else
+    #include <unistd.h>  /* UNIX standard function definitions */
+    #include <fcntl.h>   /* File control definitions */
+    #include <errno.h>   /* Error number definitions */
+    #include <termios.h> /* POSIX terminal control definitions */
+    #define delay( arg ) msleep( arg )
+#endif
 
 class UsbIo::PD
 {
@@ -28,24 +22,23 @@ public:
     ~PD() {}
     libusb_context       * cxt;
     libusb_device_handle * handle;
-    std::string err;
-    std::string res;
-    std::string output;
     int timeout;
-    std::basic_string<unsigned char> data;
     static const int VENDOR_ID;
     static const int PRODUCT_ID;
     static const int TIMEOUT;
     static const int EP_OUT;
     static const int EP_IN;
+    static const int STRI_MIN_LEN;
 };
 
 const int UsbIo::PD::VENDOR_ID  = 0x0483;
 const int UsbIo::PD::PRODUCT_ID = 0x5740;
 const int UsbIo::PD::TIMEOUT    = 1000;
 
-const int UsbIo::PD::EP_OUT = 0x03;
+const int UsbIo::PD::EP_OUT = 0x02;
 const int UsbIo::PD::EP_IN  = 0x81;
+
+const int UsbIo::PD::STRI_MIN_LEN = 64;
 
 UsbIo::UsbIo()
 {
@@ -54,7 +47,6 @@ UsbIo::UsbIo()
     pd->timeout = PD::TIMEOUT;
     libusb_init( &pd->cxt );
     libusb_set_debug( pd->cxt, 3 );
-    pd->res.resize( 8 );
 }
 
 UsbIo::~UsbIo()
@@ -97,26 +89,39 @@ bool UsbIo::isOpen() const
     return (pd->handle != 0);
 }
 
-int UsbIo::write( unsigned char * data, int size )
+int UsbIo::write( const std::string & stri )
 {
     int actual_length;
     int res = libusb_bulk_transfer( pd->handle,
-                      PD::EP_OUT, data, size,
+                      PD::EP_OUT, stri.data(), stri.size(),
                       &actual_length, pd->timeout );
     if ( res != LIBUSB_SUCCESS )
         return 0;
     return actual_length;
 }
 
-int UsbIo::read( unsigned char * data, int maxSize )
+int UsbIo::read( std::string & stri )
 {
-    int actual_length;
-    int res = libusb_bulk_transfer( pd->handle,
-                      PD::EP_IN, data, maxSize,
-                      &actual_length, pd->timeout );
-    if ( res != LIBUSB_SUCCESS )
-        return 0;
-    return actual_length;
+	int len = 0;
+	int timout = pd->timout;
+	if ( stri.size() < PD::STRI_MIN_LEN )
+		stri.resize( PD::STRI_MIN_LEN );
+	while ( ( timeout > 0 ) && ( len < stri.size() ) )
+	{
+		char * data = const_cast<chat *>( stri.data() ) + len;
+		int actual_length;
+		int res = libusb_bulk_transfer( pd->handle,
+						  PD::EP_IN, data, stri.size(),
+						  &actual_length, pd->timeout );
+		if ( res != LIBUSB_SUCCESS )
+			return 0;
+		len += actual_length;
+		if ( ( len > 0) && ( stri.at( len-1 ) == '\n' ) )
+			break;
+		dleay( 1 );
+		timeout--;
+	}
+    return len;
 }
 
 int UsbIo::setTimeout( int ms )
@@ -125,31 +130,7 @@ int UsbIo::setTimeout( int ms )
     return 0;
 }
 
-int UsbIo::readQueue( unsigned char * data, int maxSize )
-{
-    int res;
-    int sz = maxSize;
-    int cnt = 0;
-    unsigned char * d = data;
-    int t = pd->timeout;
-    do {
-        res = read( d, sz );
-        cnt += res;
-        d += res;
-        sz -= res;
-        if ( res < 1 )
-        {
-            usleep( 1000 );
-            t--;
-        }
-    } while ( ( sz > 0 ) && ( t > 0 ) );
-    return cnt;
-}
 
-std::basic_string<unsigned char> & UsbIo::data()
-{
-    return pd->data;
-}
 
 
 

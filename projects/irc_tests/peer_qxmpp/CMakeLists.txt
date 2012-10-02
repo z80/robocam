@@ -42,7 +42,9 @@ set( libs peer_abst liblua-5.1.5 qxmpp )
 message( STATUS "LIBS0 = ${libs}" )
 set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )
 message( STATUS "LIBS1 = ${libs}" )
+set( defs QXMPP_STATIC )
 target_link_libraries( peer_qxmpp ${libs} )
+set_property( TARGET peer_qxmpp PROPERTY COMPILE_DEFINITIONS ${defs} )
 
 
 

@@ -13,9 +13,6 @@ if ( UNIX )
 elseif ( WIN32 )
     include_directories( "${LIBUSB_INC_PATH}" 
                          "./src/libusb" )
-    aux_source_directory( "./src/windows" s )
-    #aux_source_directory( "./src/libusb" ss )
-    #set( s ${s} ${ss} )
 endif ( UNIX )
 set( src ${src} ${s} )
 

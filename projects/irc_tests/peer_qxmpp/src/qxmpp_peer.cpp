@@ -124,6 +124,8 @@ void QxmppPeer::connectHost( const std::string & jid, const std::string & passwo
         conf.setPort( port );
     conf.setAutoReconnectionEnabled( true );
     //conf.setUseNonSASLAuthentication( true );
+    //conf.setStreamSecurityMode(QXmppConfiguration::TLSDisabled);
+
     connectToServer( conf );
 }
 
