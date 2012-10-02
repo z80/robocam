@@ -32,7 +32,7 @@ const int UsbIo::PD::VENDOR_ID  = 0x0483;
 const int UsbIo::PD::PRODUCT_ID = 0x5740;
 const int UsbIo::PD::TIMEOUT    = 1000;
 
-const int UsbIo::PD::EP_OUT = 0x02;
+const int UsbIo::PD::EP_OUT = 0x03;
 const int UsbIo::PD::EP_IN  = 0x81;
 
 const int UsbIo::PD::STRI_MIN_LEN = 64;
@@ -67,8 +67,8 @@ bool UsbIo::open( const std::string & arg )
     if ( libusb_kernel_driver_active( pd->handle, 1 ) )
     	libusb_detach_kernel_driver( pd->handle, 1 );
 
-    int res = libusb_set_configuration( pd->handle, 1 );
-    res = libusb_claim_interface( pd->handle, 1 );
+    //int res = libusb_set_configuration( pd->handle, 1 );
+    //res = libusb_claim_interface( pd->handle, 1 );
 	return result;
 }
 
@@ -94,7 +94,7 @@ int UsbIo::write( const std::string & stri )
                       PD::EP_OUT, data, stri.size(),
                       &actual_length, pd->timeout );
     if ( res != LIBUSB_SUCCESS )
-        return 0;
+        return res;
     return actual_length;
 }
 
@@ -112,7 +112,7 @@ int UsbIo::read( std::string & stri )
 						  PD::EP_IN, data, stri.size(),
 						  &actual_length, pd->timeout );
 		if ( res != LIBUSB_SUCCESS )
-			return 0;
+			return res;
 		len += actual_length;
 		if ( ( len > 0) && ( stri.at( len-1 ) == '\n' ) )
 			break;

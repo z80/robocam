@@ -137,7 +137,7 @@ int main(void) {
   chSysInit();
   initUsb();
   //initPower();
-  initMoto();
+  //initMoto();
 
   /*
    * Setting up analog inputs used by the demo.

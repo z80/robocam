@@ -342,20 +342,20 @@ static void cmd_mem(BaseChannel *chp, int argc, char *argv[])
     return;
   }
   n = chHeapStatus(NULL, &size);
-  chprintf(chp, "core free memory : %u bytes\n", chCoreStatus());
+  //chprintf(chp, "core free memory : %u bytes\n", chCoreStatus());
   chprintf(chp, "heap fragments   : %u\n", n);
-  chprintf(chp, "heap free total  : %u bytes\n", size);
+  //chprintf(chp, "heap free total  : %u bytes\n", size);
 }
 
 static const ShellCommand commands[] = 
 {
   {"mem", cmd_mem},
-  { PWR_RST_CMD, cmd_pwr_rst },
-  { PWR_CFG_CMD, cmd_pwr_cfg },
-  { LED_CMD,     cmd_light },
-  { MOTO_CFG_CMD, cmd_moto_cfg },
-  { MOTO_RST_CMD, cmd_moto_rst },
-  { MOTO_SET_CMD, cmd_moto_set },
+  //{ PWR_RST_CMD, cmd_pwr_rst },
+  //{ PWR_CFG_CMD, cmd_pwr_cfg },
+  //{ LED_CMD,     cmd_light },
+  //{ MOTO_CFG_CMD, cmd_moto_cfg },
+  //{ MOTO_RST_CMD, cmd_moto_rst },
+  //{ MOTO_SET_CMD, cmd_moto_set },
   {NULL, NULL}
 };
 
@@ -387,7 +387,7 @@ void initUsb( void )
   //* Shell manager initialization.
   //*
   shellInit();
-  if ( !shelltp )
+  //if ( !shelltp )
 	  //shelltp = shellCreateStatic( &shell_cfg1, SHELL_PTR, SHELL_WA_SIZE, NORMALPRIO );
 	  shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
 }
