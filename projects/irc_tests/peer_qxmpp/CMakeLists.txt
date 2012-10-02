@@ -15,9 +15,9 @@ include_directories( "./src"
                      "${ROOT}/peer_abst/src" 
                      ${ROOT}/3dparty/lua-5.1.5/src 
                      ${ROOT}/3dparty/lua-5.1.5/etc 
-                     ${ROOT}/3dparty/qxmpp-0.7.3/src/base 
-                     ${ROOT}/3dparty/qxmpp-0.7.3/src/client 
-                     ${ROOT}/3dparty/qxmpp-0.7.3/src/server 
+                     ${ROOT}/3dparty/qxmpp-0.7.4/src/base 
+                     ${ROOT}/3dparty/qxmpp-0.7.4/src/client 
+                     ${ROOT}/3dparty/qxmpp-0.7.4/src/server 
                      ${Boost_INCLUDE_DIRS} 
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
