@@ -501,7 +501,6 @@ Discarded input sections
  .text.powerOffReset
                 0x00000000       0x10 build/obj/power_ctrl.o
  .bss.g_timer   0x00000000        0x4 build/obj/power_ctrl.o
- .bss.g_mutex   0x00000000       0x10 build/obj/power_ctrl.o
  .data.g_firstOnDelay
                 0x00000000        0x4 build/obj/power_ctrl.o
  .bss.g_nextOnDelay
@@ -1377,7 +1376,7 @@ destructors     0x080000ec        0x0
                 0x2000091c                . = ALIGN (0x4)
                 0x2000091c                PROVIDE (_edata, .)
 
-.bss            0x20000920      0x744 load address 0x08004a64
+.bss            0x20000920      0x754 load address 0x08004a64
                 0x20000920                . = ALIGN (0x4)
                 0x20000920                PROVIDE (_bss_start, .)
  *(.bss)
@@ -1428,21 +1427,22 @@ destructors     0x080000ec        0x0
  .bss.SDU1      0x20000f78       0xd4 build/obj/usb_ctrl.o
  .bss.shelltp   0x2000104c        0x4 build/obj/usb_ctrl.o
                 0x2000104c                shelltp
- .bss.g_mutex   0x20001050       0x10 build/obj/moto_ctrl.o
+ .bss.g_mutex   0x20001050       0x10 build/obj/power_ctrl.o
+ .bss.g_mutex   0x20001060       0x10 build/obj/moto_ctrl.o
  .bss.g_timeout
-                0x20001060        0x4 build/obj/moto_ctrl.o
-                0x20001060                g_timeout
-                0x20001064                . = ALIGN (0x4)
+                0x20001070        0x4 build/obj/moto_ctrl.o
+                0x20001070                g_timeout
+                0x20001074                . = ALIGN (0x4)
  *(COMMON)
-                0x20001064                . = ALIGN (0x4)
-                0x20001064                PROVIDE (_bss_end, .)
-                0x20001064                PROVIDE (end, .)
-                0x20001064                _end = .
-                0x20001064                __heap_base__ = _end
+                0x20001074                . = ALIGN (0x4)
+                0x20001074                PROVIDE (_bss_end, .)
+                0x20001074                PROVIDE (end, .)
+                0x20001074                _end = .
+                0x20001074                __heap_base__ = _end
                 0x20002800                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
-.debug_abbrev   0x00000000     0x50f8
+.debug_abbrev   0x00000000     0x5116
  .debug_abbrev  0x00000000      0x121 build/obj/crt0.o
  .debug_abbrev  0x00000121       0x74 build/obj/vectors.o
  .debug_abbrev  0x00000195       0x41 build/obj/chcore.o
@@ -1510,11 +1510,11 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_abbrev  0x00004812      0x181 build/obj/main.o
  .debug_abbrev  0x00004993      0x233 build/obj/usb_ctrl.o
  .debug_abbrev  0x00004bc6      0x121 build/obj/light_ctrl.o
- .debug_abbrev  0x00004ce7      0x1bb build/obj/power_ctrl.o
- .debug_abbrev  0x00004ea2      0x22b build/obj/moto_ctrl.o
- .debug_abbrev  0x000050cd       0x2b build/obj/adc_ctrl.o
+ .debug_abbrev  0x00004ce7      0x1d9 build/obj/power_ctrl.o
+ .debug_abbrev  0x00004ec0      0x22b build/obj/moto_ctrl.o
+ .debug_abbrev  0x000050eb       0x2b build/obj/adc_ctrl.o
 
-.debug_info     0x00000000    0x150b3
+.debug_info     0x00000000    0x150cb
  .debug_info    0x00000000      0x37b build/obj/crt0.o
  .debug_info    0x0000037b       0xb5 build/obj/vectors.o
  .debug_info    0x00000430       0x8b build/obj/chcore.o
@@ -1582,11 +1582,11 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00012165      0x91d build/obj/main.o
  .debug_info    0x00012a82     0x118a build/obj/usb_ctrl.o
  .debug_info    0x00013c0c      0x38b build/obj/light_ctrl.o
- .debug_info    0x00013f97      0x753 build/obj/power_ctrl.o
- .debug_info    0x000146ea      0x98b build/obj/moto_ctrl.o
- .debug_info    0x00015075       0x3e build/obj/adc_ctrl.o
+ .debug_info    0x00013f97      0x76b build/obj/power_ctrl.o
+ .debug_info    0x00014702      0x98b build/obj/moto_ctrl.o
+ .debug_info    0x0001508d       0x3e build/obj/adc_ctrl.o
 
-.debug_line     0x00000000     0x85c1
+.debug_line     0x00000000     0x85c3
  .debug_line    0x00000000      0x15b build/obj/crt0.o
  .debug_line    0x0000015b       0x63 build/obj/vectors.o
  .debug_line    0x000001be       0x58 build/obj/chcore.o
@@ -1654,9 +1654,9 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x0000781c      0x256 build/obj/main.o
  .debug_line    0x00007a72      0x37d build/obj/usb_ctrl.o
  .debug_line    0x00007def      0x237 build/obj/light_ctrl.o
- .debug_line    0x00008026      0x235 build/obj/power_ctrl.o
- .debug_line    0x0000825b      0x32d build/obj/moto_ctrl.o
- .debug_line    0x00008588       0x39 build/obj/adc_ctrl.o
+ .debug_line    0x00008026      0x237 build/obj/power_ctrl.o
+ .debug_line    0x0000825d      0x32d build/obj/moto_ctrl.o
+ .debug_line    0x0000858a       0x39 build/obj/adc_ctrl.o
 
 .debug_loc      0x00000000     0x8103
  .debug_loc     0x00000000       0x72 build/obj/crt0.o
@@ -2068,7 +2068,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_ranges  0x00001658       0x78 build/obj/moto_ctrl.o
  .debug_ranges  0x000016d0       0x10 build/obj/adc_ctrl.o
 
-.debug_str      0x00000000     0x33b2
+.debug_str      0x00000000     0x33bb
  .debug_str     0x00000000      0x1e1 build/obj/crt0.o
                                 0x226 (size before relaxing)
  .debug_str     0x000001e1       0x51 build/obj/vectors.o
@@ -2203,11 +2203,11 @@ OUTPUT(build/ch.elf elf32-littlearm)
                                 0x8fe (size before relaxing)
  .debug_str     0x0000326d       0x20 build/obj/light_ctrl.o
                                 0x1b0 (size before relaxing)
- .debug_str     0x0000328d       0x9b build/obj/power_ctrl.o
-                                0x359 (size before relaxing)
- .debug_str     0x00003328       0x77 build/obj/moto_ctrl.o
+ .debug_str     0x0000328d       0xa4 build/obj/power_ctrl.o
+                                0x362 (size before relaxing)
+ .debug_str     0x00003331       0x77 build/obj/moto_ctrl.o
                                 0x3bd (size before relaxing)
- .debug_str     0x0000339f       0x13 build/obj/adc_ctrl.o
+ .debug_str     0x000033a8       0x13 build/obj/adc_ctrl.o
                                  0x59 (size before relaxing)
 
 .comment        0x00000000       0x2a
@@ -2804,6 +2804,7 @@ chMsgSend                                         build/obj/chmsg.o
 chMsgWait                                         build/obj/chmsg.o
 chMtxInit                                         build/obj/chmtx.o
                                                   build/obj/moto_ctrl.o
+                                                  build/obj/power_ctrl.o
                                                   build/obj/adc.o
                                                   build/obj/chheap.o
 chMtxLock                                         build/obj/chmtx.o

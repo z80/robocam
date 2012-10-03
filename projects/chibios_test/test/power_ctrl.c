@@ -121,10 +121,10 @@ static msg_t Power( void *arg )
 
 void initPower( void )
 {
-    /*chMtxInit( &g_mutex );
+    chMtxInit( &g_mutex );
     setPower( 0 );
 
-    chThdCreateStatic( waPower, sizeof(waPower), NORMALPRIO, Power, NULL );*/
+    /*chThdCreateStatic( waPower, sizeof(waPower), NORMALPRIO, Power, NULL );*/
 }
 
 
