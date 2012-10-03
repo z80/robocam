@@ -33,7 +33,7 @@ const int UsbIo::PD::PRODUCT_ID = 0x5740;
 const int UsbIo::PD::TIMEOUT    = 1000;
 
 const int UsbIo::PD::EP_OUT = 0x03;
-const int UsbIo::PD::EP_IN  = 0x81;
+const int UsbIo::PD::EP_IN  = 0x82;
 
 const int UsbIo::PD::STRI_MIN_LEN = 64;
 
@@ -90,8 +90,8 @@ int UsbIo::write( const std::string & stri )
 {
     int actual_length;
     unsigned char * data = reinterpret_cast<unsigned char *>( const_cast<char *>( stri.data() ) );
-    int res = libusb_bulk_transfer( pd->handle,
-                      PD::EP_OUT, data, stri.size(),
+    int res = libusb_bulk_transfer( pd->handle, 
+                      PD::EP_OUT, data, stri.size(), 
                       &actual_length, pd->timeout );
     if ( res != LIBUSB_SUCCESS )
         return res;
@@ -108,8 +108,8 @@ int UsbIo::read( std::string & stri )
 	{
 		unsigned char * data = reinterpret_cast<unsigned char *>( const_cast<char *>( stri.data() ) + len );
 		int actual_length;
-		int res = libusb_bulk_transfer( pd->handle,
-						  PD::EP_IN, data, stri.size(),
+		int res = libusb_interrupt_transfer( pd->handle, 
+						  PD::EP_IN, data, stri.size(), 
 						  &actual_length, pd->timeout );
 		if ( res != LIBUSB_SUCCESS )
 			return res;
