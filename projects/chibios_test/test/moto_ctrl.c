@@ -21,7 +21,7 @@ void motoConfig( bool_t en, int timeout )
 	    palSetPad( MOTO_EN_PORT, MOTO_EN_PIN );
 	else
 	    palClearPad( MOTO_EN_PORT, MOTO_EN_PIN );
-    motoSet( 0, 0, 0, 0 );
+    motoSet( 0 );
     palSetPadMode( MOTO_EN_PORT, MOTO_EN_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
 
@@ -32,27 +32,27 @@ void motoReset(void)
 	chMtxUnlock();
 }
 
-void motoSet( bool_t v1, bool_t v2, bool_t v3, bool_t v4 )
+void motoSet( uint8_t en )
 {
-	if ( v1 )
+	if ( en & 1 )
 	    palSetPad( MOTO_1_PORT, MOTO_1_PIN );
 	else
 	    palClearPad( MOTO_1_PORT, MOTO_1_PIN );
     palSetPadMode( MOTO_1_PORT, MOTO_1_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 
-	if ( v2 )
+	if ( en & 2 )
 	    palSetPad( MOTO_2_PORT, MOTO_2_PIN );
 	else
 	    palClearPad( MOTO_2_PORT, MOTO_2_PIN );
     palSetPadMode( MOTO_2_PORT, MOTO_2_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 
-	if ( v3 )
+	if ( en & 4 )
 	    palSetPad( MOTO_3_PORT, MOTO_3_PIN );
 	else
 	    palClearPad( MOTO_3_PORT, MOTO_3_PIN );
     palSetPadMode( MOTO_3_PORT, MOTO_3_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 
-	if ( v4 )
+	if ( en & 8 )
 	    palSetPad( MOTO_4_PORT, MOTO_4_PIN );
 	else
 	    palClearPad( MOTO_4_PORT, MOTO_4_PIN );
@@ -93,16 +93,17 @@ void cmd_moto_set( BaseChannel *chp, int argc, char * argv [] )
 	{
 		if ( strlen(argv[0]) > 3 )
 		{
-			bool_t v1 = ( argv[0][0] != '0' ) ? 1 : 0;
-			bool_t v2 = ( argv[0][1] != '0' ) ? 1 : 0;
-			bool_t v3 = ( argv[0][2] != '0' ) ? 1 : 0;
-			bool_t v4 = ( argv[0][3] != '0' ) ? 1 : 0;
-			motoSet( v1, v2, v3, v4 );
+			static uint8_t v;
+			v = ( ( argv[0][0] != '0' ) ? 1 : 0 ) +
+			    ( ( argv[0][1] != '0' ) ? 2 : 0 ) +
+			    ( ( argv[0][2] != '0' ) ? 4 : 0 ) +
+			    ( ( argv[0][3] != '0' ) ? 8 : 0 );
+			motoSet( v );
 		}
 	}
 }
 
-static WORKING_AREA( waMoto, 256 );
+static WORKING_AREA( waMoto, 1024 );
 static msg_t Moto( void *arg )
 {
     (void)arg;
@@ -112,7 +113,8 @@ static msg_t Moto( void *arg )
     {
         chMtxLock( &g_mutex );
         g_timeout = g_offTimeout;
-        int t = g_timeout;
+        static int t;
+        t = g_timeout;
         chMtxUnlock();
         while ( t > 0 )
         {

@@ -136,8 +136,8 @@ int main(void) {
   halInit();
   chSysInit();
 
+  initMoto();  // Power routine uses Moto routine mutex. So moto should be invoked before.
   initPower();
-  //initMoto();
   initUsb();
 
   /*
