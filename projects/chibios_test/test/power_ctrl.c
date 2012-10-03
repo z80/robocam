@@ -26,17 +26,17 @@ void powerConfig( int onFirst, int on, int off )
 
 void powerOffReset( void )
 {
-    chMtxLock( &g_mutex );
+    /*chMtxLock( &g_mutex );
     g_timer = g_offDelay;
     // Of it was reset at least once, means computer performed something.
     // And it most probably means we need more recharge time.
     g_nextOnDelay = g_firstOnDelay;
-    chMtxUnlock();
+    chMtxUnlock();*/
 }
 
 static void setPower( bool_t en )
 {
-   if ( en )
+   /*if ( en )
        palSetPad( PWR_PORT, PWR_PIN );
        // initUsb();
    else
@@ -46,20 +46,20 @@ static void setPower( bool_t en )
        motoConfig( 0, 3 );
        // finitUsb();
    }
-   palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );
+   palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );*/
 }
 
 void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] )
 {
-	(void)chp;
+	/*(void)chp;
 	(void)argc;
 	(void)argv;
-	powerOffReset();
+	powerOffReset();*/
 }
 
 void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 {
-	(void)chp;
+	/*(void)chp;
 	if ( argc > 0 )
 	{
 		chMtxLock( &g_mutex );
@@ -76,7 +76,7 @@ void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 			}
 		}
 		chMtxUnlock();
-	}
+	}*/
 }
 
 
@@ -84,16 +84,22 @@ static WORKING_AREA( waPower, 256 );
 static msg_t Power( void *arg )
 {
     (void)arg;
-    setPower( 0 );
-    chRegSetThreadName( "power" );
+    while ( 1 )
+    	chThdSleepSeconds( 1 );
+
+    /*setPower( 0 );
+    chRegSetThreadName( "pwr" );
+    // First wait for power on.
+    g_nextOnDelay = g_firstOnDelay;
     while (TRUE)
     {
-        // First wait for power on.
-        g_timer = g_firstOnDelay;
+        setPower( 0 );
+        // Wait for next power on.
+        g_timer = g_nextOnDelay;
         while ( g_timer-- > 0 )
             chThdSleepSeconds( 1 );
+
         // Power on.
-POWER_LOOP:
         g_nextOnDelay = g_offDelay;
         setPower( 1 );
         chMtxLock( &g_mutex );
@@ -109,22 +115,16 @@ POWER_LOOP:
             t = g_timer;
             chMtxUnlock();
         }
-        setPower( 0 );
-        // Wait for next power on.
-        g_timer = g_nextOnDelay;
-        while ( g_timer-- > 0 )
-            chThdSleepSeconds( 1 );
-        goto POWER_LOOP;
-    }
+    }*/
     return 0;
 }
 
 void initPower( void )
 {
-    chMtxInit( &g_mutex );
+    /*chMtxInit( &g_mutex );
     setPower( 0 );
 
-    chThdCreateStatic( waPower, sizeof(waPower), NORMALPRIO, Power, NULL );
+    chThdCreateStatic( waPower, sizeof(waPower), NORMALPRIO, Power, NULL );*/
 }
 
 
