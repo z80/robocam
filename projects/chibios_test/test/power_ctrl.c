@@ -80,18 +80,17 @@ void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 }
 
 
-static WORKING_AREA( waPower, 256 );
+static WORKING_AREA( waPower, 2048 );
 static msg_t Power( void *arg )
 {
     (void)arg;
-    while ( 1 )
-    	chThdSleepSeconds( 1 );
+    //while ( 1 )
+    //	chThdSleepSeconds( 1 );
 
-    /*setPower( 0 );
     chRegSetThreadName( "pwr" );
     // First wait for power on.
     g_nextOnDelay = g_firstOnDelay;
-    while (TRUE)
+    while ( 1 )
     {
         setPower( 0 );
         // Wait for next power on.
@@ -115,7 +114,7 @@ static msg_t Power( void *arg )
             t = g_timer;
             chMtxUnlock();
         }
-    }*/
+    }
     return 0;
 }
 
