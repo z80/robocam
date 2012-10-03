@@ -42,7 +42,7 @@ static void setPower( bool_t en )
    else
    {
        palClearPad( PWR_PORT, PWR_PIN );
-       //setLight( 0 );
+       setLight( 0 );
        //motoConfig( 0, 3 );
        // finitUsb();
    }
