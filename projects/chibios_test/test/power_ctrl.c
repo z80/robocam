@@ -26,12 +26,12 @@ void powerConfig( int onFirst, int on, int off )
 
 void powerOffReset( void )
 {
-    /*chMtxLock( &g_mutex );
+    chMtxLock( &g_mutex );
     g_timer = g_offDelay;
     // Of it was reset at least once, means computer performed something.
     // And it most probably means we need more recharge time.
     g_nextOnDelay = g_firstOnDelay;
-    chMtxUnlock();*/
+    chMtxUnlock();
 }
 
 static void setPower( bool_t en )
@@ -51,15 +51,15 @@ static void setPower( bool_t en )
 
 void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] )
 {
-	/*(void)chp;
+	(void)chp;
 	(void)argc;
 	(void)argv;
-	powerOffReset();*/
+	powerOffReset();
 }
 
 void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 {
-	/*(void)chp;
+	(void)chp;
 	if ( argc > 0 )
 	{
 		chMtxLock( &g_mutex );
@@ -76,11 +76,11 @@ void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 			}
 		}
 		chMtxUnlock();
-	}*/
+	}
 }
 
 
-static WORKING_AREA( waPower, 2048 );
+static WORKING_AREA( waPower, 4096 );
 static msg_t Power( void *arg )
 {
     (void)arg;
