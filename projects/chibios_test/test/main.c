@@ -135,9 +135,10 @@ int main(void) {
    */
   halInit();
   chSysInit();
-  initUsb();
-  //initPower();
+
+  initPower();
   //initMoto();
+  initUsb();
 
   /*
    * Setting up analog inputs used by the demo.
