@@ -36,17 +36,17 @@ void powerOffReset( void )
 
 static void setPower( bool_t en )
 {
-   /*if ( en )
+   if ( en )
        palSetPad( PWR_PORT, PWR_PIN );
        // initUsb();
    else
    {
        palClearPad( PWR_PORT, PWR_PIN );
-       setLight( 0 );
-       motoConfig( 0, 3 );
+       //setLight( 0 );
+       //motoConfig( 0, 3 );
        // finitUsb();
    }
-   palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );*/
+   palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
 
 void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] )
