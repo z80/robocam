@@ -121,18 +121,18 @@ void cmd_adc( BaseChannel *chp, int argc, char * argv [] )
 void processAdc( void )
 {
 	static uint8_t en, running;
-	//chMtxLock( &g_mutex );
+	chMtxLock( &g_mutex );
 	en = ( g_status & ADC_ENABLED ) ? 1 : 0;
 	running = ( g_status & ADC_RUNNING ) ? 1 : 0;
-	//chMtxUnlock();
+	chMtxUnlock();
 	if ( en )
 	{
 		if ( !running )
 		{
-			//chMtxLock( &g_mutex );
+			chMtxLock( &g_mutex );
 			g_status |= ADC_RUNNING;
-			//chMtxUnlock();
-            adcConvert( &ADCD1, &g_grp, g_src, 1 );
+			chMtxUnlock();
+            //adcConvert( &ADCD1, &g_grp, g_src, 1 );
 		}
 	}
 }
