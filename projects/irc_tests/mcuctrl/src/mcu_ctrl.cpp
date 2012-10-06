@@ -31,6 +31,65 @@ bool McuCtrl::powerConfig( int onFirst, int onRegular, int off )
     return ( cntRd >= cntWr );
 }
 
+bool McuCtrl::motoConfig( bool en, int val )
+{
+    std::ostringstream out;
+    out << "motocfg ";
+    out << (en) ? 1 : 0;
+    out << val;
+    out << "\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    return ( cntRd == cntWr );
+}
+
+bool McuCtrl::motoReset()
+{
+    std::ostringstream out;
+    out << "motorst\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    return ( cntRd == cntWr );
+}
+
+bool McuCtrl::led( bool en )
+{
+    std::ostringstream out;
+    out << "led ";
+    out << (en) ? 1 : 0;
+    out << "\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    return ( cntRd == cntWr );
+}
+
+bool McuCtrl::adcConfig( bool en )
+{
+    std::ostringstream out;
+    out << "adccfg ";
+    out << (en) ? 1 : 0;
+    out << "\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    return ( cntRd == cntWr );
+}
+
+bool McuCtrl::adc( int & solar, int & battery )
+{
+    std::ostringstream out;
+    out << "adc\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    // Get values from result string. Values are between "{" and "}".
+
+
+}
+
 
 
 

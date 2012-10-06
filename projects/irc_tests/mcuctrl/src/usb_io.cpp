@@ -17,6 +17,8 @@ class UsbIo::PD
 public:
     PD() {}
     ~PD() {}
+
+    void clearOutput();
     libusb_context       * cxt;
     libusb_device_handle * handle;
     int timeout;
@@ -27,6 +29,26 @@ public:
     static const int EP_IN;
     static const int STRI_MIN_LEN;
 };
+
+void UsbIo::PD::clearOutput()
+{
+	char cmd[] = "mem\r\n";
+	int actual_length;
+    int res = libusb_bulk_transfer( handle,
+                      EP_OUT, reinterpret_cast<unsigned char *>( cmd ), sizeof(cmd),
+                      &actual_length, 1 );
+
+	unsigned char data[ STRI_MIN_LEN ];
+    do {
+    	actual_length = 0;
+        res = libusb_bulk_transfer( handle,
+						  EP_IN, data, STRI_MIN_LEN,
+						  &actual_length, 1 );
+		if ( res != LIBUSB_SUCCESS )
+			break;
+
+   } while ( actual_length > 0 );
+}
 
 const int UsbIo::PD::VENDOR_ID  = 0x0483;
 const int UsbIo::PD::PRODUCT_ID = 0x5740;
@@ -69,6 +91,8 @@ bool UsbIo::open( const std::string & arg )
 
     //int res = libusb_set_configuration( pd->handle, 1 );
     //res = libusb_claim_interface( pd->handle, 1 );
+
+    pd->clearOutput();
 	return result;
 }
 
@@ -88,6 +112,7 @@ bool UsbIo::isOpen() const
 
 int UsbIo::write( const std::string & stri )
 {
+	pd->clearOutput();
     int actual_length;
     unsigned char * data = reinterpret_cast<unsigned char *>( const_cast<char *>( stri.data() ) );
     int res = libusb_bulk_transfer( pd->handle, 
