@@ -80,7 +80,7 @@ void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 }
 
 
-static WORKING_AREA( waPower, 2048 );
+static WORKING_AREA( waPower, 256 );
 static msg_t Power( void *arg )
 {
     (void)arg;

@@ -26,6 +26,14 @@
 #define MOTO_4_PIN   6
 #define MOTO_4_PORT  GPIOA
 
+#define ADC_CFG_CMD  "adccfg"
+#define ADC_CMD      "adc"
+#define ADC_SOL_PORT GPIOA
+#define ADC_SOL_PIN  4
+#define ADC_BAT_PORT GPIOA
+#define ADC_BAT_PIN  3
+
+
 #endif
 
 
