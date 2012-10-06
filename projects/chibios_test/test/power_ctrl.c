@@ -9,9 +9,9 @@
 #include <stdlib.h>
 
 static Mutex g_mutex;
-int g_firstOnDelay = (60 * 60 * 2);
-int g_onDelay      = (60 * 60 * 2);
-int g_offDelay     = ( 30 );
+int g_firstOnDelay = ( 3 );
+int g_onDelay      = ( 3 );
+int g_offDelay     = ( 3 );
 int g_nextOnDelay;
 int g_timer        = 0;
 
