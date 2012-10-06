@@ -41,7 +41,7 @@ bool McuCtrl::motoConfig( bool en, int val )
     std::string stri = out.str();
     int cntWr = write( stri );
     int cntRd = read( stri );
-    return ( cntRd == cntWr );
+    return ( cntRd >= cntWr );
 }
 
 bool McuCtrl::motoReset()
@@ -51,7 +51,7 @@ bool McuCtrl::motoReset()
     std::string stri = out.str();
     int cntWr = write( stri );
     int cntRd = read( stri );
-    return ( cntRd == cntWr );
+    return ( cntRd >= cntWr );
 }
 
 bool McuCtrl::led( bool en )
@@ -63,7 +63,7 @@ bool McuCtrl::led( bool en )
     std::string stri = out.str();
     int cntWr = write( stri );
     int cntRd = read( stri );
-    return ( cntRd == cntWr );
+    return ( cntRd >= cntWr );
 }
 
 bool McuCtrl::adcConfig( bool en )
@@ -75,7 +75,7 @@ bool McuCtrl::adcConfig( bool en )
     std::string stri = out.str();
     int cntWr = write( stri );
     int cntRd = read( stri );
-    return ( cntRd == cntWr );
+    return ( cntRd >= cntWr );
 }
 
 bool McuCtrl::adc( int & solar, int & battery )
@@ -87,7 +87,7 @@ bool McuCtrl::adc( int & solar, int & battery )
     int cntRd = read( stri );
     // Get values from result string. Values are between "{" and "}".
 
-
+    return ( cntRd >= cntWr );
 }
 
 

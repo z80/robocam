@@ -7,12 +7,13 @@ int main( int argc, char * argv[] )
     bool res = c.open();
     if ( !res )
         return 1;
-    std::string stri;
-    stri.resize( 128 );
-    int cnt = c.read( stri );
-    cnt = c.write( "mem\r\n" );
-    cnt = c.read( stri );
-    cnt = c.read( stri );
+    //std::string stri;
+    //stri.resize( 128 );
+    //int cnt = c.read( stri );
+    //cnt = c.write( "mem\r\n" );
+    //cnt = c.read( stri );
+    //cnt = c.read( stri );
+    bool r = c.led( true );
 
     return 0;
 }
