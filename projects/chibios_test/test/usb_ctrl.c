@@ -327,9 +327,8 @@ static const SerialUSBConfig serusbcfg = {
 /* Command line related.                                                     */
 /*===========================================================================*/
 
-#define SHELL_WA_SIZE   THD_WA_SIZE(2048)
+#define SHELL_WA_SIZE   THD_WA_SIZE( (1024 * 3) )
 uint8_t                 SHELL_PTR[SHELL_WA_SIZE];
-#define TEST_WA_SIZE    THD_WA_SIZE(256)
 
 static void cmd_mem(BaseChannel *chp, int argc, char *argv[])
 {

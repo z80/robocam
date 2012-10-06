@@ -461,7 +461,7 @@ Discarded input sections
  .text.processShell
                 0x00000000       0x4c build/obj/usb_ctrl.o
  .bss.SHELL_PTR
-                0x00000000      0x8b0 build/obj/usb_ctrl.o
+                0x00000000      0xcb0 build/obj/usb_ctrl.o
  .text          0x00000000        0x0 build/obj/light_ctrl.o
  .data          0x00000000        0x0 build/obj/light_ctrl.o
  .bss           0x00000000        0x0 build/obj/light_ctrl.o
