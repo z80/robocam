@@ -14,6 +14,11 @@ int main( int argc, char * argv[] )
     //cnt = c.read( stri );
     //cnt = c.read( stri );
     bool r = c.led( true );
+    r = c.motoConfig( false, 3 );
+    r = c.motoReset();
+    //r = c.adcConfig( false );
+    int val1, val2;
+    r = c.adc( val1, val2 );
 
     return 0;
 }
