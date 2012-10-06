@@ -14,8 +14,8 @@ static uint8_t g_status = 0;
 #define ADC_ENABLED 1
 #define ADC_RUNNING 2
 
-static adcsample_t g_src[] = { 32767, 32767 };
-static adcsample_t g_res[] = { 32767, 32767 };
+static adcsample_t g_src[ 2 ] = { 32767, 32767 };
+static adcsample_t g_res[ 2 ] = { 32767, 32767 };
 
 static void adcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 {
@@ -43,14 +43,26 @@ static const ADCConversionGroup g_grp =
     ADC_SQR3_SQ1_N( ADC_CHANNEL_IN4 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )
 };
 
+static WORKING_AREA( waAdc, 256 );
+static msg_t Adc( void *arg )
+{
+    (void)arg;
+    chRegSetThreadName( "adc" );
+
+    while ( 1 )
+    {
+         processAdc();
+         chThdSleepSeconds( 1 );
+    }
+    return 0;
+}
+
 void initAdc( void )
 {
-    //chMtxLock( &g_mutex );
     g_status = 0;
-    //chMtxUnlock();
-	palSetGroupMode( ADC_SOL_PORT, PAL_PORT_BIT(ADC_SOL_PIN), 0, PAL_MODE_INPUT_ANALOG );
-	palSetGroupMode( ADC_BAT_PORT, PAL_PORT_BIT(ADC_BAT_PIN), 0, PAL_MODE_INPUT_ANALOG );
     adcStart( &ADCD1, NULL );
+
+    chThdCreateStatic( waAdc, sizeof(waAdc), NORMALPRIO, Adc, NULL );
 }
 
 void finitAdc( void )
@@ -65,7 +77,11 @@ void adcCfg( uint8_t en )
 {
     chMtxLock( &g_mutex );
     if ( en )
+    {
+    	palSetGroupMode( ADC_SOL_PORT, PAL_PORT_BIT(ADC_SOL_PIN), 0, PAL_MODE_INPUT_ANALOG );
+    	palSetGroupMode( ADC_BAT_PORT, PAL_PORT_BIT(ADC_BAT_PIN), 0, PAL_MODE_INPUT_ANALOG );
         g_status |= ADC_ENABLED;
+    }
     else
     	g_status &= (~ADC_ENABLED);
     chMtxUnlock();
