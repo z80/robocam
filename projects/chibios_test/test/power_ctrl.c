@@ -4,6 +4,7 @@
 #include "hal.h"
 #include "light_ctrl.h"
 #include "moto_ctrl.h"
+#include "adc_ctrl.h"
 #include "hdw_cfg.h"
 
 #include <stdlib.h>
@@ -43,6 +44,7 @@ static void setPower( bool_t en )
    {
        palClearPad( PWR_PORT, PWR_PIN );
        setLight( 0 );
+       //adcCfg( 0 );
        //motoConfig( 0, 3 );
        // finitUsb();
    }

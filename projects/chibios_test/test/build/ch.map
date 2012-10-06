@@ -1657,11 +1657,11 @@ destructors     0x080000ec        0x0
  .bss.waPower   0x20001060      0x1b0 build/obj/power_ctrl.o
  .bss.g_timer   0x20001210        0x4 build/obj/power_ctrl.o
                 0x20001210                g_timer
- .bss.t.6786    0x20001214        0x4 build/obj/power_ctrl.o
- .bss.g_mutex   0x20001218       0x10 build/obj/power_ctrl.o
+ .bss.g_mutex   0x20001214       0x10 build/obj/power_ctrl.o
  .bss.g_nextOnDelay
-                0x20001228        0x4 build/obj/power_ctrl.o
-                0x20001228                g_nextOnDelay
+                0x20001224        0x4 build/obj/power_ctrl.o
+                0x20001224                g_nextOnDelay
+ .bss.t.6805    0x20001228        0x4 build/obj/power_ctrl.o
  *fill*         0x2000122c        0x4 00
  .bss.waMoto    0x20001230      0x4b0 build/obj/moto_ctrl.o
  .bss.g_mutex   0x200016e0       0x10 build/obj/moto_ctrl.o
