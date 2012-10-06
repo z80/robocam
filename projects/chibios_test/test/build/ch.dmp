@@ -32,25 +32,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   7 .debug_info   00013c90  00000000  00000000  00015555  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000080c8  00000000  00000000  000291e5  2**0
+  8 .debug_line   000080ca  00000000  00000000  000291e5  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00006318  00000000  00000000  000312ad  2**0
+  9 .debug_loc    00006323  00000000  00000000  000312af  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_pubnames 0000177d  00000000  00000000  000375c5  2**0
+ 10 .debug_pubnames 0000177d  00000000  00000000  000375d2  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_pubtypes 00003a71  00000000  00000000  00038d42  2**0
+ 11 .debug_pubtypes 00003a71  00000000  00000000  00038d4f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_aranges 00000de8  00000000  00000000  0003c7b3  2**0
+ 12 .debug_aranges 00000de8  00000000  00000000  0003c7c0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000c38  00000000  00000000  0003d59b  2**0
+ 13 .debug_ranges 00000c38  00000000  00000000  0003d5a8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000033df  00000000  00000000  0003e1d3  2**0
+ 14 .debug_str    000033df  00000000  00000000  0003e1e0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000002a  00000000  00000000  000415b2  2**0
+ 15 .comment      0000002a  00000000  00000000  000415bf  2**0
                   CONTENTS, READONLY
- 16 .ARM.attributes 00000031  00000000  00000000  000415dc  2**0
+ 16 .ARM.attributes 00000031  00000000  00000000  000415e9  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  00002500  00000000  00000000  00041610  2**2
+ 17 .debug_frame  000024fc  00000000  00000000  0004161c  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup
@@ -180,19 +180,19 @@ SYMBOL TABLE:
 08004a10 l     O .text	00000008 vcom_device_descriptor
 00000000 l    df *ABS*	00000000 light_ctrl.c
 00000000 l    df *ABS*	00000000 power_ctrl.c
-08003830 l     F .text	00000028 setPower
-08003860 l     F .text	00000094 Power
+08003830 l     F .text	00000038 setPower
+08003870 l     F .text	00000094 Power
 20001060 l     O .bss	000001b0 waPower
 20001214 l     O .bss	00000010 g_mutex
 20001228 l     O .bss	00000004 t.6805
 00000000 l    df *ABS*	00000000 moto_ctrl.c
-08003ad0 l     F .text	00000080 Moto
+08003ae0 l     F .text	00000080 Moto
 20001230 l     O .bss	000004b0 waMoto
 200016e0 l     O .bss	00000010 g_mutex
 200016f0 l     O .bss	00000001 v.6920
 200016f4 l     O .bss	00000004 t.6925
 00000000 l    df *ABS*	00000000 adc_ctrl.c
-08003c30 l     F .text	00000038 adcReadyCb
+08003c40 l     F .text	00000038 adcReadyCb
 08003dd0 l     F .text	00000020 Adc
 200016fc l     O .bss	00000001 en.6935
 20001700 l     O .bss	00000010 g_mutex
@@ -243,7 +243,7 @@ SYMBOL TABLE:
 00000000 l    df *ABS*	00000000 evtimer.c
 00000000 l    df *ABS*	00000000 syscalls.c
 08004590 g     O .text	0000003c pal_default_config
-08003950 g     F .text	00000050 cmd_pwr_cfg
+08003960 g     F .text	00000050 cmd_pwr_cfg
 080008b0  w    F .text	00000002 Vector58
 080008b0  w    F .text	00000002 VectorE8
 080008b0  w    F .text	00000002 Vector9C
@@ -281,7 +281,7 @@ SYMBOL TABLE:
 08001140 g     F .text	0000004c chThdCreateI
 08003020 g     F .text	0000002c usb_lld_clear_out
 08000db0 g     F .text	00000020 dbg_check_enable
-080039d0 g     F .text	00000024 motoReset
+080039e0 g     F .text	00000024 motoReset
 080008b0  w    F .text	00000002 VectorC8
 08001030 g     F .text	0000005c chSchWakeupS
 08000ef0 g     F .text	00000018 _scheduler_init
@@ -289,11 +289,11 @@ SYMBOL TABLE:
 08001190 g     F .text	00000050 chThdCreateStatic
 080008b0  w    F .text	00000002 Vector94
 080008b0  w    F .text	00000002 VectorA8
-08003b50 g     F .text	00000044 cmd_moto_cfg
+08003b60 g     F .text	00000044 cmd_moto_cfg
 08001bb0 g     F .text	0000027c _usb_ep0setup
 080008b0  w    F .text	00000002 VectorB4
 08001990 g     F .text	0000004c adcConvert
-08003c00 g     F .text	00000030 initMoto
+08003c10 g     F .text	00000030 initMoto
 20000918 g     O .data	00000004 g_firstOnDelay
 08000f10 g     F .text	0000003c chSchReadyI
 080000ec g       startup	00000000 __fini_array_end
@@ -304,7 +304,7 @@ SYMBOL TABLE:
 08002300 g     F .text	00000078 sduDataReceived
 08000540 g     F .text	0000025c __udivsi3
 080017a0 g     F .text	0000001c _heap_init
-08003ba0 g     F .text	00000004 cmd_moto_rst
+08003bb0 g     F .text	00000004 cmd_moto_rst
 08002400 g     F .text	00000034 Vector74
 08001880 g     F .text	00000028 halInit
 2000091c g     O .data	00000004 g_offDelay
@@ -356,7 +356,7 @@ SYMBOL TABLE:
 08001090 g     F .text	00000048 chSchDoReschedule
 08000ad0 g     F .text	0000006c chSysInit
 00000000  w      *UND*	00000000 __sf_fake_stderr
-08003cb0 g     F .text	00000048 adcCfg
+08003cc0 g     F .text	00000040 adcCfg
 08001a90 g     F .text	0000006c usbInitEndpointI
 080011e0 g     F .text	0000002c chThdSleep
 08001500 g     F .text	00000018 chIQInit
@@ -370,7 +370,7 @@ SYMBOL TABLE:
 08002c50 g     F .text	00000020 usb_lld_get_status_in
 080026b0 g     F .text	00000084 stm32_clock_init
 08002980 g     F .text	0000006c _pal_lld_init
-080039a0 g     F .text	00000030 initPower
+080039b0 g     F .text	00000030 initPower
 080008b0  w    F .text	00000002 BusFaultVector
 08003d80 g     F .text	0000004c processAdc
 080008b0  w    F .text	00000002 VectorD0
@@ -395,14 +395,14 @@ SYMBOL TABLE:
 08003240 g     F .text	00000014 shellCreate
 080017c0 g     F .text	0000007c chHeapAlloc
 08000c10 g     F .text	00000024 chDbgCheckClassS
-08003900 g     F .text	00000034 powerOffReset
+08003910 g     F .text	00000034 powerOffReset
 080007c0  w    F .text	00000002 __aeabi_ldiv0
 08001b80 g     F .text	00000030 _usb_reset
-08003940 g     F .text	00000004 cmd_pwr_rst
+08003950 g     F .text	00000004 cmd_pwr_rst
 08000c70 g     F .text	00000034 dbg_check_leave_isr
 08004a88 g       *ABS*	00000000 _textdata
 080008b0  w    F .text	00000002 VectorE0
-08003bb0 g     F .text	00000050 cmd_moto_set
+08003bc0 g     F .text	00000050 cmd_moto_set
 00000000 g       *ABS*	00000000 _text
 080008b0  w    F .text	00000002 MemManageVector
 080000ec g       startup	00000000 __fini_array_start
@@ -442,11 +442,11 @@ SYMBOL TABLE:
 08002810 g     F .text	0000005e adc_lld_start_conversion
 20000804 g     O .data	00000004 _impure_ptr
 080023c0 g     F .text	00000034 Vector70
-08003c70 g     F .text	00000034 initAdc
+08003c80 g     F .text	0000003c initAdc
 080008b0  w    F .text	00000002 VectorD4
 08000a80 g     F .text	0000002c nvicSetSystemHandlerPriority
 08003260 g     F .text	000000b0 shellGetLine
-08003a80 g     F .text	00000044 motoConfig
+08003a90 g     F .text	00000044 motoConfig
 20000980 g     O .bss	000000c0 _idle_thread_wa
 08001610 g     F .text	00000014 chOQInit
 08001520 g     F .text	00000056 chIQGetTimeout
@@ -470,7 +470,7 @@ SYMBOL TABLE:
 200018c8 g       *ABS*	00000000 _end
 08000ea0 g     F .text	00000044 chVTResetI
 080008b0 g     F .text	00000002 _unhandled_exception
-08003a00 g     F .text	00000078 motoSet
+08003a10 g     F .text	00000078 motoSet
 080008b0  w    F .text	00000002 Vector88
 08001f70 g     F .text	0000001c tmObjectInit
 20000400 g       .stacks	00000000 __main_thread_stack_base__

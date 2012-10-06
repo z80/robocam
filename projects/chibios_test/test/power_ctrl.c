@@ -44,8 +44,8 @@ static void setPower( bool_t en )
    {
        palClearPad( PWR_PORT, PWR_PIN );
        setLight( 0 );
-       //adcCfg( 0 );
-       //motoConfig( 0, 3 );
+       adcCfg( 0 );
+       motoConfig( 0, 3 );
        // finitUsb();
    }
    palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );

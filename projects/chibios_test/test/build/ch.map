@@ -1308,59 +1308,58 @@ destructors     0x080000ec        0x0
                 0x08003810                cmd_light
  *fill*         0x08003828        0x8 00
  .text.setPower
-                0x08003830       0x28 build/obj/power_ctrl.o
- *fill*         0x08003858        0x8 00
- .text.Power    0x08003860       0x94 build/obj/power_ctrl.o
- *fill*         0x080038f4        0xc 00
+                0x08003830       0x38 build/obj/power_ctrl.o
+ *fill*         0x08003868        0x8 00
+ .text.Power    0x08003870       0x94 build/obj/power_ctrl.o
+ *fill*         0x08003904        0xc 00
  .text.powerOffReset
-                0x08003900       0x34 build/obj/power_ctrl.o
-                0x08003900                powerOffReset
- *fill*         0x08003934        0xc 00
- .text.cmd_pwr_rst
-                0x08003940        0x4 build/obj/power_ctrl.o
-                0x08003940                cmd_pwr_rst
+                0x08003910       0x34 build/obj/power_ctrl.o
+                0x08003910                powerOffReset
  *fill*         0x08003944        0xc 00
+ .text.cmd_pwr_rst
+                0x08003950        0x4 build/obj/power_ctrl.o
+                0x08003950                cmd_pwr_rst
+ *fill*         0x08003954        0xc 00
  .text.cmd_pwr_cfg
-                0x08003950       0x50 build/obj/power_ctrl.o
-                0x08003950                cmd_pwr_cfg
+                0x08003960       0x50 build/obj/power_ctrl.o
+                0x08003960                cmd_pwr_cfg
  .text.initPower
-                0x080039a0       0x30 build/obj/power_ctrl.o
-                0x080039a0                initPower
+                0x080039b0       0x30 build/obj/power_ctrl.o
+                0x080039b0                initPower
  .text.motoReset
-                0x080039d0       0x24 build/obj/moto_ctrl.o
-                0x080039d0                motoReset
- *fill*         0x080039f4        0xc 00
- .text.motoSet  0x08003a00       0x78 build/obj/moto_ctrl.o
-                0x08003a00                motoSet
- *fill*         0x08003a78        0x8 00
+                0x080039e0       0x24 build/obj/moto_ctrl.o
+                0x080039e0                motoReset
+ *fill*         0x08003a04        0xc 00
+ .text.motoSet  0x08003a10       0x78 build/obj/moto_ctrl.o
+                0x08003a10                motoSet
+ *fill*         0x08003a88        0x8 00
  .text.motoConfig
-                0x08003a80       0x44 build/obj/moto_ctrl.o
-                0x08003a80                motoConfig
- *fill*         0x08003ac4        0xc 00
- .text.Moto     0x08003ad0       0x80 build/obj/moto_ctrl.o
+                0x08003a90       0x44 build/obj/moto_ctrl.o
+                0x08003a90                motoConfig
+ *fill*         0x08003ad4        0xc 00
+ .text.Moto     0x08003ae0       0x80 build/obj/moto_ctrl.o
  .text.cmd_moto_cfg
-                0x08003b50       0x44 build/obj/moto_ctrl.o
-                0x08003b50                cmd_moto_cfg
- *fill*         0x08003b94        0xc 00
- .text.cmd_moto_rst
-                0x08003ba0        0x4 build/obj/moto_ctrl.o
-                0x08003ba0                cmd_moto_rst
+                0x08003b60       0x44 build/obj/moto_ctrl.o
+                0x08003b60                cmd_moto_cfg
  *fill*         0x08003ba4        0xc 00
+ .text.cmd_moto_rst
+                0x08003bb0        0x4 build/obj/moto_ctrl.o
+                0x08003bb0                cmd_moto_rst
+ *fill*         0x08003bb4        0xc 00
  .text.cmd_moto_set
-                0x08003bb0       0x50 build/obj/moto_ctrl.o
-                0x08003bb0                cmd_moto_set
+                0x08003bc0       0x50 build/obj/moto_ctrl.o
+                0x08003bc0                cmd_moto_set
  .text.initMoto
-                0x08003c00       0x30 build/obj/moto_ctrl.o
-                0x08003c00                initMoto
+                0x08003c10       0x30 build/obj/moto_ctrl.o
+                0x08003c10                initMoto
  .text.adcReadyCb
-                0x08003c30       0x38 build/obj/adc_ctrl.o
- *fill*         0x08003c68        0x8 00
- .text.initAdc  0x08003c70       0x34 build/obj/adc_ctrl.o
-                0x08003c70                initAdc
- *fill*         0x08003ca4        0xc 00
- .text.adcCfg   0x08003cb0       0x48 build/obj/adc_ctrl.o
-                0x08003cb0                adcCfg
- *fill*         0x08003cf8        0x8 00
+                0x08003c40       0x38 build/obj/adc_ctrl.o
+ *fill*         0x08003c78        0x8 00
+ .text.initAdc  0x08003c80       0x3c build/obj/adc_ctrl.o
+                0x08003c80                initAdc
+ *fill*         0x08003cbc        0x4 00
+ .text.adcCfg   0x08003cc0       0x40 build/obj/adc_ctrl.o
+                0x08003cc0                adcCfg
  .text.adc      0x08003d00       0x2c build/obj/adc_ctrl.o
                 0x08003d00                adc
  *fill*         0x08003d2c        0x4 00
@@ -1836,7 +1835,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00012581      0x926 build/obj/moto_ctrl.o
  .debug_info    0x00012ea7      0xde9 build/obj/adc_ctrl.o
 
-.debug_line     0x00000000     0x80c8
+.debug_line     0x00000000     0x80ca
  .debug_line    0x00000000      0x149 build/obj/crt0.o
  .debug_line    0x00000149       0x63 build/obj/vectors.o
  .debug_line    0x000001ac       0x58 build/obj/chcore.o
@@ -1904,11 +1903,11 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x00007063      0x12f build/obj/main.o
  .debug_line    0x00007192      0x37b build/obj/usb_ctrl.o
  .debug_line    0x0000750d      0x235 build/obj/light_ctrl.o
- .debug_line    0x00007742      0x306 build/obj/power_ctrl.o
- .debug_line    0x00007a48      0x324 build/obj/moto_ctrl.o
- .debug_line    0x00007d6c      0x35c build/obj/adc_ctrl.o
+ .debug_line    0x00007742      0x308 build/obj/power_ctrl.o
+ .debug_line    0x00007a4a      0x324 build/obj/moto_ctrl.o
+ .debug_line    0x00007d6e      0x35c build/obj/adc_ctrl.o
 
-.debug_loc      0x00000000     0x6318
+.debug_loc      0x00000000     0x6323
  .debug_loc     0x00000000       0x92 build/obj/crt0.o
  .debug_loc     0x00000092      0x104 build/obj/chcore_v7m.o
  .debug_loc     0x00000196      0x102 build/obj/nvic.o
@@ -1947,9 +1946,9 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_loc     0x00005ad3       0x20 build/obj/main.o
  .debug_loc     0x00005af3      0x15d build/obj/usb_ctrl.o
  .debug_loc     0x00005c50       0x78 build/obj/light_ctrl.o
- .debug_loc     0x00005cc8      0x1e1 build/obj/power_ctrl.o
- .debug_loc     0x00005ea9      0x236 build/obj/moto_ctrl.o
- .debug_loc     0x000060df      0x239 build/obj/adc_ctrl.o
+ .debug_loc     0x00005cc8      0x1ec build/obj/power_ctrl.o
+ .debug_loc     0x00005eb4      0x236 build/obj/moto_ctrl.o
+ .debug_loc     0x000060ea      0x239 build/obj/adc_ctrl.o
 
 .debug_pubnames
                 0x00000000     0x177d
@@ -2706,7 +2705,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .ARM.attributes
                 0x00000ef2       0x1b /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
 
-.debug_frame    0x00000000     0x2500
+.debug_frame    0x00000000     0x24fc
  .debug_frame   0x00000000       0x60 build/obj/crt0.o
  .debug_frame   0x00000060       0x20 build/obj/vectors.o
  .debug_frame   0x00000080       0x20 build/obj/chcore.o
@@ -2751,15 +2750,15 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_frame   0x00002078       0x30 build/obj/light_ctrl.o
  .debug_frame   0x000020a8       0xd8 build/obj/power_ctrl.o
  .debug_frame   0x00002180       0xfc build/obj/moto_ctrl.o
- .debug_frame   0x0000227c      0x110 build/obj/adc_ctrl.o
- .debug_frame   0x0000238c       0x30 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
- .debug_frame   0x000023bc       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
- .debug_frame   0x000023e8       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
- .debug_frame   0x00002414       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strchr.o)
- .debug_frame   0x00002440       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strlen.o)
- .debug_frame   0x00002460       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
- .debug_frame   0x0000248c       0x54 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
- .debug_frame   0x000024e0       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
+ .debug_frame   0x0000227c      0x10c build/obj/adc_ctrl.o
+ .debug_frame   0x00002388       0x30 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
+ .debug_frame   0x000023b8       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
+ .debug_frame   0x000023e4       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
+ .debug_frame   0x00002410       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strchr.o)
+ .debug_frame   0x0000243c       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strlen.o)
+ .debug_frame   0x0000245c       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
+ .debug_frame   0x00002488       0x54 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
+ .debug_frame   0x000024dc       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
 
 Cross Reference Table
 
@@ -2978,6 +2977,7 @@ _write_r                                          build/obj/syscalls.o
 adc                                               build/obj/adc_ctrl.o
 adcAcquireBus                                     build/obj/adc.o
 adcCfg                                            build/obj/adc_ctrl.o
+                                                  build/obj/power_ctrl.o
 adcConvert                                        build/obj/adc.o
                                                   build/obj/adc_ctrl.o
 adcInit                                           build/obj/adc.o
@@ -3109,6 +3109,7 @@ chMsgRelease                                      build/obj/chmsg.o
 chMsgSend                                         build/obj/chmsg.o
 chMsgWait                                         build/obj/chmsg.o
 chMtxInit                                         build/obj/chmtx.o
+                                                  build/obj/adc_ctrl.o
                                                   build/obj/moto_ctrl.o
                                                   build/obj/power_ctrl.o
                                                   build/obj/adc.o
@@ -3388,6 +3389,7 @@ memset                                            /home/z80/programs/code-source
                                                   build/obj/syscalls.o
                                                   build/obj/usb.o
 motoConfig                                        build/obj/moto_ctrl.o
+                                                  build/obj/power_ctrl.o
 motoReset                                         build/obj/moto_ctrl.o
 motoSet                                           build/obj/moto_ctrl.o
 nvicDisableVector                                 build/obj/nvic.o

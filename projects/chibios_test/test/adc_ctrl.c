@@ -59,6 +59,7 @@ static msg_t Adc( void *arg )
 
 void initAdc( void )
 {
+	chMtxInit( &g_mutex );
     g_status = 0;
     adcStart( &ADCD1, NULL );
 
@@ -80,7 +81,7 @@ void adcCfg( uint8_t en )
     {
     	palSetGroupMode( ADC_SOL_PORT, PAL_PORT_BIT(ADC_SOL_PIN), 0, PAL_MODE_INPUT_ANALOG );
     	palSetGroupMode( ADC_BAT_PORT, PAL_PORT_BIT(ADC_BAT_PIN), 0, PAL_MODE_INPUT_ANALOG );
-        g_status |= ADC_ENABLED;
+        //g_status |= ADC_ENABLED;
     }
     else
     	g_status &= (~ADC_ENABLED);
@@ -114,7 +115,7 @@ void cmd_adc( BaseChannel *chp, int argc, char * argv [] )
 	(void)(argv);
     static uint16_t v1, v2;
     adc( &v1, &v2 );
-    chprintf( chp, "{%i %u}", v1, v2 );
+    chprintf( chp, "{%u %u}", v1, v2 );
 }
 
 void processAdc( void )

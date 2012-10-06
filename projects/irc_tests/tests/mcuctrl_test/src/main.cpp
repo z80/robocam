@@ -16,7 +16,7 @@ int main( int argc, char * argv[] )
     bool r = c.led( true );
     r = c.motoConfig( false, 3 );
     r = c.motoReset();
-    //r = c.adcConfig( false );
+    r = c.adcConfig( true );
     int val1, val2;
     r = c.adc( val1, val2 );
 
