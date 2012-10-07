@@ -1666,12 +1666,12 @@ destructors     0x080000ec        0x0
  .bss.g_timeout
                 0x200013f8        0x4 build/obj/moto_ctrl.o
                 0x200013f8                g_timeout
- .bss.g_mutex   0x200013fc       0x10 build/obj/adc_ctrl.o
- .bss.v2.6926   0x2000140c        0x2 build/obj/adc_ctrl.o
- .bss.v1.6925   0x2000140e        0x2 build/obj/adc_ctrl.o
+ .bss.v1.6920   0x200013fc        0x2 build/obj/adc_ctrl.o
+ .bss.v2.6921   0x200013fe        0x2 build/obj/adc_ctrl.o
+ .bss.g_mutex   0x20001400       0x10 build/obj/adc_ctrl.o
  .bss.g_status  0x20001410        0x1 build/obj/adc_ctrl.o
- .bss.en.6919   0x20001411        0x1 build/obj/adc_ctrl.o
- .bss.en.6930   0x20001412        0x1 build/obj/adc_ctrl.o
+ .bss.en.6914   0x20001411        0x1 build/obj/adc_ctrl.o
+ .bss.en.6925   0x20001412        0x1 build/obj/adc_ctrl.o
                 0x20001414                . = ALIGN (0x4)
  *fill*         0x20001413        0x1 00
  *(COMMON)
@@ -1683,7 +1683,7 @@ destructors     0x080000ec        0x0
                 0x20002800                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
-.debug_abbrev   0x00000000     0x4c06
+.debug_abbrev   0x00000000     0x4be8
  .debug_abbrev  0x00000000      0x110 build/obj/crt0.o
  .debug_abbrev  0x00000110       0x74 build/obj/vectors.o
  .debug_abbrev  0x00000184       0x41 build/obj/chcore.o
@@ -1753,9 +1753,9 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_abbrev  0x00004488      0x121 build/obj/light_ctrl.o
  .debug_abbrev  0x000045a9      0x231 build/obj/power_ctrl.o
  .debug_abbrev  0x000047da      0x22b build/obj/moto_ctrl.o
- .debug_abbrev  0x00004a05      0x201 build/obj/adc_ctrl.o
+ .debug_abbrev  0x00004a05      0x1e3 build/obj/adc_ctrl.o
 
-.debug_info     0x00000000    0x13c09
+.debug_info     0x00000000    0x13b53
  .debug_info    0x00000000      0x315 build/obj/crt0.o
  .debug_info    0x00000315       0xb5 build/obj/vectors.o
  .debug_info    0x000003ca       0x8b build/obj/chcore.o
@@ -1825,9 +1825,9 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x000118cf      0x38b build/obj/light_ctrl.o
  .debug_info    0x00011c5a      0x927 build/obj/power_ctrl.o
  .debug_info    0x00012581      0x926 build/obj/moto_ctrl.o
- .debug_info    0x00012ea7      0xd62 build/obj/adc_ctrl.o
+ .debug_info    0x00012ea7      0xcac build/obj/adc_ctrl.o
 
-.debug_line     0x00000000     0x80a4
+.debug_line     0x00000000     0x8098
  .debug_line    0x00000000      0x149 build/obj/crt0.o
  .debug_line    0x00000149       0x63 build/obj/vectors.o
  .debug_line    0x000001ac       0x58 build/obj/chcore.o
@@ -1897,7 +1897,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x0000750d      0x235 build/obj/light_ctrl.o
  .debug_line    0x00007742      0x308 build/obj/power_ctrl.o
  .debug_line    0x00007a4a      0x324 build/obj/moto_ctrl.o
- .debug_line    0x00007d6e      0x336 build/obj/adc_ctrl.o
+ .debug_line    0x00007d6e      0x32a build/obj/adc_ctrl.o
 
 .debug_loc      0x00000000     0x6297
  .debug_loc     0x00000000       0x92 build/obj/crt0.o
@@ -2036,7 +2036,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
                 0x00001714       0x69 build/obj/adc_ctrl.o
 
 .debug_pubtypes
-                0x00000000     0x3a71
+                0x00000000     0x3a59
  .debug_pubtypes
                 0x00000000       0x44 build/obj/crt0.o
  .debug_pubtypes
@@ -2176,7 +2176,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_pubtypes
                 0x0000365a      0x18e build/obj/moto_ctrl.o
  .debug_pubtypes
-                0x000037e8      0x289 build/obj/adc_ctrl.o
+                0x000037e8      0x271 build/obj/adc_ctrl.o
 
 .debug_aranges  0x00000000      0xdd8
  .debug_aranges
@@ -2317,7 +2317,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_ranges  0x00000b58       0x78 build/obj/moto_ctrl.o
  .debug_ranges  0x00000bd0       0x58 build/obj/adc_ctrl.o
 
-.debug_str      0x00000000     0x33cc
+.debug_str      0x00000000     0x33c6
  .debug_str     0x00000000      0x1e1 build/obj/crt0.o
                                 0x226 (size before relaxing)
  .debug_str     0x000001e1       0x51 build/obj/vectors.o
@@ -2456,8 +2456,8 @@ OUTPUT(build/ch.elf elf32-littlearm)
                                 0x3db (size before relaxing)
  .debug_str     0x000032fa       0x77 build/obj/moto_ctrl.o
                                 0x3bd (size before relaxing)
- .debug_str     0x00003371       0x5b build/obj/adc_ctrl.o
-                                0x5b2 (size before relaxing)
+ .debug_str     0x00003371       0x55 build/obj/adc_ctrl.o
+                                0x55d (size before relaxing)
 
 .comment        0x00000000       0x2a
  .comment       0x00000000       0x2a build/obj/crt0.o

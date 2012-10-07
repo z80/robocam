@@ -54,7 +54,7 @@ static const ADCConversionGroup g_grp =
     ADC_SQR3_SQ1_N( ADC_CHANNEL_IN10 )*/
 };
 
-static WORKING_AREA( waAdc, (1024) );
+/*static WORKING_AREA( waAdc, (1024) );
 static msg_t Adc( void *arg )
 {
     (void)arg;
@@ -66,7 +66,7 @@ static msg_t Adc( void *arg )
          chThdSleepSeconds( 1 );
     }
     return 0;
-}
+}*/
 
 void initAdc( void )
 {
