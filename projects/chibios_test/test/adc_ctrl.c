@@ -31,27 +31,27 @@ static adcsample_t g_res[ 2 ] = { 32767, 32767 };
 
 static const ADCConversionGroup g_grp =
 {
-    /*FALSE,
+    FALSE,
     2,
-    adcReadyCb,
+    NULL,
     NULL,
     0, 0,
     0,
     ADC_SMPR2_SMP_AN4(ADC_SAMPLE_239P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_239P5 ),
     ADC_SQR1_NUM_CH( 2 ),
     0,
-    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN4 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )*/
+    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN4 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )
 
-    FALSE,
+    /*FALSE,
     1,
     NULL, //adcReadyCb,
     NULL,
-    0, 0,                         /* CR1, CR2 */
+    0, 0,                         // CR1, CR2
     ADC_SMPR1_SMP_AN10( ADC_SAMPLE_1P5 ),
-    0,                            /* SMPR2 */
+    0,                            // SMPR2
     ADC_SQR1_NUM_CH( 1 ),
-    0,                            /* SQR2 */
-    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN10 )
+    0,                            // SQR2
+    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN10 )*/
 };
 
 static WORKING_AREA( waAdc, (1024) );
