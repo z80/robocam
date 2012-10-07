@@ -17,7 +17,7 @@ static uint8_t g_status = 0;
 static adcsample_t g_src[ 2 ] = { 32767, 32767 };
 static adcsample_t g_res[ 2 ] = { 32767, 32767 };
 
-static void adcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
+/*static void adcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 {
     (void)adcp;
     (void)buffer;
@@ -27,11 +27,11 @@ static void adcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
     g_res[1] = g_src[1];
     g_status &= (~ADC_RUNNING);
     chMtxUnlock();
-};
+};*/
 
 static const ADCConversionGroup g_grp =
 {
-    FALSE,
+    /*FALSE,
     2,
     adcReadyCb,
     NULL,
@@ -40,10 +40,21 @@ static const ADCConversionGroup g_grp =
     ADC_SMPR2_SMP_AN4(ADC_SAMPLE_239P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_239P5 ),
     ADC_SQR1_NUM_CH( 2 ),
     0,
-    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN4 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )
+    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN4 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )*/
+
+    FALSE,
+    1,
+    NULL, //adcReadyCb,
+    NULL,
+    0, 0,                         /* CR1, CR2 */
+    ADC_SMPR1_SMP_AN10( ADC_SAMPLE_1P5 ),
+    0,                            /* SMPR2 */
+    ADC_SQR1_NUM_CH( 1 ),
+    0,                            /* SQR2 */
+    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN10 )
 };
 
-static WORKING_AREA( waAdc, 256 );
+static WORKING_AREA( waAdc, (1024) );
 static msg_t Adc( void *arg )
 {
     (void)arg;
@@ -63,7 +74,7 @@ void initAdc( void )
     g_status = 0;
     adcStart( &ADCD1, NULL );
 
-    chThdCreateStatic( waAdc, sizeof(waAdc), NORMALPRIO, Adc, NULL );
+    //chThdCreateStatic( waAdc, sizeof(waAdc), NORMALPRIO, Adc, NULL );
 }
 
 void finitAdc( void )
@@ -81,7 +92,7 @@ void adcCfg( uint8_t en )
     {
     	palSetGroupMode( ADC_SOL_PORT, PAL_PORT_BIT(ADC_SOL_PIN), 0, PAL_MODE_INPUT_ANALOG );
     	palSetGroupMode( ADC_BAT_PORT, PAL_PORT_BIT(ADC_BAT_PIN), 0, PAL_MODE_INPUT_ANALOG );
-        //g_status |= ADC_ENABLED;
+        g_status |= ADC_ENABLED;
     }
     else
     	g_status &= (~ADC_ENABLED);
@@ -120,20 +131,22 @@ void cmd_adc( BaseChannel *chp, int argc, char * argv [] )
 
 void processAdc( void )
 {
-	static uint8_t en, running;
+	static uint8_t en;
 	chMtxLock( &g_mutex );
 	en = ( g_status & ADC_ENABLED ) ? 1 : 0;
-	running = ( g_status & ADC_RUNNING ) ? 1 : 0;
 	chMtxUnlock();
 	if ( en )
 	{
-		if ( !running )
-		{
-			chMtxLock( &g_mutex );
-			g_status |= ADC_RUNNING;
-			chMtxUnlock();
-            //adcConvert( &ADCD1, &g_grp, g_src, 1 );
-		}
+		chMtxLock( &g_mutex );
+		g_status |= ADC_RUNNING;
+		chMtxUnlock();
+		//adcConvert( &ADCD1, &g_grp, g_src, 1 );
+        //adcStartConversion( &ADCD1, &g_grp, g_src, 1 );
+        chMtxLock( &g_mutex );
+        g_res[0] = g_src[0];
+        g_res[1] = g_src[1];
+        g_status &= (~ADC_RUNNING);
+        chMtxUnlock();
 	}
 }
 

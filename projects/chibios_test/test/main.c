@@ -57,7 +57,7 @@ int main(void) {
   while (TRUE)
   {
     chThdSleepSeconds( 1 );
-    processAdc();
+    //processAdc();
   }
   return 0;
 }
