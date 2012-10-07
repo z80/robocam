@@ -1,6 +1,6 @@
 
 #include "luamcuctrl.h"
-#include "ctrlboard_io.h"
+#include "mcu_ctrl.h"
 
 static const char META[] = "LUA_MCUCTRL_META";
 static const char LIB_NAME[] = "luamcuctrl";
@@ -8,9 +8,9 @@ static const char LIB_NAME[] = "luamcuctrl";
 static int create( lua_State * L )
 {
     int cnt = lua_gettop( L );
-    CtrlboardIo * io = new CtrlboardIo();
-    CtrlboardIo * * p = reinterpret_cast< CtrlboardIo * * >( lua_newuserdata( L, sizeof( CtrlboardIo * ) ) );
-    *p = dynamic_cast<CtrlboardIo *>( io );
+    McuCtrl * io = new McuCtrl();
+    McuCtrl * * p = reinterpret_cast< McuCtrl * * >( lua_newuserdata( L, sizeof( McuCtrl * ) ) );
+    *p = dynamic_cast<McuCtrl *>( io );
     luaL_getmetatable( L, META );
     lua_setmetatable( L, -2 );
     return 1;
@@ -18,7 +18,7 @@ static int create( lua_State * L )
 
 static int gc( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
     if ( io )
         delete io;
     return 0;
@@ -26,14 +26,14 @@ static int gc( lua_State * L )
 
 static int self( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
     lua_pushlightuserdata( L, reinterpret_cast< void * >(io) );
     return 1;
 }
 
 static int open( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
     bool res;
     if ( ( lua_gettop( L ) > 1 ) && ( lua_type( L, 2 ) == LUA_TSTRING ) )
     {
@@ -48,91 +48,130 @@ static int open( lua_State * L )
 
 static int close( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
     io->close();
     return 0;
 }
 
 static int isOpen( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
     bool res = io->isOpen();
     lua_pushboolean( L, ( res ) ? 1 : 0 );
     return 1;
 }
 
-static int putUInt8( lua_State * L )
+static int write( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
-    unsigned char arg = static_cast<unsigned char>( lua_tonumber( L, 2 ) );
-    int res = io->putUInt8( arg );
-    lua_pushnumber( L, static_cast<lua_Number>( res ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+    std::string stri = lua_tostring( L, 2 );
+    bool res = io->write( stri );
+    lua_pushboolean( L, ( res ) ? 1 : 0 );
     return 1;
 }
 
-static int putUInt16( lua_State * L )
+static int read( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
-    unsigned short arg = static_cast<unsigned short>( lua_tonumber( L, 2 ) );
-    int res = io->putUInt16( arg );
-    lua_pushnumber( L, static_cast<lua_Number>( res ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	std::string stri;
+    bool res = io->read( stri );
+    if ( res )
+        lua_pushstring( L, stri.c_str() );
+    else
+    	lua_pushnil( L );
     return 1;
 }
 
-static int putUInt32( lua_State * L )
+static int led( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
-    unsigned long arg = static_cast<unsigned long>( lua_tonumber( L, 2 ) );
-    int res = io->putUInt32( arg );
-    lua_pushnumber( L, static_cast<lua_Number>( res ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	bool en = ( lua_toboolean( L , 2 ) > 0 );
+
+    bool res = io->led( en );
+    lua_pushboolean( L, ( res ) ? 1 : 0 );
     return 1;
 }
 
-static int execFunc( lua_State * L )
+static int powerOffReset( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
-    int arg = static_cast<int>( lua_tonumber( L, 2 ) );
-    int res = io->execFunc( arg );
-    lua_pushnumber( L, static_cast<lua_Number>( res ) );
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	bool res = io->powerOffReset();
+	lua_pushboolean( L, ( res ) ? 1 : 0 );
+	return 1;
+}
+
+static int powerConfig( lua_State * L )
+{
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	int onFirst = static_cast<int>( lua_tonumber( L, 2 ) );
+	int onRegular = static_cast<int>( lua_tonumber( L, 3 ) );
+	int off = static_cast<int>( lua_tonumber( L, 4 ) );
+    bool res = io->powerConfig( onFirst, onRegular, off );
+    lua_pushboolean( L, ( res ) ? 1 : 0 );
     return 1;
 } 
 
-static int readQueue( lua_State * L )
+static int motoConfig( lua_State * L )
 {
-    CtrlboardIo * io = *reinterpret_cast<CtrlboardIo * *>( lua_touserdata( L, 1 ) );
-    int maxSize;
-    if ( lua_gettop( L ) > 1 )
-        maxSize = static_cast<int>( lua_tonumber( L, 2 ) );
-    else
-        maxSize = 128;
-    std::basic_string<unsigned char> & data = io->data();
-    data.resize( maxSize );
-    int cnt = io->readQueue( const_cast<unsigned char *>( data.data() ), maxSize );
-    lua_newtable( L );
-    for ( int i=0; i<cnt; i++ )
-    {
-        lua_pushnumber( L, static_cast<lua_Number>( i+1 ) );
-        lua_pushnumber( L, static_cast<lua_Number>( data[i] ) );
-        lua_settable( L, -3 );
-    }
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	bool en = ( lua_toboolean( L, 2 ) > 0 );
+	int offSec = static_cast<int>( lua_tonumber( L, 3 ) );
+	bool res = io->motoConfig( en, offSec );
+	lua_pushboolean( L, ( res ) ? 1 : 0 );
+	return 1;
+}
+
+static int motoReset( lua_State * L )
+{
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	bool res = io->motoReset();
+	lua_pushboolean( L, ( res ) ? 1 : 0 );
+	return 1;
+}
+
+static int adcConfig( lua_State * L )
+{
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+    bool en = ( lua_toboolean( L, 2 ) > 0 );
+    bool res = io->adcConfig( en );
+    lua_pushboolean( L, ( res ) ? 1 : 0 );
     return 1;
 }
 
-static const struct luaL_reg META_FUNCTIONS[] = {
-	{ "__gc",                    gc }, 
-    { "pointer",                 self }, 
-    // Open/close routines
-    { "open",                    open }, 
-    { "close",                   close }, 
-    { "isOpen",                  isOpen }, 
-    // The lowest possible level
-    { "putUInt8",                putUInt8 },
-    { "putUInt16",               putUInt16 }, 
-    { "putUInt32",               putUInt32 }, 
-    { "execFunc",                execFunc }, 
-    { "readQueue",               readQueue }, 
+static int adc( lua_State * L )
+{
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	int val1, val2;
+	bool res = io->adc( val1, val2 );
+	lua_pushboolean( L, ( res ) ? 1 : 0 );
+	if ( res )
+	{
+		lua_pushnumber( L, static_cast<lua_Number>( val1 ) );
+		lua_pushnumber( L, static_cast<lua_Number>( val2 ) );
+		return 3;
+	}
+	return 1;
+}
 
-    { NULL,           NULL }, 
+static const struct luaL_reg META_FUNCTIONS[] = {
+	{ "__gc",          gc },
+    { "pointer",       self },
+    // Open/close routines
+    { "open",          open },
+    { "close",         close },
+    { "isOpen",        isOpen },
+    // The lowest possible level
+    { "write",         write },
+    { "read",          read },
+    { "led",           led },
+    { "powerConfig",   powerConfig },
+    { "powerOffReset", powerOffReset },
+    { "motoConfig",    motoConfig },
+    { "motoReset",     motoReset },
+    { "adcConfig",     adcConfig },
+    { "adc",           adc },
+
+    { NULL,            NULL },
 };
 
 static void createMeta( lua_State * L )
