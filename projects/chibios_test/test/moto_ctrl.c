@@ -34,6 +34,9 @@ void motoReset(void)
 
 void motoSet( uint8_t en )
 {
+	motoReset();
+
+	chMtxLock( &g_mutex );
 	if ( en & 1 )
 	    palSetPad( MOTO_1_PORT, MOTO_1_PIN );
 	else
@@ -57,6 +60,7 @@ void motoSet( uint8_t en )
 	else
 	    palClearPad( MOTO_4_PORT, MOTO_4_PIN );
     palSetPadMode( MOTO_4_PORT, MOTO_4_PIN, PAL_MODE_OUTPUT_PUSHPULL );
+    chMtxUnlock();
 }
 
 void cmd_moto_cfg( BaseChannel *chp, int argc, char * argv [] )
@@ -124,10 +128,10 @@ static msg_t Moto( void *arg )
             t = g_timeout;
             chMtxUnlock();
         }
-        chMtxLock( &g_mutex );
-        t = g_offTimeout;
-        chMtxUnlock();
-        motoConfig( 0, t );
+        // Stop moving if timeout happened.
+        // This is for the case if interaction or PC hangs up
+        // to avoid robot crush.
+        motoSet( 0 );
     }
     return 0;
 }

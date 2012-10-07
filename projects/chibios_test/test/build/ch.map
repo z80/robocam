@@ -1330,14 +1330,15 @@ destructors     0x080000ec        0x0
                 0x080039e0       0x24 build/obj/moto_ctrl.o
                 0x080039e0                motoReset
  *fill*         0x08003a04        0xc 00
- .text.motoSet  0x08003a10       0x78 build/obj/moto_ctrl.o
+ .text.motoSet  0x08003a10       0x8c build/obj/moto_ctrl.o
                 0x08003a10                motoSet
- *fill*         0x08003a88        0x8 00
+ *fill*         0x08003a9c        0x4 00
  .text.motoConfig
-                0x08003a90       0x44 build/obj/moto_ctrl.o
-                0x08003a90                motoConfig
- *fill*         0x08003ad4        0xc 00
- .text.Moto     0x08003ae0       0x80 build/obj/moto_ctrl.o
+                0x08003aa0       0x44 build/obj/moto_ctrl.o
+                0x08003aa0                motoConfig
+ *fill*         0x08003ae4        0xc 00
+ .text.Moto     0x08003af0       0x68 build/obj/moto_ctrl.o
+ *fill*         0x08003b58        0x8 00
  .text.cmd_moto_cfg
                 0x08003b60       0x44 build/obj/moto_ctrl.o
                 0x08003b60                cmd_moto_cfg
@@ -1827,7 +1828,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00012581      0x926 build/obj/moto_ctrl.o
  .debug_info    0x00012ea7      0xcac build/obj/adc_ctrl.o
 
-.debug_line     0x00000000     0x8098
+.debug_line     0x00000000     0x8093
  .debug_line    0x00000000      0x149 build/obj/crt0.o
  .debug_line    0x00000149       0x63 build/obj/vectors.o
  .debug_line    0x000001ac       0x58 build/obj/chcore.o
@@ -1896,8 +1897,8 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x00007192      0x37b build/obj/usb_ctrl.o
  .debug_line    0x0000750d      0x235 build/obj/light_ctrl.o
  .debug_line    0x00007742      0x308 build/obj/power_ctrl.o
- .debug_line    0x00007a4a      0x324 build/obj/moto_ctrl.o
- .debug_line    0x00007d6e      0x32a build/obj/adc_ctrl.o
+ .debug_line    0x00007a4a      0x31f build/obj/moto_ctrl.o
+ .debug_line    0x00007d69      0x32a build/obj/adc_ctrl.o
 
 .debug_loc      0x00000000     0x6297
  .debug_loc     0x00000000       0x92 build/obj/crt0.o
@@ -2697,7 +2698,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .ARM.attributes
                 0x00000ef2       0x1b /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
 
-.debug_frame    0x00000000     0x24c8
+.debug_frame    0x00000000     0x24c0
  .debug_frame   0x00000000       0x60 build/obj/crt0.o
  .debug_frame   0x00000060       0x20 build/obj/vectors.o
  .debug_frame   0x00000080       0x20 build/obj/chcore.o
@@ -2741,16 +2742,16 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_frame   0x00001fd0       0xa8 build/obj/usb_ctrl.o
  .debug_frame   0x00002078       0x30 build/obj/light_ctrl.o
  .debug_frame   0x000020a8       0xd8 build/obj/power_ctrl.o
- .debug_frame   0x00002180       0xfc build/obj/moto_ctrl.o
- .debug_frame   0x0000227c       0xd8 build/obj/adc_ctrl.o
- .debug_frame   0x00002354       0x30 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
- .debug_frame   0x00002384       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
- .debug_frame   0x000023b0       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
- .debug_frame   0x000023dc       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strchr.o)
- .debug_frame   0x00002408       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strlen.o)
- .debug_frame   0x00002428       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
- .debug_frame   0x00002454       0x54 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
- .debug_frame   0x000024a8       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
+ .debug_frame   0x00002180       0xf4 build/obj/moto_ctrl.o
+ .debug_frame   0x00002274       0xd8 build/obj/adc_ctrl.o
+ .debug_frame   0x0000234c       0x30 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
+ .debug_frame   0x0000237c       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
+ .debug_frame   0x000023a8       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
+ .debug_frame   0x000023d4       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strchr.o)
+ .debug_frame   0x00002400       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strlen.o)
+ .debug_frame   0x00002420       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
+ .debug_frame   0x0000244c       0x54 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
+ .debug_frame   0x000024a0       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
 
 Cross Reference Table
 

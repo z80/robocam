@@ -32,25 +32,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   7 .debug_info   00013b53  00000000  00000000  00015518  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00008098  00000000  00000000  0002906b  2**0
+  8 .debug_line   00008093  00000000  00000000  0002906b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00006297  00000000  00000000  00031103  2**0
+  9 .debug_loc    00006297  00000000  00000000  000310fe  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_pubnames 0000177d  00000000  00000000  0003739a  2**0
+ 10 .debug_pubnames 0000177d  00000000  00000000  00037395  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_pubtypes 00003a59  00000000  00000000  00038b17  2**0
+ 11 .debug_pubtypes 00003a59  00000000  00000000  00038b12  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_aranges 00000dd8  00000000  00000000  0003c570  2**0
+ 12 .debug_aranges 00000dd8  00000000  00000000  0003c56b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000c28  00000000  00000000  0003d348  2**0
+ 13 .debug_ranges 00000c28  00000000  00000000  0003d343  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000033c6  00000000  00000000  0003df70  2**0
+ 14 .debug_str    000033c6  00000000  00000000  0003df6b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000002a  00000000  00000000  00041336  2**0
+ 15 .comment      0000002a  00000000  00000000  00041331  2**0
                   CONTENTS, READONLY
- 16 .ARM.attributes 00000031  00000000  00000000  00041360  2**0
+ 16 .ARM.attributes 00000031  00000000  00000000  0004135b  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  000024c8  00000000  00000000  00041394  2**2
+ 17 .debug_frame  000024c0  00000000  00000000  0004138c  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup
@@ -186,7 +186,7 @@ SYMBOL TABLE:
 20001214 l     O .bss	00000010 g_mutex
 20001228 l     O .bss	00000004 t.6805
 00000000 l    df *ABS*	00000000 moto_ctrl.c
-08003ae0 l     F .text	00000080 Moto
+08003af0 l     F .text	00000068 Moto
 20001230 l     O .bss	000001b0 waMoto
 200013e0 l     O .bss	00000010 g_mutex
 200013f0 l     O .bss	00000001 v.6920
@@ -442,7 +442,7 @@ SYMBOL TABLE:
 080008b0  w    F .text	00000002 VectorD4
 08000a80 g     F .text	0000002c nvicSetSystemHandlerPriority
 08003260 g     F .text	000000b0 shellGetLine
-08003a90 g     F .text	00000044 motoConfig
+08003aa0 g     F .text	00000044 motoConfig
 20000980 g     O .bss	000000c0 _idle_thread_wa
 08001610 g     F .text	00000014 chOQInit
 08001520 g     F .text	00000056 chIQGetTimeout
@@ -466,7 +466,7 @@ SYMBOL TABLE:
 20001414 g       *ABS*	00000000 _end
 08000ea0 g     F .text	00000044 chVTResetI
 080008b0 g     F .text	00000002 _unhandled_exception
-08003a10 g     F .text	00000078 motoSet
+08003a10 g     F .text	0000008c motoSet
 080008b0  w    F .text	00000002 Vector88
 08001f70 g     F .text	0000001c tmObjectInit
 20000400 g       .stacks	00000000 __main_thread_stack_base__
