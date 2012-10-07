@@ -140,7 +140,7 @@ void processAdc( void )
 		chMtxLock( &g_mutex );
 		g_status |= ADC_RUNNING;
 		chMtxUnlock();
-		//adcConvert( &ADCD1, &g_grp, g_src, 1 );
+		adcConvert( &ADCD1, &g_grp, g_src, 1 );
         //adcStartConversion( &ADCD1, &g_grp, g_src, 1 );
         chMtxLock( &g_mutex );
         g_res[0] = g_src[0];
