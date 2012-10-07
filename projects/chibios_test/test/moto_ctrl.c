@@ -103,7 +103,7 @@ void cmd_moto_set( BaseChannel *chp, int argc, char * argv [] )
 	}
 }
 
-static WORKING_AREA( waMoto, 1024 );
+static WORKING_AREA( waMoto, 256 );
 static msg_t Moto( void *arg )
 {
     (void)arg;
