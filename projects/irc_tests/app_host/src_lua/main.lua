@@ -1,18 +1,24 @@
 
-require( "mcuctrl" )
+require( "luamcuctrl" )
+
+local POWER_ON_FIRST   = 60 * 60 * 3
+local POWER_ON_REGULAR = 60 * 60 * 3 
+local POWER_OFF        = 20
 
 function main()
     local client = nil
-    local timeoutToConnect = 10
+    local timeoutToConnect = 20
     local timeToGetClient  = 300
     local triesLeft = 3
     local connected
+    initMcu()
+    -- Connection to XMPP servers
     for ttt = 1, triesLeft do
         local t0 = os.time()
         local t1 = t0
         while ( t1 - t0 < timeoutToConnect ) do
             t1 = os.time()
-            msleep( 1000 )
+            sleep( 1000 )
             connected = isConnected()
             if ( connected ) then
                 break
@@ -25,13 +31,15 @@ function main()
     end
     -- Connection with server established.
     if ( connected ) then
-        print( 'Online!' )
-        --send( "print( \'Online!\' )" )
+        local stri = string.format( "Online! %s", mcu and "Mcu initialized" or "ERROR: Failed to open Mcu!" )
+        print( stri )
+        stri = string.format( "print( \'%s\' )", stri )
+        send( stri )
         t0 = os.time()
         t1 = t0
         while ( t1 - t0 < timeToClient ) do
             t1 = os.time()
-            msleep( 1000 )
+            sleep( 1000 )
             -- If there was timer reset by client
             -- the "client" variable is set.
             -- Then reset timeout to shutdown.
@@ -45,8 +53,9 @@ function main()
     print( "Leave!" )
     --[[
     ps = luaprocess.create()
-    ps:start( "halt", "-p" )
-    ps:waitForFinished()]]
+    ps:start( "sudo", "halt", "-p" )
+    ps:waitForFinished()
+    ]]
 end
 
 function image( resX, resY, dev, file )
@@ -62,6 +71,24 @@ function image( resX, resY, dev, file )
     local stri = ps:readAll()
     --send( string.format( "print( '$s' )", stri ) )
     sendFile( file, file )
+end
+
+function sleep( msec )
+    if ( mcu and mcu:isOpen() ) then
+        mcu:powerReset()
+    end
+    msec = ( msec < 10000 ) and msec or 10000
+    msleep( msec )
+end
+
+function initMcu()
+    mcu = luamcuctrl.create()
+    local res = mcu:open()
+    if ( not res ) then
+        mcu = nil
+        return
+    end
+    mcu:powerConfig( POWER_ON_FIRST, POWER_ON_REGULAR, POWER_OFF )
 end
 
 main()
