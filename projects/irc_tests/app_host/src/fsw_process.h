@@ -5,7 +5,7 @@
 #include <QtGui>
 #include "lua.hpp"
 
-extern "C" int luaopen_luaprocess( lua_State * L );
+extern "C" int luaopen_luafsw( lua_State * L );
 
 class PeerAbst;
 

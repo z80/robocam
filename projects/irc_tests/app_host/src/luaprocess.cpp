@@ -87,6 +87,7 @@ static const struct luaL_reg META_FUNCTIONS[] = {
 
 static void createMeta( lua_State * L )
 {
+	int top = lua_gettop( L );
     luaL_newmetatable( L, META );  // create new metatable for file handles
     // file methods
     lua_pushliteral( L, "__index" );
@@ -94,7 +95,7 @@ static void createMeta( lua_State * L )
     lua_rawset( L, -3 );       // metatable.__index = metatable
     luaL_register( L, NULL, META_FUNCTIONS );
     // ������� ����.
-    lua_pop( L, lua_gettop( L ) );
+    lua_settop( L, top );
 }
 
 static const struct luaL_reg FUNCTIONS[] = {

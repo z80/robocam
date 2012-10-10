@@ -17,6 +17,7 @@ FswProcess::FswProcess()
 {
     connect( this, SIGNAL(finished(int, QProcess::ExitStatus)),
     		 this, SLOT(slotFinished( int, QProcess::ExitStatus)) );
+    m_fileName = "image.png";
     setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
 }
 
@@ -188,12 +189,48 @@ static int isRunning( lua_State * L )
 
 
 
+static const struct luaL_reg META_FUNCTIONS[] = {
+	{ "__gc",            gc },
+    { "setCommand",      setCommand },
+    { "setPeer",         setPeer },
+    { "setSendFileName", setSendFileName },
+    { "setInterval",     setInterval },
+    { "setLoop",         setLoop },
+    { "start",           start },
+    { "stop",            stop },
+    { "isRunning",       isRunning },
 
+    { NULL,              NULL },
+};
+
+static void createMeta( lua_State * L )
+{
+	int top = lua_gettop( L );
+    luaL_newmetatable( L, META );  // create new metatable for file handles
+    // file methods
+    lua_pushliteral( L, "__index" );
+    lua_pushvalue( L, -2 );  // push metatable
+    lua_rawset( L, -3 );       // metatable.__index = metatable
+    luaL_register( L, NULL, META_FUNCTIONS );
+
+    lua_settop( L, top );
+}
+
+static const struct luaL_reg FUNCTIONS[] = {
+	{ "create",  create },
+	{ NULL, NULL },
+};
+
+static void registerFunctions( lua_State * L )
+{
+    luaL_register( L, LIB_NAME, FUNCTIONS );
+}
 
 extern "C" int luaopen_luafsw( lua_State * L )
 {
-
-	return 0;
+    createMeta( L );
+    registerFunctions( L );
+    return 0;
 }
 
 
