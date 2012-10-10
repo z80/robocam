@@ -23,7 +23,7 @@ static int gc( lua_State * L )
 {
     QProcess * p = *reinterpret_cast<QProcess * *>( lua_touserdata( L, 1 ) );
     if ( p )
-        delete p;
+        p->deleteLater();
     return 0;
 }
 
