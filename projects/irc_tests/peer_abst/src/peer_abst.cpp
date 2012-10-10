@@ -9,6 +9,7 @@
 #include <boost/thread/condition.hpp>
 
 static void luaHook( lua_State * L, lua_Debug * ar );
+static int peer( lua_State * L );
 static int msleep( lua_State * L );
 static int connect( lua_State * L );
 static int isConnected( lua_State * L );
@@ -39,6 +40,7 @@ public:
 public:
 	//static const std::string LUA_INITIAL_SETUP;
 	static const std::string LUA_PD_NAME;
+	static const int         MAX_SLEEP_INTERVAL;
 
 	std::string pendingCmd;
 public:
@@ -51,6 +53,7 @@ public:
 
 //const std::string PeerAbst::PD::LUA_INITIAL_SETUP = "./init.lua";
 const std::string PeerAbst::PD::LUA_PD_NAME = "PD";
+const int PeerAbst::PD::MAX_SLEEP_INTERVAL = 10000;
 
 static void luaHook( lua_State * L, lua_Debug * ar )
 {
@@ -140,6 +143,7 @@ void PeerAbst::PD::luaLoop( TInit init )
 		{ 0,             0 }
 	};
 	luaL_register( L, 0, reg );*/
+	lua_register( L, "peer",        ::peer );
 	lua_register( L, "msleep",      ::msleep );
 	lua_register( L, "connect",     ::connect );
 	lua_register( L, "isConnected", ::isConnected );
@@ -269,11 +273,24 @@ bool PeerAbst::sendFileInternal( const std::string & fileName, const std::string
 
 
 
+static int peer( lua_State * L )
+{
+	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+	lua_gettable( L, LUA_REGISTRYINDEX );
+	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pushlightuserdata( L, reinterpret_cast<void *>( pd ) );
+	return 1;
+}
+
 static int msleep( lua_State * L )
 {
 	int ms;
 	if ( lua_gettop( L ) > 0 )
+	{
 	    ms = static_cast<int>( lua_tonumber( L, 1 ) );
+	    if ( ms > PeerAbst::PD::MAX_SLEEP_INTERVAL )
+	    	ms = PeerAbst::PD::MAX_SLEEP_INTERVAL;
+	}
 	else
 		ms = 1;
 	boost::this_thread::sleep( boost::posix_time::milliseconds( ms ) );
