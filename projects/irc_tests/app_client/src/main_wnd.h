@@ -17,11 +17,12 @@ signals:
     void sigLog( const QString & );
 private slots:
     void slotLog( const QString & );
+public:
+	int print( lua_State * L );
 private:
 	void init( lua_State * L );
 	QIODevice * inFileHandler( const std::string & fileName );
 	void accFileHandler( const std::string & fileName, QIODevice * file );
-	int print( lua_State * L );
 	void log( const std::string & stri );
 
 	Ui_MainWnd ui;

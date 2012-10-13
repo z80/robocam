@@ -14,8 +14,10 @@ find_package( Boost COMPONENTS thread filesystem REQUIRED )
 find_package( Threads )
 
 include_directories( "./src" 
-                     "${ROOT}/qtluaex/src" 
-                     "${ROOT}/3dparty/lua-5.1.5/src" 
+                     "${ROOT}/peer_abst/src" 
+                     "${ROOT}/peer_qxmpp/src" 
+                     "${ROOT}/3dparty/lua-5.1.5/src"
+                     "${ROOT}/3dparty/lua-5.1.5/etc"  
                      "${ROOT}/3dparty/qtlua-1.4/src" 
                      "${ROOT}/3dparty/qwt-6.0.1/src" 
                      ${Boost_INCLUDE_DIRS}
@@ -38,5 +40,5 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( app_client ${src} )
-target_link_libraries( app_client qtlua liblua-5.1.5 ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
+target_link_libraries( app_client peer_qxmpp liblua-5.1.5 ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
 install( TARGETS app_client DESTINATION "." )

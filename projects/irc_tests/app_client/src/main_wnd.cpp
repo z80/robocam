@@ -1,5 +1,6 @@
 
 #include "main_wnd.h"
+#include "lua.hpp"
 #include "boost/bind.hpp"
 #include "boost/bind/placeholders.hpp"
 
