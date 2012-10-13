@@ -25,10 +25,27 @@ private:
 	void accFileHandler( const std::string & fileName, QIODevice * file );
 	void log( const std::string & stri );
 
-	Ui_MainWnd ui;
+	Ui_MainWnd  ui;
 	PeerQxmpp * m_peer;
+	QTime       m_time;
+	QStringList m_logList;
+	QList<QPushButton *> m_motoBtns;
 
 	static const std::string CONFIG_FILE;
+	static const int         LOG_MAX;
+	static const int         MOTO_TIME_MAX; // Due to big ping in the case of fast movements
+	                                          // it is necessary to be ablt
+	                                          // to set moto time explicitly.
+
+public:
+	void slotSend();
+	void slotClear();
+	void slotImage();
+	void slotVoltages();
+	void slotLight();
+	void slotMotoEn();
+	void slotMoto();
+	void slotTimeout();
 };
 
 
