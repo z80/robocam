@@ -64,7 +64,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="clear">
+           <widget class="QPushButton" name="clearBtn">
             <property name="text">
              <string>Clear</string>
             </property>
@@ -127,7 +127,7 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QPushButton" name="send">
+           <widget class="QPushButton" name="sendBtn">
             <property name="text">
              <string>Send</string>
             </property>
@@ -217,7 +217,7 @@
       <string>Forward</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="bckBtn">
+    <widget class="QPushButton" name="bwdBtn">
      <property name="geometry">
       <rect>
        <x>208</x>
@@ -269,7 +269,7 @@
       <string>Left fwd</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="leftBtnBtn">
+    <widget class="QPushButton" name="leftBwdBtn">
      <property name="geometry">
       <rect>
        <x>127</x>

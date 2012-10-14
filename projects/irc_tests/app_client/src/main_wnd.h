@@ -15,8 +15,10 @@ public:
 
 signals:
     void sigLog( const QString & );
+    void sigImageAccepted();
 private slots:
     void slotLog( const QString & );
+    void slotImageAccepted();
 public:
 	int print( lua_State * L );
 private:
@@ -29,14 +31,19 @@ private:
 	PeerQxmpp * m_peer;
 	QTime       m_time;
 	QStringList m_logList;
-	QList<QPushButton *> m_motoBtns;
+	QHash<QPushButton *, quint8> m_motoBtns;
+	quint8                       m_motoVal;
 
 	static const std::string CONFIG_FILE;
 	static const int         LOG_MAX;
 	static const int         MOTO_TIME_MAX; // Due to big ping in the case of fast movements
 	                                          // it is necessary to be ablt
 	                                          // to set moto time explicitly.
-
+    static const int MOTO1,
+                       MOTO2,
+                       MOTO3,
+                       MOTO4;
+    QImage m_img;
 public:
 	void slotSend();
 	void slotClear();
@@ -44,7 +51,8 @@ public:
 	void slotVoltages();
 	void slotLight();
 	void slotMotoEn();
-	void slotMoto();
+	void slotMotoDown();
+	void slotMotoUp();
 	void slotTimeout();
 };
 
