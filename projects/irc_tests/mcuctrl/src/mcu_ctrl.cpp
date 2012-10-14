@@ -44,6 +44,21 @@ bool McuCtrl::motoConfig( bool en, int val )
     return ( cntRd >= cntWr );
 }
 
+bool McuCtrl::moto( bool moto1, bool moto2, bool moto3, bool moto4 )
+{
+    std::ostringstream out;
+    out << "moto ";
+    out << ( moto1 ? 1 : 0 );
+    out << ( moto2 ? 1 : 0 );
+    out << ( moto3 ? 1 : 0 );
+    out << ( moto4 ? 1 : 0 );
+    out << "\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    return ( ( cntWr >= 0 ) && ( cntRd >= cntWr ) );
+}
+
 bool McuCtrl::motoReset()
 {
     std::ostringstream out;

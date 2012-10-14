@@ -116,7 +116,7 @@ void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, Q
 }
 
 void QxmppPeer::connectHost( const std::string & jid, const std::string & password, 
-                             const std::string & host, int port )
+                             const std::string & host, int port, bool tls )
 {
     QXmppConfiguration conf;
     conf.setJid( jid.c_str() );
@@ -127,7 +127,10 @@ void QxmppPeer::connectHost( const std::string & jid, const std::string & passwo
         conf.setPort( port );
     conf.setAutoReconnectionEnabled( true );
     //conf.setUseNonSASLAuthentication( true );
-    //conf.setStreamSecurityMode(QXmppConfiguration::TLSDisabled);
+    if ( tls )
+    	conf.setStreamSecurityMode( QXmppConfiguration::TLSEnabled );
+    else
+        conf.setStreamSecurityMode( QXmppConfiguration::TLSDisabled );
 
     connectToServer( conf );
 }

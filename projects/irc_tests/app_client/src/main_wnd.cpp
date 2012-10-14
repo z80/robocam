@@ -34,14 +34,14 @@ MainWnd::MainWnd( QWidget * parent )
     m_motoBtns[ ui.ccwBtn ] = MOTO1 | MOTO4;
     m_motoBtns[ ui.cwBtn ]  = MOTO2 | MOTO3;
     m_motoBtns[ ui.leftFwdBtn ]  = MOTO1;
+    m_motoBtns[ ui.leftBwdBtn ]  = MOTO2;
     m_motoBtns[ ui.rightFwdBtn ] = MOTO3;
-    m_motoBtns[ ui.rightFwdBtn ] = MOTO2;
     m_motoBtns[ ui.rightBwdBtn ] = MOTO4;
     for ( QHash<QPushButton *, quint8>::iterator it=m_motoBtns.begin(); it!=m_motoBtns.end(); it++ )
     {
     	QPushButton * b = it.key();
-        connect( b, SIGNAL(pressed()),   this, SLOT(slotMotoDown()) );
-        connect( b, SIGNAL(repleased()), this, SLOT(slotMotoUp()) );
+        connect( b, SIGNAL(pressed()),  this, SLOT(slotMotoDown()) );
+        connect( b, SIGNAL(released()), this, SLOT(slotMotoUp()) );
     }
 }
 
@@ -77,13 +77,16 @@ static int print( lua_State * L )
 
 void MainWnd::init( lua_State * L )
 {
-	lua_pushlightuserdata( L, reinterpret_cast<void *>( this ) );
 	lua_pushstring( L, "MainWnd" );
+	lua_pushlightuserdata( L, reinterpret_cast<void *>( this ) );
 	lua_settable( L, LUA_REGISTRYINDEX );
 
-    lua_pushcfunction( L, ::print );
     lua_pushstring( L, "print" );
+    lua_pushcfunction( L, ::print );
     lua_settable( L, LUA_GLOBALSINDEX );
+
+	// Execute file.
+	luaL_dofile( L, "./client.lua" );
 }
 
 QIODevice * MainWnd::inFileHandler( const std::string & fileName )

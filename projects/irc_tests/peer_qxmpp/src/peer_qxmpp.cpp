@@ -65,9 +65,10 @@ void PeerDesc::messageHandler( const std::string & from, const std::string & msg
 
 void PeerDesc::logHandler( const std::string & msg )
 {
-    std::ostringstream out;
-    out << "print( [[" << msg << "]] )";
-    self->invokeCmd( out.str() );
+    //std::ostringstream out;
+    //out << "print( [[" << msg << "]] )";
+    //self->invokeCmd( out.str() );
+	qDebug() << msg.c_str();
 }
 
 
@@ -140,8 +141,9 @@ void PeerQxmpp::connect()
 		    p->updateDest        = sect.get<bool>( "update_dest", true );
 		    std::string jidSelf  = sect.get<std::string>( "jid_self", "litedictteam@gmail.com" );
             std::string password = sect.get<std::string>( "password", "12345" );
-            std::string host     = sect.get<std::string>( "host", "10.8.0.1" );
+            std::string host     = sect.get<std::string>( "host", "" );
             int         port     = sect.get<int>( "port", -1 );
+            bool        tls      = sect.get<bool>( "tls", true );
             QxmppPeer * peer = new QxmppPeer();
             p->peer = peer;
 

@@ -121,6 +121,18 @@ static int motoConfig( lua_State * L )
 	return 1;
 }
 
+static int moto( lua_State * L )
+{
+	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+	bool moto1 = ( lua_toboolean( L, 2 ) > 0 );
+	bool moto2 = ( lua_toboolean( L, 3 ) > 0 );
+	bool moto3 = ( lua_toboolean( L, 4 ) > 0 );
+	bool moto4 = ( lua_toboolean( L, 5 ) > 0 );
+	bool res = io->moto( moto1, moto2, moto3, moto4 );
+	lua_pushboolean( L, res ? 1 : 0 );
+	return 1;
+}
+
 static int motoReset( lua_State * L )
 {
 	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
@@ -167,6 +179,7 @@ static const struct luaL_reg META_FUNCTIONS[] = {
     { "powerConfig",   powerConfig },
     { "powerOffReset", powerOffReset },
     { "motoConfig",    motoConfig },
+    { "moto",          moto },
     { "motoReset",     motoReset },
     { "adcConfig",     adcConfig },
     { "adc",           adc },

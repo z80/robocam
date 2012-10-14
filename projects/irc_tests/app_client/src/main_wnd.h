@@ -44,7 +44,7 @@ private:
                        MOTO3,
                        MOTO4;
     QImage m_img;
-public:
+public slots:
 	void slotSend();
 	void slotClear();
 	void slotImage();

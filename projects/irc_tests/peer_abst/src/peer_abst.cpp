@@ -57,11 +57,12 @@ const int PeerAbst::PD::MAX_SLEEP_INTERVAL = 10000;
 
 static void luaHook( lua_State * L, lua_Debug * ar )
 {
-	//int n = lua_gettop( L );
+	int top = lua_gettop( L );
 	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
 	lua_gettable( L, LUA_REGISTRYINDEX );
 	//int n1 = lua_gettop( L );
 	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+	lua_pop( L, 1 );
 	pd->luaTaskMutex.lock();
 	int cnt = pd->luaCommands.size();
 	if ( cnt )
@@ -86,12 +87,12 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 		{
 			pd->pendingCmd = lua_tostring( L, -1 );
 			// Send back an error message.
-            //std::ostringstream out;
-            //out << "print( [[" << pd->pendingCmd << "]] )";
-			//pd->peer->send( out.str() );
-            pd->peer->send( pd->pendingCmd );
+            std::ostringstream out;
+            out << "print( [[ " << pd->pendingCmd << " ]] )";
+			pd->peer->send( out.str() );
+            //pd->peer->send( pd->pendingCmd );
 			// And pop that message.
-			lua_pop( L, 2 );
+			//lua_pop( L, 2 );
 		}
 		else
 		{
@@ -100,15 +101,16 @@ static void luaHook( lua_State * L, lua_Debug * ar )
 			{
 				pd->pendingCmd = lua_tostring( L, -1 );
 				// Send back an error message.
-                //std::ostringstream out;
-                //out << "print( [[" << pd->pendingCmd << "]] )";
-				//pd->peer->send( out.str() );
-                pd->peer->send( pd->pendingCmd );
+                std::ostringstream out;
+                out << "print( [[ " << pd->pendingCmd << " ]] )";
+				pd->peer->send( out.str() );
+                //pd->peer->send( pd->pendingCmd );
 				// And pop that message.
-				lua_pop( L, 1 );
+				//lua_pop( L, 1 );
 			}
 		}
 	}
+	lua_settop( L, top );
 }
 
 PeerAbst::PD::PD( PeerAbst * owner, TInit init )

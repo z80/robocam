@@ -101,8 +101,10 @@ function moto( moto1, moto2, moto3, moto4, t )
         mcu:moto( moto1, moto2, moto3, moto4 )
     end
     if ( t > 0 ) then
-        sleep( t or 1000 )    
-        mcu:moto( false, false, false, false )
+        sleep( t or 1000 )
+        if ( mcu:isOpen() ) then    
+            mcu:moto( false, false, false, false )
+        end
     end
     print( "moto left" )
 end
@@ -139,9 +141,9 @@ function volts()
     print( "volts left" )
 end
 
+print( "host.lua loaded!!!" )
 main()
 
-print( "host.lua loaded!!!" )
 
 
 
