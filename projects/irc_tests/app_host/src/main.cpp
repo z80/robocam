@@ -8,7 +8,7 @@
 #include <boost/bind.hpp>
 
 bool g_acceptFiles = false;
-static const char config[] = "config.ini";
+static const char config[] = "host.ini";
 
 static void init( lua_State * L );
 static int setAcceptFiles( lua_State * L );
@@ -39,7 +39,7 @@ static void init( lua_State * L )
 	// File acceptance function registration.
 	lua_register( L, "setAcceptFiles", ::setAcceptFiles );
 	// Execute file.
-	luaL_dofile( L, "./main.lua" );
+	luaL_dofile( L, "./host.lua" );
 }
 
 static int setAcceptFiles( lua_State * L )

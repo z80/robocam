@@ -63,7 +63,7 @@ void MainWnd::slotLog( const QString & stri )
 
 void MainWnd::slotImageAccepted()
 {
-	ui.imageLbl->setImage( m_img );
+	ui.imageLbl->setPixmap( QPixmap::fromImage( m_img ) );
 }
 
 static int print( lua_State * L )
@@ -89,7 +89,7 @@ void MainWnd::init( lua_State * L )
 QIODevice * MainWnd::inFileHandler( const std::string & fileName )
 {
 	QString fn = QString::fromStdString( fileName );
-	if ( fn.lower().left( 4 ) == ".png" )
+	if ( fn.toLower().left( 4 ) == ".png" )
 		return new QBuffer();
     return 0;
 }

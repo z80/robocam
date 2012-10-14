@@ -42,3 +42,5 @@ set( src ${src} ${qrcSrc} )
 add_executable( app_client ${src} )
 target_link_libraries( app_client peer_qxmpp liblua-5.1.5 ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
 install( TARGETS app_client DESTINATION "." )
+install( DIRECTORY "./src_lua/" DESTINATION "." )
+
