@@ -98,7 +98,8 @@ void MainWnd::accFileHandler( const std::string & fileName, QIODevice * file )
 {
     if ( file->isOpen() )
     	file->close();
-    file->open( QIODevice::ReadOnly );
+    if ( !file->open( QIODevice::ReadOnly ) )
+    	return;
     if ( m_img.load( file, "PNG" ) )
     	emit sigImageAccepted();
 }
@@ -141,24 +142,24 @@ void MainWnd::slotImage()
 
 void MainWnd::slotVoltages()
 {
-    const std::string cmd = "voltage()";
+    const std::string cmd = "volts()";
     m_peer->send( cmd );
 }
 
 void MainWnd::slotLight()
 {
     if ( ui.lightBtn->isChecked() )
-    	m_peer->send( "setLight( true )" );
+    	m_peer->send( "led( true )" );
     else
-    	m_peer->send( "setLight( false )" );
+    	m_peer->send( "led( false )" );
 }
 
 void MainWnd::slotMotoEn()
 {
     if ( ui.motoEnBtn->isChecked() )
-    	m_peer->send( "setMotoConfig( true, 10 )" );
+    	m_peer->send( "motoConfig( true, 10 )" );
     else
-    	m_peer->send( "setMotoConfig( false, 10 )" );
+    	m_peer->send( "motoConfig( false, 10 )" );
 }
 
 void MainWnd::slotMotoDown()
@@ -180,7 +181,7 @@ void MainWnd::slotMotoUp()
     if ( msecs < MOTO_TIME_MAX )
     {
     	quint8 v = m_motoVal;
-    	QString stri = QString( "setMoto( %1, %2, %3, %4, %5 )" )
+    	QString stri = QString( "moto( %1, %2, %3, %4, %5 )" )
     			                .arg( (v & MOTO1) ? "true" : "false" )
     			                .arg( (v & MOTO2) ? "true" : "false" )
     			                .arg( (v & MOTO3) ? "true" : "false" )
@@ -189,7 +190,7 @@ void MainWnd::slotMotoUp()
     	m_peer->send( stri.toStdString() );
     }
     else
-    	m_peer->send( "setMoto( false, false, false, false )" );
+    	m_peer->send( "moto( false, false, false, false )" );
     QPushButton * b = qobject_cast<QPushButton *>( sender() );
     if ( b )
     {
@@ -202,7 +203,7 @@ void MainWnd::slotMotoUp()
 void MainWnd::slotTimeout()
 {
 	quint8 v = m_motoVal;
-	QString stri = QString( "setMoto( %1, %2, %3, %4, %5 )" )
+	QString stri = QString( "moto( %1, %2, %3, %4, %5 )" )
 			                .arg( (v & MOTO1) ? "true" : "false" )
 			                .arg( (v & MOTO2) ? "true" : "false" )
 			                .arg( (v & MOTO3) ? "true" : "false" )

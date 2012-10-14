@@ -74,24 +74,74 @@ function image( resX, resY, dev, file )
 end
 
 function sleep( msec )
-    if ( mcu and mcu:isOpen() ) then
+    if ( mcu:isOpen() ) then
         mcu:powerReset()
     end
     msec = ( msec < 10000 ) and msec or 10000
-    msleep( msec )
+    for i=1, msec, 50 do
+        msleep( 50 )
+        if ( mcu:isOpen() ) then
+            mcu:motoReset()
+        end
+    end
 end
 
 function initMcu()
     mcu = luamcuctrl.create()
     local res = mcu:open()
     if ( not res ) then
-        mcu = nil
         return
     end
     mcu:powerConfig( POWER_ON_FIRST, POWER_ON_REGULAR, POWER_OFF )
 end
 
+function moto( moto1, moto2, moto3, moto4, t )
+    print( "moto" )
+    if ( mcu:isOpen() ) then
+        mcu:moto( moto1, moto2, moto3, moto4 )
+    end
+    if ( t > 0 ) then
+        sleep( t or 1000 )    
+        mcu:moto( false, false, false, false )
+    end
+    print( "moto left" )
+end
+
+function motoConfig( en, t )
+    print( "moto config" )
+    if ( mcu:isOpen() ) then
+        mcu:motoConfig( en, t or 3 )
+    end
+    print( "motoConfig left" )
+end
+
+function led( en )
+    print( "led" )
+    if ( mcu:isOpen() ) then
+        mcu:led( en )
+    end
+    print( "led left" )
+end
+
+function image( w, h )
+    print( "image entered" )
+    if ( not imgProc ) then
+        imgProc = luafsw.create()
+        imgProc:setPeer( peer() )
+    end
+    imgProc:start()
+    print( "image left" )
+end
+
+function volts()
+    print( "volts" )
+    send( "setVolts( 123, 456 )" )
+    print( "volts left" )
+end
+
 main()
+
+print( "host.lua loaded!!!" )
 
 
 
