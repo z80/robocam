@@ -151,7 +151,7 @@ void PeerQxmpp::connect()
             peer->setLogHandler( boost::bind( &PeerDesc::logHandler, p, _1 ) );
             peer->setInFileHandler( boost::bind<QIODevice *>( &PeerAbst::inFile, this, _1 ) );
             peer->setAccFileHandler( boost::bind( &PeerAbst::accFile, this, _1, _2 ) );
-            peer->connectHost( jidSelf, password, host, port );
+            peer->connectHost( jidSelf, password, host, port, tls );
             pd->peers.push_back( p );
         }
 	}

@@ -60,7 +60,7 @@ void FswProcess::start()
 {
 	m_stop = false;
 	m_running = true;
-	QTimer::singleShot( 0, this, SLOT(frame()) );
+	QTimer::singleShot( 1, this, SLOT(timeout()) );
 }
 
 void FswProcess::stop()
