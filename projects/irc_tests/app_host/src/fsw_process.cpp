@@ -17,14 +17,14 @@ FswProcess::FswProcess()
   m_stop( false ),
   m_running( false )
 {
-	qRegisterMetaType<QProcess::ExitStatus>( "QProcess::ExitStatus" );
-	connect( this, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotError(QProcess::ProcessError)) );
-	connect( this, SIGNAL(stateChanged(QProcess::ProcessState)),
-	   	     this, SLOT(slotStateChanged(QProcess::ProcessState))/*, Qt::QueuedConnection*/ );
+	//qRegisterMetaType<QProcess::ExitStatus>( "QProcess::ExitStatus" );
+	//connect( this, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotError(QProcess::ProcessError)) );
+	//connect( this, SIGNAL(stateChanged(QProcess::ProcessState)),
+	//   	     this, SLOT(slotStateChanged(QProcess::ProcessState))/*, Qt::QueuedConnection*/ );
     connect( this, SIGNAL(sigTimeout()), this, SLOT(slotTimeout())/*, Qt::QueuedConnection*/ );
     m_fileName = "image.png";
-    //setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
-    setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner image2.png" );
+    setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
+    //setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner image2.png" );
 }
 
 FswProcess::~FswProcess()
@@ -74,8 +74,8 @@ void FswProcess::start()
 	m_running = true;
 	m_mutex.unlock();
 	//m_thread = boost::thread( boost::bind( &FswProcess::threadProc, this ) );
-	//slotTimeout()
 	emit sigTimeout();
+
 }
 
 void FswProcess::stop()
@@ -110,7 +110,13 @@ void FswProcess::slotTimeout()
 	qDebug() << m_command;
 	for ( int i=0; i<m_args.size(); i++ )
 		qDebug() << m_args.at( i );
+	qDebug() << m_fileName;
 	QProcess::start( m_command, m_args );
+	bool finished = QProcess::waitForFinished( m_interval );
+	if ( ( finished ) && ( m_peer ) )
+		m_peer->sendFile( m_fileName.toStdString(), this );
+    if ( !finished )
+    	QProcess::kill();
 }
 
 void FswProcess::threadProc()
