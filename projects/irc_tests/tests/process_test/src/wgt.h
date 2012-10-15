@@ -17,8 +17,8 @@ private slots:
     void slotRun();
 private:
     Ui_Wgt ui;
-    QProcess * ps;
-    //FswProcess * ps;
+    //QProcess * ps;
+    FswProcess * ps;
 };
 
 

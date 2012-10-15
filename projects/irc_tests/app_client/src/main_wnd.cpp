@@ -19,7 +19,10 @@ MainWnd::MainWnd( QWidget * parent )
     ui.setupUi( this );
     connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
     connect( this, SIGNAL(sigImageAccepted()), this, SLOT(slotImageAccepted()), Qt::QueuedConnection );
+
     m_peer = new PeerQxmpp( CONFIG_FILE, boost::bind( &MainWnd::init, this, _1 ) );
+	m_peer->setInFileHandler( boost::bind<QIODevice *>( &MainWnd::inFileHandler, this, _1 ) );
+	m_peer->setAccFileHandler( boost::bind( &MainWnd::accFileHandler, this, _1, _2 ) );
 
     connect( ui.clearBtn,  SIGNAL(clicked()), this, SLOT(slotClear()) );
     connect( ui.sendBtn,   SIGNAL(clicked()), this, SLOT(slotSend()) );
@@ -92,7 +95,7 @@ void MainWnd::init( lua_State * L )
 QIODevice * MainWnd::inFileHandler( const std::string & fileName )
 {
 	QString fn = QString::fromStdString( fileName );
-	if ( fn.toLower().left( 4 ) == ".png" )
+	if ( fn.toLower().right( 4 ) == ".png" )
 		return new QBuffer();
     return 0;
 }

@@ -280,7 +280,8 @@ static int peer( lua_State * L )
 	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
 	lua_gettable( L, LUA_REGISTRYINDEX );
 	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
-	lua_pushlightuserdata( L, reinterpret_cast<void *>( pd ) );
+	lua_pop( L, 1 );
+	lua_pushlightuserdata( L, reinterpret_cast<void *>( pd->peer ) );
 	return 1;
 }
 
