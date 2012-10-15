@@ -17,7 +17,11 @@ FswProcess::FswProcess()
   m_stop( false ),
   m_running( false )
 {
-    connect( this, SIGNAL(sigTimeout()), this, SLOT(slotTimeout()), Qt::QueuedConnection );
+	qRegisterMetaType<QProcess::ExitStatus>( "QProcess::ExitStatus" );
+	connect( this, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotError(QProcess::ProcessError)) );
+	connect( this, SIGNAL(stateChanged(QProcess::ProcessState)),
+	   	     this, SLOT(slotStateChanged(QProcess::ProcessState))/*, Qt::QueuedConnection*/ );
+    connect( this, SIGNAL(sigTimeout()), this, SLOT(slotTimeout())/*, Qt::QueuedConnection*/ );
     m_fileName = "image.png";
     setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
 }
@@ -68,7 +72,9 @@ void FswProcess::start()
 	m_stop = false;
 	m_running = true;
 	m_mutex.unlock();
-	m_thread = boost::thread( boost::bind( &FswProcess::threadProc, this ) );
+	//m_thread = boost::thread( boost::bind( &FswProcess::threadProc, this ) );
+	//slotTimeout()
+	emit sigTimeout();
 }
 
 void FswProcess::stop()
@@ -87,8 +93,22 @@ bool FswProcess::isRunning() const
     return running;
 }
 
+void FswProcess::slotError( QProcess::ProcessError err )
+{
+    qDebug() << "Error: " << err;
+}
+
+void FswProcess::slotStateChanged( QProcess::ProcessState state )
+{
+	if ( ( m_peer ) && ( state == QProcess::NotRunning ) )
+        m_peer->sendFile( m_fileName.toStdString(), this );
+}
+
 void FswProcess::slotTimeout()
 {
+	qDebug() << m_command;
+	for ( int i=0; i<m_args.size(); i++ )
+		qDebug() << m_args.at( i );
 	QProcess::start( m_command, m_args );
 }
 

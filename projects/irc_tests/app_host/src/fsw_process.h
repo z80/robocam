@@ -30,7 +30,9 @@ public:
 signals:
     void sigTimeout();
 private slots:
+    void slotError( QProcess::ProcessError );
 	void slotTimeout();
+	void slotStateChanged( QProcess::ProcessState );
 private:
 	void threadProc();
 	QString m_command;
