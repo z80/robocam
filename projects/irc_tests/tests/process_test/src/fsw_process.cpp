@@ -23,8 +23,7 @@ FswProcess::FswProcess()
 	   	     this, SLOT(slotStateChanged(QProcess::ProcessState))/*, Qt::QueuedConnection*/ );
     connect( this, SIGNAL(sigTimeout()), this, SLOT(slotTimeout())/*, Qt::QueuedConnection*/ );
     m_fileName = "image.png";
-    //setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
-    setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner image2.png" );
+    setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
 }
 
 FswProcess::~FswProcess()
