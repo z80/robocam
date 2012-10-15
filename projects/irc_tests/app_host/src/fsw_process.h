@@ -4,6 +4,8 @@
 
 #include <QtGui>
 #include "lua.hpp"
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 extern "C" int luaopen_luafsw( lua_State * L );
 
@@ -25,10 +27,12 @@ public:
 	void stop();
 	bool isRunning() const;
 
+signals:
+    void sigTimeout();
 private slots:
-	void timeout();
-	void slotFinished( int exitCode, QProcess::ExitStatus exitStatus );
+	void slotTimeout();
 private:
+	void threadProc();
 	QString m_command;
 	QStringList m_args;
 	QString m_fileName;
@@ -37,6 +41,8 @@ private:
 	     m_stop,
 	     m_running;
 	PeerAbst * m_peer;
+	boost::thread m_thread;
+	mutable boost::mutex m_mutex;
 
 	static const int CHECK_TIMEOUT;
 };

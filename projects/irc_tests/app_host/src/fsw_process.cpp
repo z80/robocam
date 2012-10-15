@@ -1,6 +1,8 @@
 
 #include "fsw_process.h"
 #include "peer_abst.h"
+#include <boost/bind.hpp>
+
 static const char META[] = "LUA_FSW_META";
 static const char LIB_NAME[] = "luafsw";
 
@@ -15,15 +17,17 @@ FswProcess::FswProcess()
   m_stop( false ),
   m_running( false )
 {
-    connect( this, SIGNAL(finished(int, QProcess::ExitStatus)),
-    		 this, SLOT(slotFinished( int, QProcess::ExitStatus)) );
+    connect( this, SIGNAL(sigTimeout()), this, SLOT(slotTimeout()), Qt::QueuedConnection );
     m_fileName = "image.png";
     setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
 }
 
 FswProcess::~FswProcess()
 {
-
+	m_mutex.lock();
+	m_stop = true;
+	m_mutex.unlock();
+    m_thread.join();
 }
 
 void FswProcess::setCommand( const QString & stri )
@@ -53,49 +57,60 @@ void FswProcess::setInterval( int i )
 
 void FswProcess::setLoop( bool en )
 {
+	m_mutex.lock();
     m_loop = en;
+    m_mutex.unlock();
 }
 
 void FswProcess::start()
 {
+	m_mutex.lock();
 	m_stop = false;
 	m_running = true;
-	QTimer::singleShot( 1, this, SLOT(timeout()) );
+	m_mutex.unlock();
+	m_thread = boost::thread( boost::bind( &FswProcess::threadProc, this ) );
 }
 
 void FswProcess::stop()
 {
+	m_mutex.lock();
     m_stop = true;
+    m_mutex.unlock();
 }
 
 bool FswProcess::isRunning() const
 {
-	return m_running;
+	m_mutex.lock();
+    bool running = m_running;
+    m_mutex.unlock();
+    running = running && ( state() == QProcess::NotRunning );
+    return running;
 }
 
-void FswProcess::timeout()
+void FswProcess::slotTimeout()
 {
-	if ( m_stop )
-	{
-		m_running = false;
-		return;
-	}
-	if ( m_peer )
-        QProcess::start( m_command, m_args );
+	QProcess::start( m_command, m_args );
 }
 
-void FswProcess::slotFinished( int exitCode, QProcess::ExitStatus exitStatus )
+void FswProcess::threadProc()
 {
-	if ( ( m_peer ) && ( exitStatus == QProcess::NormalExit ) )
-	{
-        m_peer->sendFile( m_fileName.toStdString(), this );
-        if ( m_loop )
-        {
-            QTimer::singleShot( m_interval, this, SLOT(timeout()) );
-            return;
-        }
-	}
+	bool loop, stop;
+	do {
+        emit sigTimeout();
+        m_mutex.lock();
+        stop = m_stop;
+        m_mutex.unlock();
+        if ( stop )
+            break;
+        boost::this_thread::sleep( boost::posix_time::milliseconds( m_interval ) );
+        m_mutex.lock();
+        stop = m_stop;
+        loop = m_loop;
+        m_mutex.unlock();
+	} while ( ( loop ) && ( !stop ) );
+    m_mutex.lock();
     m_running = false;
+    m_mutex.unlock();
 }
 
 
