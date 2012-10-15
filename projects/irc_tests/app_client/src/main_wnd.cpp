@@ -96,7 +96,11 @@ QIODevice * MainWnd::inFileHandler( const std::string & fileName )
 {
 	QString fn = QString::fromStdString( fileName );
 	if ( fn.toLower().right( 4 ) == ".png" )
-		return new QBuffer();
+	{
+		QBuffer * buf = new QBuffer();
+		buf->open( QIODevice::WriteOnly );
+		return buf;
+	}
     return 0;
 }
 

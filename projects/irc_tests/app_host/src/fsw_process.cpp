@@ -23,8 +23,8 @@ FswProcess::FswProcess()
 	//   	     this, SLOT(slotStateChanged(QProcess::ProcessState))/*, Qt::QueuedConnection*/ );
     connect( this, SIGNAL(sigTimeout()), this, SLOT(slotTimeout())/*, Qt::QueuedConnection*/ );
     m_fileName = "image.png";
-    setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
-    //setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner image2.png" );
+    //setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner -" );
+    setCommand( "fswebcam -d /dev/video0 -q --png 9 --no-banner src.png" );
 }
 
 FswProcess::~FswProcess()
@@ -107,14 +107,20 @@ void FswProcess::slotStateChanged( QProcess::ProcessState state )
 
 void FswProcess::slotTimeout()
 {
-	qDebug() << m_command;
-	for ( int i=0; i<m_args.size(); i++ )
-		qDebug() << m_args.at( i );
+	//qDebug() << m_command;
+	//for ( int i=0; i<m_args.size(); i++ )
+	//	qDebug() << m_args.at( i );
 	qDebug() << m_fileName;
 	QProcess::start( m_command, m_args );
 	bool finished = QProcess::waitForFinished( m_interval );
+	qDebug() << "Bytes available: " << bytesAvailable();
 	if ( ( finished ) && ( m_peer ) )
-		m_peer->sendFile( m_fileName.toStdString(), this );
+	{
+		QFile * f = new QFile( "./src.png" );
+		f->open( QIODevice::ReadOnly );
+		m_peer->sendFile( m_fileName.toStdString(), f );
+		//m_peer->sendFile( m_fileName.toStdString(), this );
+	}
     if ( !finished )
     	QProcess::kill();
 }
