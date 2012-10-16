@@ -5,7 +5,7 @@ include( ${QT_USE_FILE} )
 
 set( Boost_USE_STATIC_LIBS True )
 set( Boost_USE_MULTITHREADED True )
-find_package( Boost COMPONENTS thread filesystem REQUIRED )
+find_package( Boost COMPONENTS thread filesystem date_time REQUIRED )
 find_package( Threads )
 
 include_directories( "./src" 

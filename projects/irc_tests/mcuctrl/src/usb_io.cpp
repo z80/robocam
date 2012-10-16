@@ -30,6 +30,15 @@ public:
     static const int STRI_MIN_LEN;
 };
 
+const int UsbIo::PD::VENDOR_ID  = 0x0483;
+const int UsbIo::PD::PRODUCT_ID = 0x5740;
+const int UsbIo::PD::TIMEOUT    = 100;
+
+const int UsbIo::PD::EP_OUT = 0x03;
+const int UsbIo::PD::EP_IN  = 0x81;
+
+const int UsbIo::PD::STRI_MIN_LEN = 64;
+
 void UsbIo::PD::clearOutput()
 {
 	char cmd[] = "mem\r\n";
@@ -49,15 +58,6 @@ void UsbIo::PD::clearOutput()
 
    } while ( actual_length > 0 );
 }
-
-const int UsbIo::PD::VENDOR_ID  = 0x0483;
-const int UsbIo::PD::PRODUCT_ID = 0x5740;
-const int UsbIo::PD::TIMEOUT    = 100;
-
-const int UsbIo::PD::EP_OUT = 0x03;
-const int UsbIo::PD::EP_IN  = 0x81;
-
-const int UsbIo::PD::STRI_MIN_LEN = 64;
 
 UsbIo::UsbIo()
 {
