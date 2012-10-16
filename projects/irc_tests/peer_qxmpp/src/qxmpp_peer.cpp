@@ -9,7 +9,7 @@ QxmppPeer::QxmppPeer( QObject * parent )
     QXmppLogger::getLogger()->setLoggingType( QXmppLogger::SignalLogging );
 
     connect( this, SIGNAL(sigSendFile(const QString &, const QString &, QIODevice *)), 
-             this, SLOT(sigSendFile(const QString &, const QString &, QIODevice *)), Qt::QueuedConnection );
+             this, SLOT(slotSendFile(const QString &, const QString &, QIODevice *)), Qt::QueuedConnection );
     bool check;
 
     check = QObject::connect( QXmppLogger::getLogger(), SIGNAL(message(QXmppLogger::MessageType, const QString &)), 
