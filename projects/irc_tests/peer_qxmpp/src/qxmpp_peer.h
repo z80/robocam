@@ -35,8 +35,9 @@ public:
     void terminate();
     void send( const std::string & jid, const std::string & stri );
     //void sendFile( const std::string & jid, const std::string & fileName );
-    void sendFile( const std::string & jid, const std::string fileName, QIODevice * dev );
-
+    void sendFile( const std::string & jid, const std::string & fileName, QIODevice * dev );
+signals:
+    void sigSendFile(const QString &, const QString &, QIODevice *);
 public slots:
     void logMessage( QXmppLogger::MessageType type, const QString & text );
     void connected();
@@ -44,6 +45,7 @@ public slots:
     void error( QXmppClient::Error );
     void messageReceived( const QXmppMessage & );
     // File transfer slots.
+    void slotSendFile( const QString & jid, const QString & fileName, QIODevice * dev );
     void trError(QXmppTransferJob::Error error);
     void trFileReceived(QXmppTransferJob *job);
     void trJobStarted(QXmppTransferJob * job);

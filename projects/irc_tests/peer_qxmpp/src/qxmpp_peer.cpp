@@ -8,6 +8,8 @@ QxmppPeer::QxmppPeer( QObject * parent )
 {
     QXmppLogger::getLogger()->setLoggingType( QXmppLogger::SignalLogging );
 
+    connect( this, SIGNAL(sigSendFile(const QString &, const QString &, QIODevice *)), 
+             this, SLOT(sigSendFile(const QString &, const QString &, QIODevice *)), Qt::QueuedConnection );
     bool check;
 
     check = QObject::connect( QXmppLogger::getLogger(), SIGNAL(message(QXmppLogger::MessageType, const QString &)), 
@@ -77,7 +79,14 @@ void QxmppPeer::send( const std::string & jid, const std::string & stri )
     sendMessage( QString::fromStdString( jid ), QString::fromStdString( stri ) );
 }
 
-void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, QIODevice * dev )
+void QxmppPeer::sendFile( const std::string & jid, const std::string & fileName, QIODevice * dev )
+{
+    QString qjid      = QString::fromStdString( jid );
+    QString qfileName = QString::fromStdString( fileName );
+    emit sigSendFile( qjid, qfileName, dev );
+}
+
+void QxmppPeer::slotSendFile( const QString & jid, const QString & fileName, QIODevice * dev )
 {
     if ( !dev->isOpen() )
     {
@@ -93,9 +102,9 @@ void QxmppPeer::sendFile( const std::string & jid, const std::string fileName, Q
         }
     }
     QXmppTransferFileInfo info;
-    info.setName( QString::fromStdString( fileName ) );
+    info.setName( fileName );
     info.setSize( dev->size() );
-    QXmppTransferJob * job = m_trManager->sendFile( QString::fromStdString( jid ), dev, info );
+    QXmppTransferJob * job = m_trManager->sendFile( jid, dev, info );
 
     bool check;
     check = connect(job, SIGNAL( error(QXmppTransferJob::Error) ),

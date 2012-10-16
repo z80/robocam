@@ -42,7 +42,7 @@ xmppClient::xmppClient(QObject *parent)
 
     // add transfer manager
     transferManager = new QXmppTransferManager;
-    transferManager->setProxy("proxy.qxmpp.org");
+    //transferManager->setProxy("proxy.qxmpp.org");
     addExtension(transferManager);
 
     // uncomment one of the following if you only want to use a specific transfer method:
@@ -147,20 +147,20 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     // we want one argument : "send" or "receive"
-    //if (argc != 2 || (strcmp(argv[1], "send") && strcmp(argv[1], "receive")))
-    //{
-    //    fprintf(stderr, "Usage: %s send|receive\n", argv[0]);
-    //    return EXIT_FAILURE;
-    //}
+    if (argc != 2 || (strcmp(argv[1], "send") && strcmp(argv[1], "receive")))
+    {
+        fprintf(stderr, "Usage: %s send|receive\n", argv[0]);
+        return EXIT_FAILURE;
+    }
 
     xmppClient client;
     client.logger()->setLoggingType(QXmppLogger::StdoutLogging);
-    //if (!strcmp(argv[1], "send")) {
-        client.setRecipient( "xxxxxxxxx@gmail.com" );
-        client.connectToServer("yyyyyyyyy@gmail.com", "zzzzzz");
-    //} else {
-    //    client.connectToServer("qxmpp.test2@qxmpp.org", "qxmpp456");
-    //}
+    if (!strcmp(argv[1], "send")) {
+        client.setRecipient( "xxx@gmail.com" );
+        client.connectToServer("yyy@gmail.com", "zzz");
+    } else {
+        client.connectToServer("xxx@gmail.com", "zzz");
+    }
 
     return a.exec();
 }
