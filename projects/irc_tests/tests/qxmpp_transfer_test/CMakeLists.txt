@@ -45,6 +45,9 @@ set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} )
 message( STATUS "LIBS1 = ${libs}" )
 target_link_libraries( qxmpp_transfer_test ${libs} )
 set_property( TARGET qxmpp_transfer_test PROPERTY COMPILE_DEFINITIONS ${defs} )
+install( TARGETS qxmpp_transfer_test DESTINATION "./" )
+
+
 
 
 
