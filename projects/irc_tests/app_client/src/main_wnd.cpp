@@ -20,6 +20,13 @@ MainWnd::MainWnd( QWidget * parent )
     connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
     connect( this, SIGNAL(sigImageAccepted()), this, SLOT(slotImageAccepted()), Qt::QueuedConnection );
 
+    m_scene = new QGraphicsScene( ui.view );
+    m_scene->setBackgroundBrush( QBrush( Qt::gray ) );
+    ui.view->setScene( m_scene );
+
+    m_image = new QGraphicsPixmapItem( 0, m_scene );
+    m_image->setPos( 0.0, 0.0 );
+
     m_peer = new PeerQxmpp( CONFIG_FILE, boost::bind( &MainWnd::init, this, _1 ) );
 	m_peer->setInFileHandler( boost::bind<QIODevice *>( &MainWnd::inFileHandler, this, _1 ) );
 	m_peer->setAccFileHandler( boost::bind( &MainWnd::accFileHandler, this, _1, _2 ) );
@@ -50,6 +57,8 @@ MainWnd::MainWnd( QWidget * parent )
 
 MainWnd::~MainWnd()
 {
+    m_scene->deleteLater();
+    delete m_image;
 	delete m_peer;
 }
 
@@ -66,7 +75,7 @@ void MainWnd::slotLog( const QString & stri )
 
 void MainWnd::slotImageAccepted()
 {
-	ui.imageLbl->setPixmap( QPixmap::fromImage( m_img ) );
+	updatePixmap( m_img );
 }
 
 static int print( lua_State * L )
@@ -222,6 +231,41 @@ void MainWnd::slotTimeout()
 	m_peer->send( stri.toStdString() );
 }
 
+void MainWnd::updatePixmap( const QImage & img )
+{
+    if ( img.isNull() )
+        return;
+    QSizeF imgSz = img.size();
+    QSizeF wndSz = ui.view->size();
+    
+    qreal sc;
+    qreal x, y;
+    if ( ( imgSz.width() * wndSz.height() ) > ( imgSz.height() * wndSz.width() ) )
+    {
+        sc = wndSz.width() / imgSz.width();
+        x = 0.0;
+        y = ( static_cast<qreal>( wndSz.height() ) - 
+              static_cast<qreal>( imgSz.height() ) * sc ) * 0.5;
+    }
+    else
+    {
+        sc = wndSz.height() / imgSz.height();
+        x = ( static_cast<qreal>( wndSz.width() ) - 
+              static_cast<qreal>( imgSz.width() ) * sc ) * 0.5;
+        y = 0.0;
+    }
+    m_scene->setSceneRect( QRectF( 0.0, 0.0, wndSz.width(), wndSz.height() ) );
+    m_image->setPixmap( QPixmap::fromImage( img ) );
+
+    QTransform scale;
+    scale.scale( sc, sc );
+
+    QTransform tran;
+    tran.translate( x, y );
+
+    tran = scale * tran;
+    m_image->setTransform( tran );
+}
 
 
 

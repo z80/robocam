@@ -26,6 +26,7 @@ private:
 	QIODevice * inFileHandler( const std::string & fileName );
 	void accFileHandler( const std::string & fileName, QIODevice * file );
 	void log( const std::string & stri );
+    void updatePixmap( const QImage & img );
 
 	Ui_MainWnd  ui;
 	PeerQxmpp * m_peer;
@@ -33,6 +34,8 @@ private:
 	QStringList m_logList;
 	QHash<QPushButton *, quint8> m_motoBtns;
 	quint8                       m_motoVal;
+    QGraphicsScene      * m_scene;
+    QGraphicsPixmapItem * m_image;
 
 	static const std::string CONFIG_FILE;
 	static const int         LOG_MAX;
