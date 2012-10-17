@@ -231,7 +231,6 @@ static int isRunning( lua_State * L )
 	bool en = p->isRunning();
 	lua_pushboolean( L, ( en ) ? 1 : 0 );
 	return 1;
-
 }
 
 
