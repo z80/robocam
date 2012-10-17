@@ -1,6 +1,7 @@
 
 #include "mcu_ctrl.h"
 #include <sstream>
+#include <boost/regex.hpp>
 
 McuCtrl::McuCtrl()
 : UsbIo()
@@ -97,12 +98,43 @@ bool McuCtrl::adc( int & solar, int & battery )
 {
     std::ostringstream out;
     out << "adc\r\n";
-    std::string stri = out.str();
-    int cntWr = write( stri );
-    int cntRd = read( stri );
+    std::string text = out.str();
+    int cntWr = write( text );
+    int cntRd = read( text );
+    bool res = ( ( cntWr > 0 ) && ( cntRd >= cntWr ) );
+    solar = -1;
+    battery = -1;
+    if ( !res )
+        return false;
     // Get values from result string. Values are between "{" and "}".
+    {
+        boost::regex patt( "\\{ {0,}\\d+" );
+        boost::sregex_iterator it( text.begin(), text.end(), patt );
+        boost::sregex_iterator end;
+        for ( ; it!=end; ++it )
+        {
+            //std::cout << it->str() << "\n";
+            std::string stri = it->str().substr( 1 );
+            std::istringstream in( stri );
+            in >> solar;
+        }
+    }
+    {
+        boost::regex patt( "\\d+ {0,}\\}" );
+        boost::sregex_iterator it( text.begin(), text.end(), patt );
+        boost::sregex_iterator end;
+        for ( ; it!=end; ++it )
+        {
+            //std::cout << it->str() << "\n";
+            std::string stri = it->str();
+            std::istringstream in( stri );
+            in >> battery;
+        }
+    }
+    std::cout << "solar:   " << solar   << "\n";
+    std::cout << "battery: " << battery << "\n";
 
-    return ( cntRd >= cntWr );
+    return res;
 }
 
 
