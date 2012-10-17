@@ -48,8 +48,7 @@ private:
                        MOTO4;
     QImage m_img;
 public slots:
-	void slotSend();
-	void slotClear();
+	void slotSend( const QString & stri );
 	void slotImage();
 	void slotVoltages();
 	void slotLight();

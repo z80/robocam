@@ -18,6 +18,8 @@ MainWnd::MainWnd( QWidget * parent )
 	m_motoVal = 0;
     ui.setupUi( this );
     connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
+    connect( ui.console, SIGNAL(line_validate(const QString &)), this, SLOT(slotSend(const QString &)), Qt::QueuedConnection );
+
     connect( this, SIGNAL(sigImageAccepted()), this, SLOT(slotImageAccepted()), Qt::QueuedConnection );
 
     m_scene = new QGraphicsScene( ui.view );
@@ -31,8 +33,6 @@ MainWnd::MainWnd( QWidget * parent )
 	m_peer->setInFileHandler( boost::bind<QIODevice *>( &MainWnd::inFileHandler, this, _1 ) );
 	m_peer->setAccFileHandler( boost::bind( &MainWnd::accFileHandler, this, _1, _2 ) );
 
-    connect( ui.clearBtn,  SIGNAL(clicked()), this, SLOT(slotClear()) );
-    connect( ui.sendBtn,   SIGNAL(clicked()), this, SLOT(slotSend()) );
     connect( ui.imgBtn,    SIGNAL(clicked()), this, SLOT(slotImage()) );
     connect( ui.voltsBtn,  SIGNAL(clicked()), this, SLOT(slotVoltages()) );
     connect( ui.motoEnBtn, SIGNAL(clicked()), this, SLOT(slotMotoEn()) );
@@ -64,13 +64,8 @@ MainWnd::~MainWnd()
 
 void MainWnd::slotLog( const QString & stri )
 {
-	while ( m_logList.size() > LOG_MAX )
-		m_logList.pop_front();
-	m_logList.push_back( stri );
-	ui.log->clear();
-    for ( QStringList::const_iterator it=m_logList.begin(); it!=m_logList.end(); it++ )
-    	ui.log->append( *it );
-    ui.log->verticalScrollBar()->setSliderPosition( ui.log->verticalScrollBar()->maximum() );
+    ui.console->print( stri );
+    ui.console->print( "\n" );
 }
 
 void MainWnd::slotImageAccepted()
@@ -141,16 +136,10 @@ void MainWnd::log( const std::string & stri )
     emit sigLog( qstri );
 }
 
-void MainWnd::slotSend()
+void MainWnd::slotSend( const QString & stri )
 {
-    std::string stri = ui.cmd->toPlainText().toUtf8().data();
-    m_peer->send( stri );
-}
-
-void MainWnd::slotClear()
-{
-    ui.log->clear();
-    m_logList.clear();
+    std::string sstri = stri.toStdString();
+    m_peer->send( sstri );
 }
 
 void MainWnd::slotImage()
