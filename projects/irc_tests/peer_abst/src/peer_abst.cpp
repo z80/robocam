@@ -323,14 +323,23 @@ static int isConnected( lua_State * L )
 
 static int send( lua_State * L )
 {
-	std::string stri = lua_tostring( L, 1 );
-	lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
-	lua_gettable( L, LUA_REGISTRYINDEX );
-	PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
-	lua_pop( L, 1 );
-	bool res = pd->peer->send( stri );
-	lua_pushboolean( L, res ? 1 : 0 );
-	return 1;
+    if ( lua_gettop( L ) > 0 )
+    {
+        std::string stri = lua_tostring( L, 1 );
+        lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+        lua_gettable( L, LUA_REGISTRYINDEX );
+        PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+        lua_pop( L, 1 );
+        bool res = pd->peer->send( stri );
+        lua_pushboolean( L, res ? 1 : 0 );
+        return 1;
+    }
+    else
+    {
+        lua_pushnil( L );
+        lua_pushstring( L, "String expected, got no arguments" );
+        return 2;
+    }
 }
 
 static int sendFile( lua_State * L )
