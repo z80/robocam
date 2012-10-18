@@ -32,6 +32,18 @@ bool McuCtrl::powerConfig( int onFirst, int onRegular, int off )
     return ( cntRd >= cntWr );
 }
 
+bool McuCtrl::powerEn( bool en )
+{
+    std::ostringstream out;
+    out << "poweren ";
+    out << ( en ) ? "1" : "0";
+    out << "\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    return ( ( cntWr > 0) && ( cntRd >= cntWr ) );
+}
+
 bool McuCtrl::motoConfig( bool en, int val )
 {
     std::ostringstream out;

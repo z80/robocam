@@ -12,6 +12,7 @@ public:
 
 	bool powerOffReset();
 	bool powerConfig( int onFirst, int onRegular, int off );
+    bool powerEn( bool en );
 
     bool motoConfig( bool en, int val );
     bool moto( bool moto1, bool moto2, bool moto3, bool moto4 );

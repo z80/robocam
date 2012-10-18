@@ -109,7 +109,16 @@ static int powerConfig( lua_State * L )
     bool res = io->powerConfig( onFirst, onRegular, off );
     lua_pushboolean( L, ( res ) ? 1 : 0 );
     return 1;
-} 
+}
+
+static int powerEn( lua_State * L )
+{
+    McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
+    bool en = static_cast<int>( lua_toboolean( L, 2 ) > 0 );
+    bool res = io->powerEn( en );
+    lua_pushboolean( L, ( res ) ? 1 : 0 );
+    return 1;
+}
 
 static int motoConfig( lua_State * L )
 {
@@ -178,6 +187,7 @@ static const struct luaL_reg META_FUNCTIONS[] = {
     { "led",           led },
     { "powerConfig",   powerConfig },
     { "powerOffReset", powerOffReset },
+    { "powerEn",       powerEn },
     { "motoConfig",    motoConfig },
     { "moto",          moto },
     { "motoReset",     motoReset },

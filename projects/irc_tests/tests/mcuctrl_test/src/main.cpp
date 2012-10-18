@@ -7,7 +7,7 @@
 
 int main( int argc, char * argv[] )
 {
-    std::string text(" bababa ba {123 567 } { 12 45} ");
+    /*std::string text(" bababa ba {123 567 } { 12 45} ");
 
     int adc1 = -1, adc2 = -1;
     {
@@ -37,12 +37,12 @@ int main( int argc, char * argv[] )
         }
     }
     std::cout << "adc1: " << adc1 << "\n";
-    std::cout << "adc2: " << adc2 << "\n";
+    std::cout << "adc2: " << adc2 << "\n";*/
 
-    //McuCtrl c;
-    //bool res = c.open();
-    //if ( !res )
-    //    return 1;
+    McuCtrl c;
+    bool res = c.open();
+    if ( !res )
+        return 1;
 
     //std::string stri;
     //stri.resize( 128 );
@@ -51,12 +51,16 @@ int main( int argc, char * argv[] )
     //cnt = c.read( stri );
     //cnt = c.read( stri );
 
-    //bool r = c.led( true );
-    //r = c.motoConfig( false, 3 );
+    bool r;
+    r = c.led( true );
+    r = c.led( false );
+    r = c.motoConfig( true, 30 );
+    r = c.moto( true, false, true, false );
     //r = c.motoReset();
-    //r = c.adcConfig( true );
-    //int val1, val2;
-    //r = c.adc( val1, val2 );
+    r = c.motoConfig( false, 3 );
+    r = c.adcConfig( true );
+    int val1, val2;
+    r = c.adc( val1, val2 );
 
     return 0;
 }

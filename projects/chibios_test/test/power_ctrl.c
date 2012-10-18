@@ -10,9 +10,9 @@
 #include <stdlib.h>
 
 static Mutex g_mutex;
-int g_firstOnDelay = ( 3 );
-int g_onDelay      = ( 3 );
-int g_offDelay     = ( 3 );
+int g_firstOnDelay = ( 3 * 60 * 60 );
+int g_onDelay      = ( 3 * 60 * 60 );
+int g_offDelay     = ( 3 * 60 );
 int g_nextOnDelay;
 int g_timer        = 0;
 
@@ -79,6 +79,18 @@ void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 		}
 		chMtxUnlock();
 	}
+}
+
+void cmd_pwr_en( BaseChannel *chp, int argc, char * argv [] )
+{
+    (void)chp;
+    if ( argc > 0 )
+    {
+        if ( argv[0][0] != '0' )
+            setPower( 1 );
+        else
+            setPower( 0 );
+    }
 }
 
 
