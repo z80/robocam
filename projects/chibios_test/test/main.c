@@ -37,7 +37,8 @@
 //*
 //* Application entry point.
 //*
-int main(void) {
+int main(void)
+{
 
   /*
    * System initializations.
@@ -58,6 +59,15 @@ int main(void) {
   {
     chThdSleepSeconds( 1 );
     processAdc();
+    //char s[] = "1111";
+    //static uint32_t v;
+    //v = ( (s[0] != '0') ? 1 : 0 ) |
+    //    ( (s[1] != '0') ? 2 : 0 ) |
+    //    ( (s[2] != '0') ? 4 : 0 ) |
+    //    ( (s[3] != '0') ? 8 : 0 );
+    //motoSet( 0, v );
+    //chThdSleepSeconds( 1 );
+    //motoSet( 0, 0 );
   }
   return 0;
 }

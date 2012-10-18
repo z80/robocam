@@ -22,9 +22,15 @@ void cmd_light( BaseChannel *chp, int argc, char * argv [] )
     if ( argc > 0 )
     {
         if ( argv[0][0] != '0' )
+        {
             setLight( 1 );
+            chprintf( chp, "ok:ledon" );
+        }
         else
+        {
             setLight( 0 );
+            chprintf( chp, "ok:ledoff" );
+        }
     }
 }
 

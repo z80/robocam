@@ -14,7 +14,7 @@
 #define MOTO_RST_CMD   "motorst"
 #define MOTO_CFG_CMD   "motocfg"
 #define MOTO_SET_CMD   "motoset"
-#define MOTO_EN_PIN    9
+#define MOTO_EN_PIN    2
 #define MOTO_EN_PORT   GPIOB
 
 #define MOTO_1_PIN   1

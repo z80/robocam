@@ -117,6 +117,7 @@ void cmd_adc_cfg( BaseChannel *chp, int argc, char * argv [] )
         static uint8_t en;
         en = ( argv[0][0] != '0' ) ? 1 : 0;
         adcCfg( en );
+        chprintf( chp, "ok:adccfg" );
     }
 }
 

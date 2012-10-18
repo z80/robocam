@@ -2,6 +2,7 @@
 #include "power_ctrl.h"
 #include "ch.h"
 #include "hal.h"
+#include "chprintf.h"
 #include "light_ctrl.h"
 #include "moto_ctrl.h"
 #include "adc_ctrl.h"
@@ -57,6 +58,7 @@ void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] )
 	(void)argc;
 	(void)argv;
 	powerOffReset();
+    chprintf( chp, "ok:pwrrst" );
 }
 
 void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
@@ -78,7 +80,10 @@ void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
 			}
 		}
 		chMtxUnlock();
+        chprintf( chp, "ok:pwrcfg" );
 	}
+    else
+        chprintf( chp, "err:pwrcfg" );
 }
 
 void cmd_pwr_en( BaseChannel *chp, int argc, char * argv [] )
@@ -87,9 +92,15 @@ void cmd_pwr_en( BaseChannel *chp, int argc, char * argv [] )
     if ( argc > 0 )
     {
         if ( argv[0][0] != '0' )
+        {
             setPower( 1 );
+            chprintf( chp, "ok:pwron" );
+        }
         else
+        {
             setPower( 0 );
+            chprintf( chp, "ok:pwroff" );
+        }
     }
 }
 

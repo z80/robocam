@@ -12,7 +12,7 @@ void motoConfig( bool_t en, int timeout );
 // Resets auto off countdown.
 void motoReset(void);
 // Drives state.
-void motoSet( uint8_t en );
+void motoSet( BaseChannel *chp, uint32_t en );
 // USB shell access functions.
 void cmd_moto_cfg( BaseChannel *chp, int argc, char * argv [] );
 void cmd_moto_rst( BaseChannel *chp, int argc, char * argv [] );

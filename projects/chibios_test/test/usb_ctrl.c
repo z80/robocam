@@ -348,7 +348,7 @@ static void cmd_mem(BaseChannel *chp, int argc, char *argv[])
 
 static const ShellCommand commands[] = 
 {
-    {"mem", cmd_mem},
+    //{"mem", cmd_mem},
     { PWR_RST_CMD,  cmd_pwr_rst },
     { PWR_CFG_CMD,  cmd_pwr_cfg },
     { LED_CMD,      cmd_light },
