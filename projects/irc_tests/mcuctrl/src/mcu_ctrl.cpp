@@ -35,7 +35,7 @@ bool McuCtrl::powerConfig( int onFirst, int onRegular, int off )
 bool McuCtrl::powerEn( bool en )
 {
     std::ostringstream out;
-    out << "poweren ";
+    out << "pwren ";
     out << ( en ) ? "1" : "0";
     out << "\r\n";
     std::string stri = out.str();
@@ -48,7 +48,7 @@ bool McuCtrl::motoConfig( bool en, int val )
 {
     std::ostringstream out;
     out << "motocfg ";
-    out << (en) ? 1 : 0;
+    out << (en) ? '1' : '0';
     out << val;
     out << "\r\n";
     std::string stri = out.str();
@@ -60,11 +60,11 @@ bool McuCtrl::motoConfig( bool en, int val )
 bool McuCtrl::moto( bool moto1, bool moto2, bool moto3, bool moto4 )
 {
     std::ostringstream out;
-    out << "moto ";
-    out << ( moto1 ? 1 : 0 );
-    out << ( moto2 ? 1 : 0 );
-    out << ( moto3 ? 1 : 0 );
-    out << ( moto4 ? 1 : 0 );
+    out << "motoset ";
+    out << ( moto1 ? '1' : '0' );
+    out << ( moto2 ? '1' : '0' );
+    out << ( moto3 ? '1' : '0' );
+    out << ( moto4 ? '1' : '0' );
     out << "\r\n";
     std::string stri = out.str();
     int cntWr = write( stri );
@@ -86,7 +86,7 @@ bool McuCtrl::led( bool en )
 {
     std::ostringstream out;
     out << "led ";
-    out << (en) ? 1 : 0;
+    out << (en) ? '1' : '0';
     out << "\r\n";
     std::string stri = out.str();
     int cntWr = write( stri );
@@ -98,7 +98,7 @@ bool McuCtrl::adcConfig( bool en )
 {
     std::ostringstream out;
     out << "adccfg ";
-    out << (en) ? 1 : 0;
+    out << (en) ? '1' : '0';
     out << "\r\n";
     std::string stri = out.str();
     int cntWr = write( stri );

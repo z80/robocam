@@ -41,11 +41,11 @@ const int UsbIo::PD::STRI_MIN_LEN = 64;
 
 void UsbIo::PD::clearOutput()
 {
-	char cmd[] = "mem\r\n";
-	int actual_length;
-    int res = libusb_bulk_transfer( handle,
-                      EP_OUT, reinterpret_cast<unsigned char *>( cmd ), sizeof(cmd),
-                      &actual_length, 1 );
+    //char cmd[] = "mem\r\n";
+    int actual_length, res;
+    //res = libusb_bulk_transfer( handle,
+    //              EP_OUT, reinterpret_cast<unsigned char *>( cmd ), sizeof(cmd),
+    //              &actual_length, 1 );
 
 	unsigned char data[ STRI_MIN_LEN ];
     do {

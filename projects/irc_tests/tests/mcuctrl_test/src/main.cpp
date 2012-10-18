@@ -52,15 +52,20 @@ int main( int argc, char * argv[] )
     //cnt = c.read( stri );
 
     bool r;
+    r = c.powerEn( true );
     r = c.led( true );
     r = c.led( false );
     r = c.motoConfig( true, 30 );
+    r = c.moto( true, true, true, true );
     r = c.moto( true, false, true, false );
+    r = c.moto( true, false, false, false );
+    r = c.moto( true, true, true, true );
     //r = c.motoReset();
     r = c.motoConfig( false, 3 );
     r = c.adcConfig( true );
     int val1, val2;
     r = c.adc( val1, val2 );
+    r = c.powerEn( false );
 
     return 0;
 }
