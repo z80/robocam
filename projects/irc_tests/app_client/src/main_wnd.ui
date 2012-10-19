@@ -70,6 +70,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="btnsDw">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
@@ -234,6 +237,22 @@
      </property>
      <property name="text">
       <string>Voltages</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="powerEnBtn">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>170</y>
+       <width>60</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Power en</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>

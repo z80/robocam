@@ -65,8 +65,8 @@ static int write( lua_State * L )
 {
 	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
     std::string stri = lua_tostring( L, 2 );
-    bool res = io->write( stri );
-    lua_pushboolean( L, ( res ) ? 1 : 0 );
+    int res = io->write( stri ) > 0;
+    lua_pushnumber( L, static_cast<lua_Number>( res ) );
     return 1;
 }
 
@@ -74,8 +74,8 @@ static int read( lua_State * L )
 {
 	McuCtrl * io = *reinterpret_cast<McuCtrl * *>( lua_touserdata( L, 1 ) );
 	std::string stri;
-    bool res = io->read( stri );
-    if ( res )
+    int res = io->read( stri );
+    if ( res > 0 )
         lua_pushstring( L, stri.c_str() );
     else
     	lua_pushnil( L );

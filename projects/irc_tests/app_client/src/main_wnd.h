@@ -13,6 +13,7 @@ public:
 	MainWnd( QWidget * parent = 0 );
 	~MainWnd();
 
+    bool eventFilter( QObject * o, QEvent * e );
 signals:
     void sigLog( const QString & );
     void sigImageAccepted();
@@ -26,9 +27,10 @@ private:
 	QIODevice * inFileHandler( const std::string & fileName );
 	void accFileHandler( const std::string & fileName, QIODevice * file );
 	void log( const std::string & stri );
-    void updatePixmap( const QImage & img );
+    void updatePixmap( const QImage & img = QImage() );
+    void sceneResizeEvent( QResizeEvent * e );
 
-	Ui_MainWnd  ui;
+    Ui_MainWnd  ui;
 	PeerQxmpp * m_peer;
 	QTime       m_time;
 	QStringList m_logList;
@@ -36,6 +38,7 @@ private:
 	quint8                       m_motoVal;
     QGraphicsScene      * m_scene;
     QGraphicsPixmapItem * m_image;
+    QPixmap               m_pixmap;
 
 	static const std::string CONFIG_FILE;
 	static const int         LOG_MAX;
@@ -53,6 +56,7 @@ public slots:
 	void slotVoltages();
 	void slotLight();
 	void slotMotoEn();
+    void slotPowerEn();
 	void slotMotoDown();
 	void slotMotoUp();
 	void slotTimeout();

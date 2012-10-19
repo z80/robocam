@@ -25,6 +25,7 @@ MainWnd::MainWnd( QWidget * parent )
     m_scene = new QGraphicsScene( ui.view );
     m_scene->setBackgroundBrush( QBrush( Qt::gray ) );
     ui.view->setScene( m_scene );
+    ui.view->installEventFilter( this );
 
     m_image = new QGraphicsPixmapItem( 0, m_scene );
     m_image->setPos( 0.0, 0.0 );
@@ -33,10 +34,11 @@ MainWnd::MainWnd( QWidget * parent )
 	m_peer->setInFileHandler( boost::bind<QIODevice *>( &MainWnd::inFileHandler, this, _1 ) );
 	m_peer->setAccFileHandler( boost::bind( &MainWnd::accFileHandler, this, _1, _2 ) );
 
-    connect( ui.imgBtn,    SIGNAL(clicked()), this, SLOT(slotImage()) );
-    connect( ui.voltsBtn,  SIGNAL(clicked()), this, SLOT(slotVoltages()) );
-    connect( ui.motoEnBtn, SIGNAL(clicked()), this, SLOT(slotMotoEn()) );
-    connect( ui.lightBtn,  SIGNAL(clicked()), this, SLOT(slotLight()) );
+    connect( ui.imgBtn,     SIGNAL(clicked()), this, SLOT(slotImage()) );
+    connect( ui.voltsBtn,   SIGNAL(clicked()), this, SLOT(slotVoltages()) );
+    connect( ui.motoEnBtn,  SIGNAL(clicked()), this, SLOT(slotMotoEn()) );
+    connect( ui.powerEnBtn, SIGNAL(clicked()), this, SLOT(slotPowerEn()) );
+    connect( ui.lightBtn,   SIGNAL(clicked()), this, SLOT(slotLight()) );
 
     // Connecting GUI slots.
     m_motoBtns[ ui.fwdBtn ] = MOTO1 | MOTO3;
@@ -60,6 +62,17 @@ MainWnd::~MainWnd()
     m_scene->deleteLater();
     delete m_image;
 	delete m_peer;
+}
+
+bool MainWnd::eventFilter( QObject * o, QEvent * e )
+{
+    if ( e->type() == QEvent::Resize )
+    {
+        QResizeEvent * re = dynamic_cast<QResizeEvent *>( e );
+        if ( re )
+            sceneResizeEvent( re );
+    }
+    return false;
 }
 
 void MainWnd::slotLog( const QString & stri )
@@ -170,6 +183,14 @@ void MainWnd::slotMotoEn()
     	m_peer->send( "motoConfig( false, 10 )" );
 }
 
+void MainWnd::slotPowerEn()
+{
+    if ( ui.motoEnBtn->isChecked() )
+    	m_peer->send( "powerEn( true )" );
+    else
+    	m_peer->send( "powerEn( false )" );
+}
+
 void MainWnd::slotMotoDown()
 {
     m_time = QTime::currentTime();
@@ -222,9 +243,12 @@ void MainWnd::slotTimeout()
 
 void MainWnd::updatePixmap( const QImage & img )
 {
-    if ( img.isNull() )
+    if ( !img.isNull() )
+        m_pixmap = QPixmap::fromImage( img );
+    if ( m_pixmap.isNull() )
         return;
-    QSizeF imgSz = img.size();
+
+    QSizeF imgSz = m_pixmap.size();
     QSizeF wndSz = ui.view->size();
     
     qreal sc;
@@ -244,7 +268,7 @@ void MainWnd::updatePixmap( const QImage & img )
         y = 0.0;
     }
     m_scene->setSceneRect( QRectF( 0.0, 0.0, wndSz.width(), wndSz.height() ) );
-    m_image->setPixmap( QPixmap::fromImage( img ) );
+    m_image->setPixmap( m_pixmap );
 
     QTransform scale;
     scale.scale( sc, sc );
@@ -254,6 +278,13 @@ void MainWnd::updatePixmap( const QImage & img )
 
     tran = scale * tran;
     m_image->setTransform( tran );
+}
+
+void MainWnd::sceneResizeEvent( QResizeEvent * e )
+{
+    QSizeF sz = ui.view->size();
+    ui.view->setSceneRect( 0.0, 0.0, sz.width() - 10, sz.height() - 10 );
+    updatePixmap();
 }
 
 
