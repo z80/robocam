@@ -15,8 +15,9 @@ public:
     bool powerEn( bool en );
 
     bool motoConfig( bool en, int val );
-    bool moto( bool moto1, bool moto2, bool moto3, bool moto4 );
+    bool motoSet( bool moto1, bool moto2, bool moto3, bool moto4 );
     bool motoReset();
+    bool moto( int & val );
 
     bool led( bool en );
 

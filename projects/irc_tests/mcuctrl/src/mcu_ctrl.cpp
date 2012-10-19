@@ -57,7 +57,7 @@ bool McuCtrl::motoConfig( bool en, int val )
     return ( cntRd >= cntWr );
 }
 
-bool McuCtrl::moto( bool moto1, bool moto2, bool moto3, bool moto4 )
+bool McuCtrl::motoSet( bool moto1, bool moto2, bool moto3, bool moto4 )
 {
     std::ostringstream out;
     out << "motoset ";
@@ -80,6 +80,31 @@ bool McuCtrl::motoReset()
     int cntWr = write( stri );
     int cntRd = read( stri );
     return ( cntRd >= cntWr );
+}
+
+bool McuCtrl::moto( int & val )
+{
+    std::ostringstream out;
+    out << "motorst\r\n";
+    std::string stri = out.str();
+    int cntWr = write( stri );
+    int cntRd = read( stri );
+    bool res = ( ( cntWr > 0 ) && ( cntRd >= cntWr ) );
+    if ( !res )
+        return false;
+
+    boost::regex patt( "\\{ {0,}\\d+" );
+    boost::sregex_iterator it( stri.begin(), stri.end(), patt );
+    boost::sregex_iterator end;
+    for ( ; it!=end; ++it )
+    {
+        //std::cout << it->str() << "\n";
+        std::string ss = it->str().substr( 1 );
+        std::istringstream in( ss );
+        in >> val;
+        return true;
+    }
+    return false;
 }
 
 bool McuCtrl::led( bool en )

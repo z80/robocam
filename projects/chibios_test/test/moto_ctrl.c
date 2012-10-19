@@ -9,8 +9,9 @@
 #include <stdlib.h>
 
 static Mutex g_mutex;
-int g_offTimeout   = ( 3 );
-int g_timeout      = 0;
+static int g_offTimeout = ( 3 );
+static int g_timeout    = 0;
+static uint8_t g_moto   = 0;
 
 
 void motoConfig( bool_t en, int timeout )
@@ -33,36 +34,44 @@ void motoReset(void)
 	chMtxUnlock();
 }
 
-void motoSet( BaseChannel *chp, uint32_t en )
+void motoSet( BaseChannel *chp, uint8_t en )
 {
 	motoReset();
 
-    static uint32_t arg;
-    arg = en;
+    //static uint32_t arg;
+    //arg = en;
     //en = 1+2+4+8;
-    arg |= 1;
-    if ( chp )
-        chprintf( chp, "ok:motoset: %u", en );
+    //arg |= 1;
 	chMtxLock( &g_mutex );
-    if ( (arg & 0x00000001) != 0 )
+    g_moto = en;
+    chMtxUnlock();
+    motoApply();
+    if ( chp )
+        chprintf( chp, "ok:motoset: %u", g_moto );
+}
+
+void motoApply( void )
+{
+	chMtxLock( &g_mutex );
+    if (g_moto & 0x01 )
 	    palSetPad( MOTO_1_PORT, MOTO_1_PIN );
 	else
 	    palClearPad( MOTO_1_PORT, MOTO_1_PIN );
     palSetPadMode( MOTO_1_PORT, MOTO_1_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 
-    if ( (arg & 0x00000002) != 0 )
+    if ( g_moto & 0x02 )
 	    palSetPad( MOTO_2_PORT, MOTO_2_PIN );
 	else
 	    palClearPad( MOTO_2_PORT, MOTO_2_PIN );
     palSetPadMode( MOTO_2_PORT, MOTO_2_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 
-    if ( (arg & 0x00000004) != 0 )
+    if ( g_moto & 0x04 )
 	    palSetPad( MOTO_3_PORT, MOTO_3_PIN );
 	else
 	    palClearPad( MOTO_3_PORT, MOTO_3_PIN );
     palSetPadMode( MOTO_3_PORT, MOTO_3_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 
-    if ( (arg & 0x00000008) != 0 )
+    if ( g_moto & 0x08 )
 	    palSetPad( MOTO_4_PORT, MOTO_4_PIN );
 	else
 	    palClearPad( MOTO_4_PORT, MOTO_4_PIN );
@@ -101,12 +110,11 @@ void cmd_moto_rst( BaseChannel *chp, int argc, char * argv [] )
 
 void cmd_moto_set( BaseChannel *chp, int argc, char * argv [] )
 {
-	(void)chp;
 	if ( argc > 0 )
 	{
 		if ( strlen(argv[0]) > 3 )
 		{
-            static uint32_t v;
+            uint8_t v;
             v = ( ( argv[0][0] != '0' ) ? 1 : 0 ) |
                 ( ( argv[0][1] != '0' ) ? 2 : 0 ) |
                 ( ( argv[0][2] != '0' ) ? 4 : 0 ) |
@@ -115,6 +123,16 @@ void cmd_moto_set( BaseChannel *chp, int argc, char * argv [] )
             //chprintf( chp, "ok:motoset: %u", v );
 		}
 	}
+}
+
+void cmd_moto( BaseChannel *chp, int argc, char * argv [] )
+{
+	(void)argc;
+	(void)argv;
+    chMtxLock( &g_mutex );
+    uint8_t val = g_moto;
+    chMtxUnlock();
+    chprintf( chp, "{%u}", v );
 }
 
 static WORKING_AREA( waMoto, 512 );

@@ -355,6 +355,7 @@ static const ShellCommand commands[] =
     { MOTO_CFG_CMD, cmd_moto_cfg },
     { MOTO_RST_CMD, cmd_moto_rst },
     { MOTO_SET_CMD, cmd_moto_set },
+    { "moto",       cmd_moto },
     { ADC_CFG_CMD,  cmd_adc_cfg },
     { ADC_CMD,      cmd_adc },
     { "pwren",      cmd_pwr_en },
