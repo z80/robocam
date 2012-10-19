@@ -58,6 +58,7 @@ int main(void)
   while (TRUE)
   {
     chThdSleepSeconds( 1 );
+    processShell();
     processAdc();
     //char s[] = "1111";
     //static uint32_t v;

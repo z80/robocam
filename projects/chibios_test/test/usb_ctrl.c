@@ -406,8 +406,6 @@ void processShell( void )
   //* Normal main() thread activity, in this demo it does nothing except
   //* sleeping in a loop and check the button state.
   //*
-  while (TRUE)
-  {
     if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE))
       shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
     else if (chThdTerminated(shelltp))
@@ -416,7 +414,6 @@ void processShell( void )
       shelltp = NULL;           // Triggers spawning of a new shell.
     }
     chThdSleepMilliseconds( 1000 );
-  }
 }
 
 
