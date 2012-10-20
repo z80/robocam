@@ -73,6 +73,9 @@
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
+   <property name="windowTitle">
+    <string>Controls</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
