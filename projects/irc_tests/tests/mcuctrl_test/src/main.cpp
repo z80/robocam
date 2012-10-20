@@ -52,6 +52,7 @@ int main( int argc, char * argv[] )
     //cnt = c.read( stri );
 
     bool r;
+    //r = c.powerConfig( 3, 3, 3 );
     r = c.powerEn( true );
     r = c.led( true );
     r = c.led( false );

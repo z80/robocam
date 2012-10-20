@@ -185,7 +185,7 @@ void MainWnd::slotMotoEn()
 
 void MainWnd::slotPowerEn()
 {
-    if ( ui.motoEnBtn->isChecked() )
+    if ( ui.powerEnBtn->isChecked() )
     	m_peer->send( "powerEn( true )" );
     else
     	m_peer->send( "powerEn( false )" );

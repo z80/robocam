@@ -124,6 +124,10 @@ void FswProcess::slotTimeout()
 	}
     if ( !finished )
     	QProcess::kill();
+    // Till continuous capture doesn't work here stop signal.
+    m_mutex.lock();
+    m_running = false;
+    m_mutex.unlock();
 }
 
 void FswProcess::threadProc()
