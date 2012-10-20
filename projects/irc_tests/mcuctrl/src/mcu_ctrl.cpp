@@ -49,6 +49,7 @@ bool McuCtrl::motoConfig( bool en, int val )
     std::ostringstream out;
     out << "motocfg ";
     out << (en) ? '1' : '0';
+    out << " ";
     out << val;
     out << "\r\n";
     std::string stri = out.str();

@@ -67,7 +67,7 @@ end
 
 function sleep( msec )
     if ( mcu:isOpen() ) then
-        mcu:powerReset()
+        mcu:powerOffReset()
     end
     msec = ( msec < 10000 ) and msec or 10000
     for i=1, msec, 50 do
@@ -85,18 +85,20 @@ function initMcu()
         return
     end
     mcu:powerConfig( POWER_ON_FIRST, POWER_ON_REGULAR, POWER_OFF )
+    mcu:adcConfig( true )
 end
 
-function moto( moto1, moto2, moto3, moto4, t )
+function motoSet( moto1, moto2, moto3, moto4, t )
     print( "moto" )
     client = true
     if ( mcu:isOpen() ) then
-        mcu:moto( moto1, moto2, moto3, moto4 )
+        mcu:motoSet( moto1, moto2, moto3, moto4 )
     end
+    t = t or 0
     if ( t > 0 ) then
         sleep( t or 1000 )
         if ( mcu:isOpen() ) then    
-            mcu:moto( false, false, false, false )
+            mcu:motoSet( false, false, false, false )
         end
     end
     print( "moto left" )
@@ -129,15 +131,30 @@ function image( w, h )
     end
     if ( imgProc:isRunning() ) then
         send( "print( \"Pending image is in procress. Another image capture is possible only after finishing current one.\" )" )
+    else
+        imgProc:start()
     end
-    imgProc:start()
     print( "image left" )
 end
 
 function volts()
     print( "volts" )
     client = true
-    send( "setVolts( 123, 456 )" )
+    if ( mcu ) and ( mcu:isOpen() ) then
+        local res, solar, battery = mcu:adc()
+        if ( res ) then
+            local stri = string.format( "setVolts( %i, %i )", solar or -1, battery or -1 )
+            send( stri )
+        end
+    end
+    --send( "setVolts( 123, 456 )" )
+    print( "volts left" )
+end
+
+function powerEn( en )
+    if ( mcu ) and ( mcu:isOpen() ) then
+        mcu:powerEn( en )
+    end
     print( "volts left" )
 end
 

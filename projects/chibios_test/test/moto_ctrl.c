@@ -23,7 +23,7 @@ void motoConfig( bool_t en, int timeout )
 	    palSetPad( MOTO_EN_PORT, MOTO_EN_PIN );
 	else
 	    palClearPad( MOTO_EN_PORT, MOTO_EN_PIN );
-    motoSet( 0, 0 );
+    motoSet( 0 );
     palSetPadMode( MOTO_EN_PORT, MOTO_EN_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
 
@@ -34,7 +34,7 @@ void motoReset(void)
 	chMtxUnlock();
 }
 
-void motoSet( BaseChannel *chp, uint8_t en )
+void motoSet( uint8_t en )
 {
 	motoReset();
 
@@ -46,8 +46,6 @@ void motoSet( BaseChannel *chp, uint8_t en )
     g_moto = en;
     chMtxUnlock();
     motoApply();
-    if ( chp )
-        chprintf( chp, "ok:motoset: %u", g_moto );
 }
 
 void motoApply( void )
@@ -95,7 +93,7 @@ void cmd_moto_cfg( BaseChannel *chp, int argc, char * argv [] )
 			chMtxUnlock();
 		}
 		motoConfig( en, timeout );
-        chprintf( chp, "ok:motocfg" );
+        chprintf( chp, "ok:motocfg {%u %u}", en, timeout );
 	}
 }
 
@@ -119,8 +117,8 @@ void cmd_moto_set( BaseChannel *chp, int argc, char * argv [] )
                 ( ( argv[0][1] != '0' ) ? 2 : 0 ) |
                 ( ( argv[0][2] != '0' ) ? 4 : 0 ) |
 			    ( ( argv[0][3] != '0' ) ? 8 : 0 );
-            motoSet( chp, v );
-            //chprintf( chp, "ok:motoset: %u", v );
+            motoSet( v );
+            chprintf( chp, "ok:motoset: %u", v );
 		}
 	}
 }
@@ -132,7 +130,7 @@ void cmd_moto( BaseChannel *chp, int argc, char * argv [] )
     chMtxLock( &g_mutex );
     uint8_t val = g_moto;
     chMtxUnlock();
-    chprintf( chp, "{%u}", v );
+    chprintf( chp, "{%u}", val );
 }
 
 static WORKING_AREA( waMoto, 512 );
@@ -158,8 +156,8 @@ static msg_t Moto( void *arg )
         }
         // Stop moving if timeout happened.
         // This is for the case if interaction or PC hangs up
-        // to avoid robot crush.
-        motoSet( 0, 0 );
+        // to avoid robot crash.
+        motoSet( 0 );
     }
     return 0;
 }

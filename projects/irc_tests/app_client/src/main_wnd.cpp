@@ -210,7 +210,7 @@ void MainWnd::slotMotoUp()
     if ( msecs < MOTO_TIME_MAX )
     {
     	quint8 v = m_motoVal;
-    	QString stri = QString( "moto( %1, %2, %3, %4, %5 )" )
+        QString stri = QString( "motoSet( %1, %2, %3, %4, %5 )" )
     			                .arg( (v & MOTO1) ? "true" : "false" )
     			                .arg( (v & MOTO2) ? "true" : "false" )
     			                .arg( (v & MOTO3) ? "true" : "false" )
@@ -219,7 +219,7 @@ void MainWnd::slotMotoUp()
     	m_peer->send( stri.toStdString() );
     }
     else
-    	m_peer->send( "moto( false, false, false, false )" );
+        m_peer->send( "motoSet( false, false, false, false )" );
     QPushButton * b = qobject_cast<QPushButton *>( sender() );
     if ( b )
     {
@@ -232,7 +232,7 @@ void MainWnd::slotMotoUp()
 void MainWnd::slotTimeout()
 {
 	quint8 v = m_motoVal;
-	QString stri = QString( "moto( %1, %2, %3, %4, %5 )" )
+    QString stri = QString( "motoSet( %1, %2, %3, %4, %5 )" )
 			                .arg( (v & MOTO1) ? "true" : "false" )
 			                .arg( (v & MOTO2) ? "true" : "false" )
 			                .arg( (v & MOTO3) ? "true" : "false" )
