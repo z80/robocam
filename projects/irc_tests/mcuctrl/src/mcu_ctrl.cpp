@@ -132,7 +132,7 @@ bool McuCtrl::adcConfig( bool en )
     return ( cntRd >= cntWr );
 }
 
-bool McuCtrl::adc( int & solar, int & battery )
+bool McuCtrl::adc( int & battery, int & solar )
 {
     std::ostringstream out;
     out << "adc\r\n";
@@ -140,8 +140,8 @@ bool McuCtrl::adc( int & solar, int & battery )
     int cntWr = write( text );
     int cntRd = read( text );
     bool res = ( ( cntWr > 0 ) && ( cntRd >= cntWr ) );
-    solar = -1;
     battery = -1;
+    solar   = -1;
     if ( !res )
         return false;
     // Get values from result string. Values are between "{" and "}".
@@ -154,7 +154,7 @@ bool McuCtrl::adc( int & solar, int & battery )
             //std::cout << it->str() << "\n";
             std::string stri = it->str().substr( 1 );
             std::istringstream in( stri );
-            in >> solar;
+            in >> battery;
         }
     }
     {
@@ -166,11 +166,11 @@ bool McuCtrl::adc( int & solar, int & battery )
             //std::cout << it->str() << "\n";
             std::string stri = it->str();
             std::istringstream in( stri );
-            in >> battery;
+            in >> solar;
         }
     }
-    std::cout << "solar:   " << solar   << "\n";
-    std::cout << "battery: " << battery << "\n";
+    //std::cout << "battery: " << battery   << "\n";
+    //std::cout << "solar:   " << solar << "\n";
 
     return res;
 }
