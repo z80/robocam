@@ -29,29 +29,32 @@ static adcsample_t g_res[ 2 ] = { 32767, 32767 };
     chMtxUnlock();
 };*/
 
-static const ADCConversionGroup g_grp =
+static const ADCConversionGroup g_grp[] =
 {
-    FALSE,
-    2,
-    NULL,
-    NULL,
-    0, 0,
-    0,
-    ADC_SMPR2_SMP_AN4(ADC_SAMPLE_239P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_239P5 ),
-    ADC_SQR1_NUM_CH( 2 ),
-    0,
-    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN2 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )
-
-    /*FALSE,
-    1,
-    NULL, //adcReadyCb,
-    NULL,
-    0, 0,                         // CR1, CR2
-    ADC_SMPR1_SMP_AN10( ADC_SAMPLE_1P5 ),
-    0,                            // SMPR2
-    ADC_SQR1_NUM_CH( 1 ),
-    0,                            // SQR2
-    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN10 )*/
+    {
+        FALSE,
+        1,
+        NULL,
+        NULL,
+        0, 0,
+        0,
+        ADC_SMPR2_SMP_AN2(ADC_SAMPLE_239P5),
+        ADC_SQR1_NUM_CH( 1 ),
+        0,
+        ADC_SQR3_SQ1_N( ADC_CHANNEL_IN2 )
+    },
+    {
+        FALSE,
+        1,
+        NULL,
+        NULL,
+        0, 0,
+        0,
+        ADC_SMPR2_SMP_AN3( ADC_SAMPLE_239P5 ),
+        ADC_SQR1_NUM_CH( 1 ),
+        0,
+        ADC_SQR3_SQ1_N( ADC_CHANNEL_IN3 )
+    }
 };
 
 /*static WORKING_AREA( waAdc, (1024) );
@@ -141,8 +144,13 @@ void processAdc( void )
 		chMtxLock( &g_mutex );
 		g_status |= ADC_RUNNING;
 		chMtxUnlock();
-		adcConvert( &ADCD1, &g_grp, g_src, 1 );
-        //adcStartConversion( &ADCD1, &g_grp, g_src, 1 );
+        adcConvert( &ADCD1, &g_grp[0], &(g_src[0]), 1 );
+        chThdSleepMilliseconds( 100 );
+        adcConvert( &ADCD1, &g_grp[0], &(g_src[0]), 1 );
+        chThdSleepMilliseconds( 100 );
+        adcConvert( &ADCD1, &g_grp[1], &(g_src[1]), 1 );
+        chThdSleepMilliseconds( 100 );
+        adcConvert( &ADCD1, &g_grp[1], &(g_src[1]), 1 );
         chMtxLock( &g_mutex );
         g_res[0] = g_src[0];
         g_res[1] = g_src[1];
