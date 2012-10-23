@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 static Mutex g_mutex;
-int g_firstOnDelay = ( 3 * 60 * 60 );
+int g_firstOnDelay = 5; //( 3 * 60 * 60 );
 int g_onDelay      = ( 3 * 60 * 60 );
 int g_offDelay     = ( 3 * 60 );
 int g_nextOnDelay;
