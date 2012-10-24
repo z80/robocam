@@ -18,7 +18,7 @@ static void accFileHandler(const std::string &, QIODevice *);
 
 int main( int argc, char ** argv )
 {
-	QApplication a( argc, argv );
+    QCoreApplication a( argc, argv );
 	PeerQxmpp peer( config, boost::bind( init, _1 ) );
 	peer.setInFileHandler( boost::bind<QIODevice *>( inFileHandler, _1 ) );
 	peer.setAccFileHandler( boost::bind( accFileHandler, _1, _2 ) );
