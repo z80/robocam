@@ -47,6 +47,15 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 
 static adcsample_t g_contRes[ 2 ] = { 32767, 32767 };
 
+// ADC_SAMPLE_1P5
+// ADC_SAMPLE_7P5
+// ADC_SAMPLE_13P5
+// ADC_SAMPLE_28P5
+// ADC_SAMPLE_41P5
+// ADC_SAMPLE_55P5
+// ADC_SAMPLE_71P5
+// ADC_SAMPLE_239P5
+
 static const ADCConversionGroup g_contGrp =
 {
     TRUE,
@@ -55,7 +64,7 @@ static const ADCConversionGroup g_contGrp =
     NULL,
     0, 0,
     0,
-    ADC_SMPR2_SMP_AN2(ADC_SAMPLE_239P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_239P5 ),
+    ADC_SMPR2_SMP_AN2(ADC_SAMPLE_1P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_1P5 ),
     ADC_SQR1_NUM_CH( 2 ),
     0,
     ADC_SQR3_SQ1_N( ADC_CHANNEL_IN2 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )
