@@ -17,17 +17,54 @@ static uint8_t g_status = 0;
 static adcsample_t g_src[ 2 ] = { 32767, 32767 };
 static adcsample_t g_res[ 2 ] = { 32767, 32767 };
 
-/*static void adcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
+
+#define ADC_CONT_PORT GPIOA
+#define ADC_CONT_PIN  4
+
+static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 {
     (void)adcp;
     (void)buffer;
     (void)n;
-    chMtxLock( &g_mutex );
-    g_res[0] = g_src[0];
-    g_res[1] = g_src[1];
-    g_status &= (~ADC_RUNNING);
-    chMtxUnlock();
-};*/
+    //chMtxLock( &g_mutex );
+    //g_res[0] = g_src[0];
+    //g_res[1] = g_src[1];
+    //g_status &= (~ADC_RUNNING);
+    //chMtxUnlock();
+    static uint8_t b = 0;
+    palSetPadMode( ADC_CONT_PORT, ADC_CONT_PIN, PAL_MODE_OUTPUT_PUSHPULL );
+    if ( b )
+    {
+    	palSetPad( ADC_CONT_PORT, ADC_CONT_PIN );
+    	b = 0;
+    }
+    else
+    {
+    	palClearPad( ADC_CONT_PORT, ADC_CONT_PIN );
+    	b = 1;
+    }
+};
+
+static adcsample_t g_contRes[ 2 ] = { 32767, 32767 };
+
+static const ADCConversionGroup g_contGrp =
+{
+    TRUE,
+    1,
+    contAdcReadyCb,
+    NULL,
+    0, 0,
+    0,
+    ADC_SMPR2_SMP_AN2(ADC_SAMPLE_239P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_239P5 ),
+    ADC_SQR1_NUM_CH( 2 ),
+    0,
+    ADC_SQR3_SQ1_N( ADC_CHANNEL_IN2 ) | ADC_SQR3_SQ2_N( ADC_CHANNEL_IN3 )
+};
+
+
+
+
+
 
 static const ADCConversionGroup g_grp[] =
 {
@@ -78,6 +115,7 @@ void initAdc( void )
     adcStart( &ADCD1, NULL );
 
     //chThdCreateStatic( waAdc, sizeof(waAdc), NORMALPRIO, Adc, NULL );
+    adcStartConversion( &ADCD1, &g_contGrp, g_contRes, 1 );
 }
 
 void finitAdc( void )
