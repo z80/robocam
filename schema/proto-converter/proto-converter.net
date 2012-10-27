@@ -1,0 +1,306 @@
+# EESchema Netlist Version 1.1 created  Sun 28 Oct 2012 12:31:20 AM MSK
+(
+ ( /508AE409 SM0805 C1 C
+  ( 1 VCC )
+  ( 2 GND )
+ )
+ ( /508AE408 C2V10 C2 CP1
+  ( 1 VCC )
+  ( 2 GND )
+ )
+ ( /508AD72A SM0805 C3 C
+  ( 1 /buck-out )
+  ( 2 GND )
+ )
+ ( /508AD742 C2V10 C4 CP1
+  ( 1 /buck-out )
+  ( 2 GND )
+ )
+ ( /508C3B3C SM0805 C6 C
+  ( 1 VCC )
+  ( 2 GND )
+ )
+ ( /508C39C3 SM0805 C7 C
+  ( 1 /boost-out )
+  ( 2 GND )
+ )
+ ( /508C39C9 C2V10 C8 CP1
+  ( 1 /boost-out )
+  ( 2 GND )
+ )
+ ( /508AD717 D3 D1 DIODESCH
+  ( 1 GND )
+  ( 2 N-000013 )
+ )
+ ( /508C39B4 D3 D2 DIODESCH
+  ( 1 N-000019 )
+  ( 2 /boost-out )
+ )
+ ( /508AD6C5 my_inductance L1 INDUCTOR
+  ( 1 N-000013 )
+  ( 2 /buck-out )
+ )
+ ( /508C39A9 my_inductance L2 INDUCTOR
+  ( 1 VCC )
+  ( 2 N-000019 )
+ )
+ ( /508C42D6 side-conn-12 P1 CONN_8
+  ( 1 VCC )
+  ( 2 GND )
+  ( 3 /buck-fb )
+  ( 4 /boost-fb )
+  ( 5 /vcc-test )
+  ( 6 GND )
+  ( 7 /pwm-buck )
+  ( 8 /pwm-boost )
+ )
+ ( /508AD80F SOT23EBC Q1 BC847
+  ( 1 N-000010 )
+  ( 2 N-000011 )
+  ( 3 VCC )
+ )
+ ( /508AD7B4 SOT23GDS Q2 MOS_P
+  ( D N-000013 )
+  ( G N-000012 )
+  ( S VCC )
+ )
+ ( /508AD7FD SOT23EBC Q3 BC857
+  ( 1 N-000010 )
+  ( 2 N-000011 )
+  ( 3 GND )
+ )
+ ( /508ADB78 SOT23EBC Q4 BC847
+  ( 1 GND )
+  ( 2 N-000018 )
+  ( 3 N-000011 )
+ )
+ ( /508C3CDF SOT23EBC Q5 BC847
+  ( 1 N-000001 )
+  ( 2 N-000008 )
+  ( 3 VCC )
+ )
+ ( /508C3C68 SOT23EBC Q6 BC847
+  ( 1 N-000022 )
+  ( 2 N-000001 )
+  ( 3 VCC )
+ )
+ ( /508C3991 SOT23GDS Q7 MOS_N
+  ( D N-000019 )
+  ( G N-000014 )
+  ( S GND )
+ )
+ ( /508C3BC6 SOT23EBC Q8 BC857
+  ( 1 N-000022 )
+  ( 2 N-000001 )
+  ( 3 GND )
+ )
+ ( /508C38B9 SM0805 R1 30k
+  ( 1 /buck-out )
+  ( 2 N-000016 )
+ )
+ ( /508AD893 SM0805 R2 10k
+  ( 1 VCC )
+  ( 2 N-000011 )
+ )
+ ( /508C38CA SM0805 R3 30k
+  ( 1 N-000016 )
+  ( 2 /buck-fb )
+ )
+ ( /508AD965 SM0805 R4 50
+  ( 1 N-000010 )
+  ( 2 N-000012 )
+ )
+ ( /508C38CE SM0805 R5 30k
+  ( 1 /buck-fb )
+  ( 2 GND )
+ )
+ ( /508ADE9D SM0805 R6 1k
+  ( 1 N-000018 )
+  ( 2 /pwm-buck )
+ )
+ ( /508C4176 SM0805 R7 30k
+  ( 1 /boost-out )
+  ( 2 N-000005 )
+ )
+ ( /508C41A2 SM0805 R8 30k
+  ( 1 VCC )
+  ( 2 N-000003 )
+ )
+ ( /508C4175 SM0805 R9 30k
+  ( 1 N-000005 )
+  ( 2 /boost-fb )
+ )
+ ( /508C3CDE SM0805 R10 1k
+  ( 1 N-000008 )
+  ( 2 /pwm-boost )
+ )
+ ( /508C41A3 SM0805 R11 30k
+  ( 1 N-000003 )
+  ( 2 /vcc-test )
+ )
+ ( /508C3BE0 SM0805 R12 50
+  ( 1 N-000022 )
+  ( 2 N-000014 )
+ )
+ ( /508C4174 SM0805 R13 30k
+  ( 1 /boost-fb )
+  ( 2 GND )
+ )
+ ( /508C41A4 SM0805 R14 30k
+  ( 1 /vcc-test )
+  ( 2 GND )
+ )
+ ( /508C3C52 SM0805 R15 10k
+  ( 1 N-000001 )
+  ( 2 GND )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ CP*
+ SM*
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component C4
+ CP*
+ SM*
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$component C7
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ CP*
+ SM*
+$endlist
+$component D1
+ D?
+ S*
+$endlist
+$component D2
+ D?
+ S*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R13
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R14
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R15
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$endfootprintlist
+}
