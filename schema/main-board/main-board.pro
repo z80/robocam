@@ -1,6 +1,6 @@
-update=Thu 30 Aug 2012 12:18:40 AM MSK
+update=Sun 28 Oct 2012 11:08:08 PM MSK
 version=1
-last_client=pcbnew
+last_client=cvpcb
 [general]
 version=1
 [eeschema]
@@ -71,11 +71,6 @@ LibName33=stm
 LibName34=usb
 LibName35=l293
 LibName36=my_comps
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [pcbnew]
 version=1
 PadDrlX=320
@@ -94,7 +89,6 @@ TxtLar=120
 MSegLar=150
 LastNetListRead=main-board.net
 [pcbnew/libraries]
-LibDir=../libs
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -109,3 +103,9 @@ LibName11=my_foots
 LibName12=sdc
 LibName13=side-conns
 LibName14=IRFL024
+LibDir=../libs
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms

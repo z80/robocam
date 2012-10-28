@@ -1,266 +1,168 @@
-# EESchema Netlist Version 1.1 created  Sun 28 Oct 2012 12:31:20 AM MSK
+# EESchema Netlist Version 1.1 created  Sun 28 Oct 2012 11:14:53 PM MSK
 (
- ( /508AE409 SM0805 C1 C
-  ( 1 VCC )
-  ( 2 GND )
+ ( /508D836D $noname  K1 CONN_3 {Lib=CONN_3}
+  (    1 GND )
+  (    2 /buck-out )
+  (    3 /boost-out )
  )
- ( /508AE408 C2V10 C2 CP1
-  ( 1 VCC )
-  ( 2 GND )
+ ( /508C42D6 $noname  P1 CONN_8 {Lib=CONN_8}
+  (    1 VCC )
+  (    2 GND )
+  (    3 /buck-fb )
+  (    4 /boost-fb )
+  (    5 /vcc-test )
+  (    6 GND )
+  (    7 /pwm-buck )
+  (    8 /pwm-boost )
  )
- ( /508AD72A SM0805 C3 C
-  ( 1 /buck-out )
-  ( 2 GND )
+ ( /508C41A4 $noname  R14 30k {Lib=R}
+  (    1 /vcc-test )
+  (    2 GND )
  )
- ( /508AD742 C2V10 C4 CP1
-  ( 1 /buck-out )
-  ( 2 GND )
+ ( /508C41A3 $noname  R11 30k {Lib=R}
+  (    1 N-000007 )
+  (    2 /vcc-test )
  )
- ( /508C3B3C SM0805 C6 C
-  ( 1 VCC )
-  ( 2 GND )
+ ( /508C41A2 $noname  R8 30k {Lib=R}
+  (    1 VCC )
+  (    2 N-000007 )
  )
- ( /508C39C3 SM0805 C7 C
-  ( 1 /boost-out )
-  ( 2 GND )
+ ( /508C4176 $noname  R7 30k {Lib=R}
+  (    1 /boost-out )
+  (    2 N-000006 )
  )
- ( /508C39C9 C2V10 C8 CP1
-  ( 1 /boost-out )
-  ( 2 GND )
+ ( /508C4175 $noname  R9 30k {Lib=R}
+  (    1 N-000006 )
+  (    2 /boost-fb )
  )
- ( /508AD717 D3 D1 DIODESCH
-  ( 1 GND )
-  ( 2 N-000013 )
+ ( /508C4174 $noname  R13 30k {Lib=R}
+  (    1 /boost-fb )
+  (    2 GND )
  )
- ( /508C39B4 D3 D2 DIODESCH
-  ( 1 N-000019 )
-  ( 2 /boost-out )
+ ( /508C3CDF $noname  Q5 BC847 {Lib=NPN}
+  (    1 N-000001 )
+  (    2 N-000010 )
+  (    3 VCC )
  )
- ( /508AD6C5 my_inductance L1 INDUCTOR
-  ( 1 N-000013 )
-  ( 2 /buck-out )
+ ( /508C3CDE $noname  R10 1k {Lib=R}
+  (    1 N-000010 )
+  (    2 /pwm-boost )
  )
- ( /508C39A9 my_inductance L2 INDUCTOR
-  ( 1 VCC )
-  ( 2 N-000019 )
+ ( /508C3C68 $noname  Q6 BC847 {Lib=NPN}
+  (    1 N-000004 )
+  (    2 N-000001 )
+  (    3 VCC )
  )
- ( /508C42D6 side-conn-12 P1 CONN_8
-  ( 1 VCC )
-  ( 2 GND )
-  ( 3 /buck-fb )
-  ( 4 /boost-fb )
-  ( 5 /vcc-test )
-  ( 6 GND )
-  ( 7 /pwm-buck )
-  ( 8 /pwm-boost )
+ ( /508C3C52 $noname  R15 10k {Lib=R}
+  (    1 N-000001 )
+  (    2 GND )
  )
- ( /508AD80F SOT23EBC Q1 BC847
-  ( 1 N-000010 )
-  ( 2 N-000011 )
-  ( 3 VCC )
+ ( /508C3BE0 $noname  R12 50 {Lib=R}
+  (    1 N-000004 )
+  (    2 N-000016 )
  )
- ( /508AD7B4 SOT23GDS Q2 MOS_P
-  ( D N-000013 )
-  ( G N-000012 )
-  ( S VCC )
+ ( /508C3BC6 $noname  Q8 BC857 {Lib=PNP}
+  (    1 N-000004 )
+  (    2 N-000001 )
+  (    3 GND )
  )
- ( /508AD7FD SOT23EBC Q3 BC857
-  ( 1 N-000010 )
-  ( 2 N-000011 )
-  ( 3 GND )
+ ( /508C3B3C $noname  C6 C {Lib=C}
+  (    1 VCC )
+  (    2 GND )
  )
- ( /508ADB78 SOT23EBC Q4 BC847
-  ( 1 GND )
-  ( 2 N-000018 )
-  ( 3 N-000011 )
+ ( /508C39C9 $noname  C8 CP1 {Lib=CP1}
+  (    1 /boost-out )
+  (    2 GND )
  )
- ( /508C3CDF SOT23EBC Q5 BC847
-  ( 1 N-000001 )
-  ( 2 N-000008 )
-  ( 3 VCC )
+ ( /508C39C3 $noname  C7 C {Lib=C}
+  (    1 /boost-out )
+  (    2 GND )
  )
- ( /508C3C68 SOT23EBC Q6 BC847
-  ( 1 N-000022 )
-  ( 2 N-000001 )
-  ( 3 VCC )
+ ( /508C39B4 $noname  D2 DIODESCH {Lib=DIODESCH}
+  (    1 N-000019 )
+  (    2 /boost-out )
  )
- ( /508C3991 SOT23GDS Q7 MOS_N
-  ( D N-000019 )
-  ( G N-000014 )
-  ( S GND )
+ ( /508C39A9 $noname  L2 INDUCTOR {Lib=INDUCTOR}
+  (    1 VCC )
+  (    2 N-000019 )
  )
- ( /508C3BC6 SOT23EBC Q8 BC857
-  ( 1 N-000022 )
-  ( 2 N-000001 )
-  ( 3 GND )
+ ( /508C3991 $noname  Q7 MOS_N {Lib=MOS_N}
+  (    D N-000019 )
+  (    G N-000016 )
+  (    S GND )
  )
- ( /508C38B9 SM0805 R1 30k
-  ( 1 /buck-out )
-  ( 2 N-000016 )
+ ( /508C38CE $noname  R5 30k {Lib=R}
+  (    1 /buck-fb )
+  (    2 GND )
  )
- ( /508AD893 SM0805 R2 10k
-  ( 1 VCC )
-  ( 2 N-000011 )
+ ( /508C38CA $noname  R3 30k {Lib=R}
+  (    1 N-000015 )
+  (    2 /buck-fb )
  )
- ( /508C38CA SM0805 R3 30k
-  ( 1 N-000016 )
-  ( 2 /buck-fb )
+ ( /508C38B9 $noname  R1 30k {Lib=R}
+  (    1 /buck-out )
+  (    2 N-000015 )
  )
- ( /508AD965 SM0805 R4 50
-  ( 1 N-000010 )
-  ( 2 N-000012 )
+ ( /508AE409 $noname  C1 C {Lib=C}
+  (    1 VCC )
+  (    2 GND )
  )
- ( /508C38CE SM0805 R5 30k
-  ( 1 /buck-fb )
-  ( 2 GND )
+ ( /508AE408 $noname  C2 CP1 {Lib=CP1}
+  (    1 VCC )
+  (    2 GND )
  )
- ( /508ADE9D SM0805 R6 1k
-  ( 1 N-000018 )
-  ( 2 /pwm-buck )
+ ( /508ADE9D $noname  R6 1k {Lib=R}
+  (    1 N-000018 )
+  (    2 /pwm-buck )
  )
- ( /508C4176 SM0805 R7 30k
-  ( 1 /boost-out )
-  ( 2 N-000005 )
+ ( /508ADB78 $noname  Q4 BC847 {Lib=NPN}
+  (    1 GND )
+  (    2 N-000018 )
+  (    3 N-000012 )
  )
- ( /508C41A2 SM0805 R8 30k
-  ( 1 VCC )
-  ( 2 N-000003 )
+ ( /508AD965 $noname  R4 50 {Lib=R}
+  (    1 N-000011 )
+  (    2 N-000014 )
  )
- ( /508C4175 SM0805 R9 30k
-  ( 1 N-000005 )
-  ( 2 /boost-fb )
+ ( /508AD893 $noname  R2 10k {Lib=R}
+  (    1 VCC )
+  (    2 N-000012 )
  )
- ( /508C3CDE SM0805 R10 1k
-  ( 1 N-000008 )
-  ( 2 /pwm-boost )
+ ( /508AD80F $noname  Q1 BC847 {Lib=NPN}
+  (    1 N-000011 )
+  (    2 N-000012 )
+  (    3 VCC )
  )
- ( /508C41A3 SM0805 R11 30k
-  ( 1 N-000003 )
-  ( 2 /vcc-test )
+ ( /508AD7FD $noname  Q3 BC857 {Lib=PNP}
+  (    1 N-000011 )
+  (    2 N-000012 )
+  (    3 GND )
  )
- ( /508C3BE0 SM0805 R12 50
-  ( 1 N-000022 )
-  ( 2 N-000014 )
+ ( /508AD7B4 $noname  Q2 MOS_P {Lib=MOS_P}
+  (    D N-000021 )
+  (    G N-000014 )
+  (    S VCC )
  )
- ( /508C4174 SM0805 R13 30k
-  ( 1 /boost-fb )
-  ( 2 GND )
+ ( /508AD742 $noname  C4 CP1 {Lib=CP1}
+  (    1 /buck-out )
+  (    2 GND )
  )
- ( /508C41A4 SM0805 R14 30k
-  ( 1 /vcc-test )
-  ( 2 GND )
+ ( /508AD72A $noname  C3 C {Lib=C}
+  (    1 /buck-out )
+  (    2 GND )
  )
- ( /508C3C52 SM0805 R15 10k
-  ( 1 N-000001 )
-  ( 2 GND )
+ ( /508AD717 $noname  D1 DIODESCH {Lib=DIODESCH}
+  (    1 GND )
+  (    2 N-000021 )
+ )
+ ( /508AD6C5 $noname  L1 INDUCTOR {Lib=INDUCTOR}
+  (    1 N-000021 )
+  (    2 /buck-out )
  )
 )
 *
 { Allowed footprints by component:
-$component C1
- SM*
- C?
- C1-1
-$endlist
-$component C2
- CP*
- SM*
-$endlist
-$component C3
- SM*
- C?
- C1-1
-$endlist
-$component C4
- CP*
- SM*
-$endlist
-$component C6
- SM*
- C?
- C1-1
-$endlist
-$component C7
- SM*
- C?
- C1-1
-$endlist
-$component C8
- CP*
- SM*
-$endlist
-$component D1
- D?
- S*
-$endlist
-$component D2
- D?
- S*
-$endlist
-$component R1
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R2
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R3
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R4
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R5
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R6
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R7
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R8
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R9
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R10
+$component R14
  R?
  SM0603
  SM0805
@@ -274,7 +176,21 @@ $component R11
  R?-*
  SM1206
 $endlist
-$component R12
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R9
  R?
  SM0603
  SM0805
@@ -288,7 +204,7 @@ $component R13
  R?-*
  SM1206
 $endlist
-$component R14
+$component R10
  R?
  SM0603
  SM0805
@@ -302,5 +218,206 @@ $component R15
  R?-*
  SM1206
 $endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ CP*
+ SM*
+$endlist
+$component C7
+ SM*
+ C?
+ C1-1
+$endlist
+$component D2
+ D?
+ S*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ CP*
+ SM*
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C4
+ CP*
+ SM*
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component D1
+ D?
+ S*
+$endlist
 $endfootprintlist
 }
+{ Pin List by Nets
+Net 1 "" ""
+ Q8 2
+ R15 1
+ Q6 2
+ Q5 1
+Net 2 "VCC" "VCC"
+ C1 1
+ C2 1
+ L2 1
+ Q2 S
+ Q1 3
+ R2 1
+ Q5 3
+ P1 1
+ Q6 3
+ R8 1
+ C6 1
+Net 3 "GND" "GND"
+ C6 2
+ Q8 3
+ C1 2
+ C2 2
+ R15 2
+ P1 2
+ P1 6
+ K1 1
+ C7 2
+ C8 2
+ R5 2
+ C4 2
+ C3 2
+ D1 1
+ Q3 3
+ R14 2
+ Q4 1
+ R13 2
+ Q7 S
+Net 4 "" ""
+ Q6 1
+ R12 1
+ Q8 1
+Net 5 "/boost-out" "boost-out"
+ C7 1
+ C8 1
+ K1 3
+ D2 2
+ R7 1
+Net 6 "" ""
+ R9 1
+ R7 2
+Net 7 "" ""
+ R11 1
+ R8 2
+Net 8 "/vcc-test" "vcc-test"
+ P1 5
+ R14 1
+ R11 2
+Net 9 "/pwm-boost" "pwm-boost"
+ P1 8
+ R10 2
+Net 10 "" ""
+ Q5 2
+ R10 1
+Net 11 "" ""
+ R4 1
+ Q1 1
+ Q3 1
+Net 12 "" ""
+ Q3 2
+ Q1 2
+ R2 2
+ Q4 3
+Net 13 "/buck-out" "buck-out"
+ K1 2
+ L1 2
+ R1 1
+ C3 1
+ C4 1
+Net 14 "" ""
+ Q2 G
+ R4 2
+Net 15 "" ""
+ R1 2
+ R3 1
+Net 16 "" ""
+ Q7 G
+ R12 2
+Net 17 "/pwm-buck" "pwm-buck"
+ R6 2
+ P1 7
+Net 18 "" ""
+ Q4 2
+ R6 1
+Net 19 "" ""
+ L2 2
+ Q7 D
+ D2 1
+Net 20 "/buck-fb" "buck-fb"
+ R3 2
+ R5 1
+ P1 3
+Net 21 "" ""
+ L1 1
+ Q2 D
+ D1 2
+Net 22 "/boost-fb" "boost-fb"
+ R13 1
+ R9 2
+ P1 4
+}
+#End

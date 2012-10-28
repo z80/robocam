@@ -1,4 +1,4 @@
-update=Sun 28 Oct 2012 12:29:27 AM MSK
+update=Sun 28 Oct 2012 11:08:34 PM MSK
 version=1
 last_client=cvpcb
 [pcbnew]
@@ -68,6 +68,7 @@ LibName9=led
 LibName10=dip_sockets
 LibName11=side-conns
 LibName12=my_foots
+LibName13=IRFL024
 LibDir=../libs
 [eeschema]
 version=1
