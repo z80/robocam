@@ -1,0 +1,49 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 11.08.0 ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+numer: true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+C: 1e-9;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R: 60;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Vth: 3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+V: 6;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Tdischarge: R*C*log( V/(V-Vth) );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Vbe: 0.7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Rpu: 10e3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+%beta: 100;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Tcharge: (R+Rpu) * C/(%beta+1)*log( (V-Vbe)/(Vth - Vbe) );
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
