@@ -4,14 +4,14 @@
 #include "hal.h"
 
 #define CONV_PWM           PWMD4
-#define CONV_PORT          GPIOB
-#define CONV_BUCK_PIN      8
-#define CONV_BOOST_PIN     9
+#define CONV_PORT          GPIOA
+#define CONV_BUCK_PIN      1
+#define CONV_BOOST_PIN     0
 
 #define CONV_ADC_PORT      GPIOA
-#define CONV_BUCK_FB_PIN   2
+#define CONV_BUCK_FB_PIN   4
 #define CONV_BOOST_FB_PIN  3
-#define CONV_INPUT_FB_PIN  4
+#define CONV_INPUT_FB_PIN  2
 
 #define ADC_NUM_CHANNELS   3
 #define ADC_BUF_DEPTH      2
@@ -90,8 +90,9 @@ static const ADCConversionGroup adcGroup =
     ADC_SMPR2_SMP_AN4( ADC_SAMPLE_1P5 ),
     ADC_SQR1_NUM_CH( ADC_NUM_CHANNELS ),
     0,
-    ADC_SQR3_SQ3_N(ADC_CHANNEL_IN4) |
-    ADC_SQR3_SQ2_N(ADC_CHANNEL_IN3) | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN2)
+    ADC_SQR3_SQ1_N(ADC_CHANNEL_IN2) |
+    ADC_SQR3_SQ2_N(ADC_CHANNEL_IN3) | 
+    ADC_SQR3_SQ3_N(ADC_CHANNEL_IN4)
 };
 
 static PWMConfig pwmCfg =
@@ -120,8 +121,8 @@ void convInit( void )
     palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     // Init ADC.
     palSetGroupMode(CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
-    		                       PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
-    		                       PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
+    	                           PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
+    		                   PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
                                    0, PAL_MODE_INPUT_ANALOG);
     adcStart(&ADCD1, NULL);
 }
