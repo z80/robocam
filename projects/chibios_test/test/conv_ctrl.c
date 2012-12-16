@@ -3,23 +3,24 @@
 #include "conv_ctrl.h"
 #include "hal.h"
 
-#define CONV_PWM           PWMD4
 #define CONV_PORT          GPIOA
-#define CONV_BUCK_PIN      1
 #define CONV_BOOST_PIN     0
+#define CONV_BUCK_PIN      1
+
+#define CONV_PWM           PWMD4
+#define PWM_BUCK_CHAN      2
+#define PWM_BOOST_CHAN     1
 
 #define CONV_ADC_PORT      GPIOA
-#define CONV_BUCK_FB_PIN   4
-#define CONV_BOOST_FB_PIN  3
 #define CONV_INPUT_FB_PIN  2
+#define CONV_BOOST_FB_PIN  3
+#define CONV_BUCK_FB_PIN   4
 
 #define ADC_NUM_CHANNELS   3
 #define ADC_BUF_DEPTH      2
-#define PWM_BUCK_CHAN      1
-#define PWM_BOOST_CHAN     2
-#define BUCK_IND           0
+#define INPUT_IND          0
 #define BOOST_IND          1
-#define INPUT_IND          2
+#define BUCK_IND           2
 
 static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
@@ -54,7 +55,7 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
         {
         	boostPwm += boostGain;
         	boostPwm = ( boostPwm <= 10000 ) ? boostPwm : 10000;
-        	pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostSp ) );
+        	pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostPwm ) );
         }
         else if ( buffer[ BOOST_IND ] > boostSp )
         {
@@ -102,7 +103,7 @@ static PWMConfig pwmCfg =
     NULL,
     {
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
-        { PWM_OUTPUT_DISABLED, NULL },
+        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_DISABLED, NULL },
         { PWM_OUTPUT_DISABLED, NULL }
     },
@@ -122,7 +123,7 @@ void convInit( void )
     // Init ADC.
     palSetGroupMode(CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
     	                           PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
-    		                   PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
+    		                       PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
                                    0, PAL_MODE_INPUT_ANALOG);
     adcStart(&ADCD1, NULL);
 }
@@ -130,7 +131,12 @@ void convInit( void )
 void convStart( void )
 {
     pwmStart( &CONV_PWM, &pwmCfg );
-    adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 5000 ) );
+    pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 2000 ) );
+    // To see that PWM really works.
+    // ADC routine may change PWM period significantly. So I turn it of at
+    // the moment for debug purpose.
+    //adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
 }
 
 void convStop( void )
