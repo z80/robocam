@@ -55,12 +55,19 @@ int main(void)
   //initAdc();
   //initPower();
   //initUsb();
-  convInit();
+
+  //convInit();
   convStart();
+
+  //palSetPadMode( GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL );
+  //palSetPadMode( GPIOA, 1, PAL_MODE_OUTPUT_PUSHPULL );
 
   while (TRUE)
   {
     chThdSleepSeconds( 1 );
+    //palSetPad( GPIOA, 0 );
+    //chThdSleepSeconds( 1 );
+    //palClearPad( GPIOA, 0 );
     //processShell();
     //processAdc();
   }

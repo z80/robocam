@@ -7,9 +7,9 @@
 #define CONV_BOOST_PIN     0
 #define CONV_BUCK_PIN      1
 
-#define CONV_PWM           PWMD4
-#define PWM_BUCK_CHAN      2
-#define PWM_BOOST_CHAN     1
+#define CONV_PWM           PWMD2
+#define PWM_BUCK_CHAN      1
+#define PWM_BOOST_CHAN     0
 
 #define CONV_ADC_PORT      GPIOA
 #define CONV_INPUT_FB_PIN  2
@@ -98,13 +98,13 @@ static const ADCConversionGroup adcGroup =
 
 static PWMConfig pwmCfg =
 {
-    100000, // 100kHz PWM clock frequency.
-    1,      // Initial PWM period 10us.
+    1000000, // 1000kHz PWM clock frequency.
+    10,      // Initial PWM period 10us.
     NULL,
     {
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
-        { PWM_OUTPUT_DISABLED, NULL },
+        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_DISABLED, NULL }
     },
     0,
@@ -130,9 +130,18 @@ void convInit( void )
 
 void convStart( void )
 {
-    pwmStart( &CONV_PWM, &pwmCfg );
-    pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 5000 ) );
-    pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 2000 ) );
+    pwmStart( &PWMD2, &pwmCfg );
+    palSetPadMode( GPIOA, 0, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    palSetPadMode( GPIOA, 1, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    palSetPadMode( GPIOA, 2, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 5000 ) );
+    pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
+    pwmEnableChannel(&PWMD2, 2, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
+
+    //pwmStart( &CONV_PWM, &pwmCfg );
+    //pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 5000 ) );
+    //pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 3030 ) );
+
     // To see that PWM really works.
     // ADC routine may change PWM period significantly. So I turn it of at
     // the moment for debug purpose.
