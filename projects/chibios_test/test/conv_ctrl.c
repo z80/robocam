@@ -104,7 +104,7 @@ static PWMConfig pwmCfg =
     {
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
-        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
+        { PWM_OUTPUT_DISABLED, NULL },
         { PWM_OUTPUT_DISABLED, NULL }
     },
     0,
