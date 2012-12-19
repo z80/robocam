@@ -24,10 +24,10 @@
 
 static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
-static uint16_t buckGain  = 128;
-static uint16_t boostGain = 128;
-static uint16_t buckSp    = 1024;
-static uint16_t boostSp   = 1024;
+static uint16_t buckGain  = 100;
+static uint16_t boostGain = 100;
+static uint16_t buckSp    = 2068;
+static uint16_t boostSp   = 3061;
 static uint16_t inputSp   = 1024;
 
 static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
@@ -98,8 +98,8 @@ static const ADCConversionGroup adcGroup =
 
 static PWMConfig pwmCfg =
 {
-    1000000, // 1000kHz PWM clock frequency.
-    10,      // Initial PWM period 10us.
+    48000000, // 1000kHz PWM clock frequency.
+    480,      // Initial PWM period 10us.
     NULL,
     {
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
@@ -130,22 +130,19 @@ void convInit( void )
 
 void convStart( void )
 {
-    pwmStart( &PWMD2, &pwmCfg );
-    palSetPadMode( GPIOA, 0, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    palSetPadMode( GPIOA, 1, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    palSetPadMode( GPIOA, 2, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 5000 ) );
-    pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
-    pwmEnableChannel(&PWMD2, 2, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
+    //pwmStart( &PWMD2, &pwmCfg );
+    //palSetPadMode( GPIOA, 0, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    //palSetPadMode( GPIOA, 1, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    //palSetPadMode( GPIOA, 2, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    //pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 5000 ) );
+    //pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
+    //pwmEnableChannel(&PWMD2, 2, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
 
-    //pwmStart( &CONV_PWM, &pwmCfg );
-    //pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 5000 ) );
-    //pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 3030 ) );
+    pwmStart( &CONV_PWM, &pwmCfg );
+    pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+    pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
 
-    // To see that PWM really works.
-    // ADC routine may change PWM period significantly. So I turn it of at
-    // the moment for debug purpose.
-    //adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
 }
 
 void convStop( void )
