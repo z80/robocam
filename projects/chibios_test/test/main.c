@@ -56,7 +56,6 @@ int main(void)
   //initPower();
   //initUsb();
 
-  //convInit();
   convStart();
 
   //palSetPadMode( GPIOA, 0, PAL_MODE_OUTPUT_PUSHPULL );

@@ -4,7 +4,6 @@
 
 #include "ch.h"
 
-void convInit( void );
 void convStart( void );
 void convStop( void );
 void convSetBuck( uint16_t sp );

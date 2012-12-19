@@ -115,18 +115,6 @@ static PWMConfig pwmCfg =
 
 
 
-void convInit( void )
-{
-	// Init PWM.
-    palSetPadMode( CONV_PORT, CONV_BUCK_PIN,  PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    // Init ADC.
-    palSetGroupMode(CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
-    	                           PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
-    		                       PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
-                                   0, PAL_MODE_INPUT_ANALOG);
-    adcStart(&ADCD1, NULL);
-}
 
 void convStart( void )
 {
@@ -138,9 +126,21 @@ void convStart( void )
     //pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
     //pwmEnableChannel(&PWMD2, 2, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
 
+	// Start PWM peripherial.
     pwmStart( &CONV_PWM, &pwmCfg );
+	// Init PWM pins.
+    palSetPadMode( CONV_PORT, CONV_BUCK_PIN,  PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    // Set zero active period.
     pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
     pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+
+    // Init ADC.
+    palSetGroupMode(CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
+    	                           PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
+    		                       PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
+                                   0, PAL_MODE_INPUT_ANALOG);
+    adcStart( &ADCD1, NULL );
 
     adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
 }
@@ -148,6 +148,7 @@ void convStart( void )
 void convStop( void )
 {
 	adcStopConversion( &ADCD1 );
+	adcStop( &ADCD1 );
     pwmStop( &CONV_PWM );
 }
 
