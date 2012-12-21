@@ -36,6 +36,8 @@
 #include "shell.h"
 #include "chprintf.h"
 
+#include "conv_ctrl.h"
+
 /*===========================================================================*/
 /* USB related stuff.                                                        */
 /*===========================================================================*/
@@ -379,6 +381,7 @@ static const ShellCommand commands[] = {
   {"mem", cmd_mem},
   {"threads", cmd_threads},
   {"test", cmd_test},
+  { "conv", cmd_conv }, 
   {NULL, NULL}
 };
 
@@ -435,6 +438,8 @@ int main(void) {
    * Shell manager initialization.
    */
   shellInit();
+  
+  //convStart();
 
   /*
    * Creates the blinker thread.
