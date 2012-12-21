@@ -12,6 +12,7 @@ void convSetInput( uint16_t minValue );
 void convSetBuckGain( uint16_t val );
 void convSetBoostGain( uint16_t val );
 
+void cmd_conv( BaseChannel *chp, int argc, char * argv [] );
 
 
 #endif

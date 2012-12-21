@@ -30,29 +30,29 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   5 .bss          00000678  20000840  08002e0c  00010840  2**3
                   ALLOC
-  6 .debug_abbrev 000051ab  00000000  00000000  0001083c  2**0
+  6 .debug_abbrev 000051cd  00000000  00000000  0001083c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00015b35  00000000  00000000  000159e7  2**0
+  7 .debug_info   00015d24  00000000  00000000  00015a09  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00008cca  00000000  00000000  0002b51c  2**0
+  8 .debug_line   00008cea  00000000  00000000  0002b72d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    000075d8  00000000  00000000  000341e6  2**0
+  9 .debug_loc    0000763d  00000000  00000000  00034417  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_pubnames 0000192c  00000000  00000000  0003b7be  2**0
+ 10 .debug_pubnames 00001939  00000000  00000000  0003ba54  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_pubtypes 00003ecf  00000000  00000000  0003d0ea  2**0
+ 11 .debug_pubtypes 00003ef2  00000000  00000000  0003d38d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_aranges 00000ec0  00000000  00000000  00040fb9  2**0
+ 12 .debug_aranges 00000ec8  00000000  00000000  0004127f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00001030  00000000  00000000  00041e79  2**0
+ 13 .debug_ranges 00001038  00000000  00000000  00042147  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000036f4  00000000  00000000  00042ea9  2**0
+ 14 .debug_str    000036fd  00000000  00000000  0004317f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000002a  00000000  00000000  0004659d  2**0
+ 15 .comment      0000002a  00000000  00000000  0004687c  2**0
                   CONTENTS, READONLY
- 16 .ARM.attributes 00000031  00000000  00000000  000465c7  2**0
+ 16 .ARM.attributes 00000031  00000000  00000000  000468a6  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  000027a0  00000000  00000000  000465f8  2**2
+ 17 .debug_frame  000027bc  00000000  00000000  000468d8  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup

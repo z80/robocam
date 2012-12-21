@@ -27,11 +27,11 @@
 
 #include "ch.h"
 #include "hal.h"
-//#include "usb_ctrl.h"
-//#include "light_ctrl.h"
-//#include "power_ctrl.h"
-//#include "moto_ctrl.h"
-//#include "adc_ctrl.h"
+#include "usb_ctrl.h"
+#include "light_ctrl.h"
+#include "power_ctrl.h"
+#include "moto_ctrl.h"
+#include "adc_ctrl.h"
 #include "conv_ctrl.h"
 
 

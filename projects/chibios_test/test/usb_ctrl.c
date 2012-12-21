@@ -40,6 +40,7 @@
 #include "light_ctrl.h"
 #include "moto_ctrl.h"
 #include "adc_ctrl.h"
+#include "conv_ctrl.h"
 #include "hdw_cfg.h"
 
 /*===========================================================================*/
@@ -359,6 +360,8 @@ static const ShellCommand commands[] =
     { ADC_CFG_CMD,  cmd_adc_cfg },
     { ADC_CMD,      cmd_adc },
     { "pwren",      cmd_pwr_en },
+    // Buck/boost converter.
+    { "conv",       cmd_conv },
     {NULL, NULL}
 };
 

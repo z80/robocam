@@ -44,16 +44,19 @@ int main( int argc, char * argv[] )
     if ( !res )
         return 1;
 
-    //std::string stri;
-    //stri.resize( 128 );
-    //int cnt = c.read( stri );
-    //cnt = c.write( "mem\r\n" );
-    //cnt = c.read( stri );
-    //cnt = c.read( stri );
+    std::string stri;
+    stri.resize( 128 );
+    int cnt = c.read( stri );
+    cnt = c.write( "conv\r\n" );
+    cnt = c.read( stri );
+    cnt = c.write( "conv\r\n" );
+    cnt = c.read( stri );
+    cnt = c.write( "conv\r\n" );
+    cnt = c.read( stri );
 
     bool r;
     //r = c.powerConfig( 3, 3, 3 );
-    r = c.powerEn( true );
+    /*r = c.powerEn( true );
     r = c.led( true );
     r = c.led( false );
     r = c.motoConfig( true, 30 );
@@ -71,7 +74,8 @@ int main( int argc, char * argv[] )
     r = c.adcConfig( true );
     int val1, val2;
     r = c.adc( val1, val2 );
-    r = c.powerEn( false );
+    r = c.powerEn( false );*/
+
 
     return 0;
 }

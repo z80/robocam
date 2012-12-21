@@ -2,6 +2,7 @@
 
 #include "conv_ctrl.h"
 #include "hal.h"
+#include "chprintf.h"
 
 #define CONV_PORT          GPIOA
 #define CONV_BOOST_PIN     0
@@ -24,11 +25,11 @@
 
 static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
-static uint16_t buckGain  = 100;
-static uint16_t boostGain = 100;
+static uint16_t buckGain  = 1000;
+static uint16_t boostGain = 1000;
 static uint16_t buckSp    = 2068;
 static uint16_t boostSp   = 3061;
-static uint16_t inputSp   = 1024;
+static uint16_t inputSp   = 2275;
 
 static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 {
@@ -40,13 +41,13 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
     {
     	buckPwm += buckGain;
     	buckPwm = ( buckPwm <= 10000 ) ? buckPwm : 10000;
-        pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
+        pwmEnableChannelI(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
     }
     else if ( buffer[ BUCK_IND ] > buckSp )
     {
     	buckPwm = ( buckPwm >= buckGain ) ? buckPwm : buckGain;
     	buckPwm -= buckGain;
-    	pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
+    	pwmEnableChannelI(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
     }
     // Boost
     if ( buffer[ INPUT_IND ] >= inputSp )
@@ -54,18 +55,18 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
         if ( buffer[ BOOST_IND ] < boostSp )
         {
         	boostPwm += boostGain;
-        	boostPwm = ( boostPwm <= 10000 ) ? boostPwm : 10000;
-        	pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostPwm ) );
+        	boostPwm = ( boostPwm <= 9000 ) ? boostPwm : 9000;
+        	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostPwm ) );
         }
         else if ( buffer[ BOOST_IND ] > boostSp )
         {
         	boostPwm = ( boostPwm >= boostGain ) ? boostPwm : boostGain;
         	boostPwm -= boostGain;
-        	pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostPwm ) );
+        	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostPwm ) );
         }
     }
     else
-    	pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );
+    	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );
 };
 
 static adcsample_t adcSamples[ ADC_NUM_CHANNELS * ADC_BUF_DEPTH ];
@@ -87,8 +88,8 @@ static const ADCConversionGroup adcGroup =
     NULL,
     0, 0,           /* CR1, CR2 */
     0,
-    ADC_SMPR2_SMP_AN2(ADC_SAMPLE_1P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_1P5 ) |
-    ADC_SMPR2_SMP_AN4( ADC_SAMPLE_1P5 ),
+    ADC_SMPR2_SMP_AN2(ADC_SAMPLE_7P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_7P5 ) |
+    ADC_SMPR2_SMP_AN4( ADC_SAMPLE_7P5 ),
     ADC_SQR1_NUM_CH( ADC_NUM_CHANNELS ),
     0,
     ADC_SQR3_SQ1_N(ADC_CHANNEL_IN2) |
@@ -118,13 +119,15 @@ static PWMConfig pwmCfg =
 
 void convStart( void )
 {
-    //pwmStart( &PWMD2, &pwmCfg );
-    //palSetPadMode( GPIOA, 0, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    //palSetPadMode( GPIOA, 1, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    /*
+    pwmStart( &PWMD2, &pwmCfg );
+    palSetPadMode( GPIOA, 0, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    palSetPadMode( GPIOA, 1, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     //palSetPadMode( GPIOA, 2, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    //pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 5000 ) );
-    //pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
+    pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 9500 ) );
+    pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
     //pwmEnableChannel(&PWMD2, 2, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
+    */
 
 	// Start PWM peripherial.
     pwmStart( &CONV_PWM, &pwmCfg );
@@ -138,7 +141,7 @@ void convStart( void )
     // Init ADC.
     palSetGroupMode(CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
     	                           PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
-    		                       PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
+    	                           PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
                                    0, PAL_MODE_INPUT_ANALOG);
     adcStart( &ADCD1, NULL );
 
@@ -177,7 +180,12 @@ void convSetBoostGain( uint16_t val )
     boostGain = val;
 }
 
-
+void cmd_conv( BaseChannel *chp, int argc, char * argv [] )
+{
+	(void)argc;
+	(void)argv;
+	chprintf( chp, "{%d, %d, %d}\r\n", adcSamples[0], adcSamples[1], adcSamples[2] );
+}
 
 
 
