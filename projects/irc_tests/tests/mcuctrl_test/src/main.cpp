@@ -47,7 +47,7 @@ int main( int argc, char * argv[] )
     std::string stri;
     stri.resize( 128 );
     int cnt = c.read( stri );
-    cnt = c.write( "conv\r\n" );
+    cnt = c.write( "mem\r\n" );
     cnt = c.read( stri );
     cnt = c.write( "conv\r\n" );
     cnt = c.read( stri );
