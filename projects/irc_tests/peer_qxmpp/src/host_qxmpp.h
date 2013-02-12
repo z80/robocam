@@ -2,8 +2,7 @@
 #ifndef __HOST_QXMPP_H_
 #define __HOST_QXMPP_H_
 
-#include "QXmppServer.h"
-#include "QXmppPasswordChecker.h"
+#include <string>
 
 class HostQxmpp
 {

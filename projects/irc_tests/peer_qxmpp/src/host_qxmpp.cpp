@@ -105,6 +105,7 @@ bool HostQxmpp::listen( const std::string & configFile )
     pd->server.setPasswordChecker( pd );
     pd->server.listenForClients();
     pd->server.listenForServers();
+    return true;
 }
 
 

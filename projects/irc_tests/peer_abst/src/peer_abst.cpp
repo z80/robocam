@@ -323,7 +323,7 @@ static int isConnected( lua_State * L )
 
 static int send( lua_State * L )
 {
-    if ( lua_gettop( L ) > 0 )
+    if ( ( lua_gettop( L ) > 0 ) && ( ( lua_isstring( L, 1 ) ) || ( lua_isnumber( L, 1 ) ) ) )
     {
         std::string stri = lua_tostring( L, 1 );
         lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
