@@ -20,5 +20,6 @@ projects/chibios_test/usb_cdc/.dep
 .deps
 Debug
 Release
+_temp
 
 

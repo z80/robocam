@@ -54,7 +54,7 @@ int main(void)
   //initMoto();  // Power routine uses Moto routine mutex. So moto should be invoked before.
   //initAdc();
   //initPower();
-  initUsb();
+  //initUsb();
 
   convStart();
 
@@ -67,8 +67,8 @@ int main(void)
     //palSetPad( GPIOA, 0 );
     //chThdSleepSeconds( 1 );
     //palClearPad( GPIOA, 0 );
-    processShell();
-    processAdc();
+    //processShell();
+    //processAdc();
   }
   return 0;
 }
