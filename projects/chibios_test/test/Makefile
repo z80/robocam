@@ -90,7 +90,8 @@ CSRC = $(PORTSRC) \
        power_ctrl.c \
        moto_ctrl.c \
        adc_ctrl.c \
-       conv_ctrl.c 
+       conv_ctrl.c \
+       gps_ctrl.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
