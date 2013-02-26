@@ -1,4 +1,4 @@
-update=Thu 21 Feb 2013 09:01:05 PM MSK
+update=26/02/2013 12:56:16
 version=1
 last_client=eeschema
 [cvpcb]
@@ -81,7 +81,7 @@ LibName10=dip_sockets
 version=1
 [eeschema]
 version=1
-LibDir=../../../../../../z80
+LibDir=../libs
 NetFmt=1
 HPGLSpd=20
 HPGLDm=15
@@ -141,5 +141,5 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=projects/robocam.git/projects/ctrl-board/libs/lsm303dlhc
-LibName32=projects/robocam.git/projects/ctrl-board/libs/my_comps
+LibName31=my_comps
+LibName32=lsm303dlhc
