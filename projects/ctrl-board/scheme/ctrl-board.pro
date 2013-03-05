@@ -1,4 +1,4 @@
-update=Tue 05 Mar 2013 04:46:23 PM MSK
+update=Tue 05 Mar 2013 05:15:18 PM MSK
 version=1
 last_client=eeschema
 [cvpcb]
@@ -144,3 +144,4 @@ LibName30=valves
 LibName31=my_comps
 LibName32=lsm303dlhc
 LibName33=24lc16b
+LibName34=tc1047a
