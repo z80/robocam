@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Thu 07 Mar 2013 12:53:02 PM MSK
+EESchema Schematic File Version 2  date Thu 07 Mar 2013 02:56:38 PM MSK
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -1540,7 +1540,7 @@ L NPN Q2
 U 1 1 512A1145
 P 19650 15200
 F 0 "Q2" H 19650 15050 50  0000 R CNN
-F 1 "NPN" H 19650 15350 50  0000 R CNN
+F 1 "BC847" H 19650 15350 50  0000 R CNN
 	1    19650 15200
 	1    0    0    -1  
 $EndComp
