@@ -1,16 +1,6 @@
-update=Tue 05 Mar 2013 05:15:18 PM MSK
+update=Thu 07 Mar 2013 11:47:25 AM MSK
 version=1
-last_client=eeschema
-[cvpcb]
-version=1
-NetITyp=0
-NetIExt=.net
-PkgIExt=.pkg
-NetDir=
-LibDir=
-NetType=0
-[cvpcb/libraries]
-EquName1=devcms
+last_client=cvpcb
 [pcbnew]
 version=1
 PadDrlX=320
@@ -66,7 +56,6 @@ MaxLnkS=3
 ShowRat=0
 ShowMRa=1
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -77,6 +66,11 @@ LibName7=display
 LibName8=valves
 LibName9=led
 LibName10=dip_sockets
+LibName11=projects/robocam.git/projects/ctrl-board/libs/IRFL024
+LibName12=projects/robocam.git/projects/ctrl-board/libs/lga28
+LibName13=projects/robocam.git/projects/ctrl-board/libs/lqfp48
+LibName14=projects/robocam.git/projects/ctrl-board/libs/my_foots
+LibDir=../../../../../../z80
 [general]
 version=1
 [eeschema]
@@ -145,3 +139,8 @@ LibName31=my_comps
 LibName32=lsm303dlhc
 LibName33=24lc16b
 LibName34=tc1047a
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms

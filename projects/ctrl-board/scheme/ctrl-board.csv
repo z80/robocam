@@ -36,6 +36,6 @@
           MOS_P;  4;"Q5, Q11, Q12, Q13"
         NCP3063;  1;"U1"
             NPN;  1;"Q2"
-         PWR-IN;  4;"P1, P3, P4, P5"
+         PWR-IN;  5;"P1, P3, P4, P5, P8"
   STM32F102C8T6;  1;"stm1"
         TC1047A;  1;"TC1"
