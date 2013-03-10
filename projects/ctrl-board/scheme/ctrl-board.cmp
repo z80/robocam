@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = Thu 07 Mar 2013 01:09:32 PM MSK
+Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = Sun 10 Mar 2013 10:02:30 PM MSK
 
 BeginCmp
 TimeStamp = /5126532F;
@@ -284,7 +284,7 @@ BeginCmp
 TimeStamp = /51265282;
 Reference = lsm1;
 ValeurCmp = LSM303DLHC;
-IdModule  = lga14;
+IdModule  = lga14-0.3mm;
 EndCmp
 
 BeginCmp

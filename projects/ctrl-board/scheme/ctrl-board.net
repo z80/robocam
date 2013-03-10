@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Thu 07 Mar 2013 01:09:32 PM MSK
+# EESchema Netlist Version 1.1 created  Sun 10 Mar 2013 10:02:30 PM MSK
 (
  ( /5126532F SM0805 C1 4u7
   ( 1 +6V )
@@ -174,7 +174,7 @@
   ( 1 N-000086 )
   ( 2 /buck-out-5v )
  )
- ( /51265282 lga14 lsm1 LSM303DLHC
+ ( /51265282 lga14-0.3mm lsm1 LSM303DLHC
   ( 1 VDD )
   ( 2 /scl-int )
   ( 3 /sda-int )
@@ -219,10 +219,10 @@
   ( 4 GND )
  )
  ( /512C7D17 PIN_ARRAY_4x1 P7 CONN_4
-  ( 1 /out1 )
-  ( 2 /out2 )
-  ( 3 /out3 )
-  ( 4 /out4 )
+  ( 1 /out2 )
+  ( 2 /out1 )
+  ( 3 /out4 )
+  ( 4 /out3 )
  )
  ( /513844F0 my_conn_2 P8 PWR-IN
   ( 1 VDD )
@@ -534,15 +534,15 @@
   ( 22 /sda-int )
   ( 23 GND )
   ( 24 VDD )
-  ( 25 /led1 )
-  ( 26 /led2 )
-  ( 27 /light )
+  ( 25 /light )
+  ( 26 /led1 )
+  ( 27 /led2 )
   ( 28 /just-power-source )
   ( 29 /moto-en )
-  ( 30 /moto1 )
-  ( 31 /moto2 )
-  ( 32 /moto3 )
-  ( 33 /moto4 )
+  ( 30 /moto2 )
+  ( 31 /moto3 )
+  ( 32 /moto4 )
+  ( 33 /moto1 )
   ( 34 /swd-io )
   ( 35 GND )
   ( 36 VDD )

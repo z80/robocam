@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sun 10 Mar 2013 01:13:38 AM MSK
+EESchema Schematic File Version 2  date Sun 10 Mar 2013 09:28:12 PM MSK
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -40,7 +40,7 @@ $Descr A1 33070 23400
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "9 mar 2013"
+Date "10 mar 2013"
 Rev ""
 Comp ""
 Comment1 ""
@@ -1115,25 +1115,25 @@ F 1 "VDD" H 18650 1810 30  0000 C CNN
 	1    18650 1700
 	1    0    0    -1  
 $EndComp
-Text Label 14200 5450 0    60   ~ 0
-moto4
 Text Label 14200 5250 0    60   ~ 0
-moto3
+moto4
 Text Label 14200 5050 0    60   ~ 0
-moto2
+moto3
 Text Label 14200 4850 0    60   ~ 0
+moto2
+Text Label 14200 5450 0    60   ~ 0
 moto1
 Text Label 14100 4650 0    60   ~ 0
 moto-en
 Text Label 23650 12600 0    60   ~ 0
 moto-en
-Text Label 29350 13350 0    60   ~ 0
-out4
 Text Label 29350 13250 0    60   ~ 0
+out4
+Text Label 29350 13350 0    60   ~ 0
 out3
-Text Label 29350 13150 0    60   ~ 0
-out2
 Text Label 29350 13050 0    60   ~ 0
+out2
+Text Label 29350 13150 0    60   ~ 0
 out1
 $Comp
 L CONN_4 P7
@@ -1513,7 +1513,7 @@ F 1 "1" V 4350 21000 50  0000 C CNN
 	1    4350 21000
 	1    0    0    -1  
 $EndComp
-Text Label 14100 9750 0    60   ~ 0
+Text Label 14100 9350 0    60   ~ 0
 light
 Text Label 18400 15200 0    60   ~ 0
 light
@@ -2746,9 +2746,9 @@ F 1 "50" V 8650 5450 50  0000 C CNN
 	1    8650 5450
 	0    -1   -1   0   
 $EndComp
-Text Label 14100 9550 0    60   ~ 0
+Text Label 14100 9750 0    60   ~ 0
 led2
-Text Label 14100 9350 0    60   ~ 0
+Text Label 14100 9550 0    60   ~ 0
 led1
 Text Label 13950 9150 0    60   ~ 0
 sda-int
