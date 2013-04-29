@@ -119,19 +119,9 @@ static PWMConfig pwmCfg =
 
 void convStart( void )
 {
-    /*
-    pwmStart( &PWMD2, &pwmCfg );
-    palSetPadMode( GPIOA, 0, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    palSetPadMode( GPIOA, 1, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    //palSetPadMode( GPIOA, 2, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 9500 ) );
-    pwmEnableChannel(&PWMD2, 1, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
-    //pwmEnableChannel(&PWMD2, 2, PWM_PERCENTAGE_TO_WIDTH( &PWMD2, 3030 ) );
-    */
-
-	// Start PWM peripherial.
+    // Start PWM peripherial.
     pwmStart( &CONV_PWM, &pwmCfg );
-	// Init PWM pins.
+    // Init PWM pins.
     palSetPadMode( CONV_PORT, CONV_BUCK_PIN,  PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     // Set zero active period.
@@ -150,9 +140,9 @@ void convStart( void )
 
 void convStop( void )
 {
-	adcStopConversion( &ADCD1 );
-	adcStop( &ADCD1 );
     pwmStop( &CONV_PWM );
+    adcStopConversion( &ADCD1 );
+    adcStop( &ADCD1 );
 }
 
 void convSetBuck( uint16_t sp )
@@ -182,9 +172,9 @@ void convSetBoostGain( uint16_t val )
 
 void cmd_conv( BaseChannel *chp, int argc, char * argv [] )
 {
-	(void)argc;
-	(void)argv;
-	chprintf( chp, "{%d, %d, %d}\r\n", adcSamples[0], adcSamples[1], adcSamples[2] );
+    (void)argc;
+    (void)argv;
+    chprintf( chp, "{%d, %d, %d}\r\n", adcSamples[0], adcSamples[1], adcSamples[2] );
 }
 
 
