@@ -2,26 +2,34 @@
 
 #include "conv_ctrl.h"
 #include "hal.h"
-#include "chprintf.h"
+
+#define PWM_CLOCK_FREQ     16000000
+#define PWM_PERIOD         160
+#define BOOST_MAX_FILL     9000
 
 #define CONV_PORT          GPIOA
-#define CONV_BOOST_PIN     0
-#define CONV_BUCK_PIN      1
+#define CONV_BOOST_PIN     1
+#define CONV_BUCK_PIN      2
 
 #define CONV_PWM           PWMD2
-#define PWM_BUCK_CHAN      1
-#define PWM_BOOST_CHAN     0
+#define PWM_BOOST_CHAN     1
+#define PWM_BUCK_CHAN      2
 
 #define CONV_ADC_PORT      GPIOA
-#define CONV_INPUT_FB_PIN  2
-#define CONV_BOOST_FB_PIN  3
-#define CONV_BUCK_FB_PIN   4
+#define CONV_SOLAR_FB_PIN  	3
+#define CONV_BOOST_FB_PIN  	4
+#define CONV_BUCK_FB_PIN   	5
+#define CONV_CURRENT_FB_PIN 6
+#define CONV_TEMP_FB_PIN 	7
 
 #define ADC_NUM_CHANNELS   3
 #define ADC_BUF_DEPTH      2
-#define INPUT_IND          0
+#define SOLAR_IND          0
 #define BOOST_IND          1
 #define BUCK_IND           2
+
+#define JUST_PS_PORT       GPIOB
+#define JUST_PS_PIN        15
 
 static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
@@ -29,7 +37,9 @@ static uint16_t buckGain  = 1000;
 static uint16_t boostGain = 1000;
 static uint16_t buckSp    = 2068;
 static uint16_t boostSp   = 3061;
-static uint16_t inputSp   = 2275;
+static uint16_t solarSp   = 2275;
+
+inline uint8_t justPs( void );
 
 static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 {
@@ -50,12 +60,12 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
     	pwmEnableChannelI(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
     }
     // Boost
-    if ( buffer[ INPUT_IND ] >= inputSp )
+    if ( buffer[ SOLAR_IND ] >= solarSp )
     {
         if ( buffer[ BOOST_IND ] < boostSp )
         {
         	boostPwm += boostGain;
-        	boostPwm = ( boostPwm <= 9000 ) ? boostPwm : 9000;
+        	boostPwm = ( boostPwm <= BOOST_MAX_FILL ) ? boostPwm : BOOST_MAX_FILL;
         	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, boostPwm ) );
         }
         else if ( buffer[ BOOST_IND ] > boostSp )
@@ -88,24 +98,25 @@ static const ADCConversionGroup adcGroup =
     NULL,
     0, 0,           /* CR1, CR2 */
     0,
-    ADC_SMPR2_SMP_AN2(ADC_SAMPLE_7P5) | ADC_SMPR2_SMP_AN3( ADC_SAMPLE_7P5 ) |
-    ADC_SMPR2_SMP_AN4( ADC_SAMPLE_7P5 ),
+    ADC_SMPR2_SMP_AN3( ADC_SAMPLE_7P5 ) |
+    ADC_SMPR2_SMP_AN4( ADC_SAMPLE_7P5 ) |
+    ADC_SMPR2_SMP_AN5( ADC_SAMPLE_7P5 ),
     ADC_SQR1_NUM_CH( ADC_NUM_CHANNELS ),
     0,
-    ADC_SQR3_SQ1_N(ADC_CHANNEL_IN2) |
-    ADC_SQR3_SQ2_N(ADC_CHANNEL_IN3) | 
-    ADC_SQR3_SQ3_N(ADC_CHANNEL_IN4)
+    ADC_SQR3_SQ1_N(ADC_CHANNEL_IN3) |
+    ADC_SQR3_SQ2_N(ADC_CHANNEL_IN4) |
+    ADC_SQR3_SQ3_N(ADC_CHANNEL_IN5)
 };
 
 static PWMConfig pwmCfg =
 {
-    48000000, // 1000kHz PWM clock frequency.
-    480,      // Initial PWM period 10us.
+    PWM_CLOCK_FREQ, // 1000kHz PWM clock frequency.
+    PWM_PERIOD,     // Initial PWM period 10us.
     NULL,
     {
-        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
-        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_DISABLED, NULL },
+        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
+        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_DISABLED, NULL }
     },
     0,
@@ -119,20 +130,25 @@ static PWMConfig pwmCfg =
 
 void convStart( void )
 {
+	// Just power source mode.
+	palSetPadMode( JUST_PS_PORT, JUST_PS_PIN,  PAL_MODE_INPUT );
+
     // Start PWM peripherial.
     pwmStart( &CONV_PWM, &pwmCfg );
     // Init PWM pins.
     palSetPadMode( CONV_PORT, CONV_BUCK_PIN,  PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     // Set zero active period.
-    pwmEnableChannel(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
-    pwmEnableChannel(&CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+    pwmEnableChannel( &CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+    pwmEnableChannel( &CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
 
     // Init ADC.
-    palSetGroupMode(CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
-    	                           PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
-    	                           PAL_PORT_BIT( CONV_INPUT_FB_PIN ),
-                                   0, PAL_MODE_INPUT_ANALOG);
+    palSetGroupMode( CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
+    	                            PAL_PORT_BIT( CONV_BOOST_FB_PIN ) |
+    	                            PAL_PORT_BIT( CONV_SOLAR_FB_PIN ) |
+    	                            PAL_PORT_BIT( CONV_CURRENT_FB_PIN ) |
+    	                            PAL_PORT_BIT( CONV_TEMP_FB_PIN ),
+                                    0, PAL_MODE_INPUT_ANALOG );
     adcStart( &ADCD1, NULL );
 
     adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
@@ -140,9 +156,12 @@ void convStart( void )
 
 void convStop( void )
 {
-    pwmStop( &CONV_PWM );
-    adcStopConversion( &ADCD1 );
-    adcStop( &ADCD1 );
+    if ( !justPs() )
+    {
+	    pwmStop( &CONV_PWM );
+        adcStopConversion( &ADCD1 );
+        adcStop( &ADCD1 );
+    }
 }
 
 void convSetBuck( uint16_t sp )
@@ -155,9 +174,9 @@ void convSetBoost( uint16_t sp )
     boostSp = sp;
 }
 
-void convSetInput( uint16_t minValue )
+void convSetSolar( uint16_t minValue )
 {
-    inputSp = minValue;
+    solarSp = minValue;
 }
 
 void convSetBuckGain( uint16_t val )
@@ -170,12 +189,77 @@ void convSetBoostGain( uint16_t val )
     boostGain = val;
 }
 
-void cmd_conv( BaseChannel *chp, int argc, char * argv [] )
+inline uint8_t justPs( void )
 {
-    (void)argc;
-    (void)argv;
-    chprintf( chp, "{%d, %d, %d}\r\n", adcSamples[0], adcSamples[1], adcSamples[2] );
+    if ( palReadPad( JUST_PS_PORT, JUST_PS_PIN ) )
+    	return 0;
+    return 1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static const ADCConversionGroup grpCurrent =
+    {
+        FALSE,
+        1,
+        NULL,
+        NULL,
+        0, 0,
+        0,
+        ADC_SMPR2_SMP_AN6( ADC_SAMPLE_7P5 ),
+        ADC_SQR1_NUM_CH( 1 ),
+        0,
+        ADC_SQR3_SQ1_N( ADC_CHANNEL_IN6 )
+    };
+
+static const ADCConversionGroup grpTemperature =
+    {
+        FALSE,
+        1,
+        NULL,
+        NULL,
+        0, 0,
+        0,
+        ADC_SMPR2_SMP_AN7( ADC_SAMPLE_7P5 ),
+        ADC_SQR1_NUM_CH( 1 ),
+        0,
+        ADC_SQR3_SQ1_N( ADC_CHANNEL_IN7 )
+    };
+
+static adcsample_t adcCurrect,
+                   adcTemperature;
+
+
+uint16_t adcCurrent( void )
+{
+    adcConvert( &ADCD1, &grpCurrent, &adcCurrect, 1 );
+    return (uint16_t)adcTemperature;
+}
+
+uint16_t adcTepmerature( void )
+{
+    adcConvert( &ADCD1, &grpTemperature, &adcTemperature, 1 );
+    return (uint16_t)adcTemperature;
+}
+
+
 
 
 

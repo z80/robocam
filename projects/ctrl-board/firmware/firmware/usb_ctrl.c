@@ -361,7 +361,7 @@ static const ShellCommand commands[] =
     { ADC_CMD,      cmd_adc },
     { "pwren",      cmd_pwr_en },*/
     // Buck/boost converter.
-    { "conv",       cmd_conv },
+    //{ "conv",       cmd_conv },
     {NULL, NULL}
 };
 

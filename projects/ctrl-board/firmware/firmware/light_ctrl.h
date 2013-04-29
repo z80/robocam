@@ -6,7 +6,6 @@
 #include "shell.h"
 
 void setLight( bool_t en );
-void cmd_light( BaseChannel *chp, int argc, char * argv [] );
 
 #endif
 
