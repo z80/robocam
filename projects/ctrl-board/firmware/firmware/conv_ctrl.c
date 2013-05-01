@@ -33,11 +33,11 @@
 
 static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
-static uint16_t buckGain  = 1000;
-static uint16_t boostGain = 1000;
-static uint16_t buckSp    = 2068;
-static uint16_t boostSp   = 3061;
-static uint16_t solarSp   = 2275;
+static uint16_t buckGain  = 1000; // Gain is 10%
+static uint16_t boostGain = 1000; // Gain is 10%
+static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) / 2 );
+static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) / 2 );
+static uint16_t solarSp   = ( ( 4095 * 2000 ) / ( 3 * 3300 ) / 2 );
 
 inline uint8_t justPs( void );
 
@@ -60,7 +60,7 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
     	pwmEnableChannelI(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
     }
     // Boost
-    if ( buffer[ SOLAR_IND ] >= solarSp )
+    /*if ( buffer[ SOLAR_IND ] >= solarSp )
     {
         if ( buffer[ BOOST_IND ] < boostSp )
         {
@@ -76,7 +76,7 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
         }
     }
     else
-    	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );
+    	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );*/
 };
 
 static adcsample_t adcSamples[ ADC_NUM_CHANNELS * ADC_BUF_DEPTH ];
@@ -115,7 +115,8 @@ static PWMConfig pwmCfg =
     NULL,
     {
         { PWM_OUTPUT_DISABLED, NULL },
-        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
+        { PWM_OUTPUT_DISABLED, NULL },      // Disable boost part of PWM.
+        //{ PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_DISABLED, NULL }
     },
@@ -137,10 +138,10 @@ void convStart( void )
     pwmStart( &CONV_PWM, &pwmCfg );
     // Init PWM pins.
     palSetPadMode( CONV_PORT, CONV_BUCK_PIN,  PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    //palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     // Set zero active period.
-    pwmEnableChannel( &CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
-    pwmEnableChannel( &CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+    //pwmEnableChannel( &CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+    pwmEnableChannel( &CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0200 ) );
 
     // Init ADC.
     palSetGroupMode( CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
@@ -158,7 +159,7 @@ void convStop( void )
 {
     if ( !justPs() )
     {
-	    pwmStop( &CONV_PWM );
+	pwmStop( &CONV_PWM );
         adcStopConversion( &ADCD1 );
         adcStop( &ADCD1 );
     }
