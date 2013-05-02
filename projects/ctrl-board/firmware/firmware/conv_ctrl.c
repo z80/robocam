@@ -35,7 +35,7 @@ static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
 static uint16_t buckGain  = 1000; // Gain is 10%
 static uint16_t boostGain = 1000; // Gain is 10%
-static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) / 2 );
+static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) );
 static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
 static uint16_t solarSp   = ( ( 4095 * 2000 ) / ( 3 * 3300 ) );
 
