@@ -36,8 +36,8 @@ static uint16_t boostPwm  = 0;
 static uint16_t buckGain  = 1000; // Gain is 10%
 static uint16_t boostGain = 1000; // Gain is 10%
 static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) / 2 );
-static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) / 2 );
-static uint16_t solarSp   = ( ( 4095 * 2000 ) / ( 3 * 3300 ) / 2 );
+static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
+static uint16_t solarSp   = ( ( 4095 * 2000 ) / ( 3 * 3300 ) );
 
 inline uint8_t justPs( void );
 
@@ -60,7 +60,7 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
     	pwmEnableChannelI(&CONV_PWM, PWM_BUCK_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, buckPwm ) );
     }
     // Boost
-    /*if ( buffer[ SOLAR_IND ] >= solarSp )
+    if ( buffer[ SOLAR_IND ] >= solarSp )
     {
         if ( buffer[ BOOST_IND ] < boostSp )
         {
@@ -76,7 +76,7 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
         }
     }
     else
-    	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );*/
+    	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );
 };
 
 static adcsample_t adcSamples[ ADC_NUM_CHANNELS * ADC_BUF_DEPTH ];
@@ -89,6 +89,7 @@ static adcsample_t adcSamples[ ADC_NUM_CHANNELS * ADC_BUF_DEPTH ];
 // ADC_SAMPLE_55P5
 // ADC_SAMPLE_71P5
 // ADC_SAMPLE_239P5
+#define ADC_SAMPLING  ADC_SAMPLE_13P5
 
 static const ADCConversionGroup adcGroup =
 {
@@ -98,9 +99,9 @@ static const ADCConversionGroup adcGroup =
     NULL,
     0, 0,           /* CR1, CR2 */
     0,
-    ADC_SMPR2_SMP_AN3( ADC_SAMPLE_7P5 ) |
-    ADC_SMPR2_SMP_AN4( ADC_SAMPLE_7P5 ) |
-    ADC_SMPR2_SMP_AN5( ADC_SAMPLE_7P5 ),
+    ADC_SMPR2_SMP_AN3( ADC_SAMPLING ) |
+    ADC_SMPR2_SMP_AN4( ADC_SAMPLING ) |
+    ADC_SMPR2_SMP_AN5( ADC_SAMPLING ),
     ADC_SQR1_NUM_CH( ADC_NUM_CHANNELS ),
     0,
     ADC_SQR3_SQ1_N(ADC_CHANNEL_IN3) |
@@ -115,8 +116,8 @@ static PWMConfig pwmCfg =
     NULL,
     {
         { PWM_OUTPUT_DISABLED, NULL },
-        { PWM_OUTPUT_DISABLED, NULL },      // Disable boost part of PWM.
-        //{ PWM_OUTPUT_ACTIVE_HIGH, NULL },
+        //{ PWM_OUTPUT_DISABLED, NULL },      // Disable boost part of PWM.
+        { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_ACTIVE_HIGH, NULL },
         { PWM_OUTPUT_DISABLED, NULL }
     },
@@ -131,17 +132,17 @@ static PWMConfig pwmCfg =
 
 void convStart( void )
 {
-	// Just power source mode.
-	palSetPadMode( JUST_PS_PORT, JUST_PS_PIN,  PAL_MODE_INPUT );
+    // Just power source mode.
+    palSetPadMode( JUST_PS_PORT, JUST_PS_PIN,  PAL_MODE_INPUT );
 
     // Start PWM peripherial.
     pwmStart( &CONV_PWM, &pwmCfg );
     // Init PWM pins.
     palSetPadMode( CONV_PORT, CONV_BUCK_PIN,  PAL_MODE_STM32_ALTERNATE_PUSHPULL );
-    //palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    palSetPadMode( CONV_PORT, CONV_BOOST_PIN, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
     // Set zero active period.
-    //pwmEnableChannel( &CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
-    pwmEnableChannel( &CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0200 ) );
+    pwmEnableChannel( &CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
+    pwmEnableChannel( &CONV_PWM, PWM_BUCK_CHAN,  PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0000 ) );
 
     // Init ADC.
     palSetGroupMode( CONV_ADC_PORT, PAL_PORT_BIT( CONV_BUCK_FB_PIN ) |
@@ -224,7 +225,7 @@ static const ADCConversionGroup grpCurrent =
         NULL,
         0, 0,
         0,
-        ADC_SMPR2_SMP_AN6( ADC_SAMPLE_7P5 ),
+        ADC_SMPR2_SMP_AN6( ADC_SAMPLING ),
         ADC_SQR1_NUM_CH( 1 ),
         0,
         ADC_SQR3_SQ1_N( ADC_CHANNEL_IN6 )
@@ -238,7 +239,7 @@ static const ADCConversionGroup grpTemperature =
         NULL,
         0, 0,
         0,
-        ADC_SMPR2_SMP_AN7( ADC_SAMPLE_7P5 ),
+        ADC_SMPR2_SMP_AN7( ADC_SAMPLING ),
         ADC_SQR1_NUM_CH( 1 ),
         0,
         ADC_SQR3_SQ1_N( ADC_CHANNEL_IN7 )

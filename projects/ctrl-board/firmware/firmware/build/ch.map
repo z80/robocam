@@ -685,11 +685,6 @@ Discarded input sections
  .text          0x00000000        0x0 build/obj/conv_ctrl.o
  .data          0x00000000        0x0 build/obj/conv_ctrl.o
  .bss           0x00000000        0x0 build/obj/conv_ctrl.o
- .bss.boostPwm  0x00000000        0x2 build/obj/conv_ctrl.o
- .data.boostGain
-                0x00000000        0x2 build/obj/conv_ctrl.o
- .data.boostSp  0x00000000        0x2 build/obj/conv_ctrl.o
- .data.solarSp  0x00000000        0x2 build/obj/conv_ctrl.o
  .text.convStop
                 0x00000000       0x30 build/obj/conv_ctrl.o
  .text.convSetBuck
@@ -859,7 +854,7 @@ destructors     0x080000ec        0x0
  *(SORT(.fini_array.*))
                 0x080000ec                PROVIDE (__fini_array_end, .)
 
-.text           0x080000f0     0x3e0c
+.text           0x080000f0     0x3efc
  *(.text.startup.*)
  *(.text)
  *(.text.*)
@@ -1274,78 +1269,78 @@ destructors     0x080000ec        0x0
  .text.main     0x080037a0       0x20 build/obj/main.o
                 0x080037a0                main
  .text.contAdcReadyCb
-                0x080037c0       0xe0 build/obj/conv_ctrl.o
+                0x080037c0      0x1c0 build/obj/conv_ctrl.o
  .text.convStart
-                0x080038a0       0x90 build/obj/conv_ctrl.o
-                0x080038a0                convStart
+                0x08003980       0xa0 build/obj/conv_ctrl.o
+                0x08003980                convStart
  *(.rodata)
- .rodata        0x08003930       0x10 build/obj/chsys.o
- .rodata        0x08003940       0x58 build/obj/chdebug.o
- *fill*         0x08003998        0x8 00
- .rodata        0x080039a0       0x34 build/obj/chvt.o
- *fill*         0x080039d4        0xc 00
- .rodata        0x080039e0       0x24 build/obj/chschd.o
- *fill*         0x08003a04        0xc 00
- .rodata        0x08003a10       0x94 build/obj/chthreads.o
- *fill*         0x08003aa4        0xc 00
- .rodata        0x08003ab0       0xac build/obj/chmtx.o
- *fill*         0x08003b5c        0x4 00
- .rodata        0x08003b60      0x110 build/obj/adc.o
- .rodata        0x08003c70       0xb0 build/obj/pwm.o
- .rodata        0x08003d20       0x34 build/obj/stm32_dma.o
- *fill*         0x08003d54        0xc 00
- .rodata        0x08003d60       0x14 build/obj/adc_lld.o
- *fill*         0x08003d74        0xc 00
- .rodata        0x08003d80       0x14 build/obj/pwm_lld.o
- *fill*         0x08003d94        0xc 00
- .rodata        0x08003da0       0x10 build/obj/usb_lld.o
- .rodata        0x08003db0        0x4 build/obj/main.o
- *(.rodata.*)
- *fill*         0x08003db4        0xc 00
- .rodata.zero_status
-                0x08003dc0        0x4 build/obj/usb.o
- *fill*         0x08003dc4        0xc 00
- .rodata.active_status
-                0x08003dd0        0x4 build/obj/usb.o
- *fill*         0x08003dd4        0xc 00
- .rodata.halted_status
-                0x08003de0        0x4 build/obj/usb.o
- *fill*         0x08003de4        0xc 00
- .rodata._stm32_dma_streams
-                0x08003df0       0x54 build/obj/stm32_dma.o
-                0x08003df0                _stm32_dma_streams
+ .rodata        0x08003a20       0x10 build/obj/chsys.o
+ .rodata        0x08003a30       0x58 build/obj/chdebug.o
+ *fill*         0x08003a88        0x8 00
+ .rodata        0x08003a90       0x34 build/obj/chvt.o
+ *fill*         0x08003ac4        0xc 00
+ .rodata        0x08003ad0       0x24 build/obj/chschd.o
+ *fill*         0x08003af4        0xc 00
+ .rodata        0x08003b00       0x94 build/obj/chthreads.o
+ *fill*         0x08003b94        0xc 00
+ .rodata        0x08003ba0       0xac build/obj/chmtx.o
+ *fill*         0x08003c4c        0x4 00
+ .rodata        0x08003c50      0x110 build/obj/adc.o
+ .rodata        0x08003d60       0xb0 build/obj/pwm.o
+ .rodata        0x08003e10       0x34 build/obj/stm32_dma.o
  *fill*         0x08003e44        0xc 00
- .rodata.cfgtab.6169
-                0x08003e50       0x14 build/obj/pal_lld.o
+ .rodata        0x08003e50       0x14 build/obj/adc_lld.o
  *fill*         0x08003e64        0xc 00
+ .rodata        0x08003e70       0x14 build/obj/pwm_lld.o
+ *fill*         0x08003e84        0xc 00
+ .rodata        0x08003e90       0x10 build/obj/usb_lld.o
+ .rodata        0x08003ea0        0x4 build/obj/main.o
+ *(.rodata.*)
+ *fill*         0x08003ea4        0xc 00
+ .rodata.zero_status
+                0x08003eb0        0x4 build/obj/usb.o
+ *fill*         0x08003eb4        0xc 00
+ .rodata.active_status
+                0x08003ec0        0x4 build/obj/usb.o
+ *fill*         0x08003ec4        0xc 00
+ .rodata.halted_status
+                0x08003ed0        0x4 build/obj/usb.o
+ *fill*         0x08003ed4        0xc 00
+ .rodata._stm32_dma_streams
+                0x08003ee0       0x54 build/obj/stm32_dma.o
+                0x08003ee0                _stm32_dma_streams
+ *fill*         0x08003f34        0xc 00
+ .rodata.cfgtab.6169
+                0x08003f40       0x14 build/obj/pal_lld.o
+ *fill*         0x08003f54        0xc 00
  .rodata.ep0config
-                0x08003e70       0x1c build/obj/usb_lld.o
- *fill*         0x08003e8c        0x4 00
+                0x08003f60       0x1c build/obj/usb_lld.o
+ *fill*         0x08003f7c        0x4 00
  .rodata.pal_default_config
-                0x08003e90       0x3c build/obj/board.o
-                0x08003e90                pal_default_config
- *fill*         0x08003ecc        0x4 00
+                0x08003f80       0x3c build/obj/board.o
+                0x08003f80                pal_default_config
+ *fill*         0x08003fbc        0x4 00
  .rodata.adcGroup
-                0x08003ed0       0x2c build/obj/conv_ctrl.o
+                0x08003fc0       0x2c build/obj/conv_ctrl.o
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.gcc*)
 
-.vfp11_veneer   0x08003efc        0x0
+.vfp11_veneer   0x08003fec        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08003efc        0x0
+.v4_bx          0x08003fec        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM.exidx      0x08003efc        0x0
-                0x08003efc                PROVIDE (__exidx_start, .)
+.ARM.exidx      0x08003fec        0x0
+                0x08003fec                PROVIDE (__exidx_start, .)
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x08003efc                PROVIDE (__exidx_end, .)
+                0x08003fec                PROVIDE (__exidx_end, .)
 
 .eh_frame_hdr
  *(.eh_frame_hdr)
@@ -1353,11 +1348,11 @@ destructors     0x080000ec        0x0
 .eh_frame
  *(.eh_frame)
 
-.textalign      0x08003efc        0x4
-                0x08003f00                . = ALIGN (0x8)
- *fill*         0x08003efc        0x4 00
-                0x08003f00                _etext = .
-                0x08003f00                _textdata = _etext
+.textalign      0x08003fec        0x4
+                0x08003ff0                . = ALIGN (0x8)
+ *fill*         0x08003fec        0x4 00
+                0x08003ff0                _etext = .
+                0x08003ff0                _textdata = _etext
 
 .stacks         0x20000000      0x800
                 0x20000000                . = ALIGN (0x8)
@@ -1374,7 +1369,7 @@ destructors     0x080000ec        0x0
                 0x20000800                __process_stack_end__ = .
                 0x20000800                __main_thread_stack_end__ = .
 
-.data           0x20000800       0x34 load address 0x08003f00
+.data           0x20000800       0x3c load address 0x08003ff0
                 0x20000800                . = ALIGN (0x4)
                 0x20000800                PROVIDE (_data, .)
  *(.data)
@@ -1382,70 +1377,75 @@ destructors     0x080000ec        0x0
  *(.data.*)
  .data.buckGain
                 0x20000800        0x2 build/obj/conv_ctrl.o
- .data.buckSp   0x20000802        0x2 build/obj/conv_ctrl.o
- .data.pwmCfg   0x20000804       0x30 build/obj/conv_ctrl.o
-                0x20000834                . = ALIGN (0x4)
+ .data.boostGain
+                0x20000802        0x2 build/obj/conv_ctrl.o
+ .data.buckSp   0x20000804        0x2 build/obj/conv_ctrl.o
+ .data.boostSp  0x20000806        0x2 build/obj/conv_ctrl.o
+ .data.solarSp  0x20000808        0x2 build/obj/conv_ctrl.o
+ *fill*         0x2000080a        0x2 00
+ .data.pwmCfg   0x2000080c       0x30 build/obj/conv_ctrl.o
+                0x2000083c                . = ALIGN (0x4)
  *(.ramtext)
-                0x20000834                . = ALIGN (0x4)
-                0x20000834                PROVIDE (_edata, .)
+                0x2000083c                . = ALIGN (0x4)
+                0x2000083c                PROVIDE (_edata, .)
 
-.bss            0x20000838      0x820 load address 0x08003f34
-                0x20000838                . = ALIGN (0x4)
-                0x20000838                PROVIDE (_bss_start, .)
+.bss            0x20000840      0x820 load address 0x0800402c
+                0x20000840                . = ALIGN (0x4)
+                0x20000840                PROVIDE (_bss_start, .)
  *(.bss)
-                0x20000838                . = ALIGN (0x4)
+                0x20000840                . = ALIGN (0x4)
  *(.bss.*)
  .bss._idle_thread_wa
-                0x20000838       0xc0 build/obj/chsys.o
-                0x20000838                _idle_thread_wa
+                0x20000840       0xc0 build/obj/chsys.o
+                0x20000840                _idle_thread_wa
  .bss.mainthread.4697
-                0x200008f8       0x4c build/obj/chsys.o
+                0x20000900       0x4c build/obj/chsys.o
  .bss.dbg_isr_cnt
-                0x20000944        0x4 build/obj/chdebug.o
-                0x20000944                dbg_isr_cnt
+                0x2000094c        0x4 build/obj/chdebug.o
+                0x2000094c                dbg_isr_cnt
  .bss.dbg_lock_cnt
-                0x20000948        0x4 build/obj/chdebug.o
-                0x20000948                dbg_lock_cnt
+                0x20000950        0x4 build/obj/chdebug.o
+                0x20000950                dbg_lock_cnt
  .bss.dbg_trace_buffer
-                0x2000094c      0x408 build/obj/chdebug.o
-                0x2000094c                dbg_trace_buffer
+                0x20000954      0x408 build/obj/chdebug.o
+                0x20000954                dbg_trace_buffer
  .bss.dbg_panic_msg
-                0x20000d54        0x4 build/obj/chdebug.o
-                0x20000d54                dbg_panic_msg
- .bss.vtlist    0x20000d58       0x10 build/obj/chvt.o
-                0x20000d58                vtlist
- .bss.rlist     0x20000d68       0x20 build/obj/chschd.o
-                0x20000d68                rlist
- .bss.nextmem   0x20000d88        0x4 build/obj/chmemcore.o
- .bss.endmem    0x20000d8c        0x4 build/obj/chmemcore.o
+                0x20000d5c        0x4 build/obj/chdebug.o
+                0x20000d5c                dbg_panic_msg
+ .bss.vtlist    0x20000d60       0x10 build/obj/chvt.o
+                0x20000d60                vtlist
+ .bss.rlist     0x20000d70       0x20 build/obj/chschd.o
+                0x20000d70                rlist
+ .bss.nextmem   0x20000d90        0x4 build/obj/chmemcore.o
+ .bss.endmem    0x20000d94        0x4 build/obj/chmemcore.o
  .bss.default_heap
-                0x20000d90       0x20 build/obj/chheap.o
+                0x20000d98       0x20 build/obj/chheap.o
  .bss.measurement_offset
-                0x20000db0        0x4 build/obj/tm.o
+                0x20000db8        0x4 build/obj/tm.o
  .bss.dma_streams_mask
-                0x20000db4        0x4 build/obj/stm32_dma.o
+                0x20000dbc        0x4 build/obj/stm32_dma.o
  .bss.dma_isr_redir
-                0x20000db8       0x38 build/obj/stm32_dma.o
- .bss.ADCD1     0x20000df0       0x34 build/obj/adc_lld.o
-                0x20000df0                ADCD1
- .bss.PWMD2     0x20000e24       0x14 build/obj/pwm_lld.o
-                0x20000e24                PWMD2
- .bss.USBD1     0x20000e38       0x50 build/obj/usb_lld.o
-                0x20000e38                USBD1
+                0x20000dc0       0x38 build/obj/stm32_dma.o
+ .bss.ADCD1     0x20000df8       0x34 build/obj/adc_lld.o
+                0x20000df8                ADCD1
+ .bss.PWMD2     0x20000e2c       0x14 build/obj/pwm_lld.o
+                0x20000e2c                PWMD2
+ .bss.USBD1     0x20000e40       0x50 build/obj/usb_lld.o
+                0x20000e40                USBD1
  .bss.ep0_state
-                0x20000e88       0x10 build/obj/usb_lld.o
- .bss.waLeds    0x20000e98      0x1b0 build/obj/main.o
- .bss.buckPwm   0x20001048        0x2 build/obj/conv_ctrl.o
- *fill*         0x2000104a        0x2 00
+                0x20000e90       0x10 build/obj/usb_lld.o
+ .bss.waLeds    0x20000ea0      0x1b0 build/obj/main.o
+ .bss.buckPwm   0x20001050        0x2 build/obj/conv_ctrl.o
+ .bss.boostPwm  0x20001052        0x2 build/obj/conv_ctrl.o
  .bss.adcSamples
-                0x2000104c        0xc build/obj/conv_ctrl.o
-                0x20001058                . = ALIGN (0x4)
+                0x20001054        0xc build/obj/conv_ctrl.o
+                0x20001060                . = ALIGN (0x4)
  *(COMMON)
-                0x20001058                . = ALIGN (0x4)
-                0x20001058                PROVIDE (_bss_end, .)
-                0x20001058                PROVIDE (end, .)
-                0x20001058                _end = .
-                0x20001058                __heap_base__ = _end
+                0x20001060                . = ALIGN (0x4)
+                0x20001060                PROVIDE (_bss_end, .)
+                0x20001060                PROVIDE (end, .)
+                0x20001060                _end = .
+                0x20001060                __heap_base__ = _end
                 0x20002800                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
@@ -1595,7 +1595,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x000137a9      0xd2f build/obj/adc_ctrl.o
  .debug_info    0x000144d8      0xf2c build/obj/conv_ctrl.o
 
-.debug_line     0x00000000     0x85c9
+.debug_line     0x00000000     0x85d5
  .debug_line    0x00000000      0x14e build/obj/crt0.o
  .debug_line    0x0000014e       0x68 build/obj/vectors.o
  .debug_line    0x000001b6       0x5d build/obj/chcore.o
@@ -1666,7 +1666,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x000079ad      0x318 build/obj/power_ctrl.o
  .debug_line    0x00007cc5      0x234 build/obj/moto_ctrl.o
  .debug_line    0x00007ef9      0x33c build/obj/adc_ctrl.o
- .debug_line    0x00008235      0x394 build/obj/conv_ctrl.o
+ .debug_line    0x00008235      0x3a0 build/obj/conv_ctrl.o
 
 .debug_loc      0x00000000     0x312a
  .debug_loc     0x00000000       0x20 build/obj/crt0.o
