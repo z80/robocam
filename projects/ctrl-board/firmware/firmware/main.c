@@ -6,6 +6,7 @@
 #include "moto_ctrl.h"
 #include "adc_ctrl.h"
 #include "conv_ctrl.h"
+#include "serial_ctrl.h"
 
 static WORKING_AREA( waLeds, 256 );
 static msg_t Leds( void *arg )
@@ -49,22 +50,14 @@ int main(void)
   halInit();
   chSysInit();
 
-  //initMoto();  // Power routine uses Moto routine mutex. So moto should be invoked before.
-  //initAdc();
-  //initPower();
-  //initUsb();
-
   initLeds();
   convStart();
+  initSerial();
 
-  while (TRUE)
+  while ( TRUE )
   {
-    chThdSleepSeconds( 1 );
-    //palSetPad( GPIOA, 0 );
-    //chThdSleepSeconds( 1 );
-    //palClearPad( GPIOA, 0 );
-    //processShell();
-    //processAdc();
+      processSerial();
+      chThdSleepSeconds( 1 );
   }
   return 0;
 }

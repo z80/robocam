@@ -3,8 +3,8 @@
 #include "conv_ctrl.h"
 #include "hal.h"
 
-#define PWM_CLOCK_FREQ     16000000
-#define PWM_PERIOD         160
+#define PWM_CLOCK_FREQ     8000000  // 8MHz clock
+#define PWM_PERIOD         60       // 150kHz
 #define BOOST_MAX_FILL     9000
 
 #define CONV_PORT          GPIOA
@@ -160,7 +160,7 @@ void convStop( void )
 {
     if ( !justPs() )
     {
-	pwmStop( &CONV_PWM );
+	    pwmStop( &CONV_PWM );
         adcStopConversion( &ADCD1 );
         adcStop( &ADCD1 );
     }
