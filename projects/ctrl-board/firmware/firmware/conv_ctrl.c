@@ -245,20 +245,24 @@ static const ADCConversionGroup grpTemperature =
         ADC_SQR3_SQ1_N( ADC_CHANNEL_IN7 )
     };
 
-static adcsample_t adcCurrect,
-                   adcTemperature;
+static adcsample_t valCurrect,
+                   valTemperature;
 
 
 uint16_t adcCurrent( void )
 {
-    adcConvert( &ADCD1, &grpCurrent, &adcCurrect, 1 );
-    return (uint16_t)adcTemperature;
+    adcStopConversion( &ADCD1 );
+    adcConvert( &ADCD1, &grpCurrent, &valCurrect, 1 );
+    adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    return (uint16_t)valCurrect;
 }
 
 uint16_t adcTepmerature( void )
 {
-    adcConvert( &ADCD1, &grpTemperature, &adcTemperature, 1 );
-    return (uint16_t)adcTemperature;
+    adcStopConversion( &ADCD1 );
+    adcConvert( &ADCD1, &grpTemperature, &valTemperature, 1 );
+    adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    return (uint16_t)valTemperature;
 }
 
 

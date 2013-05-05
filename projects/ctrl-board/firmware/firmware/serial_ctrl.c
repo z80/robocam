@@ -26,7 +26,9 @@ static void cmd_current( BaseChannel * chp, int argc, char * argv[] );
 static const ShellCommand commands[] =
 {
     { "mem", cmd_mem },
-    { NULL,  NULL }
+    { "cur", cmd_current },
+    { "tem", cmd_temperature },
+    { NULL,          NULL }
 };
 
 Thread * shelltp = NULL;
@@ -39,7 +41,20 @@ static const ShellConfig shell_cfg =
 
 void initSerial( void )
 {
+    palSetPadMode( GPIOB, 10, PAL_MODE_STM32_ALTERNATE_PUSHPULL );
+    palSetPadMode( GPIOB, 11, PAL_MODE_INPUT );
     sdStart( &SERIAL_UART, &config );
+
+    chprintf( (BaseChannel *)&SERIAL_UART, "Hello!\r\n" );
+    /*
+    uint32_t i;
+    for ( i=0; i<128; i++ )
+    {
+        //chprintf( (BaseChannel *)&SERIAL_UART, "Hello!\r\n" );
+        sdWrite( &SERIAL_UART, (const uint8_t *)"Hello!\r\n", 8 );
+        chThdSleepSeconds( 1 );
+    }
+    */
 }
 
 void processSerial( void )
@@ -55,6 +70,8 @@ void processSerial( void )
 
 static void cmd_mem( BaseChannel * chp, int argc, char * argv[] )
 {
+    (void)argc;
+    (void)argv;
     size_t n, size;
     n = chHeapStatus( NULL, &size );
     chprintf( chp, "core free memory : %u bytes\r\n", chCoreStatus() );
@@ -64,12 +81,16 @@ static void cmd_mem( BaseChannel * chp, int argc, char * argv[] )
 
 static void cmd_temperature( BaseChannel * chp, int argc, char * argv[] )
 {
-    chprintf( chp, "temperature: %u\r\n", adcTemperature() );
+    (void)argc;
+    (void)argv;
+    chprintf( chp, "temperature: %u\r\n", adcTepmerature() );
 }
 
 static void cmd_current( BaseChannel * chp, int argc, char * argv[] )
 {
-    chprintf( chp, "temperature: %u\r\n", adcCurrent() );
+    (void)argc;
+    (void)argv;
+    chprintf( chp, "current: %u\r\n", adcCurrent() );
 }
 
 
