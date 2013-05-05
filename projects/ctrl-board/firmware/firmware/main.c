@@ -23,11 +23,11 @@ static msg_t Leds( void *arg )
     {
         chThdSleepMilliseconds( 300 );
         palSetPad( GPIOB, 13 );
-	palClearPad( GPIOB, 14 );
+        palClearPad( GPIOB, 14 );
 
         chThdSleepMilliseconds( 300 );
         palClearPad( GPIOB, 13 );
-	palSetPad( GPIOB, 14 );
+        palSetPad( GPIOB, 14 );
  
     }
     return 0;
