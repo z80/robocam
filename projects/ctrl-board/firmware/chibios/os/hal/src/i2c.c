@@ -305,6 +305,39 @@ void i2cReleaseBus(I2CDriver *i2cp) {
 }
 #endif /* I2C_USE_MUTUAL_EXCLUSION */
 
+
+#if I2C_USE_SLAVE_MODE
+msg_t i2cSlaveIoTimeout( I2CDriver * i2cp,
+                         i2caddr_t addr,
+                         uint8_t * rxbuf, size_t rxbytes,
+                         uint8_t * txbuf, size_t txbytes,
+                         TI2cSlaveCb rxcb,
+                         TI2cSlaveCb txcb,
+                         systime_t timeout )
+{
+    msg_t rdymsg;
+
+    chSysLock();
+    i2cp->errors = I2CD_NO_ERROR;
+    i2cp->state = 0;
+    rdymsg = i2c_lld_slave_io_timeout( i2cp,
+                                       addr,
+                                       rxbuf, rxbytes,
+                                       txbuf, txbytes,
+                                       rxcb,
+                                       txcb,
+                                       timeout );
+    if (rdymsg == RDY_TIMEOUT)
+        i2cp->state = I2C_LOCKED;
+    else
+        i2cp->state = I2C_READY;
+    chSysUnlock();
+    return rdymsg;
+
+}
+
+#endif /* I2C_ISE_SLAVE_MODE */
+
 #endif /* HAL_USE_I2C */
 
 /** @} */
