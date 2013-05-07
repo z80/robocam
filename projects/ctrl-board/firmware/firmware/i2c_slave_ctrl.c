@@ -1,7 +1,13 @@
 
 #include "i2c_slave_ctrl.h"
 #include "hal.h"
+
 #include "i2c_slave_conf.h"
+
+#include "moto_ctrl.h"
+#include "light_ctrl.h"
+#include "conv_ctrl.h"
+#include "power_ctrl.h"
 
 static uint8_t outBuffer[ I2C_OUT_BUFFER_SZ ];
 static uint8_t inBuffer[ I2C_IN_BUFFER_SZ ];
@@ -90,30 +96,39 @@ static msg_t execThread( void *arg )
         static uint8_t buffer[ I2C_IN_BUFFER_SZ ];
         sz = chIQReadTimeout( &inputQueue, buffer, I2C_IN_BUFFER_SZ, TIME_INFINITE );
 
-        //static int32_t value32;
+        static uint16_t * puvalue16Out;
+        puvalue16Out = (uint16_t *)(&outBuffer[1]);
+        static uint16_t * puvalue16In;
+        puvalue16In = (uint16_t *)(&buffer[1]);
         // Parse inBuffer
         switch ( buffer[0] )
         {
-        /*case I2C_CMD_DAC1:
-            dacSet( 0, buffer[1] );
+        case CMD_SET_POWER_TIMES:
+            powerConfig( puvalue16In[0], puvalue16In[1], puvalue16In[2] );
             break;
-        case I2C_CMD_DAC2:
-            dacSet( 1, buffer[1] );
+        case CMD_SHUTDOWN_RESET:
+            powerOffReset();
             break;
-        case I2C_CMD_ENC1:
-            value32 = *(int32_t *)(&(buffer[1]));
-            encrelSet( 0, value32 );
+        case CMD_TEMP:
+            *puvalue16Out = adcTemperature();
+            outBuffer[0]  = CMD_TEMP;
             break;
-        case I2C_CMD_ENC2:
-            value32 = *(int32_t *)(&(buffer[1]));
-            encrelSet( 1, value32 );
+        case CMD_CURR:
+            *puvalue16Out = adcCurrent();
+            outBuffer[0]  = CMD_TEMP;
             break;
-        case I2C_CMD_BMSD:
-            bmsdRawCmd( &buffer[1] );
+        case CMD_SET_SOLAR_VOLT:
+            convSetSolar( *puvalue16In );
             break;
-        case I2C_CMD_LEDS:
-            setLeds( (uint32_t)buffer[1] );
-            break;*/
+        case CMD_SET_CHARGE_VOLT:
+            convSetBoost( *puvalue16In );
+            break;
+        case CMD_SET_MOTO_EN:
+            motoSetEn( *puvalue16In );
+            break;
+        case CMD_SET_MOTO:
+            motoSet( *puvalue16In );
+            break;
         }
     }
     return 0;

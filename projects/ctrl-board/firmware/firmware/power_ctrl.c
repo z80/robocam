@@ -5,8 +5,7 @@
 #include "chprintf.h"
 #include "light_ctrl.h"
 #include "moto_ctrl.h"
-#include "adc_ctrl.h"
-#include "hdw_cfg.h"
+#include "conv_ctrl.h"
 
 #include <stdlib.h>
 
@@ -38,72 +37,14 @@ void powerOffReset( void )
 
 static void setPower( bool_t en )
 {
-   if ( en )
-       palSetPad( PWR_PORT, PWR_PIN );
-       // initUsb();
-   else
+   if ( !en )
    {
-       palClearPad( PWR_PORT, PWR_PIN );
        setLight( 0 );
-       adcCfg( 0 );
-       motoConfig( 0, 3 );
-       // finitUsb();
+       motoSet( 0 );
+       motoSetEn( 0 );
    }
-   palSetPadMode( PWR_PORT, PWR_PIN, PAL_MODE_OUTPUT_PUSHPULL );
+   convSetBuckEn( en ? 1 : 0 );
 }
-
-void cmd_pwr_rst( BaseChannel *chp, int argc, char * argv [] )
-{
-	(void)chp;
-	(void)argc;
-	(void)argv;
-	powerOffReset();
-    chprintf( chp, "ok:pwrrst" );
-}
-
-void cmd_pwr_cfg( BaseChannel *chp, int argc, char * argv [] )
-{
-	(void)chp;
-	if ( argc > 0 )
-	{
-		chMtxLock( &g_mutex );
-		int res = atoi( argv[0] );
-		g_firstOnDelay = res;
-		if ( argc > 1 )
-		{
-			res = atoi( argv[1] );
-			g_onDelay = res;
-			if ( argc > 2 )
-			{
-				res = atoi( argv[2] );
-				g_offDelay = res;
-			}
-		}
-		chMtxUnlock();
-        chprintf( chp, "ok:pwrcfg" );
-	}
-    else
-        chprintf( chp, "err:pwrcfg" );
-}
-
-void cmd_pwr_en( BaseChannel *chp, int argc, char * argv [] )
-{
-    (void)chp;
-    if ( argc > 0 )
-    {
-        if ( argv[0][0] != '0' )
-        {
-            setPower( 1 );
-            chprintf( chp, "ok:pwron" );
-        }
-        else
-        {
-            setPower( 0 );
-            chprintf( chp, "ok:pwroff" );
-        }
-    }
-}
-
 
 static WORKING_AREA( waPower, 256 );
 static msg_t Power( void *arg )
@@ -112,7 +53,7 @@ static msg_t Power( void *arg )
     //while ( 1 )
     //	chThdSleepSeconds( 1 );
 
-    chRegSetThreadName( "pwr" );
+    chRegSetThreadName( "p" );
     // First wait for power on.
     g_nextOnDelay = g_firstOnDelay;
     while ( 1 )

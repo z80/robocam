@@ -83,7 +83,7 @@ static void cmd_temperature( BaseChannel * chp, int argc, char * argv[] )
 {
     (void)argc;
     (void)argv;
-    chprintf( chp, "temperature: %u\r\n", adcTepmerature() );
+    chprintf( chp, "temperature: %u\r\n", adcTemperature() );
 }
 
 static void cmd_current( BaseChannel * chp, int argc, char * argv[] )

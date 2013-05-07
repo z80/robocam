@@ -7,13 +7,8 @@
 
 void initMoto( void );
 
-// On or off and off timeout.
-void motoConfig( bool_t en, int timeout );
-// Resets auto off countdown.
-void motoReset(void);
-// Drives state.
-void motoSet( uint8_t en );
-void motoApply( void );
+void motoSetEn( uint16_t en );
+void motoSet( uint16_t en );
 
 
 

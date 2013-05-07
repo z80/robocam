@@ -38,6 +38,7 @@ static uint16_t boostGain = 1000; // Gain is 10%
 static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) );
 static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
 static uint16_t solarSp   = ( ( 4095 * 6000 ) / ( 3 * 3300 ) );
+static uint16_t buckSpSave = 0;
 
 inline uint8_t justPs( void );
 
@@ -166,29 +167,55 @@ void convStop( void )
     }
 }
 
+void convSetBuckEn( uint16_t en )
+{
+    chSysLock();
+        if ( en )
+        {
+            buckSp = buckSpSave;
+        }
+        else
+        {
+            buckSpSave = buckSp;
+            if ( !justPs() )
+                buckSp = 0;
+        }
+    chSysUnlock();
+}
+
 void convSetBuck( uint16_t sp )
 {
-    buckSp = sp;
+    chSysLock();
+        buckSp = sp;
+    chSysUnlock();
 }
 
 void convSetBoost( uint16_t sp )
 {
-    boostSp = sp;
+    chSysLock()
+        boostSp = sp;
+    chSysUnlock();
 }
 
 void convSetSolar( uint16_t minValue )
 {
-    solarSp = minValue;
+    chSysLock();
+        solarSp = minValue;
+    chSysUnlock();
 }
 
 void convSetBuckGain( uint16_t val )
 {
-    buckGain = val;
+    chSysLock();
+        buckGain = val;
+    chSysUnlock();
 }
 
 void convSetBoostGain( uint16_t val )
 {
-    boostGain = val;
+    chSysLock();
+        boostGain = val;
+    chSysUnlock();
 }
 
 inline uint8_t justPs( void )
@@ -257,7 +284,7 @@ uint16_t adcCurrent( void )
     return (uint16_t)valCurrect;
 }
 
-uint16_t adcTepmerature( void )
+uint16_t adcTemperature( void )
 {
     adcStopConversion( &ADCD1 );
     adcConvert( &ADCD1, &grpTemperature, &valTemperature, 1 );

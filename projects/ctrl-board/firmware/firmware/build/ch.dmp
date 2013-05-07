@@ -28,29 +28,29 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   4 .bss          000008f0  20000868  080059ec  00010868  2**3
                   ALLOC
-  5 .debug_abbrev 00004dbd  00000000  00000000  00010864  2**0
+  5 .debug_abbrev 00004ccd  00000000  00000000  00010864  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00016972  00000000  00000000  00015621  2**0
+  6 .debug_info   000162e8  00000000  00000000  00015531  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00008bfa  00000000  00000000  0002bf93  2**0
+  7 .debug_line   00008a66  00000000  00000000  0002b819  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_loc    00003146  00000000  00000000  00034b8d  2**0
+  8 .debug_loc    000030ea  00000000  00000000  0003427f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_pubnames 000017fb  00000000  00000000  00037cd3  2**0
+  9 .debug_pubnames 000017c1  00000000  00000000  00037369  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_pubtypes 00004306  00000000  00000000  000394ce  2**0
+ 10 .debug_pubtypes 000041c8  00000000  00000000  00038b2a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_aranges 00000f10  00000000  00000000  0003d7d4  2**0
+ 11 .debug_aranges 00000ef0  00000000  00000000  0003ccf2  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000bf0  00000000  00000000  0003e6e4  2**0
+ 12 .debug_ranges 00000bd0  00000000  00000000  0003dbe2  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_str    00003464  00000000  00000000  0003f2d4  2**0
+ 13 .debug_str    00003440  00000000  00000000  0003e7b2  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .comment      0000002a  00000000  00000000  00042738  2**0
+ 14 .comment      0000002a  00000000  00000000  00041bf2  2**0
                   CONTENTS, READONLY
- 15 .ARM.attributes 00000031  00000000  00000000  00042762  2**0
+ 15 .ARM.attributes 00000031  00000000  00000000  00041c1c  2**0
                   CONTENTS, READONLY
- 16 .debug_frame  00002670  00000000  00000000  00042794  2**2
+ 16 .debug_frame  00002584  00000000  00000000  00041c50  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup
@@ -212,10 +212,7 @@ SYMBOL TABLE:
 00000000 l    df *ABS*	00000000 moto_ctrl.c
 00000000 l    df *ABS*	00000000 adc_ctrl.c
 00000000 l    df *ABS*	00000000 i2c_slave_ctrl.c
-00000000 l    df *ABS*	00000000 atoi.c
 00000000 l    df *ABS*	00000000 memset.c
-00000000 l    df *ABS*	00000000 strtol.c
-00000000 l       *ABS*	00000000 shift
 08005890 g     O .text	0000003c pal_default_config
 080002f0  w    F .text	00000002 Vector58
 080002f0  w    F .text	00000002 VectorE8
@@ -312,12 +309,12 @@ SYMBOL TABLE:
 08001b00 g     F .text	00000018 chCoreStatus
 08000e20 g     F .text	00000064 chSchDoReschedule
 080005d0 g     F .text	00000088 chSysInit
-00000000  w      *UND*	00000000 __sf_fake_stderr
 08001050 g     F .text	00000034 chThdSleep
 080015c0 g     F .text	0000004c chIQInit
 08000970 g     F .text	00000046 prio_insert
 08005800 g     O .text	00000054 _stm32_dma_streams
 08002800 g     F .text	00000048 Vector84
+08004c20 g     F .text	00000040 adcTemperature
 08000310 g     F .text	00000024 SysTickVector
 08004be0 g     F .text	00000040 adcCurrent
 20000974 g     O .bss	00000004 dbg_isr_cnt
@@ -353,7 +350,6 @@ SYMBOL TABLE:
 00000000 g       *ABS*	00000000 _text
 080002f0  w    F .text	00000002 MemManageVector
 080000ec g       startup	00000000 __fini_array_start
-00000000  w      *UND*	00000000 __sf_fake_stdin
 08004950 g     F .text	00000024 main
 08002620 g     F .text	00000044 Vector6C
 08001ee0 g     F .text	0000005c adcStart
@@ -418,7 +414,6 @@ SYMBOL TABLE:
 080025e0 g     F .text	00000034 tmObjectInit
 20000400 g       .stacks	00000000 __main_thread_stack_base__
 20000800 g     O .data	00000004 __ctype_ptr__
-00000000  w      *UND*	00000000 __sf_fake_stdout
 080008e0 g     F .text	00000064 dbg_trace
 080056c0 g     O .text	00000101 _ctype_
 080000ec g       startup	00000000 __init_array_start
@@ -441,7 +436,6 @@ SYMBOL TABLE:
 08000a40 g     F .text	0000001a list_remove
 080002f0  w    F .text	00000002 Vector34
 08003de0 g     F .text	00000008 __early_init
-08004c20 g     F .text	00000040 adcTepmerature
 080002f0  w    F .text	00000002 VectorA4
 00000400 g       *ABS*	00000000 __process_stack_size__
 08004b40 g     F .text	00000094 convStart

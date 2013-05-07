@@ -1,7 +1,5 @@
 Archive member included because of file (symbol)
 
-/home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
-                              build/obj/power_ctrl.o (atoi)
 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
                               build/obj/syscalls.o (memset)
 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
@@ -10,16 +8,8 @@ Archive member included because of file (symbol)
                               build/obj/shell.o (strpbrk)
 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
                               build/obj/shell.o (strspn)
-/home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
-                              /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o) (_strtol_r)
 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
                               /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o) (__ctype_ptr__)
-/home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
-                              /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o) (_impure_ptr)
-/home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
-                              /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o) (__aeabi_uidiv)
-/home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
-                              /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o) (__aeabi_idiv0)
 
 Discarded input sections
 
@@ -492,35 +482,19 @@ Discarded input sections
  .text.powerOffReset
                 0x00000000       0x40 build/obj/power_ctrl.o
  .text.setPower
-                0x00000000       0x50 build/obj/power_ctrl.o
- .rodata        0x00000000       0x40 build/obj/power_ctrl.o
- .text.cmd_pwr_rst
-                0x00000000       0x20 build/obj/power_ctrl.o
- .text.cmd_pwr_cfg
-                0x00000000       0xa0 build/obj/power_ctrl.o
- .text.cmd_pwr_en
-                0x00000000       0x50 build/obj/power_ctrl.o
+                0x00000000       0x40 build/obj/power_ctrl.o
  .bss.waPower   0x00000000      0x1b0 build/obj/power_ctrl.o
+ .rodata        0x00000000        0x4 build/obj/power_ctrl.o
  .text.Power    0x00000000       0xd0 build/obj/power_ctrl.o
  .text.initPower
                 0x00000000       0x40 build/obj/power_ctrl.o
- .bss.t.6774    0x00000000        0x4 build/obj/power_ctrl.o
+ .bss.t.6754    0x00000000        0x4 build/obj/power_ctrl.o
  .text          0x00000000        0x0 build/obj/moto_ctrl.o
  .data          0x00000000        0x0 build/obj/moto_ctrl.o
  .bss           0x00000000        0x0 build/obj/moto_ctrl.o
- .bss.g_mutex   0x00000000       0x10 build/obj/moto_ctrl.o
- .data.g_offTimeout
-                0x00000000        0x4 build/obj/moto_ctrl.o
- .bss.g_timeout
-                0x00000000        0x4 build/obj/moto_ctrl.o
- .bss.g_moto    0x00000000        0x1 build/obj/moto_ctrl.o
- .text.motoConfig
-                0x00000000       0x60 build/obj/moto_ctrl.o
- .text.motoReset
-                0x00000000       0x30 build/obj/moto_ctrl.o
- .text.motoSet  0x00000000       0x30 build/obj/moto_ctrl.o
- .text.motoApply
-                0x00000000       0xd0 build/obj/moto_ctrl.o
+ .text.motoSetEn
+                0x00000000       0x50 build/obj/moto_ctrl.o
+ .text.motoSet  0x00000000       0xd0 build/obj/moto_ctrl.o
  .text          0x00000000        0x0 build/obj/adc_ctrl.o
  .data          0x00000000        0x0 build/obj/adc_ctrl.o
  .bss           0x00000000        0x0 build/obj/adc_ctrl.o
@@ -554,18 +528,22 @@ Discarded input sections
  .text          0x00000000        0x0 build/obj/conv_ctrl.o
  .data          0x00000000        0x0 build/obj/conv_ctrl.o
  .bss           0x00000000        0x0 build/obj/conv_ctrl.o
+ .bss.buckSpSave
+                0x00000000        0x2 build/obj/conv_ctrl.o
  .text.convStop
                 0x00000000       0x30 build/obj/conv_ctrl.o
+ .text.convSetBuckEn
+                0x00000000       0x60 build/obj/conv_ctrl.o
  .text.convSetBuck
-                0x00000000       0x20 build/obj/conv_ctrl.o
+                0x00000000       0x30 build/obj/conv_ctrl.o
  .text.convSetBoost
-                0x00000000       0x20 build/obj/conv_ctrl.o
+                0x00000000       0x30 build/obj/conv_ctrl.o
  .text.convSetSolar
-                0x00000000       0x20 build/obj/conv_ctrl.o
+                0x00000000       0x30 build/obj/conv_ctrl.o
  .text.convSetBuckGain
-                0x00000000       0x20 build/obj/conv_ctrl.o
+                0x00000000       0x30 build/obj/conv_ctrl.o
  .text.convSetBoostGain
-                0x00000000       0x20 build/obj/conv_ctrl.o
+                0x00000000       0x30 build/obj/conv_ctrl.o
  .text.justPs   0x00000000       0x30 build/obj/conv_ctrl.o
  .text          0x00000000        0x0 build/obj/serial_ctrl.o
  .data          0x00000000        0x0 build/obj/serial_ctrl.o
@@ -592,18 +570,19 @@ Discarded input sections
  .text.i2cTxCb  0x00000000       0x10 build/obj/i2c_slave_ctrl.o
  .rodata        0x00000000        0x4 build/obj/i2c_slave_ctrl.o
  .text.execThread
-                0x00000000       0x40 build/obj/i2c_slave_ctrl.o
- .bss.buffer.6115
+                0x00000000      0x130 build/obj/i2c_slave_ctrl.o
+ .bss.buffer.6191
                 0x00000000        0x4 build/obj/i2c_slave_ctrl.o
- .bss.sz.6114   0x00000000        0x4 build/obj/i2c_slave_ctrl.o
- .bss.i.6103    0x00000000        0x4 build/obj/i2c_slave_ctrl.o
- .bss.res.6104  0x00000000        0x4 build/obj/i2c_slave_ctrl.o
- .bss.tmo.6096  0x00000000        0x4 build/obj/i2c_slave_ctrl.o
- .bss.status.6095
+ .bss.sz.6190   0x00000000        0x4 build/obj/i2c_slave_ctrl.o
+ .bss.puvalue16Out.6192
                 0x00000000        0x4 build/obj/i2c_slave_ctrl.o
- .text          0x00000000       0x10 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
- .data          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
- .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
+ .bss.puvalue16In.6193
+                0x00000000        0x4 build/obj/i2c_slave_ctrl.o
+ .bss.i.6179    0x00000000        0x4 build/obj/i2c_slave_ctrl.o
+ .bss.res.6180  0x00000000        0x4 build/obj/i2c_slave_ctrl.o
+ .bss.tmo.6172  0x00000000        0x4 build/obj/i2c_slave_ctrl.o
+ .bss.status.6171
+                0x00000000        0x4 build/obj/i2c_slave_ctrl.o
  .text          0x00000000       0xb4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
  .data          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
  .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
@@ -613,23 +592,8 @@ Discarded input sections
  .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strpbrk.o)
  .data          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
  .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
- .text          0x00000000      0x17c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
- .data          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
- .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
  .text          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
  .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
- .text          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
- .data          0x00000000       0xf4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
- .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
- .rodata        0x00000000        0x4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
- .rodata.str1.4
-                0x00000000        0x4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
- .text          0x00000000      0x278 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
- .data          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
- .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
- .text          0x00000000        0x4 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
- .data          0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
- .bss           0x00000000        0x0 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
 
 Memory Configuration
 
@@ -1244,9 +1208,9 @@ destructors     0x080000ec        0x0
  .text.adcCurrent
                 0x08004be0       0x40 build/obj/conv_ctrl.o
                 0x08004be0                adcCurrent
- .text.adcTepmerature
+ .text.adcTemperature
                 0x08004c20       0x40 build/obj/conv_ctrl.o
-                0x08004c20                adcTepmerature
+                0x08004c20                adcTemperature
  .text.initSerial
                 0x08004c60       0x50 build/obj/serial_ctrl.o
                 0x08004c60                initSerial
@@ -1470,7 +1434,7 @@ destructors     0x080000ec        0x0
                 0x20002800                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
-.debug_abbrev   0x00000000     0x4dbd
+.debug_abbrev   0x00000000     0x4ccd
  .debug_abbrev  0x00000000       0xdc build/obj/crt0.o
  .debug_abbrev  0x000000dc       0x74 build/obj/vectors.o
  .debug_abbrev  0x00000150       0x41 build/obj/chcore.o
@@ -1537,14 +1501,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_abbrev  0x00003f6a      0x135 build/obj/chprintf.o
  .debug_abbrev  0x0000409f      0x187 build/obj/main.o
  .debug_abbrev  0x00004226       0xaf build/obj/light_ctrl.o
- .debug_abbrev  0x000042d5      0x1e6 build/obj/power_ctrl.o
- .debug_abbrev  0x000044bb      0x15c build/obj/moto_ctrl.o
- .debug_abbrev  0x00004617      0x1e3 build/obj/adc_ctrl.o
- .debug_abbrev  0x000047fa      0x1ee build/obj/conv_ctrl.o
- .debug_abbrev  0x000049e8      0x1df build/obj/serial_ctrl.o
- .debug_abbrev  0x00004bc7      0x1f6 build/obj/i2c_slave_ctrl.o
+ .debug_abbrev  0x000042d5      0x1ab build/obj/power_ctrl.o
+ .debug_abbrev  0x00004480       0xaf build/obj/moto_ctrl.o
+ .debug_abbrev  0x0000452f      0x1e3 build/obj/adc_ctrl.o
+ .debug_abbrev  0x00004712      0x1e6 build/obj/conv_ctrl.o
+ .debug_abbrev  0x000048f8      0x1df build/obj/serial_ctrl.o
+ .debug_abbrev  0x00004ad7      0x1f6 build/obj/i2c_slave_ctrl.o
 
-.debug_info     0x00000000    0x16972
+.debug_info     0x00000000    0x162e8
  .debug_info    0x00000000      0x31a build/obj/crt0.o
  .debug_info    0x0000031a       0xb5 build/obj/vectors.o
  .debug_info    0x000003cf       0x8b build/obj/chcore.o
@@ -1611,14 +1575,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00011ae3      0x3ed build/obj/chprintf.o
  .debug_info    0x00011ed0      0x59e build/obj/main.o
  .debug_info    0x0001246e      0x16f build/obj/light_ctrl.o
- .debug_info    0x000125dd      0x96a build/obj/power_ctrl.o
- .debug_info    0x00012f47      0x55e build/obj/moto_ctrl.o
- .debug_info    0x000134a5      0xd2f build/obj/adc_ctrl.o
- .debug_info    0x000141d4      0xf2c build/obj/conv_ctrl.o
- .debug_info    0x00015100      0xc64 build/obj/serial_ctrl.o
- .debug_info    0x00015d64      0xc0e build/obj/i2c_slave_ctrl.o
+ .debug_info    0x000125dd      0x644 build/obj/power_ctrl.o
+ .debug_info    0x00012c21      0x196 build/obj/moto_ctrl.o
+ .debug_info    0x00012db7      0xd2f build/obj/adc_ctrl.o
+ .debug_info    0x00013ae6      0xf68 build/obj/conv_ctrl.o
+ .debug_info    0x00014a4e      0xc64 build/obj/serial_ctrl.o
+ .debug_info    0x000156b2      0xc36 build/obj/i2c_slave_ctrl.o
 
-.debug_line     0x00000000     0x8bfa
+.debug_line     0x00000000     0x8a66
  .debug_line    0x00000000      0x14e build/obj/crt0.o
  .debug_line    0x0000014e       0x68 build/obj/vectors.o
  .debug_line    0x000001b6       0x5d build/obj/chcore.o
@@ -1685,14 +1649,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x0000730e      0x27d build/obj/chprintf.o
  .debug_line    0x0000758b      0x242 build/obj/main.o
  .debug_line    0x000077cd      0x193 build/obj/light_ctrl.o
- .debug_line    0x00007960      0x318 build/obj/power_ctrl.o
- .debug_line    0x00007c78      0x234 build/obj/moto_ctrl.o
- .debug_line    0x00007eac      0x33c build/obj/adc_ctrl.o
- .debug_line    0x000081e8      0x3a4 build/obj/conv_ctrl.o
- .debug_line    0x0000858c      0x33c build/obj/serial_ctrl.o
- .debug_line    0x000088c8      0x332 build/obj/i2c_slave_ctrl.o
+ .debug_line    0x00007960      0x1f4 build/obj/power_ctrl.o
+ .debug_line    0x00007b54      0x187 build/obj/moto_ctrl.o
+ .debug_line    0x00007cdb      0x33c build/obj/adc_ctrl.o
+ .debug_line    0x00008017      0x3c6 build/obj/conv_ctrl.o
+ .debug_line    0x000083dd      0x33c build/obj/serial_ctrl.o
+ .debug_line    0x00008719      0x34d build/obj/i2c_slave_ctrl.o
 
-.debug_loc      0x00000000     0x3146
+.debug_loc      0x00000000     0x30ea
  .debug_loc     0x00000000       0x20 build/obj/crt0.o
  .debug_loc     0x00000020       0xb8 build/obj/chcore_v7m.o
  .debug_loc     0x000000d8       0x84 build/obj/nvic.o
@@ -1735,15 +1699,15 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_loc     0x00002a21       0x59 build/obj/chprintf.o
  .debug_loc     0x00002a7a       0x78 build/obj/main.o
  .debug_loc     0x00002af2       0x2c build/obj/light_ctrl.o
- .debug_loc     0x00002b1e      0x154 build/obj/power_ctrl.o
- .debug_loc     0x00002c72       0x98 build/obj/moto_ctrl.o
- .debug_loc     0x00002d0a      0x13c build/obj/adc_ctrl.o
- .debug_loc     0x00002e46      0x14c build/obj/conv_ctrl.o
- .debug_loc     0x00002f92       0xc4 build/obj/serial_ctrl.o
- .debug_loc     0x00003056       0xf0 build/obj/i2c_slave_ctrl.o
+ .debug_loc     0x00002b1e       0xd0 build/obj/power_ctrl.o
+ .debug_loc     0x00002bee       0x58 build/obj/moto_ctrl.o
+ .debug_loc     0x00002c46      0x13c build/obj/adc_ctrl.o
+ .debug_loc     0x00002d82      0x1b4 build/obj/conv_ctrl.o
+ .debug_loc     0x00002f36       0xc4 build/obj/serial_ctrl.o
+ .debug_loc     0x00002ffa       0xf0 build/obj/i2c_slave_ctrl.o
 
 .debug_pubnames
-                0x00000000     0x17fb
+                0x00000000     0x17c1
  .debug_pubnames
                 0x00000000       0x56 build/obj/crt0.o
  .debug_pubnames
@@ -1833,20 +1797,20 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_pubnames
                 0x00001531       0x1f build/obj/light_ctrl.o
  .debug_pubnames
-                0x00001550       0xbf build/obj/power_ctrl.o
+                0x00001550       0x90 build/obj/power_ctrl.o
  .debug_pubnames
-                0x0000160f       0x49 build/obj/moto_ctrl.o
+                0x000015e0       0x2c build/obj/moto_ctrl.o
  .debug_pubnames
-                0x00001658       0x69 build/obj/adc_ctrl.o
+                0x0000160c       0x69 build/obj/adc_ctrl.o
  .debug_pubnames
-                0x000016c1       0xb5 build/obj/conv_ctrl.o
+                0x00001675       0xc7 build/obj/conv_ctrl.o
  .debug_pubnames
-                0x00001776       0x3f build/obj/serial_ctrl.o
+                0x0000173c       0x3f build/obj/serial_ctrl.o
  .debug_pubnames
-                0x000017b5       0x46 build/obj/i2c_slave_ctrl.o
+                0x0000177b       0x46 build/obj/i2c_slave_ctrl.o
 
 .debug_pubtypes
-                0x00000000     0x4306
+                0x00000000     0x41c8
  .debug_pubtypes
                 0x00000000       0x44 build/obj/crt0.o
  .debug_pubtypes
@@ -1980,19 +1944,19 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_pubtypes
                 0x0000354d       0x58 build/obj/light_ctrl.o
  .debug_pubtypes
-                0x000035a5      0x18e build/obj/power_ctrl.o
+                0x000035a5      0x13e build/obj/power_ctrl.o
  .debug_pubtypes
-                0x00003733      0x148 build/obj/moto_ctrl.o
+                0x000036e3       0x5a build/obj/moto_ctrl.o
  .debug_pubtypes
-                0x0000387b      0x271 build/obj/adc_ctrl.o
+                0x0000373d      0x271 build/obj/adc_ctrl.o
  .debug_pubtypes
-                0x00003aec      0x2d9 build/obj/conv_ctrl.o
+                0x000039ae      0x2d9 build/obj/conv_ctrl.o
  .debug_pubtypes
-                0x00003dc5      0x2cd build/obj/serial_ctrl.o
+                0x00003c87      0x2cd build/obj/serial_ctrl.o
  .debug_pubtypes
-                0x00004092      0x274 build/obj/i2c_slave_ctrl.o
+                0x00003f54      0x274 build/obj/i2c_slave_ctrl.o
 
-.debug_aranges  0x00000000      0xf10
+.debug_aranges  0x00000000      0xef0
  .debug_aranges
                 0x00000000       0x40 build/obj/crt0.o
  .debug_aranges
@@ -2082,19 +2046,19 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_aranges
                 0x00000d10       0x20 build/obj/light_ctrl.o
  .debug_aranges
-                0x00000d30       0x58 build/obj/power_ctrl.o
+                0x00000d30       0x40 build/obj/power_ctrl.o
  .debug_aranges
-                0x00000d88       0x38 build/obj/moto_ctrl.o
+                0x00000d70       0x28 build/obj/moto_ctrl.o
  .debug_aranges
-                0x00000dc0       0x58 build/obj/adc_ctrl.o
+                0x00000d98       0x58 build/obj/adc_ctrl.o
  .debug_aranges
-                0x00000e18       0x70 build/obj/conv_ctrl.o
+                0x00000df0       0x78 build/obj/conv_ctrl.o
  .debug_aranges
-                0x00000e88       0x40 build/obj/serial_ctrl.o
+                0x00000e68       0x40 build/obj/serial_ctrl.o
  .debug_aranges
-                0x00000ec8       0x48 build/obj/i2c_slave_ctrl.o
+                0x00000ea8       0x48 build/obj/i2c_slave_ctrl.o
 
-.debug_ranges   0x00000000      0xbf0
+.debug_ranges   0x00000000      0xbd0
  .debug_ranges  0x00000000       0x30 build/obj/crt0.o
  .debug_ranges  0x00000030       0x10 build/obj/vectors.o
  .debug_ranges  0x00000040       0x10 build/obj/chcore.o
@@ -2139,14 +2103,14 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_ranges  0x00000a28       0x18 build/obj/chprintf.o
  .debug_ranges  0x00000a40       0x20 build/obj/main.o
  .debug_ranges  0x00000a60       0x10 build/obj/light_ctrl.o
- .debug_ranges  0x00000a70       0x48 build/obj/power_ctrl.o
- .debug_ranges  0x00000ab8       0x28 build/obj/moto_ctrl.o
- .debug_ranges  0x00000ae0       0x48 build/obj/adc_ctrl.o
- .debug_ranges  0x00000b28       0x60 build/obj/conv_ctrl.o
- .debug_ranges  0x00000b88       0x30 build/obj/serial_ctrl.o
- .debug_ranges  0x00000bb8       0x38 build/obj/i2c_slave_ctrl.o
+ .debug_ranges  0x00000a70       0x30 build/obj/power_ctrl.o
+ .debug_ranges  0x00000aa0       0x18 build/obj/moto_ctrl.o
+ .debug_ranges  0x00000ab8       0x48 build/obj/adc_ctrl.o
+ .debug_ranges  0x00000b00       0x68 build/obj/conv_ctrl.o
+ .debug_ranges  0x00000b68       0x30 build/obj/serial_ctrl.o
+ .debug_ranges  0x00000b98       0x38 build/obj/i2c_slave_ctrl.o
 
-.debug_str      0x00000000     0x3464
+.debug_str      0x00000000     0x3440
  .debug_str     0x00000000      0x1f2 build/obj/crt0.o
                                 0x231 (size before relaxing)
  .debug_str     0x000001f2       0x51 build/obj/vectors.o
@@ -2279,18 +2243,18 @@ OUTPUT(build/ch.elf elf32-littlearm)
                                 0x2f6 (size before relaxing)
  .debug_str     0x000030df       0x16 build/obj/light_ctrl.o
                                 0x139 (size before relaxing)
- .debug_str     0x000030f5       0xaf build/obj/power_ctrl.o
-                                0x3f1 (size before relaxing)
- .debug_str     0x000031a4       0x51 build/obj/moto_ctrl.o
-                                0x2ee (size before relaxing)
- .debug_str     0x000031f5       0x78 build/obj/adc_ctrl.o
+ .debug_str     0x000030f5       0x8c build/obj/power_ctrl.o
+                                0x34a (size before relaxing)
+ .debug_str     0x00003181       0x1e build/obj/moto_ctrl.o
+                                0x143 (size before relaxing)
+ .debug_str     0x0000319f       0x78 build/obj/adc_ctrl.o
                                 0x597 (size before relaxing)
- .debug_str     0x0000326d      0x11a build/obj/conv_ctrl.o
-                                0x730 (size before relaxing)
- .debug_str     0x00003387       0x5d build/obj/serial_ctrl.o
+ .debug_str     0x00003217      0x133 build/obj/conv_ctrl.o
+                                0x749 (size before relaxing)
+ .debug_str     0x0000334a       0x5d build/obj/serial_ctrl.o
                                 0x56c (size before relaxing)
- .debug_str     0x000033e4       0x80 build/obj/i2c_slave_ctrl.o
-                                0x651 (size before relaxing)
+ .debug_str     0x000033a7       0x99 build/obj/i2c_slave_ctrl.o
+                                0x66a (size before relaxing)
 
 .comment        0x00000000       0x2a
  .comment       0x00000000       0x2a build/obj/crt0.o
@@ -2514,27 +2478,17 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .ARM.attributes
                 0x00000d97       0x31 build/obj/i2c_slave_ctrl.o
  .ARM.attributes
-                0x00000dc8       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
+                0x00000dc8       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
  .ARM.attributes
-                0x00000df1       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
+                0x00000df1       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
  .ARM.attributes
-                0x00000e1a       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
+                0x00000e1a       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strpbrk.o)
  .ARM.attributes
-                0x00000e43       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strpbrk.o)
+                0x00000e43       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
  .ARM.attributes
-                0x00000e6c       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
- .ARM.attributes
-                0x00000e95       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
- .ARM.attributes
-                0x00000ebe       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
- .ARM.attributes
-                0x00000ee7       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
- .ARM.attributes
-                0x00000f10       0x1b /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
- .ARM.attributes
-                0x00000f2b       0x1b /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
+                0x00000e6c       0x29 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
 
-.debug_frame    0x00000000     0x2670
+.debug_frame    0x00000000     0x2584
  .debug_frame   0x00000000       0x64 build/obj/crt0.o
  .debug_frame   0x00000064       0x20 build/obj/vectors.o
  .debug_frame   0x00000084       0x20 build/obj/chcore.o
@@ -2579,19 +2533,16 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_frame   0x00001f84       0x4c build/obj/chprintf.o
  .debug_frame   0x00001fd0       0x64 build/obj/main.o
  .debug_frame   0x00002034       0x2c build/obj/light_ctrl.o
- .debug_frame   0x00002060       0xf0 build/obj/power_ctrl.o
- .debug_frame   0x00002150       0x80 build/obj/moto_ctrl.o
- .debug_frame   0x000021d0       0xf0 build/obj/adc_ctrl.o
- .debug_frame   0x000022c0      0x110 build/obj/conv_ctrl.o
- .debug_frame   0x000023d0       0x9c build/obj/serial_ctrl.o
- .debug_frame   0x0000246c       0xb0 build/obj/i2c_slave_ctrl.o
- .debug_frame   0x0000251c       0x30 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
- .debug_frame   0x0000254c       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
- .debug_frame   0x00002578       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
- .debug_frame   0x000025a4       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strpbrk.o)
- .debug_frame   0x000025d0       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
- .debug_frame   0x000025fc       0x54 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
- .debug_frame   0x00002650       0x20 /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
+ .debug_frame   0x00002060       0x9c build/obj/power_ctrl.o
+ .debug_frame   0x000020fc       0x48 build/obj/moto_ctrl.o
+ .debug_frame   0x00002144       0xf0 build/obj/adc_ctrl.o
+ .debug_frame   0x00002234      0x154 build/obj/conv_ctrl.o
+ .debug_frame   0x00002388       0x9c build/obj/serial_ctrl.o
+ .debug_frame   0x00002424       0xb0 build/obj/i2c_slave_ctrl.o
+ .debug_frame   0x000024d4       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
+ .debug_frame   0x00002500       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
+ .debug_frame   0x0000252c       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strpbrk.o)
+ .debug_frame   0x00002558       0x2c /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
 
 Cross Reference Table
 
@@ -2680,15 +2631,7 @@ VectorDC                                          build/obj/serial_lld.o
 VectorE0                                          build/obj/vectors.o
 VectorE4                                          build/obj/vectors.o
 VectorE8                                          build/obj/vectors.o
-__aeabi_idiv0                                     /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
-__aeabi_ldiv0                                     /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_dvmd_tls.o)
-__aeabi_uidiv                                     /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
-__aeabi_uidivmod                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
 __ctype_ptr__                                     /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-ctype_.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
                                                   /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strcasecmp.o)
 __early_init                                      build/obj/board.o
                                                   build/obj/crt0.o
@@ -2705,11 +2648,6 @@ __main_stack_end__                                build/obj/vectors.o
 __main_thread_stack_base__                        build/obj/chsys.o
 __process_stack_base__                            build/obj/crt0.o
 __process_stack_end__                             build/obj/crt0.o
-__sf_fake_stderr                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
-__sf_fake_stdin                                   /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
-__sf_fake_stdout                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
-__udivsi3                                         /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/thumb2/libgcc.a(_udivsi3.o)
-_atoi_r                                           /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
 _bss_end                                          build/obj/crt0.o
 _bss_start                                        build/obj/crt0.o
 _close_r                                          build/obj/syscalls.o
@@ -2720,13 +2658,10 @@ _data                                             build/obj/crt0.o
 _default_exit                                     build/obj/crt0.o
 _edata                                            build/obj/crt0.o
 _fstat_r                                          build/obj/syscalls.o
-_global_impure_ptr                                /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
 _heap_init                                        build/obj/chheap.o
                                                   build/obj/chsys.o
 _idle_thread                                      build/obj/chsys.o
 _idle_thread_wa                                   build/obj/chsys.o
-_impure_ptr                                       /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-impure.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
 _isatty_r                                         build/obj/syscalls.o
 _lseek_r                                          build/obj/syscalls.o
 _pal_lld_init                                     build/obj/pal_lld.o
@@ -2737,7 +2672,6 @@ _pal_lld_setgroupmode                             build/obj/pal_lld.o
                                                   build/obj/conv_ctrl.o
                                                   build/obj/adc_ctrl.o
                                                   build/obj/moto_ctrl.o
-                                                  build/obj/power_ctrl.o
                                                   build/obj/light_ctrl.o
                                                   build/obj/main.o
                                                   build/obj/pal.o
@@ -2750,6 +2684,7 @@ _port_irq_epilogue                                build/obj/chcore_v7m.o
                                                   build/obj/stm32_dma.o
 _port_lock                                        build/obj/chcore_v7m.o
                                                   build/obj/i2c_slave_ctrl.o
+                                                  build/obj/conv_ctrl.o
                                                   build/obj/shell.o
                                                   build/obj/evtimer.o
                                                   build/obj/serial_lld.o
@@ -2779,6 +2714,7 @@ _port_thread_start                                build/obj/chcore_v7m.o
                                                   build/obj/chthreads.o
 _port_unlock                                      build/obj/chcore_v7m.o
                                                   build/obj/i2c_slave_ctrl.o
+                                                  build/obj/conv_ctrl.o
                                                   build/obj/evtimer.o
                                                   build/obj/serial_lld.o
                                                   build/obj/i2c_lld.o
@@ -2807,8 +2743,6 @@ _scheduler_init                                   build/obj/chschd.o
 _stm32_dma_streams                                build/obj/stm32_dma.o
                                                   build/obj/i2c_lld.o
                                                   build/obj/adc_lld.o
-_strtol_r                                         /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
 _textdata                                         build/obj/crt0.o
 _thread_init                                      build/obj/chthreads.o
                                                   build/obj/chsys.o
@@ -2824,11 +2758,11 @@ _write_r                                          build/obj/syscalls.o
 adc                                               build/obj/adc_ctrl.o
 adcAcquireBus                                     build/obj/adc.o
 adcCfg                                            build/obj/adc_ctrl.o
-                                                  build/obj/power_ctrl.o
 adcConvert                                        build/obj/adc.o
                                                   build/obj/conv_ctrl.o
                                                   build/obj/adc_ctrl.o
 adcCurrent                                        build/obj/conv_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
                                                   build/obj/serial_ctrl.o
 adcInit                                           build/obj/adc.o
                                                   build/obj/hal.o
@@ -2848,7 +2782,8 @@ adcStop                                           build/obj/adc.o
 adcStopConversion                                 build/obj/adc.o
                                                   build/obj/conv_ctrl.o
 adcStopConversionI                                build/obj/adc.o
-adcTepmerature                                    build/obj/conv_ctrl.o
+adcTemperature                                    build/obj/conv_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
                                                   build/obj/serial_ctrl.o
 adc_lld_init                                      build/obj/adc_lld.o
                                                   build/obj/adc.o
@@ -2860,8 +2795,6 @@ adc_lld_stop                                      build/obj/adc_lld.o
                                                   build/obj/adc.o
 adc_lld_stop_conversion                           build/obj/adc_lld.o
                                                   build/obj/adc.o
-atoi                                              /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
-                                                  build/obj/power_ctrl.o
 boardInit                                         build/obj/board.o
                                                   build/obj/hal.o
 chCondBroadcast                                   build/obj/chcond.o
@@ -2981,7 +2914,6 @@ chMtxInit                                         build/obj/chmtx.o
                                                   build/obj/chheap.o
 chMtxLock                                         build/obj/chmtx.o
                                                   build/obj/adc_ctrl.o
-                                                  build/obj/moto_ctrl.o
                                                   build/obj/power_ctrl.o
                                                   build/obj/i2c.o
                                                   build/obj/adc.o
@@ -2992,7 +2924,6 @@ chMtxTryLock                                      build/obj/chmtx.o
 chMtxTryLockS                                     build/obj/chmtx.o
 chMtxUnlock                                       build/obj/chmtx.o
                                                   build/obj/adc_ctrl.o
-                                                  build/obj/moto_ctrl.o
                                                   build/obj/power_ctrl.o
                                                   build/obj/i2c.o
                                                   build/obj/adc.o
@@ -3125,18 +3056,18 @@ chVTSetI                                          build/obj/chvt.o
 chprintf                                          build/obj/chprintf.o
                                                   build/obj/serial_ctrl.o
                                                   build/obj/adc_ctrl.o
-                                                  build/obj/power_ctrl.o
                                                   build/obj/shell.o
 cmd_adc                                           build/obj/adc_ctrl.o
 cmd_adc_cfg                                       build/obj/adc_ctrl.o
-cmd_pwr_cfg                                       build/obj/power_ctrl.o
-cmd_pwr_en                                        build/obj/power_ctrl.o
-cmd_pwr_rst                                       build/obj/power_ctrl.o
 convSetBoost                                      build/obj/conv_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
 convSetBoostGain                                  build/obj/conv_ctrl.o
 convSetBuck                                       build/obj/conv_ctrl.o
+convSetBuckEn                                     build/obj/conv_ctrl.o
+                                                  build/obj/power_ctrl.o
 convSetBuckGain                                   build/obj/conv_ctrl.o
 convSetSolar                                      build/obj/conv_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
 convStart                                         build/obj/conv_ctrl.o
                                                   build/obj/main.o
 convStop                                          build/obj/conv_ctrl.o
@@ -3156,6 +3087,7 @@ dbg_check_leave_isr                               build/obj/chdebug.o
                                                   build/obj/stm32_dma.o
                                                   build/obj/chcore_v7m.o
 dbg_check_lock                                    build/obj/chdebug.o
+                                                  build/obj/conv_ctrl.o
                                                   build/obj/shell.o
                                                   build/obj/evtimer.o
                                                   build/obj/i2c_lld.o
@@ -3184,6 +3116,7 @@ dbg_check_lock_from_isr                           build/obj/chdebug.o
                                                   build/obj/chcore_v7m.o
 dbg_check_suspend                                 build/obj/chdebug.o
 dbg_check_unlock                                  build/obj/chdebug.o
+                                                  build/obj/conv_ctrl.o
                                                   build/obj/evtimer.o
                                                   build/obj/i2c_lld.o
                                                   build/obj/serial.o
@@ -3291,11 +3224,12 @@ main                                              build/obj/main.o
                                                   build/obj/crt0.o
 memset                                            /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-memset.o)
                                                   build/obj/syscalls.o
-motoApply                                         build/obj/moto_ctrl.o
-motoConfig                                        build/obj/moto_ctrl.o
-                                                  build/obj/power_ctrl.o
-motoReset                                         build/obj/moto_ctrl.o
 motoSet                                           build/obj/moto_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
+                                                  build/obj/power_ctrl.o
+motoSetEn                                         build/obj/moto_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
+                                                  build/obj/power_ctrl.o
 nvicDisableVector                                 build/obj/nvic.o
                                                   build/obj/serial_lld.o
                                                   build/obj/pwm_lld.o
@@ -3317,7 +3251,9 @@ port_halt                                         build/obj/chcore.o
                                                   build/obj/i2c_lld.o
                                                   build/obj/chdebug.o
 powerConfig                                       build/obj/power_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
 powerOffReset                                     build/obj/power_ctrl.o
+                                                  build/obj/i2c_slave_ctrl.o
 prio_insert                                       build/obj/chlists.o
                                                   build/obj/chcond.o
                                                   build/obj/chmtx.o
@@ -3404,8 +3340,6 @@ strpbrk                                           /home/z80/programs/code-source
                                                   build/obj/shell.o
 strspn                                            /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strspn.o)
                                                   build/obj/shell.o
-strtol                                            /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-strtol.o)
-                                                  /home/z80/programs/code-sourcery/2011.03-42/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib/thumb2/libc.a(lib_a-atoi.o)
 tmInit                                            build/obj/tm.o
                                                   build/obj/hal.o
 tmObjectInit                                      build/obj/tm.o

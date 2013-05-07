@@ -6,6 +6,7 @@
 
 void convStart( void );
 void convStop( void );
+void convSetBuckEn( uint16_t en );
 void convSetBuck( uint16_t sp );
 void convSetBoost( uint16_t sp );
 void convSetSolar( uint16_t minValue );
@@ -13,7 +14,7 @@ void convSetBuckGain( uint16_t val );
 void convSetBoostGain( uint16_t val );
 
 uint16_t adcCurrent( void );
-uint16_t adcTepmerature( void );
+uint16_t adcTemperature( void );
 
 
 #endif
