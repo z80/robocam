@@ -1,6 +1,8 @@
 
 #include "serial_ctrl.h"
 #include "conv_ctrl.h"
+#include "light_ctrl.h"
+#include "moto_ctrl.h"
 
 #include "hal.h"
 #include "shell.h"
@@ -21,13 +23,19 @@ static SerialConfig config =
 static void cmd_mem( BaseChannel * chp, int argc, char * argv[] );
 static void cmd_temperature( BaseChannel * chp, int argc, char * argv[] );
 static void cmd_current( BaseChannel * chp, int argc, char * argv[] );
+static void cmd_light( BaseChannel * chp, int argc, char * argv[] );
+static void cmd_motoEn( BaseChannel * chp, int argc, char * argv[] );
+static void cmd_moto( BaseChannel * chp, int argc, char * argv[] );
 
 #define SHELL_WA_SIZE   THD_WA_SIZE( 2048 )
 static const ShellCommand commands[] =
 {
-    { "mem", cmd_mem },
-    { "cur", cmd_current },
-    { "tem", cmd_temperature },
+    { "mem",  cmd_mem },
+    { "cur",  cmd_current },
+    { "tem",  cmd_temperature },
+    { "li",   cmd_light },
+    { "moen", cmd_motoEn },
+    { "mo",   cmd_moto },
     { NULL,          NULL }
 };
 
@@ -93,6 +101,60 @@ static void cmd_current( BaseChannel * chp, int argc, char * argv[] )
     chprintf( chp, "current: %u\r\n", adcCurrent() );
 }
 
+static void cmd_light( BaseChannel * chp, int argc, char * argv[] )
+{
+    (void)chp;
+    if ( argc > 0 )
+    {
+        if ( argv[0][0] != '0' )
+        {
+            setLight( 1 );
+            return;
+        }
+    }
+    setLight( 0 );
+}
+
+static void cmd_motoEn( BaseChannel * chp, int argc, char * argv[] )
+{
+    (void)chp;
+    if ( argc > 0 )
+    {
+        if ( argv[0][0] != '0' )
+        {
+            motoSetEn( 1 );
+            return;
+        }
+    }
+    motoSetEn( 0 );
+}
+
+static void cmd_moto( BaseChannel * chp, int argc, char * argv[] )
+{
+    (void)chp;
+    uint16_t en = 0;
+    if ( argc > 0 )
+    {
+        if ( argv[0][0] != '0' )
+            en |= 1;
+    }
+    if ( argc > 1 )
+    {
+        if ( argv[1][0] != '0' )
+            en |= 2;
+    }
+    if ( argc > 2 )
+    {
+        if ( argv[2][0] != '0' )
+            en |= 4;
+    }
+    if ( argc > 3 )
+    {
+        if ( argv[3][0] != '0' )
+            en |= 8;
+    }
+    motoSet( en );
+}
 
 
 
