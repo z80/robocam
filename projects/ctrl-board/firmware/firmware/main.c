@@ -7,6 +7,7 @@
 #include "adc_ctrl.h"
 #include "conv_ctrl.h"
 #include "serial_ctrl.h"
+#include "i2c_slave_ctrl.h"
 
 static WORKING_AREA( waLeds, 256 );
 static msg_t Leds( void *arg )
@@ -53,6 +54,9 @@ int main(void)
   initLeds();
   convStart();
   initSerial();
+
+  initI2cSlave();
+  startI2cSlave();
 
   while ( TRUE )
   {
