@@ -6,7 +6,7 @@ class CtrlBoard
 {
 public:
     CtrlBoard();
-    ~CtrlBoard();
+    virtual ~CtrlBoard();
 
     bool open();
     bool isOpen();

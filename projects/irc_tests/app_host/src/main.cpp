@@ -2,7 +2,7 @@
 #include <QtGui>
 #include "lua.hpp"
 #include "peer_qxmpp.h"
-#include "luamcuctrl.h"
+#include "luactrlboard.h"
 #include "luaprocess.h"
 #include "fsw_process.h"
 #include <boost/bind.hpp>
@@ -31,7 +31,7 @@ int main( int argc, char ** argv )
 static void init( lua_State * L )
 {
 	// Board USB io.
-	luaopen_luamcuctrl( L );
+    luaopen_luactrlboard( L );
 	// QProcess management.
 	luaopen_luaprocess( L );
 	// FswProcess management.

@@ -14,7 +14,7 @@ find_package( Threads )
 include_directories( "./src" 
                      "${ROOT}/peer_abst/src" 
                      "${ROOT}/peer_qxmpp/src"
-                     "${ROOT}/luamcuctrl/src"   
+                     "${ROOT}/luactrlboard/src"
                      ${ROOT}/3dparty/lua-5.1.5/src  
                      ${ROOT}/3dparty/lua-5.1.5/etc 
                      ${Boost_INCLUDE_DIRS} 
@@ -39,12 +39,11 @@ set( src ${src} ${qrcSrc} )
 add_executable( app_host ${src} )
 set( libs liblua-5.1.5 
           peer_qxmpp 
-          luamcuctrl 
+          luactrlboard
           liblua-5.1.5 
           ${QT_LIBRARIES} 
           ${CMAKE_THREAD_LIBS_INIT} 
-          ${Boost_LIBRARIES} 
-          liblua-5.1.5 )
+          ${Boost_LIBRARIES} )
 target_link_libraries( app_host ${libs} )
 install( TARGETS app_host DESTINATION "./" )
 install( DIRECTORY "./src_lua/" DESTINATION "./" )

@@ -1,5 +1,5 @@
 
-require( "luamcuctrl" )
+require( "luactrlboard" )
 
 local POWER_ON_FIRST   = 60 * 60 * 3
 local POWER_ON_REGULAR = 60 * 60 * 3 
@@ -66,26 +66,16 @@ function main()
 end
 
 function sleep( msec )
-    if ( mcu:isOpen() ) then
-        mcu:powerOffReset()
-    end
     msec = ( msec < 10000 ) and msec or 10000
     for i=1, msec, 50 do
         msleep( 50 )
-        if ( mcu:isOpen() ) then
-            mcu:motoReset()
-        end
     end
 end
 
 function initMcu()
-    mcu = luamcuctrl.create()
+    mcu = luactrlboard.create()
     local res = mcu:open()
-    if ( not res ) then
-        return
-    end
-    mcu:powerConfig( POWER_ON_FIRST, POWER_ON_REGULAR, POWER_OFF )
-    mcu:adcConfig( true )
+    return res
 end
 
 function motoSet( moto1, moto2, moto3, moto4, t )
