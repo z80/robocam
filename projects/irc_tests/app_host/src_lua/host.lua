@@ -1,6 +1,14 @@
 
 require( "luactrlboard" )
 
+function display( ... )
+    local t = { ... }
+    for i=1, #t do
+        local stri = string.format( "print( \'arg[%i] = %s\' )", i, tostring( t[i] ) )
+	send( stri )
+    end
+end
+
 local POWER_ON_FIRST   = 60 * 60 * 3
 local POWER_ON_REGULAR = 60 * 60 * 3 
 local POWER_OFF        = 20
