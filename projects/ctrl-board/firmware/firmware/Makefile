@@ -84,14 +84,19 @@ CSRC = $(PORTSRC) \
        $(CHIBIOS)/os/various/syscalls.c \
        $(CHIBIOS)/os/various/shell.c \
        $(CHIBIOS)/os/various/chprintf.c \
+       stm32f10x_flash.c \
        main.c \
+       led_ctrl.c \
        light_ctrl.c \
        power_ctrl.c \
        moto_ctrl.c \
        adc_ctrl.c \
        conv_ctrl.c \
        serial_ctrl.c \
-       i2c_slave_ctrl.c
+       i2c_slave_ctrl.c \
+       pawn/amx.c \
+       pawn/amxcore.c \
+       pawn/pawn_ctrl.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -122,7 +127,8 @@ ASMSRC = $(PORTASM)
 
 INCDIR = $(PORTINC) $(KERNINC) $(TESTINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(CHIBIOS)/os/various
+         $(CHIBIOS)/os/various \
+	 pawn
 
 #
 # Project, sources and paths
@@ -193,7 +199,10 @@ DLIBS =
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS =
+UDEFS = -DAMX_DONT_RELOCATE \
+	-DAMX_TOKENTHREADING \
+	-DNDEBUG \
+	-DAMX_NATIVETABLE=g_nativetable
 
 # Define ASM defines here
 UADEFS =
