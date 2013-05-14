@@ -50,6 +50,14 @@ void startI2cSlave( void )
     tmo = MS2ST( I2C_TIMEOUT );
 
     i2cStart( &I2CD1, &i2cfg1 );
+    /*while ( 1 )
+    {
+        i2cStart( &I2CD1, &i2cfg1 );
+        status = i2cMasterTransmitTimeout( &I2CD1, I2C_ADDRESS,
+                                           (uint8_t *)(&outBuffer), sizeof(outBuffer),
+                                           0,  0,
+                                           tmo );
+    }*/
     status = i2cSlaveIoTimeout( &I2CD1, I2C_ADDRESS,
                                 inBuffer,  I2C_IN_BUFFER_SZ,
                                 outBuffer, I2C_OUT_BUFFER_SZ,

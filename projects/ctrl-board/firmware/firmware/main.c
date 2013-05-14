@@ -51,12 +51,13 @@ int main(void)
   halInit();
   chSysInit();
 
+  initI2cSlave();
+  startI2cSlave();
+
   initLeds();
   convStart();
   initSerial();
 
-  initI2cSlave();
-  startI2cSlave();
 
   while ( TRUE )
   {
