@@ -5,7 +5,7 @@ function display( ... )
     local t = { ... }
     for i=1, #t do
         local stri = string.format( "print( \'arg[%i] = %s\' )", i, tostring( t[i] ) )
-	send( stri )
+    send( stri )
     end
 end
 
@@ -51,16 +51,16 @@ function main()
         --stri = string.format( "print( \'%s, %s, %s\' )", type(t0), type(t1), type(timeToGetClient) )
         --send( stri )
         while ( t1 - t0 < timeToGetClient ) do
-            --send( "print( \'Awesome!\' )" )
+            send( "print( \'Awesome!\' )" )
             t1 = os.time()
             sleep( 1000 )
             -- If there was timer reset by client
             -- the "client" variable is set.
             -- Then reset timeout to shutdown.
-            if ( client ) then
+            -- if ( client ) then
                 t0 = t1
                 client = nil
-            end
+            -- end
             --print( 'waiting for client command' )
         end
         send( "print( \'Going to shutdown\' )" )
