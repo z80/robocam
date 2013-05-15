@@ -13,7 +13,7 @@ typedef struct
     char isRunning;
     int result, error;
     unsigned char memblock[ PAWN_MEM_SIZE ];
-    uint32_t      ioblock[ PAWN_IO_SIZE ];
+    uint8_t       ioblock[ PAWN_IO_SIZE ];
 } Pawn;
 
 Pawn g_pawn;
@@ -36,22 +36,7 @@ int AMXAPI aux_Monitor( AMX * amx )
     return AMX_ERR_EXIT;
 }
 
-void pawnStop( Pawn * pawn )
-{
-    chSysLock();
-        amx_SetDebugHook( &pawn->amx, aux_Monitor );
-    chSysUnlock();
-}
-
-char pawnIsRunning( Pawn * pawn )
-{
-    chSysLock();
-        char res = pawn->isRunning;
-    chSysUnlock();
-    return res;
-}
-
-static void pawnRun( Pawn * pawn )
+static void pawnExec( Pawn * pawn )
 {
     chSysLock();
         pawn->isRunning = 0;
@@ -94,7 +79,7 @@ static cell n_setIo( AMX * amx, const cell * params )
 {
     (void)amx;
     uint32_t index;
-    index = (uint32_t)params[1];
+    index = (uint8_t)params[1];
     g_pawn.ioblock[ index ] = params[2];
     return 0;
 }
@@ -103,7 +88,7 @@ static cell n_setLeds( AMX * amx, const cell * params )
 {
     (void)amx;
     uint32_t value;
-    value = (uint32_t)params[1];
+    value = (uint8_t)params[1];
     setLed( value );
     return 0;
 }
@@ -133,11 +118,79 @@ static cell n_setLeds( AMX * amx, const cell * params )
 
 
 
+static WORKING_AREA( waExec, 1024 );
+static msg_t execThread( void *arg );
+static BinarySemaphore semaphore;
 
 void pawnInit( void )
 {
-
+    // Initialize mailbox.
+    chBSemInit( &semaphore, TRUE );
+    // Creating thread.
+    chThdCreateStatic( waExec, sizeof(waExec), NORMALPRIO, execThread, NULL );
 }
+
+void pawnSetIo( uint8_t cnt, uint8_t * vals )
+{
+    uint8_t i;
+    for ( i=0; i<cnt; i++ )
+        g_pawn.ioblock[i] = vals[i];
+}
+
+void pawnIo( uint8_t cnt, uint8_t * vals )
+{
+    uint8_t i;
+    for ( i=0; i<cnt; i++ )
+        vals[i] = g_pawn.ioblock[i];
+}
+
+void pawnSetMem( uint8_t cnt, uint16_t at, uint8_t * vals )
+{
+    uint16_t i;
+    for ( i=0; i<cnt; i++ )
+        g_pawn.memblock[at+i] = vals[i];
+}
+
+void pawnWriteFlash( uint8_t block )
+{
+    // to be done.
+    (void)block;
+}
+
+void pawnRun( void )
+{
+    chBSemSignal( &semaphore );
+}
+
+uint8_t pawnIsRunning( void )
+{
+    chSysLock();
+        char res = g_pawn.isRunning;
+    chSysUnlock();
+    return res;
+}
+
+void pawnStop( void )
+{
+    chSysLock();
+        amx_SetDebugHook( &(g_pawn.amx), aux_Monitor );
+    chSysUnlock();
+}
+
+static msg_t execThread( void *arg )
+{
+    (void)arg;
+    chRegSetThreadName( "e" );
+    while ( 1 )
+    {
+        chBSemWait( &semaphore );
+
+        // If's come here run Pawn machine.
+        pawnExec( &g_pawn );
+    }
+    return 0;
+}
+
 
 
 
