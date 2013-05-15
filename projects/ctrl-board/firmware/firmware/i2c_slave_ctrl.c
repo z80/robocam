@@ -6,6 +6,7 @@
 
 #include "moto_ctrl.h"
 #include "light_ctrl.h"
+#include "led_ctrl.h"
 #include "conv_ctrl.h"
 #include "power_ctrl.h"
 
@@ -136,6 +137,21 @@ static msg_t execThread( void *arg )
             break;
         case CMD_SET_MOTO:
             motoSet( *puvalue16In );
+            break;
+        case CMD_SET_LIGHT:
+            setLight( *puvalue16In );
+            break;
+        case CMD_SET_LED:
+            setLed( *puvalue16In );
+            break;
+        // Pawn commands.
+        case CMD_PAWN_SET_IO:
+        case CMD_PAWN_IO:
+        case CMD_PAWN_SET_MEM:
+        case CMD_PAWN_WRITE_FLASH:
+        case CMD_PAWN_RUN:
+        case CMD_PAWN_IS_RUNNING:
+        case CMD_PAWN_STOP:
             break;
         }
     }

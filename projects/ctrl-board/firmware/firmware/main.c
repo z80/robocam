@@ -1,6 +1,7 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "led_ctrl.h"
 #include "light_ctrl.h"
 #include "power_ctrl.h"
 #include "moto_ctrl.h"
@@ -23,12 +24,10 @@ static msg_t Leds( void *arg )
     while ( 1 )
     {
         chThdSleepMilliseconds( 300 );
-        palSetPad( GPIOB, 13 );
-        palClearPad( GPIOB, 14 );
+        setLed( 1 );
 
         chThdSleepMilliseconds( 300 );
-        palClearPad( GPIOB, 13 );
-        palSetPad( GPIOB, 14 );
+        setLed( 2 );
  
     }
     return 0;
@@ -54,7 +53,7 @@ int main(void)
   initI2cSlave();
   startI2cSlave();
 
-  initLeds();
+  initLed();
   convStart();
   initSerial();
 
