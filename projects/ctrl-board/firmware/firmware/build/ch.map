@@ -1963,7 +1963,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00018d7c      0xe2e build/obj/amxcore.o
  .debug_info    0x00019baa      0xbe3 build/obj/pawn_ctrl.o
 
-.debug_line     0x00000000     0xa53c
+.debug_line     0x00000000     0xa53a
  .debug_line    0x00000000      0x14e build/obj/crt0.o
  .debug_line    0x0000014e       0x68 build/obj/vectors.o
  .debug_line    0x000001b6       0x5d build/obj/chcore.o
@@ -2037,10 +2037,10 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x0000826f      0x33c build/obj/adc_ctrl.o
  .debug_line    0x000085ab      0x3c6 build/obj/conv_ctrl.o
  .debug_line    0x00008971      0x388 build/obj/serial_ctrl.o
- .debug_line    0x00008cf9      0x35a build/obj/i2c_slave_ctrl.o
- .debug_line    0x00009053      0xe79 build/obj/amx.o
- .debug_line    0x00009ecc      0x389 build/obj/amxcore.o
- .debug_line    0x0000a255      0x2e7 build/obj/pawn_ctrl.o
+ .debug_line    0x00008cf9      0x358 build/obj/i2c_slave_ctrl.o
+ .debug_line    0x00009051      0xe79 build/obj/amx.o
+ .debug_line    0x00009eca      0x389 build/obj/amxcore.o
+ .debug_line    0x0000a253      0x2e7 build/obj/pawn_ctrl.o
 
 .debug_loc      0x00000000     0x419c
  .debug_loc     0x00000000       0x20 build/obj/crt0.o
