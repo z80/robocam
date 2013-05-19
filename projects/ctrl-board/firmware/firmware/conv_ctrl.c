@@ -37,7 +37,7 @@ static uint16_t buckGain  = 1000; // Gain is 10%
 static uint16_t boostGain = 1000; // Gain is 10%
 static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) );
 static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
-static uint16_t solarSp   = ( ( 4095 * 6000 ) / ( 3 * 3300 ) );
+static uint16_t solarSp   = ( ( 4095 * 4900 ) / ( 3 * 3300 ) );
 static uint16_t buckSpSave = 0;
 
 inline uint8_t justPs( void );
