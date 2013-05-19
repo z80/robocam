@@ -64,6 +64,7 @@ void startI2cSlave( void )
             i2cStop( &I2CD1 );
         else
             break;
+        chThdSleepMilliseconds( 2000 );
     }
 }
 

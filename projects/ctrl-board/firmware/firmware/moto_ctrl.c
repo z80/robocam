@@ -18,7 +18,7 @@
 void initMoto( void )
 {
     motoSetEn( 0 );
-    motoSet( 0 );
+    //motoSet( 0 );
 }
 
 void motoSetEn( uint16_t en )
@@ -27,7 +27,6 @@ void motoSetEn( uint16_t en )
 	    palSetPad( MOTO_EN_PORT, MOTO_EN_PIN );
 	else
 	    palClearPad( MOTO_EN_PORT, MOTO_EN_PIN );
-    motoSet( 0 );
     palSetPadMode( MOTO_EN_PORT, MOTO_EN_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
 

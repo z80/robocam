@@ -19,18 +19,18 @@ int main(void)
   halInit();
   chSysInit();
 
-  initI2cSlave();
-  startI2cSlave();
-
   initLed();
   initLight();
   initMoto();
   convStart();
-  initSerial();
+  //initSerial();
+
+  initI2cSlave();
+  startI2cSlave();
 
   while ( TRUE )
   {
-      processSerial();
+      //processSerial();
       chThdSleepSeconds( 1 );
   }
   return 0;

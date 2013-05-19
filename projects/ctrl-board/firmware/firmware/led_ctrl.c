@@ -3,6 +3,8 @@
 #include "hal.h"
 
 uint8_t leds = 0;
+static void applyLed( uint16_t arg );
+
 static WORKING_AREA( waLeds, 256 );
 static msg_t Leds( void *arg )
 {
@@ -16,13 +18,13 @@ static msg_t Leds( void *arg )
 
     while ( 1 )
     {
-        setLed( 1 );
+        applyLed( 0 );
         chThdSleepMilliseconds( 100 );
 
-        setLed( 2 );
+        applyLed( 3 );
         chThdSleepMilliseconds( 100 );
 
-        setLed( leds );
+        applyLed( leds );
         chThdSleepMilliseconds( 800 );
 
     }
@@ -45,7 +47,11 @@ void initLed( void )
 void setLed( uint32_t arg )
 {
     leds = arg;
+    applyLed( arg );
+}
 
+static void applyLed( uint16_t arg )
+{
     if ( arg & 1 )
         palSetPad( GPIOB, 13 );
     else
