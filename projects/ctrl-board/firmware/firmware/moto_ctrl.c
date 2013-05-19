@@ -15,6 +15,12 @@
 #define MOTO_4_PIN   11
 #define MOTO_4_PORT  GPIOA
 
+void initMoto( void )
+{
+    motoSetEn( 0 );
+    motoSet( 0 );
+}
+
 void motoSetEn( uint16_t en )
 {
 	if ( en )

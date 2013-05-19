@@ -6,6 +6,11 @@
 #define LIGHT_PORT  GPIOB
 #define LIGHT_PIN   12
 
+void initLight( void )
+{
+    setLight( 0 );
+}
+
 void setLight( bool_t en )
 {
     if ( en )
