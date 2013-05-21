@@ -40,7 +40,7 @@ $Descr A1 33110 23386
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "19 may 2013"
+Date "21 may 2013"
 Rev ""
 Comp ""
 Comment1 ""
@@ -1334,9 +1334,9 @@ Text Label 26250 13700 0    60   Italic 0
 moto2
 Text Label 26250 13000 0    60   Italic 0
 moto1
-Text Label 27850 13100 0    60   Italic 0
-out4
 Text Label 27850 13600 0    60   Italic 0
+out4
+Text Label 27850 13100 0    60   Italic 0
 out3
 Text Label 26250 13600 0    60   Italic 0
 out2
