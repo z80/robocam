@@ -70,7 +70,7 @@ include $(CHIBIOS)/os/kernel/kernel.mk
 # Ovverride PORTLD to custom one.
 PORTLD=./PORTLD
 # Define linker script file here
-LDSCRIPT= $(PORTLD)/STM32F102C8T6.ld
+LDSCRIPT= $(PORTLD)/STM32F103C8T6.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

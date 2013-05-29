@@ -20,13 +20,14 @@ int main(void)
   chSysInit();
 
   initLed();
-  initLight();
-  initMoto();
-  convStart();
+  //initLight();
+  //initMoto();
+  //convStart();
+
   //initSerial();
 
-  initI2cSlave();
-  startI2cSlave();
+  //initI2cSlave();
+  //startI2cSlave();
 
   while ( TRUE )
   {
