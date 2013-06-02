@@ -26,6 +26,8 @@ int main(void)
 
   //initSerial();
 
+  chThdSleepSeconds( 5 );
+
   initI2cSlave();
   startI2cSlave();
 
