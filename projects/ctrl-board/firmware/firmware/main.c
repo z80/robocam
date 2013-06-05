@@ -22,20 +22,9 @@ int main(void)
   initLed();
   initLight();
   initMoto();
-  convStart();
-
-  //initSerial();
-
-  chThdSleepSeconds( 5 );
-
   initI2cSlave();
-  startI2cSlave();
 
-  while ( TRUE )
-  {
-      //processSerial();
-      chThdSleepSeconds( 1 );
-  }
+  powerHandler();
   return 0;
 }
 

@@ -3,35 +3,38 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
+#include "led_ctrl.h"
 #include "light_ctrl.h"
 #include "moto_ctrl.h"
+#include "i2c_slave_ctrl.h"
 #include "conv_ctrl.h"
 
-#include <stdlib.h>
+// #include <stdlib.h>
 
-static Mutex g_mutex;
-int g_firstOnDelay = 5; //( 3 * 60 * 60 );
-int g_onDelay      = ( 3 * 60 * 60 );
-int g_offDelay     = ( 3 * 60 );
-int g_nextOnDelay;
-int g_timer        = 0;
+#define JUST_PS_PORT       GPIOB
+#define JUST_PS_PIN        15
 
-void powerConfig( int onFirst, int on, int off )
+static Mutex mutex;
+static int idleTime      = ( 3 * 60 * 60 );
+static int activeTime    = ( 3 * 60 );
+static int timeout       = ( 3 * 60 );
+
+inline uint8_t justPs( void );
+static void    powerOn( void );
+static void    powerOff( void );
+
+void powerConfig( int aactiveTime, int aidleTime )
 {
-    chMtxLock( &g_mutex );
-    g_firstOnDelay = onFirst;
-    g_onDelay      = on;
-    g_offDelay     = off;
+    chMtxLock( &mutex );
+        idleTime   = aidleTime;
+        activeTime = aactiveTime;
     chMtxUnlock();
 }
 
 void powerOffReset( void )
 {
-    chMtxLock( &g_mutex );
-    g_timer = g_offDelay;
-    // Of it was reset at least once, means computer performed something.
-    // And it most probably means we need more recharge time.
-    g_nextOnDelay = g_firstOnDelay;
+    chMtxLock( &mutex );
+        timeout = activeTime;
     chMtxUnlock();
 }
 
@@ -42,55 +45,97 @@ static void setPower( bool_t en )
        setLight( 0 );
        motoSet( 0 );
        motoSetEn( 0 );
+       setLed( 0 );
    }
+   if ( !en )
+       stopI2cSlave();
    convSetBuckEn( en ? 1 : 0 );
+   if ( en )
+   {
+       // Wait for some time and turn I2C on after that.
+       chThdSleepMilliseconds( 5000 );
+       startI2cSlave();
+   }
 }
 
-static WORKING_AREA( waPower, 256 );
-static msg_t Power( void *arg )
+void powerHandler( void )
 {
-    (void)arg;
-    //while ( 1 )
-    //	chThdSleepSeconds( 1 );
-
     chRegSetThreadName( "p" );
     // First wait for power on.
-    g_nextOnDelay = g_firstOnDelay;
+    if ( justPs() )
+        powerOn();
     while ( 1 )
     {
-        setPower( 0 );
-        // Wait for next power on.
-        g_timer = g_nextOnDelay;
-        while ( g_timer-- > 0 )
-            chThdSleepSeconds( 1 );
-
-        // Power on.
-        g_nextOnDelay = g_offDelay;
-        setPower( 1 );
-        chMtxLock( &g_mutex );
-        g_timer = g_offDelay;
-        static int t;
-        t = g_timer;
-        chMtxUnlock();
-        while ( t > 0 )
-        {
-            chThdSleepSeconds( 1 );
-            chMtxLock( &g_mutex );
-            g_timer--;
-            t = g_timer;
-            chMtxUnlock();
-        }
+        powerOff();
+        powerOn();
     }
-    return 0;
 }
 
 void initPower( void )
 {
-    chMtxInit( &g_mutex );
-    setPower( 0 );
+    // Just power source mode.
+    palSetPadMode( JUST_PS_PORT, JUST_PS_PIN,  PAL_MODE_INPUT );
 
-    chThdCreateStatic( waPower, sizeof(waPower), NORMALPRIO, Power, NULL );
+    chMtxInit( &mutex );
+    setPower( 0 );
 }
+
+inline uint8_t justPs( void )
+{
+    if ( palReadPad( JUST_PS_PORT, JUST_PS_PIN ) )
+        return 0;
+    return 1;
+}
+
+static void powerOn( void )
+{
+    // Power on.
+    setPower( 1 );
+    // Wait for next power off.
+    chMtxLock( &mutex );
+        timeout = activeTime;
+    chMtxUnlock();
+    while ( 1 )
+    {
+        chThdSleepSeconds( 1 );
+        if ( !justPs() )
+        {
+            chMtxLock( &mutex );
+                int t = timeout;
+            chMtxUnlock();
+            t--;
+            chMtxLock( &mutex );
+                timeout = t;
+            chMtxUnlock();
+            if ( t<=0 )
+                break;
+        }
+    }
+}
+
+static void powerOff( void )
+{
+    // Power off.
+    setPower( 0 );
+    // Wait for next power off.
+    chMtxLock( &mutex );
+        timeout = idleTime;
+    chMtxUnlock();
+    while ( 1 )
+    {
+        chThdSleepSeconds( 1 );
+        chMtxLock( &mutex );
+            int t = timeout;
+        chMtxUnlock();
+        t--;
+        chMtxLock( &mutex );
+            timeout = t;
+        chMtxUnlock();
+        if ( t<=0 )
+            break;
+    }
+}
+
 
 
 

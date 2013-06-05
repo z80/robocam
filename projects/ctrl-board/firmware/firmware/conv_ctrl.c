@@ -28,9 +28,6 @@
 #define BOOST_IND          1
 #define BUCK_IND           2
 
-#define JUST_PS_PORT       GPIOB
-#define JUST_PS_PIN        15
-
 static uint16_t buckPwm   = 0;
 static uint16_t boostPwm  = 0;
 static uint16_t buckGain  = 1000; // Gain is 10%
@@ -39,8 +36,6 @@ static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) );
 static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
 static uint16_t solarSp   = ( ( 4095 * 4900 ) / ( 3 * 3300 ) );
 static uint16_t buckSpSave = 0;
-
-inline uint8_t justPs( void );
 
 static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
 {
@@ -133,9 +128,6 @@ static PWMConfig pwmCfg =
 
 void convStart( void )
 {
-    // Just power source mode.
-    palSetPadMode( JUST_PS_PORT, JUST_PS_PIN,  PAL_MODE_INPUT );
-
     // Start PWM peripherial.
     pwmStart( &CONV_PWM, &pwmCfg );
     // Init PWM pins.
@@ -159,12 +151,9 @@ void convStart( void )
 
 void convStop( void )
 {
-    if ( !justPs() )
-    {
-	    pwmStop( &CONV_PWM );
-        adcStopConversion( &ADCD1 );
-        adcStop( &ADCD1 );
-    }
+    pwmStop( &CONV_PWM );
+    adcStopConversion( &ADCD1 );
+    adcStop( &ADCD1 );
 }
 
 void convSetBuckEn( uint16_t en )
@@ -177,8 +166,7 @@ void convSetBuckEn( uint16_t en )
         else
         {
             buckSpSave = buckSp;
-            if ( !justPs() )
-                buckSp = 0;
+            buckSp = 0;
         }
     chSysUnlock();
 }
@@ -192,7 +180,7 @@ void convSetBuck( uint16_t sp )
 
 void convSetBoost( uint16_t sp )
 {
-    chSysLock()
+    chSysLock();
         boostSp = sp;
     chSysUnlock();
 }
@@ -218,12 +206,6 @@ void convSetBoostGain( uint16_t val )
     chSysUnlock();
 }
 
-inline uint8_t justPs( void )
-{
-    if ( palReadPad( JUST_PS_PORT, JUST_PS_PIN ) )
-    	return 0;
-    return 1;
-}
 
 
 

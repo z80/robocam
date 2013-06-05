@@ -114,7 +114,7 @@ static msg_t execThread( void *arg )
         switch ( buffer[0] )
         {
         case CMD_SET_POWER_TIMES:
-            powerConfig( puvalue16In[0], puvalue16In[1], puvalue16In[2] );
+            powerConfig( puvalue16In[0], puvalue16In[1] );
             break;
         case CMD_SHUTDOWN_RESET:
             powerOffReset();
