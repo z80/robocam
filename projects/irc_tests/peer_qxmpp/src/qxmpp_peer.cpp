@@ -4,7 +4,7 @@
 #include "QXmppLogger.h"
 #include <sstream>
 
-QxmppPeer::QxmppPeer( QObject * parent )
+QXmppPeer::QXmppPeer( QObject * parent )
 {
     QXmppLogger::getLogger()->setLoggingType( QXmppLogger::SignalLogging );
 
@@ -49,44 +49,59 @@ QxmppPeer::QxmppPeer( QObject * parent )
     Q_UNUSED(check);
 }
 
-QxmppPeer::~QxmppPeer()
+QXmppPeer::~QXmppPeer()
 {
     m_trManager->deleteLater();
 }
 
-void QxmppPeer::setLogHandler( TLogHandler handler )
+void QXmppPeer::setLogHandler( TLogHandler handler )
 {
     m_logHandler = handler;
 }
 
-void QxmppPeer::setMessageHandler( TMessageHandler handler )
+void QXmppPeer::setMessageHandler( TMessageHandler handler )
 {
     m_messageHandler = handler;
 }
 
-void QxmppPeer::setInFileHandler( TInFileHandler handler )
+void QXmppPeer::setInFileHandler( TInFileHandler handler )
 {
     m_inFileHandler = handler;
 }
 
-void QxmppPeer::setAccFileHandler( TAccFileHandler handler )
+void QXmppPeer::setAccFileHandler( TAccFileHandler handler )
 {
     m_accFileHandler = handler;
 }
 
-void QxmppPeer::send( const std::string & jid, const std::string & stri )
+void QXmppPeer::send( const std::string & jid, const std::string & stri )
 {
     sendMessage( QString::fromStdString( jid ), QString::fromStdString( stri ) );
 }
 
-void QxmppPeer::sendFile( const std::string & jid, const std::string & fileName, QIODevice * dev )
+void QXmppPeer::sendFile( const std::string & jid, const std::string & fileName, QIODevice * dev )
 {
     QString qjid      = QString::fromStdString( jid );
     QString qfileName = QString::fromStdString( fileName );
     emit sigSendFile( qjid, qfileName, dev );
 }
 
-void QxmppPeer::slotSendFile( const QString & jid, const QString & fileName, QIODevice * dev )
+void QXmppPeer::call( const std::string & jid )
+{
+    if ( m_video )
+        m_video->deleteLater();
+    m_video = new QXmppVideo( this );
+    m_video->slotCall( QString::fromStdString( jid ) );
+}
+
+void QXmppPeer::endCall()
+{
+    if ( !m_video )
+        return;
+    m_video->slotEndCall();
+}
+
+void QXmppPeer::slotSendFile( const QString & jid, const QString & fileName, QIODevice * dev )
 {
     if ( !dev->isOpen() )
     {
@@ -124,7 +139,7 @@ void QxmppPeer::slotSendFile( const QString & jid, const QString & fileName, QIO
     m_hash[ job ] = dev;
 }
 
-void QxmppPeer::connectHost( const std::string & jid, const std::string & password, 
+void QXmppPeer::connectHost( const std::string & jid, const std::string & password,
                              const std::string & host, int port, bool tls )
 {
     QXmppConfiguration conf;
@@ -144,18 +159,18 @@ void QxmppPeer::connectHost( const std::string & jid, const std::string & passwo
     connectToServer( conf );
 }
 
-bool QxmppPeer::isConnected() const
+bool QXmppPeer::isConnected() const
 {
     bool res = QXmppClient::isConnected();
     return res;
 }
 
-void QxmppPeer::terminate()
+void QXmppPeer::terminate()
 {
     disconnectFromServer();
 }
 
-void QxmppPeer::logMessage( QXmppLogger::MessageType type, const QString & text )
+void QXmppPeer::logMessage( QXmppLogger::MessageType type, const QString & text )
 {
     if ( !m_logHandler.empty() )
     {
@@ -166,7 +181,7 @@ void QxmppPeer::logMessage( QXmppLogger::MessageType type, const QString & text 
     }
 }
 
-void QxmppPeer::connected()
+void QXmppPeer::connected()
 {
     QXmppPresence pr;
     setClientPresence( pr );
@@ -174,13 +189,13 @@ void QxmppPeer::connected()
         m_logHandler( "Connected" );
 }
 
-void QxmppPeer::disconnected()
+void QXmppPeer::disconnected()
 {
     if ( !m_logHandler.empty() )
         m_logHandler( "Disconnected" );
 }
 
-void QxmppPeer::error( QXmppClient::Error err )
+void QXmppPeer::error( QXmppClient::Error err )
 {
     if ( !m_logHandler.empty() )
     {
@@ -191,7 +206,7 @@ void QxmppPeer::error( QXmppClient::Error err )
     }
 }
 
-void QxmppPeer::messageReceived(const QXmppMessage& message)
+void QXmppPeer::messageReceived(const QXmppMessage& message)
 {
     QString from = message.from();
     QString msg  = message.body();
@@ -202,7 +217,7 @@ void QxmppPeer::messageReceived(const QXmppMessage& message)
 }
 
 /// A file transfer failed.
-void QxmppPeer::trError( QXmppTransferJob::Error error )
+void QXmppPeer::trError( QXmppTransferJob::Error error )
 {
     //qDebug() << "Transmission failed:" << error;
     if ( !m_logHandler.empty() )
@@ -226,7 +241,7 @@ void QxmppPeer::trError( QXmppTransferJob::Error error )
 }
 
 /// A file transfer request was received.
-void QxmppPeer::trFileReceived( QXmppTransferJob * job )
+void QXmppPeer::trFileReceived( QXmppTransferJob * job )
 {
 
     if ( !m_logHandler.empty() )
@@ -265,7 +280,7 @@ void QxmppPeer::trFileReceived( QXmppTransferJob * job )
     m_hash[ job ] = device;
 }
 
-void QxmppPeer::trJobStarted(QXmppTransferJob * job)
+void QXmppPeer::trJobStarted(QXmppTransferJob * job)
 {
     if ( !m_logHandler.empty() )
     {
@@ -277,7 +292,7 @@ void QxmppPeer::trJobStarted(QXmppTransferJob * job)
 }
 
 /// A file transfer finished.
-void QxmppPeer::trFinished()
+void QXmppPeer::trFinished()
 {
     //qDebug() << "Transmission finished";
     if ( !m_logHandler.empty() )
@@ -303,7 +318,7 @@ void QxmppPeer::trFinished()
 }
 
 /// A presence was received
-void QxmppPeer::trPresenceReceived(const QXmppPresence &presence)
+void QXmppPeer::trPresenceReceived(const QXmppPresence &presence)
 {
     //bool check;
     //Q_UNUSED(check);
@@ -334,7 +349,7 @@ void QxmppPeer::trPresenceReceived(const QXmppPresence &presence)
 }
 
 /// A file transfer has made progress.
-void QxmppPeer::trProgress(qint64 done, qint64 total)
+void QXmppPeer::trProgress(qint64 done, qint64 total)
 {
     //qDebug() << "Transmission progress:" << done << "/" << total;
     if ( !m_logHandler.empty() )

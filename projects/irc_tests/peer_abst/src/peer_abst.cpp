@@ -16,6 +16,8 @@ static int isConnected( lua_State * L );
 static int send( lua_State * L );
 static int sendFile( lua_State * L );
 static int stop( lua_State * L );
+static int call( lua_State * L );
+static int endCall( lua_State * L );
 
 class PeerAbst::PD
 {
@@ -152,6 +154,8 @@ void PeerAbst::PD::luaLoop( TInit init )
 	lua_register( L, "send",        ::send );
     lua_register( L, "sendFile",    ::sendFile );
 	lua_register( L, "stop",        ::stop );
+    lua_register( L, "call",        ::call );
+    lua_register( L, "endCall",     ::endCall );
 
 	if ( !init.empty() )
 		init( L );
@@ -365,6 +369,25 @@ static int stop( lua_State * L )
 	return 0;
 }
 
+static int call( lua_State * L )
+{
+    lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+    lua_gettable( L, LUA_REGISTRYINDEX );
+    PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+    lua_pop( L, 1 );
+    pd->peer->call();
+    return 0;
+}
+
+static int endCall( lua_State * L )
+{
+    lua_pushstring( L, PeerAbst::PD::LUA_PD_NAME.c_str() );
+    lua_gettable( L, LUA_REGISTRYINDEX );
+    PeerAbst::PD * pd = reinterpret_cast<PeerAbst::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+    lua_pop( L, 1 );
+    pd->peer->endCall();
+    return 0;
+}
 
 
 

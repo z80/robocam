@@ -54,11 +54,6 @@ public:
     int reconnectionTries;
     QTimer *reconnectionTimer;
 
-    // managers
-    QXmppRosterManager *rosterManager;
-    QXmppVCardManager *vCardManager;
-    QXmppVersionManager *versionManager;
-
     void addProperCapability(QXmppPresence& presence);
     int getNextReconnectTime() const;
 
@@ -73,9 +68,6 @@ QXmppClientPrivate::QXmppClientPrivate(QXmppClient *qq)
     , receivedConflict(false)
     , reconnectionTries(0)
     , reconnectionTimer(0)
-    , rosterManager(0)
-    , vCardManager(0)
-    , versionManager(0)
     , q(qq)
 {
 }
@@ -199,17 +191,9 @@ QXmppClient::QXmppClient(QObject *parent)
     // logging
     setLogger(QXmppLogger::getLogger());
 
-    // create managers
-    // TODO move manager references to d->extensions
-    d->rosterManager = new QXmppRosterManager(this);
-    addExtension(d->rosterManager);
-
-    d->vCardManager = new QXmppVCardManager;
-    addExtension(d->vCardManager);
-
-    d->versionManager = new QXmppVersionManager;
-    addExtension(d->versionManager);
-
+    addExtension(new QXmppRosterManager(this));
+    addExtension(new QXmppVCardManager);
+    addExtension(new QXmppVersionManager);
     addExtension(new QXmppEntityTimeManager());
     addExtension(new QXmppDiscoveryManager());
 }
@@ -222,11 +206,21 @@ QXmppClient::~QXmppClient()
     delete d;
 }
 
-/// Registers a new extension with the client.
+/// Registers a new \a extension with the client.
 ///
 /// \param extension
 
 bool QXmppClient::addExtension(QXmppClientExtension* extension)
+{
+    return insertExtension(d->extensions.size(), extension);
+}
+
+/// Registers a new \a extension with the client at the given \a index.
+///
+/// \param index
+/// \param extension
+
+bool QXmppClient::insertExtension(int index, QXmppClientExtension *extension)
 {
     if (d->extensions.contains(extension))
     {
@@ -236,7 +230,7 @@ bool QXmppClient::addExtension(QXmppClientExtension* extension)
 
     extension->setParent(this);
     extension->setClient(this);
-    d->extensions << extension;
+    d->extensions.insert(index, extension);
     return true;
 }
 
@@ -370,7 +364,7 @@ bool QXmppClient::isConnected() const
 
 QXmppRosterManager& QXmppClient::rosterManager()
 {
-    return *d->rosterManager;
+    return *findExtension<QXmppRosterManager>();
 }
 
 /// Utility function to send message to all the resources associated with the
@@ -476,7 +470,7 @@ QXmppStanza::Error::Condition QXmppClient::xmppStreamError()
 
 QXmppVCardManager& QXmppClient::vCardManager()
 {
-    return *d->vCardManager;
+    return *findExtension<QXmppVCardManager>();
 }
 
 /// Returns the reference to QXmppVersionManager, implementation of XEP-0092.
@@ -485,7 +479,7 @@ QXmppVCardManager& QXmppClient::vCardManager()
 
 QXmppVersionManager& QXmppClient::versionManager()
 {
-    return *d->versionManager;
+    return *findExtension<QXmppVersionManager>();
 }
 
 /// Give extensions a chance to handle incoming stanzas.

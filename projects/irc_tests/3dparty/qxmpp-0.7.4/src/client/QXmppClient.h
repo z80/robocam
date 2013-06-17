@@ -105,6 +105,7 @@ public:
     ~QXmppClient();
 
     bool addExtension(QXmppClientExtension* extension);
+    bool insertExtension(int index, QXmppClientExtension* extension);
     bool removeExtension(QXmppClientExtension* extension);
 
     QList<QXmppClientExtension*> extensions();

@@ -28,6 +28,9 @@ public:
 	// File io handlers;
 	void setInFileHandler( TInFileHandler handler );
 	void setAccFileHandler( TAccFileHandler handler );
+    // Video related stuff.
+    virtual void call() = 0;
+    virtual void endCall() = 0;
 public:
     // Should be called in appropriate places when file comes in and when it is downloaded.
     // E.i. in file io realization part.
@@ -42,6 +45,7 @@ public:
 	virtual bool sendFile( const std::string & fileName, QIODevice * dev ) = 0;
     bool sendFileInternal( const std::string & fileName, const std::string & filePath );
 	//virtual bool sendBinary( const std::string & desc, const std::basic_string<char> & data ) = 0;
+
 public:
 	class PD;
 	PD * pd;

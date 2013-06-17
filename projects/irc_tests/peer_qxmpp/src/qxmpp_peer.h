@@ -13,7 +13,9 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
-class QxmppPeer: public QXmppClient
+class QXmppVideo;
+
+class QXmppPeer: public QXmppClient
 {
     Q_OBJECT
 public:
@@ -22,8 +24,8 @@ public:
     typedef boost::function<QIODevice * (const std::string &)> TInFileHandler;
     typedef boost::function<void (const std::string &, QIODevice * )> TAccFileHandler;
 
-    QxmppPeer( QObject * parent = 0 );
-    ~QxmppPeer();
+    QXmppPeer( QObject * parent = 0 );
+    ~QXmppPeer();
 
     void setLogHandler( TLogHandler handler );
     void setMessageHandler( TMessageHandler handler );
@@ -36,6 +38,8 @@ public:
     void send( const std::string & jid, const std::string & stri );
     //void sendFile( const std::string & jid, const std::string & fileName );
     void sendFile( const std::string & jid, const std::string & fileName, QIODevice * dev );
+    void call( const std::string & jid );
+    void endCall();
 signals:
     void sigSendFile(const QString &, const QString &, QIODevice *);
 public slots:
@@ -53,6 +57,9 @@ public slots:
     void trPresenceReceived(const QXmppPresence &presence);
     void trProgress(qint64 done, qint64 total);
 
+    // Video related.
+    void slotFrame();
+
 private:
     TLogHandler     m_logHandler;
     TMessageHandler m_messageHandler;
@@ -60,6 +67,7 @@ private:
     TAccFileHandler   m_accFileHandler;
     QXmppTransferManager * m_trManager;
     QHash<QXmppTransferJob *, QIODevice *> m_hash;
+    QXmppVideo * m_video;
 };
 
 

@@ -25,7 +25,7 @@ public:
     void logHandler( const std::string & msg );
 
     PeerQxmpp * self;
-    QxmppPeer * peer;
+    QXmppPeer * peer;
     std::string jidDest;
     bool updateDest;
 };
@@ -144,7 +144,7 @@ void PeerQxmpp::connect()
             std::string host     = sect.get<std::string>( "host", "" );
             int         port     = sect.get<int>( "port", -1 );
             bool        tls      = sect.get<bool>( "tls", true );
-            QxmppPeer * peer = new QxmppPeer();
+            QXmppPeer * peer = new QXmppPeer();
             p->peer = peer;
 
             peer->setMessageHandler( boost::bind( &PeerDesc::messageHandler, p, _1, _2 ) );

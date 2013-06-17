@@ -1,4 +1,10 @@
 
+set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
+find_package( Vpx    REQUIRED )
+find_package( Theora REQUIRED )
+find_package( Speex  REQUIRED )
+find_package( OpenCV REQUIRED )
+
 find_package( Qt4 )
 set( QT_USE_QTCORE     True )
 set( QT_USE_QTGUI      True )
@@ -9,7 +15,11 @@ include( ${QT_USE_FILE} )
 include_directories( "./src/base" 
                      "./src/client" 
                      "./src/server" 
-                     ${CMAKE_CURRENT_BINARY_DIR} )
+                     ${CMAKE_CURRENT_BINARY_DIR}
+		     ${VPX_INCLUDE_DIRS} 
+		     ${THEORA_INCLUDE_DIRS} 
+		     ${SPEEX_INCLUDE_DIRS} 
+		     ${OPENCV_INCLUDE_DIRS} )
 
 set( src ./src/base/QXmppArchiveIq.cpp 
          ./src/base/QXmppBindIq.cpp 
@@ -124,12 +134,15 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_library( qxmpp STATIC ${src} )
-set( libs ${QT_LIBRARIES} )
+set( libs ${QT_LIBRARIES} ${VPX_LIBRARIES} ${THEORA_LIBRARY} ${SPEEX_LIBRARIES} ${OPENCV_LIVRARIES} )
 if ( WIN32 )
     set( libs ${libs} dnsapi.lib ws2_32.lib )
 endif ( WIN32 )
 target_link_libraries( qxmpp ${libs} )
-set_property( TARGET qxmpp PROPERTY COMPILE_DEFINITIONS QXMPP_BUILD )
+set_property( TARGET qxmpp PROPERTY COMPILE_DEFINITIONS QXMPP_BUILD 
+                                                        QXMPP_USE_SPEEX 
+							QXMPP_USE_THEORA 
+							QXMPP_USE_VPX )
 
 
 

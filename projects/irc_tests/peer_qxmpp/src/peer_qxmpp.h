@@ -14,6 +14,8 @@ public:
 	bool isConnected();
 	bool send( const std::string & cmd );
     bool sendFile( const std::string & fileName, QIODevice * file );
+    void call();
+    void endCall();
 private:
     class PD;
     PD * pd;

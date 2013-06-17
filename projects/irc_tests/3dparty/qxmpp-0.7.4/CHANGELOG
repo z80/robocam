@@ -1,3 +1,16 @@
+QXmpp 0.7.6 (Mar 9, 2013)
+-------------------------
+
+  - Add QXmppClient::insertExtension to insert an extension at a given index.
+  - Disable Facebook / Google / Facebook specific mechanisms if we do not
+    have the corresponding credentials.
+
+QXmpp 0.7.5 (Jan 11, 2013)
+--------------------------
+
+  - Replace toAscii/fromAscii with toLatin1/fromLatin1 for Qt 5 compatibility.
+  - Fix build using clang in pedantic mode.
+
 QXmpp 0.7.4 (Oct 1, 2012)
 -------------------------
 
