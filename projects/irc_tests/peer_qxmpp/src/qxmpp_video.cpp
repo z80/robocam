@@ -47,6 +47,16 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
                       SLOT(callStarted(QXmppCall *)) );
 }
 
+void QXmppVideo::setFrameHandler( PeerAbst::TFrameHandler handler )
+{
+    m_frameHandler = handler;
+}
+
+void QXmppVideo::frame( QImage & image )
+{
+    image = m_image;
+}
+
 // https://en.wikipedia.org/wiki/YUV {
 inline quint8 QXmppVideo::clamp(qint32 value)
 {
@@ -137,9 +147,10 @@ QXmppVideoFrame QXmppVideo::imageToVideoFrame(const QImage &image)
     return videoFrame;
 }
 
-QImage QXmppVideo::videoFrameToImage(const QXmppVideoFrame &videoFrame)
+void QXmppVideo::videoFrameToImage( const QXmppVideoFrame & videoFrame )
 {
-    QImage image(videoFrame.size(), QImage::Format_RGB888);
+    QImage & image = m_image;
+    image = QImage(videoFrame.size(), QImage::Format_RGB888);
 
     qint32 width = videoFrame.size().width();
     qint32 height = videoFrame.size().height();
@@ -203,8 +214,6 @@ QImage QXmppVideo::videoFrameToImage(const QXmppVideoFrame &videoFrame)
         default:
         break;
     }
-
-    return image;
 }
 
 
@@ -419,8 +428,11 @@ void QXmppVideo::readFrames()
         if (!frame.isValid())
             continue;
 
-        const QImage image = this->videoFrameToImage(frame);
-        emit frame( image );
+        this->videoFrameToImage(frame);
+
+        if ( !m_frameHandler.empty() )
+            m_frameHandler();
+        //emit frame( image );
         //this->lblIncomingFrame->setPixmap(QPixmap::fromImage(image));
     }
 }
@@ -557,7 +569,8 @@ void QXmppVideo::writeFrame()
     if (imageRGB.size() != encoderFrameSize)
         imageRGB = imageRGB.scaled(encoderFrameSize);
 
-    const QXmppVideoFrame frame = this->imageToVideoFrame(imageRGB);
+    QXmppVideoFrame frame;
+    this->imageToVideoFrame( imageRGB, frame );
 
     this->m_call->videoChannel()->writeFrame(frame);
 

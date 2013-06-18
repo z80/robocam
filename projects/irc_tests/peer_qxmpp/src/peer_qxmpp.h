@@ -16,6 +16,9 @@ public:
     bool sendFile( const std::string & fileName, QIODevice * file );
     void call();
     void endCall();
+    void setFrameHandler( TFrameHandler handler );
+    bool frame( QImage & image );
+
 private:
     class PD;
     PD * pd;

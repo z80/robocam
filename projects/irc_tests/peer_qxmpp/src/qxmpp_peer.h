@@ -40,6 +40,7 @@ public:
     void sendFile( const std::string & jid, const std::string & fileName, QIODevice * dev );
     void call( const std::string & jid );
     void endCall();
+    QXmppVideo * qxmppVideo();
 signals:
     void sigSendFile(const QString &, const QString &, QIODevice *);
 public slots:

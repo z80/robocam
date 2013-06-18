@@ -1,5 +1,7 @@
 
-find_package( OpenCV REQUIRED )
+if ( USE_OPENCV )
+    find_package( OpenCV REQUIRED )
+endif ( USE_OPENCV )
 
 find_package( Qt4 )
 set( QT_USE_QTCORE       True )
@@ -23,8 +25,10 @@ include_directories( "./src"
                      ${ROOT}/3dparty/qxmpp-0.7.4/src/client 
                      ${ROOT}/3dparty/qxmpp-0.7.4/src/server 
                      ${Boost_INCLUDE_DIRS} 
-		     ${OPENCV_INCLUDE_DIRS}
                      ${CMAKE_CURRENT_BINARY_DIR} )
+if ( USE_OPENCV )
+    include_directories( ${OPENCV_INCLUDE_DIRS} )
+endif ( USE_OPENCV )
 
 file( GLOB src     "./src/*.cpp" )
 file( GLOB headers "./src/*.h" )
@@ -45,7 +49,10 @@ set( src ${src} ${qrcSrc} )
 add_library( peer_qxmpp STATIC ${src} )
 set( libs peer_abst liblua-5.1.5 qxmpp )
 message( STATUS "LIBS0 = ${libs}" )
-set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OPENCV_LIBRARIES} )
+set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES}  )
+if ( USE_OPENCV )
+    set( libs ${libs} ${OPENCV_LIBRARIES} )
+endif ( USE_OPENCV )
 message( STATUS "LIBS1 = ${libs}" )
 set( defs QXMPP_STATIC )
 target_link_libraries( peer_qxmpp ${libs} )

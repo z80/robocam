@@ -10,12 +10,17 @@
 #include <QXmppRtpChannel.h>
 #include <opencv2/opencv.hpp>
 
+#include "peer_abst.h"
+
 class QXmppVideo: public QTimer
 {
     Q_OBJECT
 public:
     QXmppVideo( QXmppClient * parent );
     ~QXmppVideo();
+
+    void setFrameHandler( PeerAbst::TFrameHandler handler );
+    void frame( QImage & image );
 
 private:
     // Methods for converting between RGB <=> YUV.
@@ -30,8 +35,8 @@ private:
     qint32 yuv2b(quint8 y, quint8 u, quint8 v);
 
     // Convertion between QXmpp <=> Qt image format.
-    QXmppVideoFrame imageToVideoFrame(const QImage &image);
-    QImage videoFrameToImage(const QXmppVideoFrame &videoFrame);
+    void imageToVideoFrame( const QImage & image, QXmppVideoFrame & frame );
+    void videoFrameToImage( const QXmppVideoFrame & videoFrame );
 
 private slots:
     void slotCall( const QString & jid );
@@ -49,15 +54,15 @@ private slots:
     void videoModeChanged(QIODevice::OpenMode mode);
     void writeFrame();
 
-signals:
-    void frame( const QImage & );
-
 private:
     QXmppClient      * m_client;
     QStringList      m_roster;
     QXmppCall        * m_call;
     QXmppCallManager m_callManager;
     cv::VideoCapture m_webcam;
+
+    PeerAbst::TFrameHandler m_frameHandler;
+    QImage                  m_image;
 };
 
 #endif

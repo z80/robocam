@@ -85,10 +85,14 @@ public:
     // Here it should be several peers to protect from XMPP server being down.
     std::string iniFile;
     std::list<PeerDesc *> peers;
+    // Video related.
+    PeerQxmpp     * videoPeer;
+    TFrameHandler frameHandler;
 };
 
 PeerQxmpp::PD::PD()
 {
+    videoPeer = 0;
 }
 
 PeerQxmpp::PD::~PD()
@@ -200,6 +204,53 @@ bool PeerQxmpp::sendFile( const std::string & fileName, QIODevice * file )
     }
     return false;
 }
+
+void PeerQxmpp::call()
+{
+    for ( std::list<PeerDesc*>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
+    {
+        PeerDesc * p = *i;
+        if ( p->peer->isConnected() )
+        {
+            p->peer->call( p->jidDest );
+            pd->videoPeer = p->peer;
+            pd->videoPeer->qxmppVideo()->setFrameHandler( pd->frameHandler );
+            return;
+        }
+    }
+}
+
+void PeerQxmpp::endCall()
+{
+    for ( std::list<PeerDesc*>::iterator i=pd->peers.begin(); i!=pd->peers.end(); i++ )
+    {
+        PeerDesc * p = *i;
+        if ( p->peer->isConnected() )
+            p->peer->endCall();
+    }
+    pd->videoPeer = 0;
+}
+
+void PeerQxmpp::setFrameHandler( TFrameHandler handler )
+{
+    pd->frameHandler = handler;
+    if ( pd->videoPeer )
+    {
+        if ( pd->videoPeer->qxmppVideo() )
+            pd->videoPeer->qxmppVideo()->setFrameHandler( handler );
+    }
+}
+
+bool PeerQxmpp::frame( QImage & image )
+{
+    if ( pd->videoPeer )
+    {
+        if ( pd->videoPeer->qxmppVideo() )
+            pd->videoPeer->qxmppVideo()->frame( image );
+    }
+}
+
+
 
 
 

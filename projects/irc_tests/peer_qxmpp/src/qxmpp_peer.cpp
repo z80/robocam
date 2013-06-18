@@ -101,6 +101,11 @@ void QXmppPeer::endCall()
     m_video->slotEndCall();
 }
 
+QXmppVideo * QXmppPeer::qxmppVideo()
+{
+    return m_video;
+}
+
 void QXmppPeer::slotSendFile( const QString & jid, const QString & fileName, QIODevice * dev )
 {
     if ( !dev->isOpen() )

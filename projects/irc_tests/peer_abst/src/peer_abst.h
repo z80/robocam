@@ -15,6 +15,7 @@ public:
 	typedef boost::function<void (lua_State *)> TInit;
 	typedef boost::function<QIODevice * (const std::string &)>       TInFileHandler;
 	typedef boost::function<void (const std::string &, QIODevice *)> TAccFileHandler;
+    typedef boost::function<void ()> TFrameHandler;
 
 	PeerAbst( TInit init );
 	virtual ~PeerAbst();
@@ -29,8 +30,10 @@ public:
 	void setInFileHandler( TInFileHandler handler );
 	void setAccFileHandler( TAccFileHandler handler );
     // Video related stuff.
-    virtual void call() = 0;
-    virtual void endCall() = 0;
+    //virtual void call() = 0;
+    //virtual void endCall() = 0;
+    //virtual void setFrameHandler( TFrameHandler handler ) = 0;
+    //virtual bool frame( QImage & image ) = 0;
 public:
     // Should be called in appropriate places when file comes in and when it is downloaded.
     // E.i. in file io realization part.
