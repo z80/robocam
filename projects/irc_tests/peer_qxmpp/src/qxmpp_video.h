@@ -4,6 +4,7 @@
 
 #include <QTimer>
 #include <QProcess>
+#include <QImage>
 #include <QXmppClient.h>
 #include <QXmppRosterManager.h>
 #include <QXmppCallManager.h>
@@ -38,9 +39,10 @@ private:
     void imageToVideoFrame( const QImage & image, QXmppVideoFrame & frame );
     void videoFrameToImage( const QXmppVideoFrame & videoFrame );
 
-private slots:
+public slots:
     void slotCall( const QString & jid );
     void slotEndCall();
+private slots:
     void audioModeChanged(QIODevice::OpenMode mode);
     void callConnected();
     void callFinished();

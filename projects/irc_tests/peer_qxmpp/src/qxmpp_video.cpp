@@ -47,6 +47,11 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
                       SLOT(callStarted(QXmppCall *)) );
 }
 
+QXmppVideo::~QXmppVideo()
+{
+
+}
+
 void QXmppVideo::setFrameHandler( PeerAbst::TFrameHandler handler )
 {
     m_frameHandler = handler;
@@ -111,7 +116,7 @@ inline qint32 QXmppVideo::yuv2b(quint8 y, quint8 u, quint8 v)
 
 
 
-QXmppVideoFrame QXmppVideo::imageToVideoFrame(const QImage &image)
+void QXmppVideo::imageToVideoFrame( const QImage & image, QXmppVideoFrame & frame )
 {
     QXmppVideoFrame videoFrame(2 * image.width() * image.height(),
                                image.size(),
@@ -144,7 +149,7 @@ QXmppVideoFrame QXmppVideo::imageToVideoFrame(const QImage &image)
         *oBits++ = this->rgb2v(this->med(r1, r2), this->med(g1, g2), this->med(b1, b2));
     }
 
-    return videoFrame;
+    frame = videoFrame;
 }
 
 void QXmppVideo::videoFrameToImage( const QXmppVideoFrame & videoFrame )

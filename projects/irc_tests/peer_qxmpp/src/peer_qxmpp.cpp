@@ -1,6 +1,7 @@
 
 #include "peer_qxmpp.h"
 #include "qxmpp_peer.h"
+#include "qxmpp_video.h"
 #include <iostream>
 #include <sstream>
 #include <boost/bind.hpp>
@@ -86,7 +87,7 @@ public:
     std::string iniFile;
     std::list<PeerDesc *> peers;
     // Video related.
-    PeerQxmpp     * videoPeer;
+    QXmppPeer     * videoPeer;
     TFrameHandler frameHandler;
 };
 

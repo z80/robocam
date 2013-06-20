@@ -30,8 +30,8 @@ public:
 	void setInFileHandler( TInFileHandler handler );
 	void setAccFileHandler( TAccFileHandler handler );
     // Video related stuff.
-    //virtual void call() = 0;
-    //virtual void endCall() = 0;
+    virtual void call() = 0;
+    virtual void endCall() = 0;
     //virtual void setFrameHandler( TFrameHandler handler ) = 0;
     //virtual bool frame( QImage & image ) = 0;
 public:

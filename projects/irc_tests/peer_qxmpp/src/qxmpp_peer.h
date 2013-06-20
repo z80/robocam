@@ -58,9 +58,6 @@ public slots:
     void trPresenceReceived(const QXmppPresence &presence);
     void trProgress(qint64 done, qint64 total);
 
-    // Video related.
-    void slotFrame();
-
 private:
     TLogHandler     m_logHandler;
     TMessageHandler m_messageHandler;

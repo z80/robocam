@@ -3,6 +3,7 @@
 #define __PEER_QXMPP_H_
 
 #include "peer_abst.h"
+#include <QImage>
 
 class PeerQxmpp: public PeerAbst
 {

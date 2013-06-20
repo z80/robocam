@@ -136,7 +136,8 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_library( qxmpp STATIC ${src} )
-set( libs ${QT_LIBRARIES} ${VPX_LIBRARIES} ${THEORA_LIBRARY} ${SPEEX_LIBRARIES} )
+# ${THEORA_LIBRARY}
+set( libs ${QT_LIBRARIES} ${VPX_LIBRARIES} ${SPEEX_LIBRARY} ${SPEEXDSP_LIBRARY} )
 if ( WIN32 )
     set( libs ${libs} dnsapi.lib ws2_32.lib )
 endif ( WIN32 )
@@ -144,8 +145,9 @@ target_link_libraries( qxmpp ${libs} )
 set( defs QXMPP_BUILD )
 if ( QXMPP_USE_CODECS )
     set( defs ${defs} QXMPP_USE_SPEEX 
-                      QXMPP_USE_THEORA 
                       QXMPP_USE_VPX )
+#                       QXMPP_USE_THEORA
+
 endif (QXMPP_USE_CODECS )
 set_property( TARGET qxmpp PROPERTY COMPILE_DEFINITIONS ${defs} )
 

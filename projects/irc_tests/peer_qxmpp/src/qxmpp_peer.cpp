@@ -1,5 +1,6 @@
 
 #include "qxmpp_peer.h"
+#include "qxmpp_video.h"
 #include "QXmppMessage.h"
 #include "QXmppLogger.h"
 #include <sstream>
