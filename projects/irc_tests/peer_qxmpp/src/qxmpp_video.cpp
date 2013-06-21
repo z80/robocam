@@ -259,10 +259,12 @@ void QXmppVideo::slotCall( const QString & jid )
                      SIGNAL(videoModeChanged(QIODevice::OpenMode)),
                      this,
                      SLOT(videoModeChanged(QIODevice::OpenMode)));
+    QTimer::start();
 }
 
 void QXmppVideo::slotEndCall()
 {
+    QTimer::stop();
     if ( this->m_call )
     {
         // Hangup call.
