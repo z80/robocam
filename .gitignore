@@ -16,6 +16,8 @@ projects/chibios_test/usb_cdc/build/lst
 projects/chibios_test/usb_cdc/.dep
 projects/ctrl-board/firmware/firmware/build/lst
 projects/ctrl-board/firmware/firmware/.dep
+projects/ctrl-board/software/build
+projects/ctrl-board/software/build.app
 *.swp
 *.o
 .libs
