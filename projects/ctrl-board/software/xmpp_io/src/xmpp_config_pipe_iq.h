@@ -1,4 +1,9 @@
 
+
+#ifndef __XMPP_CONFIG_PIPE_IQ_H_
+#define __XMPP_CONFIG_PIPE_IQ_H_
+
+
 #include "QXmppIq.h"
 
 class QXmppConfigPipeIq: public QXmppIq
@@ -8,23 +13,24 @@ public:
     ~QXmppConfigPipeIq();
 
     void setPort( int arg );
-    int port() const;
+    int  port() const;
 
-    void setIsListening( bool en );
-    bool isListening() const;
+    void setHost( const QString & stri );
+    const QString & host() const;
 
     void setId( int id );
-    int id() const;
+    int  id() const;
 
-    static bool isConfigPipeIq( const QDomElement & element );
+    static bool isConfigPipeIq( const QDomElement & element, int id );
 protected:
     void parseElementFromChild( const QDomElement & element );
-    void toXmlElementFromChild( QXmlStreamWriter * writer );
+    void toXmlElementFromChild( QXmlStreamWriter * writer ) const;
 private:
-    int  m_port;
-    bool m_listening;
-    int  m_id;
+    int     m_port;
+    QString m_host;
+    int     m_id;
 };
 
 
+#endif
 

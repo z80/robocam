@@ -6,7 +6,7 @@
 #include "QXmppConstants.h"
 #include "QXmppUtils.h"
 
-#include "xmpp_pipe_packet_iq.h"
+#include "xmpp_packet_iq.h"
 
 QXmppPacketIq::QXmppPacketIq()
     : QXmppIq()

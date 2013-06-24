@@ -28,14 +28,15 @@
 #include "QXmppMessage.h"
 
 #include "xmpp_tcp_proxy.h"
-#include "xmpp_pipe_packet_iq.h"
+#include "xmpp_packet_iq.h"
+#include "xmpp_config_pipe_iq.h"
 
 #include "example_1_echoClient.h"
 
 echoClient::echoClient(QObject *parent)
     : QXmppPeer(parent)
 {
-    QObject::connect( this, SIGNAL(message(const QString &)),
+    QObject::connect( this, SIGNAL(textmsg(const QString &)),
                       this, SLOT(messageReceived(const QString &)));
 
     QObject::connect( this, SIGNAL( connected() ),
@@ -45,7 +46,7 @@ echoClient::echoClient(QObject *parent)
 
     QXmppTcpProxy * proxy = new QXmppTcpProxy( 1 );
     this->addExtension( proxy );
-    proxy->setPipe( 80, true );
+    proxy->setOutPipe( "in@xmpp", 1234, 22, "localhost" );
 }
 
 echoClient::~echoClient()
@@ -60,11 +61,21 @@ void echoClient::messageReceived( const QString & stri )
 
 void echoClient::slotConnected()
 {
+    /*
+    QXmppConfigPipeIq configIq;
+    configIq.setTo( "in@xmpp" );
+    configIq.setId( 1 );
+    configIq.setPort( 22 );
+    configIq.setHost( "localhost" );
+    sendPacket( configIq );
+
+
     QXmppPacketIq packetIq;
     packetIq.setTo( "in@xmpp" );
     packetIq.setId( 1 );
     packetIq.setData( "123456" );
     sendPacket( packetIq );
+    */
 }
 
 int main(int argc, char *argv[])

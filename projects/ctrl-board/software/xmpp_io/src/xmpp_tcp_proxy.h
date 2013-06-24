@@ -13,7 +13,8 @@ public:
     QXmppTcpProxy( int id = -1 );
     ~QXmppTcpProxy();
 
-    void setPipe( int localPort, bool outgoing = true, int id = -1 );
+    void setInPipe( int id = -1 );
+    void setOutPipe( const QString & jidDest, int localPort, int remotePort = -1, const QString & remoteHost = QString(), int id = -1 );
     void clearPipe();
 
     virtual bool handleStanza(const QDomElement &element);

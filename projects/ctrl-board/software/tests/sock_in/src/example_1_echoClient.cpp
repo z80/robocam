@@ -34,14 +34,14 @@
 echoClient::echoClient(QObject *parent)
     : QXmppPeer(parent)
 {
-    QObject::connect( this, SIGNAL(message(const QString &)),
+    QObject::connect( this, SIGNAL(textmsg(const QString &)),
                       this, SLOT(messageReceived(const QString &)) );
 
     QXmppPeer::connect( "in@xmpp", "12345", "localhost" );
 
     QXmppTcpProxy * proxy = new QXmppTcpProxy( 1 );
     this->addExtension( proxy );
-    proxy->setPipe( 80, false );
+    proxy->setInPipe();
 }
 
 echoClient::~echoClient()
