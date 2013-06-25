@@ -20,6 +20,9 @@ public:
     QTcpSocket * sock;
     QByteArray   data64;
     QByteArray   data;
+    QByteArray   dataToWrite;
+    QByteArray   dataToRead;
+    int          maxPacketSize;
 };
 
 QXmppMsgPipe::QXmppMsgPipe( QXmppClient * client, int id )
@@ -28,11 +31,12 @@ QXmppMsgPipe::QXmppMsgPipe( QXmppClient * client, int id )
     pd = new PD();
     pd->client     = client;
     pd->id         = id;
-    pd->localPort  = -1;
-    pd->remotePort = -1;
-    pd->remoteHost = "";
+    pd->localPort  = 1234;
+    pd->remotePort = 22;
+    pd->remoteHost = "localhost";
     pd->serv       = 0;
     pd->sock       = 0;
+    pd->maxPacketSize = 96;
 
     connect( client, SIGNAL(messageReceived(QXmppMessage)),
              this,     SLOT(qxmppMessageReceived(QXmppMessage)));
@@ -77,9 +81,16 @@ void QXmppMsgPipe::clearPipe()
     pd->serv = 0;
 }
 
+void QXmppMsgPipe::setMaxPacketSize( int sz )
+{
+    pd->maxPacketSize = sz;
+    if ( pd->maxPacketSize < 0 )
+        pd->maxPacketSize = 1;
+}
+
 void QXmppMsgPipe::qxmppMessageReceived( const QXmppMessage & msg )
 {
-    pd->data64   = msg.body().toUtf8();
+    pd->data64   = msg.body().toAscii();
     pd->data     = QByteArray::fromBase64( pd->data64 );
 
     QDomDocument doc;
@@ -111,10 +122,18 @@ void QXmppMsgPipe::qxmppMessageReceived( const QXmppMessage & msg )
             return;
         if ( pd->sock )
         {
+            bool doWrite = ( root.attribute( "wr", "-1" ).toInt() > 0 );
             pd->data64 = root.text().toUtf8();
-            pd->data   = QByteArray::fromBase64( pd->data64 );
+            pd->dataToRead.append( pd->data64 );
+            if ( doWrite )
+            {
+                pd->data = QByteArray::fromBase64( pd->dataToRead );
 
-            pd->sock->write( pd->data );
+                qDebug() << "#####################<<<" << pd->data;
+
+                pd->sock->write( pd->data );
+                pd->dataToRead.clear();
+            }
         }
     }
 
@@ -138,13 +157,12 @@ void QXmppMsgPipe::serverNewConnection()
         pd->data.clear();
         QXmlStreamWriter stream( &pd->data );
         stream.setAutoFormatting( false );
-        //stream.writeStartDocument();
+
         stream.writeStartElement( "config" );
         stream.writeAttribute( "ind", QString( "%1" ).arg( pd->id ) );
         stream.writeAttribute( "port", QString( "%1" ).arg( pd->remotePort ) );
         stream.writeAttribute( "host", QString( "%1" ).arg( pd->remoteHost ) );
         stream.writeEndElement();
-        //stream.writeEndDocument();
 
         pd->data64 = pd->data.toBase64();
 
@@ -156,23 +174,33 @@ void QXmppMsgPipe::socketReadyRead()
 {
     if ( !pd->sock )
         return;
-    pd->data = pd->sock->readAll();
-    pd->data64 = pd->data.toBase64();
+    pd->dataToWrite = pd->sock->readAll();
 
-    pd->data.clear();
-    QXmlStreamWriter stream( &pd->data );
-    stream.setAutoFormatting( false );
-    //stream.writeStartDocument();
-    stream.writeStartElement( "data" );
-    stream.writeAttribute( "ind", QString( "%1" ).arg( pd->id ) );
-    stream.writeCharacters( pd->data64 );
-    stream.writeEndElement();
-    //stream.writeEndDocument();
+    qDebug() << "#####################>>> " << pd->dataToWrite;
 
-    pd->data64 = pd->data.toBase64();
-    pd->client->sendMessage( pd->jidDest, pd->data64 );
+    pd->data64 = pd->dataToWrite.toBase64();
+    pd->dataToWrite = pd->data64;
 
-    //qDebug() << "#####################>" << pd->stri;
+    for ( int i=0; i<pd->dataToWrite.size(); i+=pd->maxPacketSize )
+    {
+        pd->data.clear();
+        QXmlStreamWriter stream( &pd->data );
+        stream.setAutoFormatting( false );
+
+        stream.writeStartElement( "data" );
+        stream.writeAttribute( "ind", QString( "%1" ).arg( pd->id ) );
+        if ( pd->dataToWrite.size() - i > pd->maxPacketSize )
+            stream.writeAttribute( "wr", QString( "%1" ).arg( -1 ) );
+        else
+            stream.writeAttribute( "wr", QString( "%1" ).arg( 1 ) );
+        pd->data64 = pd->dataToWrite.mid( i, pd->maxPacketSize );
+        stream.writeCharacters( pd->data64 );
+        stream.writeEndElement();
+
+        pd->data64 = pd->data.toBase64();
+        pd->client->sendMessage( pd->jidDest, pd->data64 );
+    }
+    pd->dataToWrite.clear();
 }
 
 

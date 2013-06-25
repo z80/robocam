@@ -16,6 +16,7 @@ public:
     void setInPipe( int id = -1 );
     void setOutPipe( const QString & jidDest, int localPort, int remotePort = -1, const QString & remoteHost = QString(), int id = -1 );
     void clearPipe();
+    void setMaxPacketSize( int sz = 128 );
 
 private slots:
     void qxmppMessageReceived( const QXmppMessage & );
