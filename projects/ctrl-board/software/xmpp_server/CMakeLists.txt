@@ -11,7 +11,8 @@ include_directories( "./src"
                      "${ROOT}/3dparty/qxmpp/src/base"
                      "${ROOT}/3dparty/qxmpp/src/client"
                      "${ROOT}/3dparty/qxmpp/src/server"
-                     ${CMAKE_CURRENT_BINARY_DIR} )
+                     ${CMAKE_CURRENT_BINARY_DIR} 
+                     ${BOOST_INCLUDEDIR} )
 
 file( GLOB src     "./src/*.cpp" )
 file( GLOB headers "./src/*.h" )
@@ -33,6 +34,10 @@ add_executable( ${PROJ_NAME} ${src} )
 set( libs qxmpp 
           ${QT_LIBRARIES} ) 
 target_link_libraries( ${PROJ_NAME} ${libs} )
+
+set( defs QXMPP_STATIC )
+set_property( TARGET ${PROJ_NAME} PROPERTY COMPILE_DEFINITIONS ${defs} )
+
 install( TARGETS ${PROJ_NAME} DESTINATION "./" )
 install( DIRECTORY "./ini/" DESTINATION "./" )
 
