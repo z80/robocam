@@ -55,6 +55,11 @@ if ( USE_OPENCV )
 endif ( USE_OPENCV )
 #message( STATUS "LIBS1 = ${libs}" )
 set( defs QXMPP_STATIC )
+
+if ( WIN32 )
+    include( "./win32_opencv.cmake" )
+endif ( WIN32 )
+
 target_link_libraries( ${PROJ_NAME} ${libs} )
 set_property( TARGET ${PROJ_NAME} PROPERTY COMPILE_DEFINITIONS ${defs} )
 
