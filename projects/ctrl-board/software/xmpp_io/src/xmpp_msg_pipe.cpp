@@ -37,7 +37,7 @@ QXmppMsgPipe::QXmppMsgPipe( QXmppClient * client, int id )
     pd->remoteHost = "localhost";
     pd->serv       = 0;
     pd->sock       = 0;
-    pd->maxPacketSize = 96;
+    pd->maxPacketSize = 1024;
     pd->messageDelay  = 0;
 
     connect( client, SIGNAL(messageReceived(QXmppMessage)),
@@ -111,8 +111,10 @@ void QXmppMsgPipe::qxmppMessageReceived( const QXmppMessage & msg )
         int id = root.attribute( "ind", "-1" ).toInt();
         if ( id != pd->id )
             return;
-        pd->remotePort = root.attribute( "port", "1234" ).toInt();
-        pd->remoteHost = root.attribute( "host", "localhost" );
+        pd->remotePort    = root.attribute( "port", "1234" ).toInt();
+        pd->remoteHost    = root.attribute( "host", "localhost" );
+        pd->maxPacketSize = root.attribute( "packet", QString( "%1" ).arg( pd->maxPacketSize ) ).toInt();
+        pd->messageDelay  = root.attribute( "delay",  QString( "%1" ).arg( pd->messageDelay ) ).toInt();
         pd->jidDest    = msg.from();
 
         clearPipe();
@@ -173,9 +175,11 @@ void QXmppMsgPipe::serverNewConnection()
         stream.setAutoFormatting( false );
 
         stream.writeStartElement( "config" );
-        stream.writeAttribute( "ind", QString( "%1" ).arg( pd->id ) );
-        stream.writeAttribute( "port", QString( "%1" ).arg( pd->remotePort ) );
-        stream.writeAttribute( "host", QString( "%1" ).arg( pd->remoteHost ) );
+        stream.writeAttribute( "ind",    QString( "%1" ).arg( pd->id ) );
+        stream.writeAttribute( "port",   QString( "%1" ).arg( pd->remotePort ) );
+        stream.writeAttribute( "host",   QString( "%1" ).arg( pd->remoteHost ) );
+        stream.writeAttribute( "packet", QString( "%1" ).arg( pd->maxPacketSize ) );
+        stream.writeAttribute( "delay",  QString( "%1" ).arg( pd->messageDelay ) );
         stream.writeEndElement();
 
         pd->data64 = pd->data.toBase64();
