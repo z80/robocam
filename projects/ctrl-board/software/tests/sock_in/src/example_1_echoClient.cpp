@@ -27,7 +27,7 @@
 #include "QXmppLogger.h"
 #include "QXmppMessage.h"
 
-#include "xmpp_tcp_proxy.h"
+#include "xmpp_msg_pipe.h"
 
 #include "example_1_echoClient.h"
 
@@ -39,8 +39,7 @@ echoClient::echoClient(QObject *parent)
 
     QXmppPeer::connect( "in@xmpp", "12345", "localhost" );
 
-    QXmppTcpProxy * proxy = new QXmppTcpProxy( 1 );
-    this->addExtension( proxy );
+    QXmppMsgPipe * proxy = new QXmppMsgPipe( this, 1 );
     proxy->setInPipe();
 }
 
@@ -51,7 +50,7 @@ echoClient::~echoClient()
 
 void echoClient::messageReceived( const QString & stri )
 {
-    sendMessage( stri );
+    //sendMessage( stri );
 }
 
 int main(int argc, char *argv[])

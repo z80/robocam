@@ -82,10 +82,12 @@ void QXmppMsgPipe::qxmppMessageReceived( const QXmppMessage & msg )
     pd->data64   = msg.body().toUtf8();
     pd->data     = QByteArray::fromBase64( pd->data64 );
 
-    QDomDocument doc( pd->data );
-    QDomElement  root = doc.documentElement();
-    if ( root.isNull() )
+    QDomDocument doc;
+    QString errorMsg;
+    bool res = doc.setContent( pd->data, &errorMsg );
+    if ( !res )
         return;
+    QDomElement  root = doc.documentElement();
     if ( root.tagName() == "config" )
     {
         int id = root.attribute( "ind", "-1" ).toInt();
@@ -136,13 +138,13 @@ void QXmppMsgPipe::serverNewConnection()
         pd->data.clear();
         QXmlStreamWriter stream( &pd->data );
         stream.setAutoFormatting( false );
-        stream.writeStartDocument();
+        //stream.writeStartDocument();
         stream.writeStartElement( "config" );
         stream.writeAttribute( "ind", QString( "%1" ).arg( pd->id ) );
         stream.writeAttribute( "port", QString( "%1" ).arg( pd->remotePort ) );
         stream.writeAttribute( "host", QString( "%1" ).arg( pd->remoteHost ) );
         stream.writeEndElement();
-        stream.writeEndDocument();
+        //stream.writeEndDocument();
 
         pd->data64 = pd->data.toBase64();
 
@@ -160,11 +162,12 @@ void QXmppMsgPipe::socketReadyRead()
     pd->data.clear();
     QXmlStreamWriter stream( &pd->data );
     stream.setAutoFormatting( false );
-    stream.writeStartDocument();
+    //stream.writeStartDocument();
     stream.writeStartElement( "data" );
     stream.writeAttribute( "ind", QString( "%1" ).arg( pd->id ) );
     stream.writeCharacters( pd->data64 );
-    stream.writeEndDocument();
+    stream.writeEndElement();
+    //stream.writeEndDocument();
 
     pd->data64 = pd->data.toBase64();
     pd->client->sendMessage( pd->jidDest, pd->data64 );
