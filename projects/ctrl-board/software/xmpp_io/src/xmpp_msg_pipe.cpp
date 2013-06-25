@@ -23,6 +23,7 @@ public:
     QByteArray   dataToWrite;
     QByteArray   dataToRead;
     int          maxPacketSize;
+    int          messageDelay;
 };
 
 QXmppMsgPipe::QXmppMsgPipe( QXmppClient * client, int id )
@@ -37,6 +38,7 @@ QXmppMsgPipe::QXmppMsgPipe( QXmppClient * client, int id )
     pd->serv       = 0;
     pd->sock       = 0;
     pd->maxPacketSize = 96;
+    pd->messageDelay  = 0;
 
     connect( client, SIGNAL(messageReceived(QXmppMessage)),
              this,     SLOT(qxmppMessageReceived(QXmppMessage)));
@@ -88,6 +90,11 @@ void QXmppMsgPipe::setMaxPacketSize( int sz )
         pd->maxPacketSize = 1;
 }
 
+void QXmppMsgPipe::setMessageDelay( int ms )
+{
+    pd->messageDelay = ms;
+}
+
 void QXmppMsgPipe::qxmppMessageReceived( const QXmppMessage & msg )
 {
     pd->data64   = msg.body().toAscii();
@@ -136,9 +143,16 @@ void QXmppMsgPipe::qxmppMessageReceived( const QXmppMessage & msg )
             }
         }
     }
-
-    //sendPacket(QXmppMessage("", from, "Your message: " + msg));
 }
+
+class Sleep: public QThread
+{
+public:
+    static void msleep( int ms )
+    {
+        QThread::msleep( ms );
+    }
+};
 
 void QXmppMsgPipe::serverNewConnection()
 {
@@ -167,6 +181,7 @@ void QXmppMsgPipe::serverNewConnection()
         pd->data64 = pd->data.toBase64();
 
         pd->client->sendMessage( pd->jidDest, pd->data64 );
+        Sleep::msleep( pd->messageDelay );
     }
 }
 
@@ -199,6 +214,13 @@ void QXmppMsgPipe::socketReadyRead()
 
         pd->data64 = pd->data.toBase64();
         pd->client->sendMessage( pd->jidDest, pd->data64 );
+
+        // Delay between messages.
+        /*QTime t;
+        t.start();
+        while ( t.elapsed() < pd->messageDelay )
+            qApp->processEvents();*/
+        Sleep::msleep( pd->messageDelay );
     }
     pd->dataToWrite.clear();
 }
