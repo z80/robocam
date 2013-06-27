@@ -1,19 +1,26 @@
 
 #include "xmpp_video.h"
+#include "rpc_call_interface.h"
 #include <QXmppClient.h>
 #include <QXmppRosterManager.h>
 #include <QXmppCallManager.h>
+#include <QXmppRpcManager.h>
 #include <QXmppRtpChannel.h>
 #include <opencv2/opencv.hpp>
 
 class QXmppVideo::PD
 {
 public:
-    PD () {}
+    PD ( QXmppVideo * video )
+        : callInterface( video )
+    {}
+
     ~PD() {}
 
     QXmppClient      * client;
     QXmppCallManager callManager;
+    QXmppRpcManager  rpcManager;
+    CallInterface    callInterface;
     QXmppCall        * call;
     cv::VideoCapture webcam;
 
@@ -96,6 +103,7 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
     pd->acceptCall = true;
     pd->call       = 0;
 
+    pd->client->addExtension( &pd->callManager );
     pd->client->addExtension( &pd->callManager );
 
     QTimer::setInterval( 33 );
@@ -308,6 +316,16 @@ void QXmppVideo::endCall()
 
         pd->call = 0;
     }
+}
+
+void QXmppVideo::invokeCall()
+{
+    QXmppRemoteMethodResult method = pd->rpcManager.callRemoteMethod( pd->jid, "CallInterface.call" );
+}
+
+void QXmppVideo::invokeEndCall()
+{
+    QXmppRemoteMethodResult method = pd->rpcManager.callRemoteMethod( pd->jid, "CallInterface.endCall" );
 }
 
 void QXmppVideo::xmppAudioModeChanged(QIODevice::OpenMode mode)

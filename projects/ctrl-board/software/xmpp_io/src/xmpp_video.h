@@ -22,6 +22,8 @@ public:
 public slots:
     void call();
     void endCall();
+    void invokeCall();
+    void invokeEndCall();
 
 signals:
     void frameReady();
