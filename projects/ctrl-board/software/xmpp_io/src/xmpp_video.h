@@ -44,7 +44,7 @@ private slots:
     void xmppReadFrames();
     void xmppCallStateChanged(QXmppCall::State state);
     void xmppVideoModeChanged(QIODevice::OpenMode mode);
-    void xmppWriteFrame();
+    void xmppWriteFrames();
 
 private:
     class PD;

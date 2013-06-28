@@ -113,11 +113,6 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
                       this,   
                       SLOT(xmppMessageReceived(QXmppMessage)) );
 
-    QObject::connect( this,
-                      SIGNAL(timeout()),
-                      this,
-                      SLOT(xmppWriteFrame()) );
-
     QObject::connect( &pd->callManager,
                       SIGNAL(callReceived(QXmppCall *)),
                       this,
@@ -457,8 +452,21 @@ void QXmppVideo::xmppCallConnected()
 {
     // Only caller or receiver can start a video call, but not both
     // at same time.
+    pd->call->startVideo();
     if ( pd->call->direction() == QXmppCall::OutgoingDirection)
-        pd->call->startVideo();
+    {
+        QObject::connect( this,
+                          SIGNAL( timeout() ),
+                          this,
+                          SLOT( xmppWriteFrames() ) );
+    }
+    else
+    {
+        QObject::connect( this,
+                          SIGNAL( timeout() ),
+                          this,
+                          SLOT( xmppReadFrames() ) );
+    }
     QTimer::start();
 }
 
@@ -577,7 +585,7 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
         //     pixelFormat =  21
         // }
 
-        videoFormat.setFrameRate( 30 );
+        videoFormat.setFrameRate( static_cast<int>( 1000.0/pd->fps ) );
         videoFormat.setFrameSize(QSize( pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH ),
                                         pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT ) ) );
 
@@ -639,7 +647,7 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
     }
 }
 
-void QXmppVideo::xmppWriteFrame()
+void QXmppVideo::xmppWriteFrames()
 {
     if ( !pd->call )
         return;

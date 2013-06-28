@@ -31,6 +31,7 @@
 #include "xmpp_video.h"
 
 #include "example_1_echoClient.h"
+#include "main_wnd.h"
 
 echoClient::echoClient(QObject *parent)
     : QXmppPeer(parent)
@@ -84,9 +85,11 @@ void echoClient::slotConnected()
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-    echoClient client;
+    MainWnd * wnd = new MainWnd();
+    wnd->show();
+    //echoClient client;
     //client.logger()->setLoggingType(QXmppLogger::StdoutLogging);
     //client.connectToServer("qxmpp.test1@qxmpp.org", "qxmpp123");
 

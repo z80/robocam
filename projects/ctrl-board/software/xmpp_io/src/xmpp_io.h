@@ -1,4 +1,7 @@
 
+#ifndef __XMPP_PEER_H_
+#define __XMPP_PEER_H_
+
 #include "QXmppClient.h"
 
 class QXmppPeer: public QXmppClient
@@ -34,6 +37,7 @@ private:
     PD * pd;
 };
 
+#endif
 
 
 
