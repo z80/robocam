@@ -459,6 +459,56 @@ void QXmppVideo::xmppCallConnected()
                           SIGNAL( timeout() ),
                           this,
                           SLOT( xmppWriteFrames() ) );
+
+        QXmppVideoFormat videoFormat;
+
+        // Open the webcam.
+        pd->webcam.open( 0 );
+
+        // QXmpp uses this defaults formats for Encoder/Decoder:
+        //
+        // Default Decoder Format
+        // {
+        //     frameRate =  15
+        //     frameSize =  QSize(320, 240)
+        //     pixelFormat =  18
+        // }
+        //
+        // Default Encoder Format
+        // {
+        //     frameRate =  15
+        //     frameSize =  QSize(320, 240)
+        //     pixelFormat =  21
+        // }
+
+        videoFormat.setFrameRate( static_cast<int>( 1000.0/pd->fps ) );
+        videoFormat.setFrameSize(QSize( pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH ),
+                                        pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT ) ) );
+
+        // QXmpp allow the following pixel formats for video encoding:
+        //
+        // PixelFormat
+        // {
+        //     Format_Invalid = 0,
+        //     Format_RGB32 = 3,
+        //     Format_RGB24 = 4,
+        //     Format_YUV420P = 18,
+        //     Format_UYVY = 20,
+        //     Format_YUYV = 21
+        // }
+        //
+        // QXmpp can be compiled with Vp8 and Theora support.
+        // The encoding formats supported by this codecs are:
+        //
+        // Vpx    -> QXmppVideoFrame::Format_YUYV
+        //
+        // Theora -> QXmppVideoFrame::Format_YUV420P
+        //           QXmppVideoFrame::Format_YUYV
+
+        videoFormat.setPixelFormat( QXmppVideoFrame::Format_YUYV );
+
+        // Change default Encoder Format.
+        pd->call->videoChannel()->setEncoderFormat( videoFormat );
     }
     else
     {
@@ -619,7 +669,7 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
             QObject::connect( this,
                               SIGNAL( timeout() ),
                               this,
-                              SLOT( xmppWriteFrame()) );
+                              SLOT( xmppWriteFrames()) );
 
             QObject::connect( this,
                               SIGNAL( timeout() ),
@@ -636,7 +686,7 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
         QObject::disconnect( this,
                              SIGNAL( timeout() ),
                              this,
-                             SLOT( xmppWriteFrame() ) );
+                             SLOT( xmppWriteFrames() ) );
 
         QObject::disconnect( this,
                              SIGNAL( timeout() ),

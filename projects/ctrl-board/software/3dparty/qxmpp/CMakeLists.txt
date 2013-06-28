@@ -1,9 +1,9 @@
 
 if ( QXMPP_USE_CODECS )
     set( CMAKE_MODULE_PATH "${ROOT}/cmake" )
-    #find_package( Vpx    REQUIRED )
+    find_package( Vpx    REQUIRED )
     #find_package( Theora REQUIRED )
-    #find_package( Speex  REQUIRED )
+    find_package( Speex  REQUIRED )
 endif ( QXMPP_USE_CODECS )
 
 find_package( Qt4 )
@@ -144,9 +144,9 @@ endif ( WIN32 )
 target_link_libraries( qxmpp ${libs} )
 set( defs QXMPP_BUILD )
 if ( QXMPP_USE_CODECS )
-#    set( defs ${defs} QXMPP_USE_SPEEX 
-#                      QXMPP_USE_VPX )
-#                      QXMPP_USE_THEORA
+    set( defs ${defs} QXMPP_USE_SPEEX 
+                      QXMPP_USE_VPX )
+                      #QXMPP_USE_THEORA )
 
 endif (QXMPP_USE_CODECS )
 set_property( TARGET qxmpp PROPERTY COMPILE_DEFINITIONS ${defs} )
