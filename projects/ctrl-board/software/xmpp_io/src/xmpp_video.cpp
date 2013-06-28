@@ -1,5 +1,7 @@
 
 #include "xmpp_video.h"
+
+#include <QtXml>
 #include "rpc_call_interface.h"
 #include <QXmppClient.h>
 #include <QXmppRosterManager.h>
@@ -12,21 +14,19 @@ class QXmppVideo::PD
 {
 public:
     PD ( QXmppVideo * video )
-        : callInterface( video )
     {}
 
     ~PD() {}
 
     QXmppClient      * client;
     QXmppCallManager callManager;
-    QXmppRpcManager  rpcManager;
-    CallInterface    callInterface;
     QXmppCall        * call;
     cv::VideoCapture webcam;
 
     QImage           image;
     QString          jid;
     bool             acceptCall;
+    qreal            fps;
 };
 
 
@@ -102,11 +102,16 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
     pd->client     = parent;
     pd->acceptCall = true;
     pd->call       = 0;
+    pd->fps        = 2.0;
 
     pd->client->addExtension( &pd->callManager );
-    pd->client->addExtension( &pd->rpcManager );
 
-    QTimer::setInterval( 33 );
+    QTimer::setInterval( static_cast<int>( 1000.0/pd->fps ) );
+
+    QObject::connect( parent, 
+                      SIGNAL(messageReceived(QXmppMessage)),
+                      this,   
+                      SLOT(xmppMessageReceived(QXmppMessage)) );
 
     QObject::connect( this,
                       SIGNAL(timeout()),
@@ -116,12 +121,12 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
     QObject::connect( &pd->callManager,
                       SIGNAL(callReceived(QXmppCall *)),
                       this,
-                      SLOT(callReceived(QXmppCall *)) );
+                      SLOT(xmppCallReceived(QXmppCall *)) );
 
     QObject::connect( &pd->callManager,
                       SIGNAL(callStarted(QXmppCall *)),
                       this,
-                      SLOT(callStarted(QXmppCall *)) );
+                      SLOT(xmppCallStarted(QXmppCall *)) );
 }
 
 QXmppVideo::~QXmppVideo()
@@ -249,6 +254,38 @@ void QXmppVideo::videoFrameToImage( const QXmppVideoFrame & videoFrame )
     }
 }
 
+void QXmppVideo::xmppMessageReceived( const QXmppMessage & msg )
+{
+    QByteArray data = msg.body().toUtf8();
+    data = QByteArray::fromBase64( data );
+
+    QDomDocument doc;
+    QString errorMsg;
+    bool res = doc.setContent( data, &errorMsg );
+    if ( !res )
+        return;
+    QDomElement  root = doc.documentElement();
+    if ( root.tagName() == "rpc" )
+    {
+        QString func = root.attribute( "func", "call" );
+        if ( func == "call" )
+        {
+            setTarget( msg.from() );
+            QTimer::singleShot( 0, this, SLOT(call()) );
+        }
+        else if ( func == "endCall" )
+        {
+            setTarget( msg.from() );
+            QTimer::singleShot( 0, this, SLOT(endCall()) );
+        }
+        else if ( func == "setFps" )
+        {
+            pd->fps = root.attribute( "arg0" ).toDouble();
+            QTimer::singleShot( 0, this, SLOT(setFps()) );
+        }
+    }
+}
+
 void QXmppVideo::call()
 {
     // Call to contact as otherusername@server.org/resource
@@ -278,7 +315,9 @@ void QXmppVideo::call()
                      SIGNAL(videoModeChanged(QIODevice::OpenMode)),
                      this,
                      SLOT(xmppVideoModeChanged(QIODevice::OpenMode)));
-    QTimer::start();
+
+    cv::VideoCapture & webcam = pd->webcam;
+    webcam.open( 0 );
 }
 
 void QXmppVideo::endCall()
@@ -316,16 +355,62 @@ void QXmppVideo::endCall()
 
         pd->call = 0;
     }
+
+    cv::VideoCapture & webcam = pd->webcam;
+    webcam.release();
+}
+
+void QXmppVideo::setFps()
+{
+    if ( pd->fps <= 0.0 )
+        pd->fps = 0.5;
+    QTimer::setInterval( static_cast<int>( 1000.0/pd->fps ) );
 }
 
 void QXmppVideo::invokeCall()
 {
-    QXmppRemoteMethodResult method = pd->rpcManager.callRemoteMethod( pd->jid, "CallInterface.call" );
+    QByteArray data;
+    QXmlStreamWriter stream( &data );
+    stream.setAutoFormatting( false );
+
+    stream.writeStartElement( "rpc" );
+    stream.writeAttribute( "func",   "call" );
+    stream.writeEndElement();
+
+    data = data.toBase64();
+
+    pd->client->sendMessage( pd->jid, data );
 }
 
 void QXmppVideo::invokeEndCall()
 {
-    QXmppRemoteMethodResult method = pd->rpcManager.callRemoteMethod( pd->jid, "CallInterface.endCall" );
+    QByteArray data;
+    QXmlStreamWriter stream( &data );
+    stream.setAutoFormatting( false );
+
+    stream.writeStartElement( "rpc" );
+    stream.writeAttribute( "func",   "endCall" );
+    stream.writeEndElement();
+
+    data = data.toBase64();
+
+    pd->client->sendMessage( pd->jid, data );
+}
+
+void QXmppVideo::invokeSetFps( qreal fps )
+{
+    QByteArray data;
+    QXmlStreamWriter stream( &data );
+    stream.setAutoFormatting( false );
+
+    stream.writeStartElement( "rpc" );
+    stream.writeAttribute( "func",   "setFps" );
+    stream.writeAttribute( "arg0", QString( "%1" ).arg( fps ) );
+    stream.writeEndElement();
+
+    data = data.toBase64();
+
+    pd->client->sendMessage( pd->jid, data );
 }
 
 void QXmppVideo::xmppAudioModeChanged(QIODevice::OpenMode mode)
@@ -374,6 +459,7 @@ void QXmppVideo::xmppCallConnected()
     // at same time.
     if ( pd->call->direction() == QXmppCall::OutgoingDirection)
         pd->call->startVideo();
+    QTimer::start();
 }
 
 void QXmppVideo::xmppCallFinished()
@@ -558,8 +644,12 @@ void QXmppVideo::xmppWriteFrame()
     if ( !pd->call )
         return;
 
+    if ( !pd->call->videoChannel() )
+        return;
+
     cv::Mat mat;
-    pd->webcam >> mat;
+    cv::VideoCapture & webcam = pd->webcam;
+    webcam >> mat;
 
     QImage imageBGR((const uchar *)mat.data, mat.cols, mat.rows, QImage::Format_RGB888);
 

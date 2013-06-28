@@ -7,7 +7,7 @@
 #include <QXmppRosterManager.h>
 #include <QXmppCallManager.h>
 #include <QXmppRtpChannel.h>
-
+#include "QXmppMessage.h"
 
 class QXmppVideo: public QTimer
 {
@@ -22,8 +22,11 @@ public:
 public slots:
     void call();
     void endCall();
+    void setFps();
+
     void invokeCall();
     void invokeEndCall();
+    void invokeSetFps( qreal fps );
 
 signals:
     void frameReady();
@@ -32,6 +35,7 @@ private:
     void imageToVideoFrame( const QImage & image, QXmppVideoFrame & frame );
     void videoFrameToImage( const QXmppVideoFrame & videoFrame );
 private slots:
+    void xmppMessageReceived( const QXmppMessage & msg );
     void xmppAudioModeChanged(QIODevice::OpenMode mode);
     void xmppCallConnected();
     void xmppCallFinished();
