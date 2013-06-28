@@ -3,7 +3,7 @@
 #include "xmpp_video.h"
 
 CallInterface::CallInterface( QXmppVideo * parent )
-    : QXmppInvocable( parent )
+    : QXmppInvokable( parent )
 {
 
 }
@@ -24,7 +24,6 @@ void CallInterface::call()
     QXmppVideo * v = qobject_cast<QXmppVideo *>( parent() );
     if ( !v )
         return;
-    v->setTarget( v );
     v->call();
 }
 

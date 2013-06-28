@@ -47,6 +47,11 @@ void QXmppPeer::setTarget( const QString & jid, bool update )
     pd->targetUpdate = update;
 }
 
+const QString & QXmppPeer::target() const
+{
+    return pd->targetJid;
+}
+
 void QXmppPeer::connect( const QString & jid, const QString & password, const QString & host, int port, bool tls )
 {
     QXmppConfiguration conf;

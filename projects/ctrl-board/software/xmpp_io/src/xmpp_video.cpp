@@ -98,13 +98,13 @@ inline qint32 yuv2b(quint8 y, quint8 u, quint8 v)
 QXmppVideo::QXmppVideo( QXmppClient * parent )
 : QTimer( parent )
 {
-    pd             = new PD();
+    pd             = new PD( this );
     pd->client     = parent;
     pd->acceptCall = true;
     pd->call       = 0;
 
     pd->client->addExtension( &pd->callManager );
-    pd->client->addExtension( &pd->callManager );
+    pd->client->addExtension( &pd->rpcManager );
 
     QTimer::setInterval( 33 );
 
@@ -491,7 +491,7 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
         //     pixelFormat =  21
         // }
 
-        videoFormat.setFrameRate(30);
+        videoFormat.setFrameRate( 30 );
         videoFormat.setFrameSize(QSize( pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH ),
                                         pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT ) ) );
 
@@ -555,11 +555,10 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
 
 void QXmppVideo::xmppWriteFrame()
 {
-    if (!pd->call)
+    if ( !pd->call )
         return;
 
     cv::Mat mat;
-
     pd->webcam >> mat;
 
     QImage imageBGR((const uchar *)mat.data, mat.cols, mat.rows, QImage::Format_RGB888);

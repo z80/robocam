@@ -28,6 +28,8 @@
 #include "QXmppMessage.h"
 
 #include "xmpp_msg_pipe.h"
+#include "xmpp_video.h"
+
 #include "example_1_echoClient.h"
 
 echoClient::echoClient(QObject *parent)
@@ -43,6 +45,10 @@ echoClient::echoClient(QObject *parent)
 
     QXmppMsgPipe * proxy = new QXmppMsgPipe( this, 1 );
     proxy->setOutPipe( "in@xmpp", 1234, 22, "localhost" );
+
+    QXmppVideo * video = new QXmppVideo( this );
+    video->setTarget( "in@xmpp" );
+    m_video = video;
 }
 
 echoClient::~echoClient()
@@ -72,6 +78,8 @@ void echoClient::slotConnected()
     packetIq.setData( "123456" );
     sendPacket( packetIq );
     */
+    m_video->setAcceptCall( true );
+    m_video->invokeCall();
 }
 
 int main(int argc, char *argv[])

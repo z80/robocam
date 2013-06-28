@@ -28,6 +28,7 @@
 #include "QXmppMessage.h"
 
 #include "xmpp_msg_pipe.h"
+#include "xmpp_video.h"
 
 #include "example_1_echoClient.h"
 
@@ -41,6 +42,9 @@ echoClient::echoClient(QObject *parent)
 
     QXmppMsgPipe * proxy = new QXmppMsgPipe( this, 1 );
     proxy->setInPipe();
+
+    QXmppVideo * video = new QXmppVideo( this );
+    video->setTarget( "out@xmpp" );
 }
 
 echoClient::~echoClient()

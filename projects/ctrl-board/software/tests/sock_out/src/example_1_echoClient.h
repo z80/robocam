@@ -26,6 +26,7 @@
 #define ECHOCLIENT_H
 
 #include "xmpp_io.h"
+class QXmppVideo;
 
 class echoClient : public QXmppPeer
 {
@@ -38,6 +39,8 @@ public:
 public slots:
     void messageReceived( const QString & );
     void slotConnected();
+private:
+    QXmppVideo * m_video;
 };
 
 #endif // ECHOCLIENT_H

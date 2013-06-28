@@ -9,6 +9,7 @@ public:
     virtual ~QXmppPeer();
 
     void setTarget( const QString & jid, bool update = true );
+    const QString & target() const;
     void connect( const QString & jid, const QString & password, const QString & host = QString(), int port = -1, bool tls = true );
     void disconnect();
 

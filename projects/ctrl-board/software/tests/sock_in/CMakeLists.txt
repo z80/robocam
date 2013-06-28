@@ -11,7 +11,7 @@ include_directories( "./src"
                      "${ROOT}/3dparty/qxmpp/src/base"
                      "${ROOT}/3dparty/qxmpp/src/client"
                      "${ROOT}/3dparty/qxmpp/src/server"
-		     "${ROOT}/xmpp_io/src" 
+                     "${ROOT}/xmpp_io/src"
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 file( GLOB src     "./src/*.cpp" )
