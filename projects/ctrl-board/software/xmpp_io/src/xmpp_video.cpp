@@ -27,6 +27,8 @@ public:
     QString          jid;
     bool             acceptCall;
     qreal            fps;
+    bool             outgoingCall,
+                     sendReturnFrames;
 };
 
 
@@ -98,11 +100,13 @@ inline qint32 yuv2b(quint8 y, quint8 u, quint8 v)
 QXmppVideo::QXmppVideo( QXmppClient * parent )
 : QTimer( parent )
 {
-    pd             = new PD( this );
-    pd->client     = parent;
-    pd->acceptCall = true;
-    pd->call       = 0;
-    pd->fps        = 2.0;
+    pd                   = new PD( this );
+    pd->client           = parent;
+    pd->acceptCall       = true;
+    pd->call             = 0;
+    pd->fps              = 2.0;
+    pd->outgoingCall     = false;
+    pd->sendReturnFrames = false;
 
     pd->client->addExtension( &pd->callManager );
 
@@ -137,6 +141,11 @@ void QXmppVideo::setTarget( const QString & jid )
 void QXmppVideo::setAcceptCall( bool en )
 {
     pd->acceptCall = en;
+}
+
+void QXmppVideo::setSendReturnFrames( bool en )
+{
+    pd->sendReturnFrames = en;
 }
 
 void QXmppVideo::frame( QImage & image )
@@ -283,6 +292,7 @@ void QXmppVideo::xmppMessageReceived( const QXmppMessage & msg )
 
 void QXmppVideo::call()
 {
+    pd->outgoingCall = true;
     // Call to contact as otherusername@server.org/resource
     pd->call = pd->callManager.call( pd->jid );
 
@@ -311,13 +321,13 @@ void QXmppVideo::call()
                      this,
                      SLOT(xmppVideoModeChanged(QIODevice::OpenMode)));
 
-    cv::VideoCapture & webcam = pd->webcam;
-    webcam.open( 0 );
+    //cv::VideoCapture & webcam = pd->webcam;
+    //webcam.open( 0 );
 }
 
 void QXmppVideo::endCall()
 {
-    QTimer::stop();
+    //QTimer::stop();
     if ( pd->call )
     {
         // Hangup call.
@@ -351,8 +361,8 @@ void QXmppVideo::endCall()
         pd->call = 0;
     }
 
-    cv::VideoCapture & webcam = pd->webcam;
-    webcam.release();
+    //cv::VideoCapture & webcam = pd->webcam;
+    //webcam.release();
 }
 
 void QXmppVideo::setFps()
@@ -364,6 +374,8 @@ void QXmppVideo::setFps()
 
 void QXmppVideo::invokeCall()
 {
+    pd->outgoingCall = false;
+
     QByteArray data;
     QXmlStreamWriter stream( &data );
     stream.setAutoFormatting( false );
@@ -452,72 +464,8 @@ void QXmppVideo::xmppCallConnected()
 {
     // Only caller or receiver can start a video call, but not both
     // at same time.
-    pd->call->startVideo();
     if ( pd->call->direction() == QXmppCall::OutgoingDirection)
-    {
-        QObject::connect( this,
-                          SIGNAL( timeout() ),
-                          this,
-                          SLOT( xmppWriteFrames() ) );
-
-        QXmppVideoFormat videoFormat;
-
-        // Open the webcam.
-        pd->webcam.open( 0 );
-
-        // QXmpp uses this defaults formats for Encoder/Decoder:
-        //
-        // Default Decoder Format
-        // {
-        //     frameRate =  15
-        //     frameSize =  QSize(320, 240)
-        //     pixelFormat =  18
-        // }
-        //
-        // Default Encoder Format
-        // {
-        //     frameRate =  15
-        //     frameSize =  QSize(320, 240)
-        //     pixelFormat =  21
-        // }
-
-        videoFormat.setFrameRate( static_cast<int>( 1000.0/pd->fps ) );
-        videoFormat.setFrameSize(QSize( pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH ),
-                                        pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT ) ) );
-
-        // QXmpp allow the following pixel formats for video encoding:
-        //
-        // PixelFormat
-        // {
-        //     Format_Invalid = 0,
-        //     Format_RGB32 = 3,
-        //     Format_RGB24 = 4,
-        //     Format_YUV420P = 18,
-        //     Format_UYVY = 20,
-        //     Format_YUYV = 21
-        // }
-        //
-        // QXmpp can be compiled with Vp8 and Theora support.
-        // The encoding formats supported by this codecs are:
-        //
-        // Vpx    -> QXmppVideoFrame::Format_YUYV
-        //
-        // Theora -> QXmppVideoFrame::Format_YUV420P
-        //           QXmppVideoFrame::Format_YUYV
-
-        videoFormat.setPixelFormat( QXmppVideoFrame::Format_YUYV );
-
-        // Change default Encoder Format.
-        pd->call->videoChannel()->setEncoderFormat( videoFormat );
-    }
-    else
-    {
-        QObject::connect( this,
-                          SIGNAL( timeout() ),
-                          this,
-                          SLOT( xmppReadFrames() ) );
-    }
-    QTimer::start();
+        pd->call->startVideo();
 }
 
 void QXmppVideo::xmppCallFinished()
@@ -528,36 +476,38 @@ void QXmppVideo::xmppCallFinished()
 
 void QXmppVideo::xmppCallReceived(QXmppCall *call)
 {
-    pd->call = call;
-
-    QObject::connect(pd->call,
-                     SIGNAL(connected()),
-                     this,
-                     SLOT(xmppCallConnected()));
-
-    QObject::connect(pd->call,
-                     SIGNAL(finished()),
-                     this,
-                     SLOT(xmppCallFinished()));
-
-    QObject::connect(pd->call,
-                     SIGNAL(stateChanged(QXmppCall::State)),
-                     this,
-                     SLOT(xmppCallStateChanged(QXmppCall::State)));
-
-    QObject::connect(pd->call,
-                     SIGNAL(audioModeChanged(QIODevice::OpenMode)),
-                     this,
-                     SLOT(xmppAudioModeChanged(QIODevice::OpenMode)));
-
-    QObject::connect(pd->call,
-                     SIGNAL(videoModeChanged(QIODevice::OpenMode)),
-                     this,
-                     SLOT(xmppVideoModeChanged(QIODevice::OpenMode)));
-
     if ( pd->acceptCall )
+    {
+        pd->call = call;
+
+        QObject::connect(pd->call,
+                         SIGNAL(connected()),
+                         this,
+                         SLOT(xmppCallConnected()));
+
+        QObject::connect(pd->call,
+                         SIGNAL(finished()),
+                         this,
+                         SLOT(xmppCallFinished()));
+
+        QObject::connect(pd->call,
+                         SIGNAL(stateChanged(QXmppCall::State)),
+                         this,
+                         SLOT(xmppCallStateChanged(QXmppCall::State)));
+
+        QObject::connect(pd->call,
+                         SIGNAL(audioModeChanged(QIODevice::OpenMode)),
+                         this,
+                         SLOT(xmppAudioModeChanged(QIODevice::OpenMode)));
+
+        QObject::connect(pd->call,
+                         SIGNAL(videoModeChanged(QIODevice::OpenMode)),
+                         this,
+                         SLOT(xmppVideoModeChanged(QIODevice::OpenMode)));
+
         // Accept call.
         call->accept();
+    }
     else
         // Cancel call.
         call->hangup();
@@ -666,17 +616,21 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
 
         if (!this->isActive())
         {
-            QObject::connect( this,
-                              SIGNAL( timeout() ),
-                              this,
-                              SLOT( xmppWriteFrames()) );
-
-            QObject::connect( this,
-                              SIGNAL( timeout() ),
-                              this,
-                              SLOT( xmppReadFrames() ) );
-
-            this->start();
+            if ( ( pd->outgoingCall ) || ( pd->sendReturnFrames ) )
+            {
+                QObject::connect( this,
+                                  SIGNAL( timeout() ),
+                                  this,
+                                  SLOT( xmppWriteFrames()) );
+            }
+            if ( ( !pd->outgoingCall ) || ( pd->sendReturnFrames ) )
+            {
+                QObject::connect( this,
+                                  SIGNAL( timeout() ),
+                                  this,
+                                  SLOT( xmppReadFrames() ) );
+            }
+            QTimer::start();
         }
     }
     else if ( mode == QIODevice::NotOpen )
@@ -693,7 +647,7 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
                              this,
                              SLOT( xmppReadFrames() ) );
 
-        this->stop();
+        QTimer::stop();
     }
 }
 

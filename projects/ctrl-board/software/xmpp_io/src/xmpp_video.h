@@ -18,6 +18,7 @@ public:
 
     void setTarget( const QString & jid );
     void setAcceptCall( bool en );
+    void setSendReturnFrames( bool en );
     void frame( QImage & image );
 public slots:
     void call();
