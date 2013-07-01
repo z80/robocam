@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWnd</class>
+ <widget class="QMainWindow" name="MainWnd">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>590</width>
+    <height>556</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Tracked camera client software</string>
+  </property>
+  <widget class="QWidget" name="cw">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>1</number>
+    </property>
+    <property name="margin">
+     <number>1</number>
+    </property>
+    <item>
+     <widget class="CaptureWgt" name="view" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>590</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QDockWidget" name="cmdDw">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Command</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QtLua::Console" name="console" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="btnsDw">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Controls</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <widget class="QPushButton" name="lightBtn">
+     <property name="geometry">
+      <rect>
+       <x>19</x>
+       <y>50</y>
+       <width>60</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Light</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="motoEnBtn">
+     <property name="geometry">
+      <rect>
+       <x>19</x>
+       <y>80</y>
+       <width>60</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Moto en</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="fwdBtn">
+     <property name="geometry">
+      <rect>
+       <x>208</x>
+       <y>10</y>
+       <width>70</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Forward</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bwdBtn">
+     <property name="geometry">
+      <rect>
+       <x>208</x>
+       <y>40</y>
+       <width>70</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Backward</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ccwBtn">
+     <property name="geometry">
+      <rect>
+       <x>127</x>
+       <y>10</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CCW</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cwBtn">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>10</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CW</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="leftFwdBtn">
+     <property name="geometry">
+      <rect>
+       <x>127</x>
+       <y>40</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Left fwd</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="leftBwdBtn">
+     <property name="geometry">
+      <rect>
+       <x>127</x>
+       <y>70</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Left bwd</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="rightFwdBtn">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>40</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Right fwd</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="rightBwdBtn">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>70</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Right bwd</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="voltsBtn">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>61</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Voltages</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="powerEnBtn">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>60</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Power en</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtLua::Console</class>
+   <extends>QWidget</extends>
+   <header>QtLua/Console</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CaptureWgt</class>
+   <extends>QWidget</extends>
+   <header>capture_wgt.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -17,10 +17,12 @@ include( ${QT_USE_FILE} )
 
 set( Boost_USE_STATIC_LIBS True )
 set( Boost_USE_MULTITHREADED True )
-find_package( Boost COMPONENTS thread filesystem REQUIRED )
+find_package( Boost COMPONENTS thread filesystem date_time REQUIRED )
 find_package( Threads )
 
 include_directories( "./src" 
+                     ${ROOT}/3dparty/lua-5.1.5/src 
+                     ${ROOT}/3dparty/lua-5.1.5/etc 
                      ${ROOT}/3dparty/qxmpp/src/base 
                      ${ROOT}/3dparty/qxmpp/src/client 
                      ${ROOT}/3dparty/qxmpp/src/server 
@@ -49,7 +51,7 @@ set( src ${src} ${qrcSrc} )
 add_library( ${PROJ_NAME} STATIC ${src} )
 set( libs qxmpp )
 #message( STATUS "LIBS0 = ${libs}" )
-set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES}  )
+set( libs ${libs} ${QT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} liblua-5.1.5 )
 if ( USE_OPENCV )
     set( libs ${libs} ${OpenCV_LIBS} )
 endif ( USE_OPENCV )

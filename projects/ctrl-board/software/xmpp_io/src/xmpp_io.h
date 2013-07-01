@@ -18,8 +18,6 @@ public:
 
     // Pure text message.
     void sendMessage( const QString & stri );
-    // Establishing pipe.
-    bool createPipe( int portLocal, bool outgoing = true );
 
 signals:
     void log( const QString & );

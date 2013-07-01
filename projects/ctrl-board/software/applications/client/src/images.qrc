@@ -1,0 +1,29 @@
+<!DOCTYPE RCC><RCC version="1.0">
+
+<qresource>
+    <file>images/arrow.png</file>
+    <file>images/info.png</file>
+    <file>images/device.png</file>
+    <file>images/format.png</file>
+    <file>images/resolution.png</file>
+    <file>images/laser.png</file>
+    <file>images/filters.png</file>
+    <file>images/format_not_supported.png</file>
+    <file>images/s-video.png</file>
+    <file>images/equalizeHist.png</file>
+    <file>images/fullContrast.png</file>
+    <file>images/highpass.png</file>
+    <file>images/sobel.png</file>
+    <file>images/median.png</file>
+    <file>images/timeSmooth.png</file>
+    <file>images/pixmap.png</file>
+    <file>images/surface.png</file>
+    <file>images/brightness.png</file>
+    <file>images/flipX.png</file>
+    <file>images/flipY.png</file>
+    <file>images/wrench.png</file>
+</qresource>
+
+</RCC>
+
+

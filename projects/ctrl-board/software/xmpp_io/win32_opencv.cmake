@@ -46,7 +46,6 @@ find_library( liblapackd NAMES opencv_lapackd.lib opencv_lapackd.a PATHS ${p3d} 
 
 find_library( libvfw32 NAMES vfw32.lib vfw32.a PATHS $ENV{PATH} "${PL_SDK}/lib" )
 
-add_library( libopencv STATIC ${src} )
 set( libs         ${libs}        debug     ${libcored}
                                  debug     ${libvideod} 
                                  debug     ${libcalib3dd} 
