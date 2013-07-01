@@ -19,6 +19,10 @@ include_directories( ./src
                      ${ROOT}/3dparty/lua-5.1.5/etc 
                      ${Boost_INCLUDE_DIRS} 
                      ${CMAKE_CURRENT_BINARY_DIR} )
+if ( UNIX )
+    include_directories( ${ROOT}/luactrlboard/src
+                         ${ROOT}/ctrlboard/src )
+endif ( UNIX )
 
 file( GLOB src     "./src/*.cpp" )
 file( GLOB headers "./src/*.h" )

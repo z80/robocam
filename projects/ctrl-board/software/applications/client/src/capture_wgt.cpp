@@ -97,7 +97,6 @@ CaptureWgt::CaptureWgt( QWidget * parent )
     pd->lineY1 = new QGraphicsLineItem( pd->image, pd->scene );
     pd->lineX2 = new QGraphicsLineItem( pd->image, pd->scene );
     pd->lineY2 = new QGraphicsLineItem( pd->image, pd->scene );
-    pd->arrow = new QGraphicsPolygonItem( pd->image, pd->scene );
     //pd->image->setPixmap( QPixmap( ":/images/camera.png" ) );
 
     connect( pd->ui.flipX, SIGNAL(triggered()), this, SLOT(slotFlipX()) );
@@ -120,7 +119,7 @@ CaptureWgt::CaptureWgt( QWidget * parent )
         connect( a, SIGNAL(triggered()), this, SLOT(slotFilter()) );
     }
 
-    connect( ui.pixmap, SIGNAL(triggered()), this, SLOT(slotPixmap()) );
+    connect( ui.pixmap, SIGNAL(triggered()), this, SLOT(slotSavePixmap()) );
 }
 
 CaptureWgt::~CaptureWgt()
@@ -131,9 +130,9 @@ CaptureWgt::~CaptureWgt()
 void CaptureWgt::setVideo( QXmppVideo * video )
 {
     if ( pd->video )
-        disconnect( pd->video, SIGNAL(frame()), this, SLOT(slotFrame()) );
+        disconnect( pd->video, SIGNAL(frameReady()), this, SLOT(slotFrameReady()) );
     pd->video = video;
-    connect( pd->video, SIGNAL(frame()), this, SLOT(slotFrame()) );
+    connect( pd->video, SIGNAL(frameReady()), this, SLOT(slotFrameReady()) );
 }
 
 bool CaptureWgt::eventFilter( QObject * o, QEvent * e )
@@ -166,7 +165,7 @@ void CaptureWgt::slotCapture()
     if ( en )
         pd->video->invokeCall();
     else
-        pd->video->invokeStopCall();
+        pd->video->invokeEndCall();
 }
 
 void CaptureWgt::slotFilter()
@@ -194,7 +193,7 @@ void CaptureWgt::slotFilter()
     // Here it should be processing setup.
 }
 
-void CaptureWgt::slotPixmap()
+void CaptureWgt::slotSavePixmap()
 {
     QFileDialog d( this );
     d.setWindowTitle( "Save pixmap as" );
@@ -212,9 +211,9 @@ void CaptureWgt::slotPixmap()
     }
 }
 
-void CaptureWgt::slotFrame()
+void CaptureWgt::slotFrameReady()
 {
-    pv->video->image( pd->img );
+    pd->video->frame( pd->img );
     updatePixmap();
 }
 
@@ -225,7 +224,7 @@ void CaptureWgt::slotBrightness()
 
 void CaptureWgt::slotBrightnessChanged( const QPointF & range )
 {
-    pd->cap->setBrightnessRange( range );
+    //pd->cap->setBrightnessRange( range );
 }
 
 void CaptureWgt::slotFlipX()

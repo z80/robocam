@@ -1,5 +1,6 @@
 
 #include "main_wnd.h"
+
 #include "lua.hpp"
 #include "boost/bind.hpp"
 #include "boost/bind/placeholders.hpp"
@@ -20,10 +21,20 @@ MainWnd::MainWnd( QWidget * parent )
     connect( ui.console, SIGNAL(line_validate(const QString &)), this, SLOT(slotSend(const QString &)), Qt::QueuedConnection );
 
 
-    m_peer = new QxmppPeer( CONFIG_FILE, boost::bind( &MainWnd::init, this, _1 ) );
+    m_peer = new QXmppPeer( this );
     m_video = new QXmppVideo( m_peer );
     m_lua  = new LuaMachine( m_peer );
     ui.view->setVideo( m_video );
+
+
+    QSettings ini( CONFIG_FILE.c_str(), QSettings::IniFormat );
+    QString selfJid  = ini.value( "selfJid",  "host@xmpp" ).toString();
+    QString destJid  = ini.value( "destJid",  "client@xmpp" ).toString();
+    QString password = ini.value( "password", "12345" ).toString();
+    QString host     = ini.value( "host",     QString() ).toString();
+    int     port     = ini.value( "port",     -1 ).toInt();
+    bool    tls      = ini.value( "tls",      true ).toBool();
+    m_peer->connect( selfJid, password, host, port, tls );
 }
 
 MainWnd::~MainWnd()

@@ -3,7 +3,6 @@
 #define __CAPTURE_WGT_H_
 
 #include <QtGui>
-#include "capture.h"
 
 class QXmppVideo;
 
@@ -25,8 +24,8 @@ public slots:
     void slotCapture();
 
     void slotFilter();
-    void slotPixmap();
-    void slotFrame();
+    void slotSavePixmap();
+    void slotFrameReady();
     void slotBrightness();
     void slotBrightnessChanged( const QPointF & range );
     void slotFlipX();
@@ -41,7 +40,7 @@ public:
 private:
     void listDevices();
     void listResolutions();
-    void updatePixmap( const QImage & img = QImage() );
+    void updatePixmap();
     void drawArrow();
     
     class PD;

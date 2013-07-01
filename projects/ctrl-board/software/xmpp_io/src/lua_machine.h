@@ -16,7 +16,7 @@ class LuaMachine: public QObject
 public:
 	typedef boost::function<void (lua_State *)> TInit;
 
-	LuaMachine( QXmppPeer * parent, TInit init );
+    LuaMachine( QXmppPeer * parent, TInit init = TInit() );
 	virtual ~LuaMachine();
 
 	// Block current thread till undergound thread exit.
