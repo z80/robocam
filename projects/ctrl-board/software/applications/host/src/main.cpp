@@ -18,14 +18,17 @@ int main( int argc, char ** argv )
 {
     QCoreApplication a( argc, argv );
     QSettings ini( "host.ini", QSettings::IniFormat );
-    QString selfJid  = ini.value( "selfJid",  "host@xmpp" ).toString();
-    QString destJid  = ini.value( "destJid",  "client@xmpp" ).toString();
-    QString password = ini.value( "password", "12345" ).toString();
-    QString host     = ini.value( "host",     QString() ).toString();
-    int     port     = ini.value( "port",     -1 ).toInt();
-    bool    tls      = ini.value( "tls",      true ).toBool();
+    ini.beginGroup( "main" );
+    QString selfJid  = ini.value( "selfJid",    "host@xmpp" ).toString();
+    QString destJid  = ini.value( "destJid",    "client@xmpp" ).toString();
+    QString password = ini.value( "password",   "12345" ).toString();
+    QString host     = ini.value( "host",       QString() ).toString();
+    int     port     = ini.value( "port",       -1 ).toInt();
+    bool    tls      = ini.value( "tls",        true ).toBool();
+    bool updateDest  = ini.value( "updateDest", true ).toBool();
 
     QXmppPeer peer;
+    peer.setTarget( destJid, updateDest );
     peer.connect( selfJid, password, host, port, tls );
     QXmppMsgPipe pipe( &peer, 1 );
     LuaMachine   lua( &peer, boost::bind( init, _1 ) );

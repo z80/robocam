@@ -25,7 +25,6 @@ private:
     Ui_MainWnd  ui;
 	QXmppPeer * m_peer;
     QXmppVideo * m_video;
-    LuaMachine * m_lua;
 
 	static const std::string CONFIG_FILE;
 	static const int         LOG_MAX;

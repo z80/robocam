@@ -55,7 +55,7 @@ target_link_libraries( ${PROJ_NAME} ${libs} )
 set_property( TARGET ${PROJ_NAME} PROPERTY COMPILE_DEFINITIONS ${defs} )
 
 install( TARGETS ${PROJ_NAME} DESTINATION "./" )
-install( DIRECTORY "./src_lua/" DESTINATION "./" )
+install( DIRECTORY "./src_txt/" DESTINATION "./" )
 
 
 

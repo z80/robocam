@@ -38,10 +38,7 @@ public:
     bool isMarker() const;
     const QPointF & marker() const;
 private:
-    void listDevices();
-    void listResolutions();
     void updatePixmap();
-    void drawArrow();
     
     class PD;
     friend class PD;

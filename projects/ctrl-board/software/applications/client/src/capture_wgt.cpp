@@ -379,8 +379,6 @@ void CaptureWgt::updatePixmap()
         pd->lineX2->setLine( 0, yy, w, yy );
         pd->lineY2->setLine( xx, 0, xx, h );
     }
-
-    drawArrow();
 }
 
 
