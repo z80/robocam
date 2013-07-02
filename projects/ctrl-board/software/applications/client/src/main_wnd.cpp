@@ -39,6 +39,7 @@ MainWnd::MainWnd( QWidget * parent )
     bool updateDest  = ini.value( "updateDest", true ).toBool();
 
     m_peer->setTarget( destJid, updateDest );
+    m_video->setTarget( destJid );
     m_peer->connect( selfJid, password, host, port, tls );
 }
 

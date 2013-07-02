@@ -30,7 +30,12 @@ int main( int argc, char ** argv )
     QXmppPeer peer;
     peer.setTarget( destJid, updateDest );
     peer.connect( selfJid, password, host, port, tls );
+
     QXmppMsgPipe pipe( &peer, 1 );
+
+    QXmppVideo   video( &peer );
+    video.setTarget( destJid );
+
     LuaMachine   lua( &peer, boost::bind( init, _1 ) );
 
     int res = a.exec();
