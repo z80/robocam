@@ -7,10 +7,10 @@ MainWnd::MainWnd( QWidget * parent )
     ui.setupUi( this );
 
     peer = new QXmppPeer( this );
-    peer->connect( "out@xmpp", "12345", "localhost" );
+    peer->connect( "client@xmpp", "12345", "localhost" );
 
     video = new QXmppVideo( peer );
-    video->setTarget( "in@xmpp" );
+    video->setTarget( "host@xmpp" );
 
     connect( ui.callBtn, SIGNAL(clicked()), this, SLOT(slotCall()) );
     connect( ui.endCallBtn, SIGNAL(clicked()), this, SLOT(slotEndCall()) );

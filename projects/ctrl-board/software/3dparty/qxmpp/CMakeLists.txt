@@ -1,9 +1,10 @@
 
+
 if ( QXMPP_USE_CODECS )
     set( CMAKE_MODULE_PATH "${ROOT}/cmake" )
     find_package( Vpx    REQUIRED )
     #find_package( Theora REQUIRED )
-    find_package( Speex  REQUIRED )
+    #find_package( Speex  REQUIRED )
 endif ( QXMPP_USE_CODECS )
 
 find_package( Qt4 )
@@ -13,15 +14,16 @@ set( QT_USE_QTNETWORK  True )
 set( QT_USE_QTXML      True )
 include( ${QT_USE_FILE} )
 
+
+if ( WIN32 )
+    include( ./vpx.cmake )
+endif ( WIN32 )
+
 include_directories( "./src/base" 
                      "./src/client" 
                      "./src/server" 
                      ${CMAKE_CURRENT_BINARY_DIR} )
-if ( QXMPP_USE_CODECS )
-    include_directories( ${VPX_INCLUDE_DIRS} 
-                         ${THEORA_INCLUDE_DIRS} 
-                         ${SPEEX_INCLUDE_DIRS} )
-endif ( QXMPP_USE_CODECS )
+include_directories( ${VPX_INCLUDE_DIRS} )
 
 set( src ./src/base/QXmppArchiveIq.cpp 
          ./src/base/QXmppBindIq.cpp 
@@ -137,18 +139,16 @@ set( src ${src} ${qrcSrc} )
 
 add_library( qxmpp STATIC ${src} )
 # ${THEORA_LIBRARY}
-set( libs ${QT_LIBRARIES} ${VPX_LIBRARIES} ${SPEEX_LIBRARY} ${SPEEXDSP_LIBRARY} )
+# ${SPEEX_LIBRARY} ${SPEEXDSP_LIBRARY}
+set( libs ${QT_LIBRARIES} ${VPX_LIBRARIES} )
 if ( WIN32 )
     set( libs ${libs} dnsapi.lib ws2_32.lib )
 endif ( WIN32 )
 target_link_libraries( qxmpp ${libs} )
 set( defs QXMPP_BUILD )
-if ( QXMPP_USE_CODECS )
-    set( defs ${defs} QXMPP_USE_SPEEX 
-                      QXMPP_USE_VPX )
-                      #QXMPP_USE_THEORA )
-
-endif (QXMPP_USE_CODECS )
+set( defs ${defs} QXMPP_USE_VPX )
+                  #QXMPP_USE_SPEEX 
+                  #QXMPP_USE_THEORA )
 set_property( TARGET qxmpp PROPERTY COMPILE_DEFINITIONS ${defs} )
 
 

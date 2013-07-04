@@ -38,13 +38,13 @@ echoClient::echoClient(QObject *parent)
     QObject::connect( this, SIGNAL(textmsg(const QString &)),
                       this, SLOT(messageReceived(const QString &)) );
 
-    QXmppPeer::connect( "in@xmpp", "12345", "localhost" );
+    QXmppPeer::connect( "host@xmpp", "12345", "localhost" );
 
     QXmppMsgPipe * proxy = new QXmppMsgPipe( this, 1 );
     proxy->setInPipe();
 
     QXmppVideo * video = new QXmppVideo( this );
-    video->setTarget( "out@xmpp" );
+    video->setTarget( "client@xmpp" );
 }
 
 echoClient::~echoClient()
