@@ -51,7 +51,7 @@ function main()
         --stri = string.format( "print( \'%s, %s, %s\' )", type(t0), type(t1), type(timeToGetClient) )
         --send( stri )
         while ( t1 - t0 < timeToGetClient ) do
-            send( "print( \'Awesome!\' )" )
+            send( 'Awesome!' )
             t1 = os.time()
             sleep( 1000 )
             -- If there was timer reset by client
