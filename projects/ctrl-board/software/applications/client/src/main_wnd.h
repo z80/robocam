@@ -19,6 +19,11 @@ signals:
     void sigLog( const QString & );
 private slots:
     void slotLog( const QString & );
+    void slotShowLog();
+    void slotShowFullLog();
+    void slotConnected();
+    void slotDisconnected();
+    void slotShutdown();
 private:
 	void log( const std::string & stri );
 

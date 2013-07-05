@@ -20,8 +20,12 @@ MainWnd::MainWnd( QWidget * parent )
     connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
     connect( ui.console, SIGNAL(line_validate(const QString &)), this, SLOT(slotSend(const QString &)), Qt::QueuedConnection );
 
+    QObject::connect( ui.showLog,     SIGNAL(triggered()), this, SLOT(slotShowLog()) );
+    QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
+
     m_peer = new QXmppPeer( this );
-    connect( m_peer, SIGNAL(log(QString)), this, SLOT(slotLog(QString)) );
+    QObject::connect( m_peer, SIGNAL(connected()),    this, SLOT(slotConnected()) );
+    QObject::connect( m_peer, SIGNAL(disconnected()), this, SLOT(slotDisconnected()) );
 
     m_video = new QXmppVideo( m_peer );
     // It also connects frameReady() signal to an appropriate slot.
@@ -53,6 +57,39 @@ void MainWnd::slotLog( const QString & stri )
 {
     ui.console->print( stri );
     ui.console->print( "\n" );
+}
+
+void MainWnd::slotShowLog()
+{
+    bool en = ui.showLog->isChecked();
+    if ( en )
+        QObject::connect( m_peer, SIGNAL(textmsg(QString)), this, SLOT(slotLog(QString)) );
+    else
+        QObject::disconnect( m_peer, SIGNAL(textmsg(QString)), this, SLOT(slotLog(QString)) );
+}
+
+void MainWnd::slotShowFullLog()
+{
+    bool en = ui.showFullLog->isChecked();
+    if ( en )
+        QObject::connect( m_peer, SIGNAL(log(QString)), this, SLOT(slotLog(QString)) );
+    else
+        QObject::disconnect( m_peer, SIGNAL(log(QString)), this, SLOT(slotLog(QString)) );
+}
+
+void MainWnd::slotConnected()
+{
+    log( "Connected" );
+}
+
+void MainWnd::slotDisconnected()
+{
+    log( "Disconnected" );
+}
+
+void MainWnd::slotShutdown()
+{
+    slotSend( "shutdown()" );
 }
 
 void MainWnd::log( const std::string & stri )

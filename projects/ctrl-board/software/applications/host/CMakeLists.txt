@@ -46,6 +46,7 @@ set( libs liblua-5.1.5
           xmpp_io 
           liblua-5.1.5 
           ${QT_LIBRARIES} )
+set( defs QXMPP_STATIC )
 if ( UNIX )
     set( defs LUA_CTRL_BOARD )
     set( libs ${libs} 

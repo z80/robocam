@@ -22,7 +22,9 @@ public:
 signals:
     void log( const QString & );
     void textmsg( const QString & );
+    void sigSendMessage( const QString & );
 private slots:
+    void slotSendMessage( const QString & );
     // QXMPP related slots:
     void qxmppLog( QXmppLogger::MessageType type, const QString & text );
     void qxmppConnected();

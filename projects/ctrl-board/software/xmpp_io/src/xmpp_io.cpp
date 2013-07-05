@@ -23,6 +23,10 @@ QXmppPeer::QXmppPeer( QObject * parent )
     QObject::connect( QXmppLogger::getLogger(), SIGNAL(message(QXmppLogger::MessageType, const QString &)),
                       this,                     SLOT(qxmppLog( QXmppLogger::MessageType, const QString &)) );
 
+    QObject::connect( this, SIGNAL( sigSendMessage( QString ) ), 
+                              SLOT( slotSendMessage( QString ) ), 
+                              Qt::QueuedConnection );
+
     QObject::connect( this, SIGNAL( connected() ),
                               SLOT( qxmppConnected() ) );
 
@@ -78,6 +82,11 @@ void QXmppPeer::disconnect()
 }
 
 void QXmppPeer::sendMessage( const QString & stri )
+{
+    emit sigSendMessage( stri );
+}
+
+void QXmppPeer::slotSendMessage( const QString & stri )
 {
     QXmppClient::sendMessage( pd->targetJid, stri );
 }

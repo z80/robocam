@@ -250,6 +250,50 @@
     </widget>
    </widget>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="showFullLog"/>
+   <addaction name="showLog"/>
+   <addaction name="shutdown"/>
+  </widget>
+  <action name="showFullLog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show full log</string>
+   </property>
+   <property name="toolTip">
+    <string>Show full log</string>
+   </property>
+  </action>
+  <action name="shutdown">
+   <property name="text">
+    <string>Shutdown</string>
+   </property>
+   <property name="toolTip">
+    <string>Shutdown</string>
+   </property>
+  </action>
+  <action name="showLog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show log</string>
+   </property>
+   <property name="toolTip">
+    <string>Show log</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
