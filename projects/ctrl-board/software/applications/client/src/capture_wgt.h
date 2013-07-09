@@ -22,8 +22,8 @@ protected:
     void showEvent( QShowEvent * w );
 public slots:
     void slotCapture();
+    void slotSettings();
 
-    void slotFilter();
     void slotSavePixmap();
     void slotFrameReady();
     void slotBrightness();
@@ -39,6 +39,7 @@ public:
     const QPointF & marker() const;
 private:
     void updatePixmap();
+    void brightnessRange();
     
     class PD;
     friend class PD;

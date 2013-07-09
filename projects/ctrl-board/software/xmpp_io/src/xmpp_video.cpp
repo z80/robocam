@@ -153,6 +153,11 @@ void QXmppVideo::frame( QImage & image )
     image = pd->image;
 }
 
+qreal QXmppVideo::fps() const
+{
+    return pd->fps;
+}
+
 void QXmppVideo::imageToVideoFrame( const QImage & image, QXmppVideoFrame & frame )
 {
     QXmppVideoFrame videoFrame(2 * image.width() * image.height(),

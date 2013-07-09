@@ -20,6 +20,8 @@ public:
     void setAcceptCall( bool en );
     void setSendReturnFrames( bool en );
     void frame( QImage & image );
+
+    qreal fps() const;
 public slots:
     void call();
     void endCall();

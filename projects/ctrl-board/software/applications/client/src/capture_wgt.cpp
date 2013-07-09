@@ -42,6 +42,7 @@ public:
     bool flipX, 
          flipY;
     QSize imgSize;
+    qreal fps;
 
     QList<QAction *> filterList;
 
@@ -76,6 +77,7 @@ CaptureWgt::CaptureWgt( QWidget * parent )
     pd->imgScale = 1.0;
     pd->flipX = false;
     pd->flipY = false;
+    pd->fps   = 2.0;
     pd->ui.brightnessDw->setVisible( false );
     pd->brightness = new BrightnessWgt( this );
     pd->ui.brightnessDw->setWidget( pd->brightness );
@@ -103,21 +105,6 @@ CaptureWgt::CaptureWgt( QWidget * parent )
     connect( pd->ui.flipY, SIGNAL(triggered()), this, SLOT(slotFlipY()) );
 
     ui.view->installEventFilter( this );
-
-    // Действия соответствующие фильтрам.
-    pd->filterList << ui.equalizeHist;
-    pd->filterList << ui.fullContrast;
-    pd->filterList << ui.sobel;
-    pd->filterList << ui.median;
-    pd->filterList << ui.timeSmooth;
-    pd->filterList << ui.highPass;
-    pd->filterList << ui.surface;
-    pd->filterList << ui.brightnessRange;
-    for ( int i=0; i<pd->filterList.size(); i++ )
-    {
-        QAction * a = pd->filterList[i];
-        connect( a, SIGNAL(triggered()), this, SLOT(slotFilter()) );
-    }
 
     connect( ui.pixmap, SIGNAL(triggered()), this, SLOT(slotSavePixmap()) );
 }
@@ -168,29 +155,15 @@ void CaptureWgt::slotCapture()
         pd->video->invokeEndCall();
 }
 
-void CaptureWgt::slotFilter()
+void CaptureWgt::slotSettings()
 {
-    QObject * o = sender();
-    QAction * a = qobject_cast<QAction *>( o );
-    QString name;
-    if ( a == pd->ui.equalizeHist )
-        name = "equalizeHist";
-    else if ( a == pd->ui.fullContrast )
-        name = "fullContrast";
-    else if ( a == pd->ui.sobel )
-        name = "sobel";
-    else if ( a == pd->ui.median )
-        name = "median";
-    else if ( a == pd->ui.timeSmooth )
-        name = "timeSmooth";
-    else if ( a == pd->ui.highPass )
-        name = "highPass";
-    else if ( a == pd->ui.surface )
-        name = "surfaceSubtract";
-    else if ( a == pd->ui.brightnessRange )
-        name = "brightnessRange";
-    bool checked = a->isChecked();
-    // Here it should be processing setup.
+    bool ok;
+    qreal fps = QInputDialog::getDouble( this, "FPS", "fps", pd->fps, 0.1, 50.0, 1, &ok );
+    if ( ok )
+    {
+        pd->video->invokeSetFps( fps );
+        pd->fps = fps;
+    }
 }
 
 void CaptureWgt::slotSavePixmap()
@@ -214,6 +187,8 @@ void CaptureWgt::slotSavePixmap()
 void CaptureWgt::slotFrameReady()
 {
     pd->video->frame( pd->img );
+    if ( pd->ui.brightnessRange->isChecked() )
+        brightnessRange();
     updatePixmap();
 }
 
@@ -224,7 +199,8 @@ void CaptureWgt::slotBrightness()
 
 void CaptureWgt::slotBrightnessChanged( const QPointF & range )
 {
-    //pd->cap->setBrightnessRange( range );
+    brightnessRange();
+    updatePixmap();
 }
 
 void CaptureWgt::slotFlipX()
@@ -380,6 +356,40 @@ void CaptureWgt::updatePixmap()
         pd->lineY2->setLine( xx, 0, xx, h );
     }
 }
+
+void CaptureWgt::brightnessRange()
+{
+    if ( pd->img.isNull() )
+        return;
+
+    int vmin = pd->brightness->range().x();
+    int vmax = pd->brightness->range().y();
+
+    int lines = pd->img.size().width();
+    int pts   = pd->img.size().height();
+    for ( int line=0; line<lines; line++ )
+    {
+        QRgb * rgb = reinterpret_cast<QRgb *>( pd->img.scanLine( line ) );
+        for ( int pt=0; pt<pts; pt++ )
+        {
+            int r = (rgb[pt] >> 16) & 0xFF;
+            int g = (rgb[pt] >> 8 ) & 0xFF;
+            int b = rgb[pt] & 0xFF;
+            r = 255 * ( r - vmin ) / (vmax - vmin);
+            r = ( r < 255 ) ? r : 255;
+            r = ( r >= 0 )  ? r : 0;
+            g = 255 * ( g - vmin ) / (vmax - vmin);
+            g = ( g < 255 ) ? g : 255;
+            g = ( g >= 0 )  ? g : 0;
+            b = 255 * ( b - vmin ) / (vmax - vmin);
+            b = ( b < 255 ) ? b : 255;
+            b = ( b >= 0 )  ? b : 0;
+            rgb[ pt ] = (r << 16) | (g << 8) | b;
+        }
+    }
+}
+
+
 
 
 
