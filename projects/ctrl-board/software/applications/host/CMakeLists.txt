@@ -17,6 +17,7 @@ include_directories( ./src
                      ${ROOT}/xmpp_io/src 
                      ${ROOT}/3dparty/lua-5.1.5/src 
                      ${ROOT}/3dparty/lua-5.1.5/etc 
+                     ${ROOT}/3dparty/luabitop-1.0.2/ 
                      ${Boost_INCLUDE_DIRS} 
                      ${CMAKE_CURRENT_BINARY_DIR} )
 if ( UNIX )
@@ -41,10 +42,10 @@ QT4_ADD_RESOURCES( qrcSrc ${qrc} )
 set( src ${src} ${qrcSrc} )
 
 add_executable( ${PROJ_NAME} ${src} )
-set( libs liblua-5.1.5 
-          qxmpp
+set( libs qxmpp
           xmpp_io 
           liblua-5.1.5 
+          bit
           ${QT_LIBRARIES} )
 set( defs QXMPP_STATIC )
 if ( UNIX )

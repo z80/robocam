@@ -5,13 +5,37 @@ function display( ... )
     local t = { ... }
     for i=1, #t do
         local stri = string.format( "print( \'arg[%i] = %s\' )", i, tostring( t[i] ) )
-    send( stri )
+    print stri )
     end
 end
 
 local POWER_ON_FIRST   = 60 * 60 * 3
 local POWER_ON_REGULAR = 60 * 60 * 3 
 local POWER_OFF        = 20
+local I2C_ADDR         = 1
+local status_table     = {}
+local TRIES_CNT        = 5
+local TRY_DELAY        = 100
+
+local CMD_SET_POWER_TIMES = 1
+local CMD_POWER_RESET     = 2
+local CMD_SHUTDOWN_RESET  = 3
+local CMD_TEMP            = 4
+local CMD_CURR            = 5
+local CMD_SET_SOLAR_VOLT  = 6
+local CMD_SET_CHARGE_VOLT = 7
+local CMD_SET_MOTO_EN     = 8
+local CMD_SET_MOTO        = 9
+local CMD_SET_LIGHT       = 10
+local CMD_SET_LED         = 11
+
+function sendStatus()
+    local stri = ""
+    for k, v in pairs( status_table ) do
+        stri = string.format( "%s\n<b>%s</b> = <b>%s</b>", stri, tostring(k), tostring(v) )
+    end
+    status( stri )
+end
 
 function main()
     local client = nil
@@ -82,78 +106,171 @@ end
 
 function initMcu()
     mcu = luactrlboard.create()
+end
+
+function setMotoEn( en )
     local res = mcu:open()
-    return res
-end
-
-function motoSet( moto1, moto2, moto3, moto4, t )
-    print( "moto" )
-    client = true
-    if ( mcu:isOpen() ) then
-        mcu:motoSet( moto1, moto2, moto3, moto4 )
-    end
-    t = t or 0
-    if ( t > 0 ) then
-        sleep( t or 1000 )
-        if ( mcu:isOpen() ) then    
-            mcu:motoSet( false, false, false, false )
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_SET_MOTO_EN
+        t[2] = 1
+        t[3] = 1
+        t[4] = 0
+        t[5] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
         end
+        status_table.moto = en
+        mcu:close()
+        return true
     end
-    print( "moto left" )
+    return false
 end
 
-function motoConfig( en, t )
-    print( "moto config" )
-    client = true
-    if ( mcu:isOpen() ) then
-        mcu:motoConfig( en, t or 3 )
+function setMoto( m1, m2, m3, m4 )
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_SET_MOTO
+        t[2] = 0
+        t[3] = (m1 and 1 or 0) + (m2 and 2 or 0) + (m3 and 4 or 0) + (m4 and 8 or 0)
+        t[4] = 0
+        t[5] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        status_table.moto1 = m1
+        status_table.moto2 = m2
+        status_table.moto3 = m3
+        status_table.moto4 = m4
+        mcu:close()
+        return true
     end
-    print( "motoConfig left" )
+    return false
 end
 
-function led( en )
-    print( "led" )
-    client = true
-    if ( mcu:isOpen() ) then
-        mcu:led( en )
+function setLight( en )
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_SET_LIGHT
+        t[2] = 0
+        t[3] = (en and 1 or 0)
+        t[4] = 0
+        t[5] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        status_table.light = en
+        mcu:close()
+        return true
     end
-    print( "led left" )
+    return false
 end
 
-function image( w, h )
-    print( "image entered" )
-    client = true
-    if ( not imgProc ) then
-        imgProc = luafsw.create()
-        imgProc:setPeer( peer() )
+function setLed( v )
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_SET_LED
+        t[2] = 0
+        t[3] = v
+        t[4] = 0
+        t[5] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        status_table.led = en
+        mcu:close()
+        return true
     end
-    if ( imgProc:isRunning() ) then
-        send( "print( \"Pending image is in procress. Another image capture is possible only after finishing current one.\" )" )
-    else
-        imgProc:start()
-    end
-    print( "image left" )
+    return false
 end
 
-function volts()
-    print( "volts" )
-    client = true
-    if ( mcu ) and ( mcu:isOpen() ) then
-        local res, solar, battery = mcu:adc()
+function powerSetup( onTime, offTime )
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_SET_POWER_TIMES
+        t[2] = bit.rshift( onTime, 8 )
+        t[3] = bit.band( onTime, 255 )
+        t[4] = bit.rshift( offTime, 8 )
+        t[5] = bit.band( offTime, 255 )
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        status_table.led = en
+        mcu:close()
+        return true
+    end
+    return false
+end
+
+function temp()
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_TEMP
+        t[2] = 0
+        t[3] = 0
+        t[4] = 0
+        t[5] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        for i = 1, TRIES_CNT do
+            res = mcu:read( I2C_ADDR, 5 )
+            if ( res ) then
+                break
+            end
+            sleep( TRY_DELAY )
+        end
         if ( res ) then
-            local stri = string.format( "setVolts( %i, %i )", solar or -1, battery or -1 )
-            send( stri )
+            status_table.temp = res[2] * 256 + res[3]
         end
+        mcu:close()
+        return true
     end
-    --send( "setVolts( 123, 456 )" )
-    print( "volts left" )
+    return false
 end
 
-function powerEn( en )
-    if ( mcu ) and ( mcu:isOpen() ) then
-        mcu:powerEn( en )
+function curr()
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_CURR
+        t[2] = 0
+        t[3] = 0
+        t[4] = 0
+        t[5] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        for i = 1, TRIES_CNT do
+            res = mcu:read( I2C_ADDR, 5 )
+            if ( res ) then
+                break
+            end
+            sleep( TRY_DELAY )
+        end
+        if ( res ) then
+            status_table.temp = res[2] * 256 + res[3]
+        end
+        mcu:close()
+        return true
     end
-    print( "volts left" )
+    return false
+end
+
+function motoStop()
+    setMoto( false, false, false, false )
 end
 
 print( "host.lua loaded!!!" )

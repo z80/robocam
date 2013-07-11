@@ -1,6 +1,7 @@
 
 #include <QtGui>
 #include "lua.hpp"
+#include "bit.h"
 #include <boost/bind.hpp>
 
 #include "xmpp_io.h"
@@ -58,6 +59,7 @@ static void init( lua_State * L )
     lua_register( L, "shutdown",    ::shutdown );
     lua_register( L, "process",     ::process );
 
+    luaopen_bit( L );
     #ifdef LUA_CTRL_BOARD
         // Board I2C io.
         luaopen_luactrlboard( L );
