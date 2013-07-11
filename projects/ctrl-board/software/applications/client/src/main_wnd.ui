@@ -75,6 +75,12 @@
      </property>
      <item>
       <widget class="QtLua::Console" name="console" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <property name="spacing">
          <number>0</number>
@@ -282,6 +288,7 @@
    <addaction name="queryStatus"/>
    <addaction name="showFullLog"/>
    <addaction name="shutdown"/>
+   <addaction name="clearLog"/>
   </widget>
   <widget class="QDockWidget" name="statusDw">
    <property name="features">
@@ -411,6 +418,14 @@
    </property>
    <property name="toolTip">
     <string>Query status</string>
+   </property>
+  </action>
+  <action name="clearLog">
+   <property name="text">
+    <string>Clear log</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear log</string>
    </property>
   </action>
  </widget>

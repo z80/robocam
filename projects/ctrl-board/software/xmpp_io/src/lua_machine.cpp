@@ -276,7 +276,7 @@ void LuaMachine::slotPrint( const QString & stri )
 
     data = data.toBase64();
 
-    pd->client->sendMessage( stri );
+    pd->client->sendMessage( data );
 }
 
 void LuaMachine::slotStatus( const QString & stri )
@@ -292,7 +292,7 @@ void LuaMachine::slotStatus( const QString & stri )
 
     data = data.toBase64();
 
-    pd->client->sendMessage( stri );
+    pd->client->sendMessage( data );
 }
 
 

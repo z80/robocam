@@ -22,6 +22,7 @@ private slots:
     void slotShowFullLog();
     void slotConnected();
     void slotDisconnected();
+    void slotClearLog();
 
     // Controls
     void slotStatus();

@@ -21,8 +21,10 @@ MainWnd::MainWnd( QWidget * parent )
     connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
     connect( ui.console, SIGNAL(line_validate(const QString &)), this, SLOT(slotSend(const QString &)), Qt::QueuedConnection );
 
+    QObject::connect( ui.clearLog,    SIGNAL(triggered()), this, SLOT(slotClearLog()) );
+
     QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
-    QObject::connect( ui.status,      SIGNAL(triggered()), this, SLOT(slotStatus()) );
+    QObject::connect( ui.queryStatus, SIGNAL(triggered()), this, SLOT(slotStatus()) );
     QObject::connect( ui.shutdown,    SIGNAL(triggered()), this, SLOT(slotShutdown()) );
     QObject::connect( ui.forward,     SIGNAL(changed()),   this, SLOT(slotForward()) );
     QObject::connect( ui.backward,    SIGNAL(changed()),   this, SLOT(slotBackward()) );
@@ -85,6 +87,11 @@ void MainWnd::slotConnected()
 void MainWnd::slotDisconnected()
 {
     log( "Disconnected" );
+}
+
+void MainWnd::slotClearLog()
+{
+    ui.log->clear();
 }
 
 void MainWnd::slotStatus()
@@ -165,21 +172,22 @@ void MainWnd::qxmppMessageReceived( const QString & stri )
     QString errorMsg;
     bool res = doc.setContent( data, &errorMsg );
     if ( !res )
+    {
+        slotLog( stri );
         return;
+    }
     QDomElement  root = doc.documentElement();
     if ( root.tagName() == "msg" )
     {
         if ( root.hasAttribute( "type" ) )
         {
-            QByteArray cmd = QByteArray::fromBase64( root.text().toUtf8() );
+            QString cmd = root.text();
             if ( root.attribute( "type" ) == "status" )
                 ui.status->setText( cmd );
             else
                 slotLog( cmd );
         }
     }
-    else
-        slotLog( stri );
 }
 
 
