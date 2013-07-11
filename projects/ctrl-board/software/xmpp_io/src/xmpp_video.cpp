@@ -591,8 +591,11 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
         // }
 
         videoFormat.setFrameRate( static_cast<int>( 1000.0/pd->fps ) );
-        videoFormat.setFrameSize(QSize( pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH ),
-                                        pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT ) ) );
+        int w = pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH );
+        w = ( w > 0 ) ? w : 320;
+        int h = pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT );
+        h = ( h > 0 ) ? h : 240;
+        videoFormat.setFrameSize(QSize( w, h ) );
 
         // QXmpp allow the following pixel formats for video encoding:
         //
