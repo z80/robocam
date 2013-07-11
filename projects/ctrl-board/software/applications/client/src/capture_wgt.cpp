@@ -201,8 +201,8 @@ void CaptureWgt::slotBrightness()
 
 void CaptureWgt::slotBrightnessChanged( const QPointF & range )
 {
-    brightnessRange();
-    updatePixmap();
+    //brightnessRange();
+    //updatePixmap();
 }
 
 void CaptureWgt::slotFlipX()
@@ -368,25 +368,17 @@ void CaptureWgt::brightnessRange()
     int vmax = pd->brightness->range().y();
 
     int lines = pd->img.size().height();
-    int pts   = pd->img.size().width();
+    int pts   = pd->img.size().width() * 3;
     for ( int line=0; line<lines; line++ )
     {
-        QRgb * rgb = reinterpret_cast<QRgb *>( pd->img.scanLine( line ) );
+        quint8 * rgb = reinterpret_cast<quint8 *>( pd->img.scanLine( line ) );
         for ( int pt=0; pt<pts; pt++ )
         {
-            int r = (rgb[pt] >> 16) & 0xFF;
-            int g = (rgb[pt] >> 8 ) & 0xFF;
-            int b = rgb[pt] & 0xFF;
-            r = 255 * ( r - vmin ) / (vmax - vmin);
-            r = ( r < 255 ) ? r : 255;
-            r = ( r >= 0 )  ? r : 0;
-            g = 255 * ( g - vmin ) / (vmax - vmin);
-            g = ( g < 255 ) ? g : 255;
-            g = ( g >= 0 )  ? g : 0;
-            b = 255 * ( b - vmin ) / (vmax - vmin);
-            b = ( b < 255 ) ? b : 255;
-            b = ( b >= 0 )  ? b : 0;
-            rgb[ pt ] = (r << 16) | (g << 8) | b;
+            int c = static_cast<int>( rgb[pt] );
+            c = 255 * ( c - vmin ) / (vmax - vmin);
+            c = ( c < 255 ) ? c : 255;
+            c = ( c >= 0 )  ? c : 0;
+            rgb[pt] = static_cast<quint8>( c );
         }
     }
 }

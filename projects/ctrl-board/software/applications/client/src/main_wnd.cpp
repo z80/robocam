@@ -1,5 +1,6 @@
 
 #include "main_wnd.h"
+#include <QtXml>
 
 #include "lua.hpp"
 #include "boost/bind.hpp"
@@ -20,12 +21,21 @@ MainWnd::MainWnd( QWidget * parent )
     connect( this, SIGNAL(sigLog(const QString &)), this, SLOT(slotLog(const QString &)), Qt::QueuedConnection );
     connect( ui.console, SIGNAL(line_validate(const QString &)), this, SLOT(slotSend(const QString &)), Qt::QueuedConnection );
 
-    QObject::connect( ui.showLog,     SIGNAL(triggered()), this, SLOT(slotShowLog()) );
+    QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
+    QObject::connect( ui.status,      SIGNAL(triggered()), this, SLOT(slotStatus()) );
+    QObject::connect( ui.shutdown,    SIGNAL(triggered()), this, SLOT(slotShutdown()) );
+    QObject::connect( ui.forward,     SIGNAL(changed()),   this, SLOT(slotForward()) );
+    QObject::connect( ui.backward,    SIGNAL(changed()),   this, SLOT(slotBackward()) );
+    QObject::connect( ui.left,        SIGNAL(changed()),   this, SLOT(slotLeft()) );
+    QObject::connect( ui.right,       SIGNAL(changed()),   this, SLOT(slotRight()) );
+
+
     QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
 
     m_peer = new QXmppPeer( this );
-    QObject::connect( m_peer, SIGNAL(connected()),    this, SLOT(slotConnected()) );
-    QObject::connect( m_peer, SIGNAL(disconnected()), this, SLOT(slotDisconnected()) );
+    QObject::connect( m_peer, SIGNAL(connected()),      this, SLOT(slotConnected()) );
+    QObject::connect( m_peer, SIGNAL(disconnected()),   this, SLOT(slotDisconnected()) );
+    QObject::connect( m_peer, SIGNAL(textmsg(QString)), this, SLOT(qxmppMessageReceived(QString)) );
 
     m_video = new QXmppVideo( m_peer );
     // It also connects frameReady() signal to an appropriate slot.
@@ -55,17 +65,7 @@ MainWnd::~MainWnd()
 
 void MainWnd::slotLog( const QString & stri )
 {
-    ui.console->print( stri );
-    ui.console->print( "\n" );
-}
-
-void MainWnd::slotShowLog()
-{
-    bool en = ui.showLog->isChecked();
-    if ( en )
-        QObject::connect( m_peer, SIGNAL(textmsg(QString)), this, SLOT(slotLog(QString)) );
-    else
-        QObject::disconnect( m_peer, SIGNAL(textmsg(QString)), this, SLOT(slotLog(QString)) );
+    ui.log->append( stri );
 }
 
 void MainWnd::slotShowFullLog()
@@ -87,10 +87,49 @@ void MainWnd::slotDisconnected()
     log( "Disconnected" );
 }
 
+void MainWnd::slotStatus()
+{
+    slotSend( "sendStatus()" );
+}
+
 void MainWnd::slotShutdown()
 {
     slotSend( "shutdown()" );
 }
+
+void MainWnd::slotForward()
+{
+    if( ui.forward->isChecked() )
+        slotSend( "motoForward()" );
+    else
+        slotSend( "motoStop()" );
+}
+
+void MainWnd::slotBackward()
+{
+    if( ui.backward->isChecked() )
+        slotSend( "motoBackward()" );
+    else
+        slotSend( "motoStop()" );
+}
+
+void MainWnd::slotLeft()
+{
+    if( ui.left->isChecked() )
+        slotSend( "motoLeft()" );
+    else
+        slotSend( "motoStop()" );
+}
+
+void MainWnd::slotRight()
+{
+    if( ui.right->isChecked() )
+        slotSend( "motoRight()" );
+    else
+        slotSend( "motoStop()" );
+}
+
+
 
 void MainWnd::log( const std::string & stri )
 {
@@ -116,6 +155,31 @@ void MainWnd::slotSend( const QString & stri )
 
     QString striMsg = QString( msg );
     m_peer->sendMessage( striMsg );
+}
+
+void MainWnd::qxmppMessageReceived( const QString & stri )
+{
+    QByteArray data = QByteArray::fromBase64( stri.toUtf8() );
+
+    QDomDocument doc;
+    QString errorMsg;
+    bool res = doc.setContent( data, &errorMsg );
+    if ( !res )
+        return;
+    QDomElement  root = doc.documentElement();
+    if ( root.tagName() == "msg" )
+    {
+        if ( root.hasAttribute( "type" ) )
+        {
+            QByteArray cmd = QByteArray::fromBase64( root.text().toUtf8() );
+            if ( root.attribute( "type" ) == "status" )
+                ui.status->setText( cmd );
+            else
+                slotLog( cmd );
+        }
+    }
+    else
+        slotLog( stri );
 }
 
 

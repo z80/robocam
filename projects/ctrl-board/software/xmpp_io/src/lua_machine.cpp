@@ -13,6 +13,7 @@ static void luaHook( lua_State * L, lua_Debug * ar );
 static int peer( lua_State * L );
 static int msleep( lua_State * L );
 static int print( lua_State * L );
+static int status( lua_State * L );
 static int stop( lua_State * L );
 
 class LuaMachine::PD
@@ -133,10 +134,11 @@ void LuaMachine::PD::luaLoop( TInit init )
         { 0,             0 }
     };
     luaL_register( L, 0, reg );*/
-    lua_register( L, "peer",        ::peer );
-    lua_register( L, "msleep",      ::msleep );
-    lua_register( L, "print",       ::print );
-    lua_register( L, "stop",        ::stop );
+    lua_register( L, "peer",   ::peer );
+    lua_register( L, "msleep", ::msleep );
+    lua_register( L, "print",  ::print );
+    lua_register( L, "status", ::status );
+    lua_register( L, "stop",   ::stop );
 
     if ( !init.empty() )
         init( L );
@@ -211,6 +213,9 @@ LuaMachine::LuaMachine( QXmppPeer * parent, TInit init )
     connect( this,       SIGNAL(sigPrint(QString)), 
              this,       SLOT(slotPrint(QString)), 
              Qt::QueuedConnection );
+    connect( this,       SIGNAL(sigStatus(QString)), 
+             this,       SLOT(slotStatus(QString)), 
+             Qt::QueuedConnection );
     connect( pd->client, SIGNAL(textmsg(QString)), 
              this,       SLOT(qxmppMessageReceived(QString)), 
              Qt::QueuedConnection );
@@ -236,6 +241,11 @@ void LuaMachine::print( const QString & stri )
     emit sigPrint( stri );
 }
 
+void LuaMachine::status( const QString & stri )
+{
+    emit sigStatus( stri );
+}
+
 void LuaMachine::qxmppMessageReceived( const QString & stri )
 {
     QByteArray data = QByteArray::fromBase64( stri.toUtf8() );
@@ -255,9 +265,35 @@ void LuaMachine::qxmppMessageReceived( const QString & stri )
 
 void LuaMachine::slotPrint( const QString & stri )
 {
+    QByteArray data;
+    QXmlStreamWriter stream( &data );
+    stream.setAutoFormatting( false );
+
+    stream.writeStartElement( "msg" );
+    stream.writeAttribute( "type",   "print" );
+    stream.writeCharacters( stri );
+    stream.writeEndElement();
+
+    data = data.toBase64();
+
     pd->client->sendMessage( stri );
 }
 
+void LuaMachine::slotStatus( const QString & stri )
+{
+    QByteArray data;
+    QXmlStreamWriter stream( &data );
+    stream.setAutoFormatting( false );
+
+    stream.writeStartElement( "msg" );
+    stream.writeAttribute( "type",   "status" );
+    stream.writeCharacters( stri );
+    stream.writeEndElement();
+
+    data = data.toBase64();
+
+    pd->client->sendMessage( stri );
+}
 
 
 
@@ -297,6 +333,27 @@ static int print( lua_State * L )
         LuaMachine::PD * pd = reinterpret_cast<LuaMachine::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
         lua_pop( L, 1 );
         pd->peer->print( stri );
+        lua_pushboolean( L, 1 );
+        return 1;
+    }
+    else
+    {
+        lua_pushnil( L );
+        lua_pushstring( L, "String expected, got no arguments" );
+        return 2;
+    }
+}
+
+static int status( lua_State * L )
+{
+    if ( ( lua_gettop( L ) > 0 ) && ( ( lua_isstring( L, 1 ) ) || ( lua_isnumber( L, 1 ) ) ) )
+    {
+        QString stri = lua_tostring( L, 1 );
+        lua_pushstring( L, LuaMachine::PD::LUA_PD_NAME.c_str() );
+        lua_gettable( L, LUA_REGISTRYINDEX );
+        LuaMachine::PD * pd = reinterpret_cast<LuaMachine::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+        lua_pop( L, 1 );
+        pd->peer->status( stri );
         lua_pushboolean( L, 1 );
         return 1;
     }

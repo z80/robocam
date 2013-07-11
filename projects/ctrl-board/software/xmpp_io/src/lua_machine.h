@@ -29,13 +29,16 @@ public:
 public:
 	// Send cmd to another peer.
 	void print( const QString & stri );
+    void status( const QString & stri );
 
 signals:
     void sigPrint( const QString & stri );
+    void sigStatus( const QString & stri );
 
 private slots:
     void qxmppMessageReceived( const QString & );
     void slotPrint( const QString & stri );
+    void slotStatus( const QString & stri );
 
 public:
 	class PD;

@@ -19,11 +19,17 @@ signals:
     void sigLog( const QString & );
 private slots:
     void slotLog( const QString & );
-    void slotShowLog();
     void slotShowFullLog();
     void slotConnected();
     void slotDisconnected();
+
+    // Controls
+    void slotStatus();
     void slotShutdown();
+    void slotForward();
+    void slotBackward();
+    void slotLeft();
+    void slotRight();
 private:
 	void log( const std::string & stri );
 
@@ -43,6 +49,7 @@ private:
     QImage m_img;
 public slots:
 	void slotSend( const QString & stri );
+    void qxmppMessageReceived( const QString & );
 };
 
 
