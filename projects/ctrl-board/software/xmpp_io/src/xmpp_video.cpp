@@ -423,6 +423,9 @@ void QXmppVideo::invokeSetFps( qreal fps )
     data = data.toBase64();
 
     pd->client->sendMessage( pd->jid, data );
+
+    pd->fps = fps;
+    setFps();
 }
 
 void QXmppVideo::xmppAudioModeChanged(QIODevice::OpenMode mode)

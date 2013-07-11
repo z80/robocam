@@ -260,8 +260,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="showFullLog"/>
    <addaction name="showLog"/>
+   <addaction name="showFullLog"/>
    <addaction name="shutdown"/>
   </widget>
   <action name="showFullLog">

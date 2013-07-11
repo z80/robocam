@@ -85,6 +85,8 @@ CaptureWgt::CaptureWgt( QWidget * parent )
              this,           SLOT(slotBrightnessChanged(const QPointF &)) );
     connect( pd->ui.brightnessRange, SIGNAL(triggered()), 
              this,                   SLOT(slotBrightness()) );
+    connect( pd->ui.settings, SIGNAL(triggered()), 
+             this,            SLOT(slotSettings()) );
 
     Ui_CaptureWgt & ui = pd->ui;
     connect( ui.capture,  SIGNAL(triggered()), this, SLOT(slotCapture()) );
@@ -365,8 +367,8 @@ void CaptureWgt::brightnessRange()
     int vmin = pd->brightness->range().x();
     int vmax = pd->brightness->range().y();
 
-    int lines = pd->img.size().width();
-    int pts   = pd->img.size().height();
+    int lines = pd->img.size().height();
+    int pts   = pd->img.size().width();
     for ( int line=0; line<lines; line++ )
     {
         QRgb * rgb = reinterpret_cast<QRgb *>( pd->img.scanLine( line ) );
