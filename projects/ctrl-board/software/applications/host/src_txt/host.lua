@@ -23,9 +23,9 @@ local CMD_SET_LED         = 11
 
 function sendStatus()
     status(  )
-    local stri = "<h3><b>Status:</b></h3>\n"
+    local stri = "<h3><b>Status:</b></h3><br>"
     for k, v in pairs( status_table ) do
-        stri = string.format( "%s\n<b>%s</b> = <b>%s</b>\n", stri, tostring(k), tostring(v) )
+        stri = string.format( "%s\n<b>%s</b> = <b>%s</b><br>", stri, tostring(k), tostring(v) )
     end
     status( stri )
 end
