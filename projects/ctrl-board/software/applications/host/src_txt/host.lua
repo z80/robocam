@@ -5,7 +5,7 @@ function display( ... )
     local t = { ... }
     for i=1, #t do
         local stri = string.format( "print( \'arg[%i] = %s\' )", i, tostring( t[i] ) )
-    print stri )
+        print( stri )
     end
 end
 
@@ -30,6 +30,7 @@ local CMD_SET_LIGHT       = 10
 local CMD_SET_LED         = 11
 
 function sendStatus()
+    print( "<h3><b>Status:</b></h>" )
     local stri = ""
     for k, v in pairs( status_table ) do
         stri = string.format( "%s\n<b>%s</b> = <b>%s</b>", stri, tostring(k), tostring(v) )
