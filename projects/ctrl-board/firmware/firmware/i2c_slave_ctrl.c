@@ -106,8 +106,7 @@ static msg_t execThread( void *arg )
         static uint8_t buffer[ I2C_IN_BUFFER_SZ ];
         sz = chIQReadTimeout( &inputQueue, buffer, I2C_IN_BUFFER_SZ, TIME_INFINITE );
 
-        static uint16_t * puvalue16Out;
-        puvalue16Out = (uint16_t *)(&outBuffer[1]);
+        static uint16_t uvalue16Out;
         static uint16_t * puvalue16In;
         puvalue16In = (uint16_t *)(&buffer[1]);
         // Parse inBuffer
@@ -123,12 +122,16 @@ static msg_t execThread( void *arg )
             powerOffReset();
             break;
         case CMD_TEMP:
-            *puvalue16Out = adcTemperature();
+            uvalue16Out = adcTemperature();
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
             outBuffer[0]  = CMD_TEMP;
             break;
         case CMD_CURR:
-            *puvalue16Out = adcCurrent();
-            outBuffer[0]  = CMD_TEMP;
+            uvalue16Out = adcCurrent();
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
+            outBuffer[0]  = CMD_CURR;
             break;
         case CMD_SET_SOLAR_VOLT:
             convSetSolar( *puvalue16In );
