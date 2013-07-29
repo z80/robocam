@@ -115,9 +115,7 @@ function setMotoEn( en )
         local t = {}
         t[1] = CMD_SET_MOTO_EN
         t[2] = 1
-        t[3] = 1
-        t[4] = 0
-        t[5] = 0
+        t[3] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
@@ -134,10 +132,8 @@ function setMoto( m1, m2, m3, m4 )
     if ( res ) then
         local t = {}
         t[1] = CMD_SET_MOTO
-        t[2] = 0
-        t[3] = (m1 and 1 or 0) + (m2 and 2 or 0) + (m3 and 4 or 0) + (m4 and 8 or 0)
-        t[4] = 0
-        t[5] = 0
+        t[2] = (m1 and 1 or 0) + (m2 and 2 or 0) + (m3 and 4 or 0) + (m4 and 8 or 0)
+        t[3] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
@@ -157,10 +153,8 @@ function setLight( en )
     if ( res ) then
         local t = {}
         t[1] = CMD_SET_LIGHT
-        t[2] = 0
-        t[3] = (en and 1 or 0)
-        t[4] = 0
-        t[5] = 0
+        t[2] = (en and 1 or 0)
+        t[3] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
@@ -177,10 +171,8 @@ function setLed( v )
     if ( res ) then
         local t = {}
         t[1] = CMD_SET_LED
-        t[2] = 0
-        t[3] = v
-        t[4] = 0
-        t[5] = 0
+        t[2] = v
+        t[3] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
@@ -219,8 +211,6 @@ function temp()
         t[1] = CMD_TEMP
         t[2] = 0
         t[3] = 0
-        t[4] = 0
-        t[5] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
@@ -248,8 +238,6 @@ function curr()
         t[1] = CMD_CURR
         t[2] = 0
         t[3] = 0
-        t[4] = 0
-        t[5] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
