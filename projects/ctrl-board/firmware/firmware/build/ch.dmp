@@ -32,25 +32,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   7 .debug_info   0001a780  00000000  00000000  00015cf5  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000a421  00000000  00000000  00030475  2**0
+  8 .debug_line   0000a599  00000000  00000000  00030475  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00004228  00000000  00000000  0003a896  2**0
+  9 .debug_loc    00004228  00000000  00000000  0003aa0e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_pubnames 00001ed8  00000000  00000000  0003eabe  2**0
+ 10 .debug_pubnames 00001ed8  00000000  00000000  0003ec36  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_pubtypes 000046cc  00000000  00000000  00040996  2**0
+ 11 .debug_pubtypes 000046cc  00000000  00000000  00040b0e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_aranges 00001338  00000000  00000000  00045062  2**0
+ 12 .debug_aranges 00001338  00000000  00000000  000451da  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000ff8  00000000  00000000  0004639a  2**0
+ 13 .debug_ranges 00000ff8  00000000  00000000  00046512  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    00004939  00000000  00000000  00047392  2**0
+ 14 .debug_str    00004940  00000000  00000000  0004750a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000002a  00000000  00000000  0004bccb  2**0
+ 15 .comment      0000002a  00000000  00000000  0004be4a  2**0
                   CONTENTS, READONLY
- 16 .ARM.attributes 00000031  00000000  00000000  0004bcf5  2**0
+ 16 .ARM.attributes 00000031  00000000  00000000  0004be74  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  000033dc  00000000  00000000  0004bd28  2**2
+ 17 .debug_frame  000033dc  00000000  00000000  0004bea8  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup

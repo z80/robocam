@@ -84,7 +84,7 @@ static void i2cRxCb( I2CDriver * i2cp )
     {
         res = chIQPutI( &inputQueue, inBuffer[i] );
         if ( res != Q_OK )
-            return;
+            break;
     }
     chSysUnlockFromIsr();
 }
