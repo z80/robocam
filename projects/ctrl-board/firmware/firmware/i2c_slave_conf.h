@@ -3,7 +3,7 @@
 #define __I2C_SLAVE_CONF_H_
 
 #define I2C_OUT_BUFFER_SZ       16
-#define I2C_IN_BUFFER_SZ        4
+#define I2C_IN_BUFFER_SZ        8  // Command id as 1 byte and up to 2 two byte numbers = 5 bytes.
 #define EXEC_QUEUE_SIZE         3
 #define I2C_ADDRESS             1
 #define I2C_TIMEOUT             500
