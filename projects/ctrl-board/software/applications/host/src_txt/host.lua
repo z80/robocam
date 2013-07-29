@@ -1,14 +1,6 @@
 
 require( "luactrlboard" )
 
-function display( ... )
-    local t = { ... }
-    for i=1, #t do
-        local stri = string.format( "print( \'arg[%i] = %s\' )", i, tostring( t[i] ) )
-        print( stri )
-    end
-end
-
 local POWER_ON_FIRST   = 60 * 60 * 3
 local POWER_ON_REGULAR = 60 * 60 * 3 
 local POWER_OFF        = 20
@@ -30,10 +22,10 @@ local CMD_SET_LIGHT       = 10
 local CMD_SET_LED         = 11
 
 function sendStatus()
-    print( "<h3><b>Status:</b></h>" )
-    local stri = ""
+    status(  )
+    local stri = "<h3><b>Status:</b></h3>\n"
     for k, v in pairs( status_table ) do
-        stri = string.format( "%s\n<b>%s</b> = <b>%s</b>", stri, tostring(k), tostring(v) )
+        stri = string.format( "%s\n<b>%s</b> = <b>%s</b>\n", stri, tostring(k), tostring(v) )
     end
     status( stri )
 end
@@ -64,19 +56,15 @@ function main()
     end
     -- Connection with server established.
     if ( connected ) then
-        local stri = string.format( "Online! %s", mcu:isOpen() and "Mcu initialized" or "ERROR: Failed to open Mcu!" )
+        local stri = "Online"
         print( stri )
-        stri = string.format( "print( \'%s\' )", stri )
-        --send( "print( \'Here!\' )" )
-        send( stri )
-        --send( "print( \'And here!\' )" )
         t0 = os.time()
         t1 = t0
         --send( "print( \'And damn here!\' )" )
         --stri = string.format( "print( \'%s, %s, %s\' )", type(t0), type(t1), type(timeToGetClient) )
         --send( stri )
         while ( t1 - t0 < timeToGetClient ) do
-            send( 'Awesome!' )
+            --send( 'Awesome!' )
             t1 = os.time()
             sleep( 1000 )
             -- If there was timer reset by client
@@ -90,7 +78,7 @@ function main()
         end
         send( "print( \'Going to shutdown\' )" )
     end
-    print( "Leave!" )
+    print( "Terminating" )
     --[[
     ps = luaprocess.create()
     ps:start( "sudo", "halt", "-p" )
@@ -189,15 +177,16 @@ function powerSetup( onTime, offTime )
     if ( res ) then
         local t = {}
         t[1] = CMD_SET_POWER_TIMES
-        t[2] = bit.rshift( onTime, 8 )
-        t[3] = bit.band( onTime, 255 )
-        t[4] = bit.rshift( offTime, 8 )
-        t[5] = bit.band( offTime, 255 )
+        t[2] = bit.band( onTime, 255 )
+        t[3] = bit.rshift( onTime, 8 )
+        t[4] = bit.band( offTime, 255 )
+        t[5] = bit.rshift( offTime, 8 )
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
             return false
         end
-        status_table.led = en
+        status_table.onTime  = onTime
+	status_table.offTime = offTime
         mcu:close()
         return true
     end
@@ -215,16 +204,12 @@ function temp()
         if ( not res ) then
             return false
         end
-        for i = 1, TRIES_CNT do
-            res = mcu:read( I2C_ADDR, 5 )
-            if ( res ) then
-                break
-            end
-            sleep( TRY_DELAY )
+        sleep( TRY_DELAY )
+        res = mcu:read( I2C_ADDR, 3 )
+        if ( not res ) then
+            return false
         end
-        if ( res ) then
-            status_table.temp = res[2] * 256 + res[3]
-        end
+        status_table.temp = res[2] + res[3] * 256
         mcu:close()
         return true
     end
@@ -242,16 +227,12 @@ function curr()
         if ( not res ) then
             return false
         end
-        for i = 1, TRIES_CNT do
-            res = mcu:read( I2C_ADDR, 5 )
-            if ( res ) then
-                break
-            end
-            sleep( TRY_DELAY )
+        sleep( TRY_DELAY )
+        res = mcu:read( I2C_ADDR, 3 )
+        if ( not res ) then
+            return false
         end
-        if ( res ) then
-            status_table.temp = res[2] * 256 + res[3]
-        end
+        status_table.curr = res[2] + res[3] * 256 
         mcu:close()
         return true
     end
