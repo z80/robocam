@@ -34,7 +34,9 @@ static uint16_t buckGain  = 1000; // Gain is 10%
 static uint16_t boostGain = 1000; // Gain is 10%
 static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) );
 static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
-static uint16_t solarSp   = ( ( 4095 * 4900 ) / ( 3 * 3300 ) );
+// Was 4.9V but with diode decreased on voltage drop on diode which is 0.65V.
+// So now solar setpoint is 4.2V.
+static uint16_t solarSp   = ( ( 4095 * 4200 ) / ( 3 * 3300 ) );
 static uint16_t buckSpSave = 0;
 
 static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
@@ -260,17 +262,31 @@ static adcsample_t valCurrect,
 
 uint16_t adcCurrent( void )
 {
-    adcStopConversion( &ADCD1 );
+    uint8_t en =  ( ADCD1.state != ADC_STOP ) ? 1 : 0;
+    if ( !en )
+        adcStart( &ADCD1, NULL );
+    else
+        adcStopConversion( &ADCD1 );
     adcConvert( &ADCD1, &grpCurrent, &valCurrect, 1 );
-    adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    if ( en )
+        adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    else
+        adcStop( &ADCD1 );
     return (uint16_t)valCurrect;
 }
 
 uint16_t adcTemperature( void )
 {
-    adcStopConversion( &ADCD1 );
+    uint8_t en =  ( ADCD1.state != ADC_STOP ) ? 1 : 0;
+    if ( !en )
+        adcStart( &ADCD1, NULL );
+    else
+        adcStopConversion( &ADCD1 );
     adcConvert( &ADCD1, &grpTemperature, &valTemperature, 1 );
-    adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    if ( en )
+        adcStartConversion( &ADCD1, &adcGroup, adcSamples, ADC_BUF_DEPTH );
+    else
+        adcStop( &ADCD1 );
     return (uint16_t)valTemperature;
 }
 
