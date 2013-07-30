@@ -209,7 +209,9 @@ function temp()
         if ( not res ) then
             return false
         end
-        status_table.temp = res[2] + res[3] * 256
+        local v = res[2] + res[3] * 256
+	local t = ( v * (3300 / 4095) - 500 ) / 10
+        status_table.temp = t
         mcu:close()
         return true
     end
@@ -232,7 +234,11 @@ function curr()
         if ( not res ) then
             return false
         end
-        status_table.curr = res[2] + res[3] * 256 
+	local i = res[2] + res[3] * 256 
+	-- V = I(A) * 0.3(Ohm) * 11(gain)
+	-- A(adc) = 4095 / 3.3 * I + 2047(shift to range center with another OpAmp)
+	i = 0.2442 * (i - 2047) -- mA
+        status_table.curr = i
         mcu:close()
         return true
     end
