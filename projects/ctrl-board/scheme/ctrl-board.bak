@@ -40,7 +40,7 @@ $Descr A1 33110 23386
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "19 may 2013"
+Date "30 jul 2013"
 Rev ""
 Comp ""
 Comment1 ""
@@ -1334,9 +1334,9 @@ Text Label 26250 13700 0    60   Italic 0
 moto2
 Text Label 26250 13000 0    60   Italic 0
 moto1
-Text Label 27850 13100 0    60   Italic 0
-out4
 Text Label 27850 13600 0    60   Italic 0
+out4
+Text Label 27850 13100 0    60   Italic 0
 out3
 Text Label 26250 13600 0    60   Italic 0
 out2
@@ -3458,4 +3458,16 @@ Text Notes 4850 18600 0    60   ~ 0
 Vcc and tested close to Gnd voltage \nare summed in equal proportions. \nResult is close to Vcc/2.
 Wire Notes Line
 	5250 18900 5950 20500
+Wire Notes Line
+	9400 20600 9200 20700
+Wire Notes Line
+	9200 20700 9100 20950
+Wire Notes Line
+	9100 20950 9150 21300
+Wire Notes Line
+	9150 21300 9250 21600
+Wire Notes Line
+	9250 21600 9400 21800
+Text Notes 9650 21800 0    60   ~ 0
+There is an error here. Feed back should connect negative \nterminal with "ground" (here ref voltage instead of ground) \nthrough resistance. But here it connects output with ref \nvoltage. It is why output doesn't change.
 $EndSCHEMATC
