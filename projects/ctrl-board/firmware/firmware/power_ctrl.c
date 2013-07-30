@@ -73,7 +73,10 @@ void powerHandler( void )
 
 void initPower( void )
 {
-    // Just power source mode.
+    // Starting power converters.
+    convStart();
+
+    // Just power source mode check pin.
     palSetPadMode( JUST_PS_PORT, JUST_PS_PIN,  PAL_MODE_INPUT );
 
     chMtxInit( &mutex );

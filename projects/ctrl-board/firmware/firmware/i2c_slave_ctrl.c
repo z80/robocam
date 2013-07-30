@@ -133,6 +133,24 @@ static msg_t execThread( void *arg )
             outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
             outBuffer[0]  = CMD_CURR;
             break;
+        case CMD_BUCK_FB:
+            uvalue16Out = adcBuckFb();
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
+            outBuffer[0]  = CMD_BUCK_FB;
+            break;
+        case CMD_BOOST_FB:
+            uvalue16Out = adcBoostFb();
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
+            outBuffer[0]  = CMD_BOOST_FB;
+            break;
+        case CMD_SOLAR_FB:
+            uvalue16Out = adcSolarFb();
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
+            outBuffer[0]  = CMD_SOLAR_FB;
+            break;
         case CMD_SET_SOLAR_VOLT:
             convSetSolar( *puvalue16In );
             break;
@@ -161,6 +179,8 @@ static msg_t execThread( void *arg )
         case CMD_PAWN_STOP:
             break;
         }
+        // Reset counting down at any I2C interaction.
+        powerOffReset();
     }
     return 0;
 }

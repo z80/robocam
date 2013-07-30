@@ -19,15 +19,18 @@
 #define CMD_SET_MOTO            9
 #define CMD_SET_LIGHT           10
 #define CMD_SET_LED             11
+#define CMD_BUCK_FB             12
+#define CMD_BOOST_FB            13
+#define CMD_SOLAR_FB            14
 // To be continued.
 // .....
-#define CMD_PAWN_SET_IO         12
-#define CMD_PAWN_IO             13
-#define CMD_PAWN_SET_MEM        14
-#define CMD_PAWN_WRITE_FLASH    15
-#define CMD_PAWN_RUN            16
-#define CMD_PAWN_IS_RUNNING     17
-#define CMD_PAWN_STOP           18
+#define CMD_PAWN_SET_IO         15
+#define CMD_PAWN_IO             16
+#define CMD_PAWN_SET_MEM        17
+#define CMD_PAWN_WRITE_FLASH    18
+#define CMD_PAWN_RUN            19
+#define CMD_PAWN_IS_RUNNING     20
+#define CMD_PAWN_STOP           21
 
 
 #endif

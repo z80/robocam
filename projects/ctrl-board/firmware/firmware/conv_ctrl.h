@@ -15,6 +15,9 @@ void convSetBoostGain( uint16_t val );
 
 uint16_t adcCurrent( void );
 uint16_t adcTemperature( void );
+uint16_t adcBoostFb( void );
+uint16_t adcBuckFb( void );
+uint16_t adcSolarFb( void );
 
 
 #endif

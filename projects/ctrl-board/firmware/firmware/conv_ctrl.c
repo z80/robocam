@@ -290,6 +290,31 @@ uint16_t adcTemperature( void )
     return (uint16_t)valTemperature;
 }
 
+uint16_t adcBoostFb( void )
+{
+    chSysLock();
+        uint16_t res = adcSamples[BOOST_IND];
+    chSysUnlock();
+    return res;
+}
+
+uint16_t adcBuckFb( void )
+{
+    chSysLock();
+        uint16_t res = adcSamples[BUCK_IND];
+    chSysUnlock();
+    return res;
+}
+
+uint16_t adcSolarFb( void )
+{
+    chSysLock();
+        uint16_t res = adcSamples[SOLAR_IND];
+    chSysUnlock();
+    return res;
+}
+
+
 
 
 
