@@ -23,6 +23,7 @@ int main(void)
   initLight();
   initMoto();
   initI2cSlave();
+
   initPower();
 
   powerHandler();

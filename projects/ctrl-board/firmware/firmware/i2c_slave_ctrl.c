@@ -35,8 +35,10 @@ static msg_t execThread( void *arg );
 
 void initI2cSlave( void )
 {
-    palSetPadMode( GPIOB, 6, PAL_MODE_STM32_ALTERNATE_OPENDRAIN );
-    palSetPadMode( GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN );
+    //palSetPadMode( GPIOB, 6, PAL_MODE_STM32_ALTERNATE_OPENDRAIN );
+    //palSetPadMode( GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN );
+    palSetPadMode( GPIOB, 6, PAL_MODE_INPUT );
+    palSetPadMode( GPIOB, 7, PAL_MODE_INPUT );
 
     // Initialize mailbox.
     chIQInit( &inputQueue, queue, I2C_IN_BUFFER_SZ * EXEC_QUEUE_SIZE, NULL );
@@ -50,6 +52,8 @@ void startI2cSlave( void )
     static systime_t tmo;
     tmo = MS2ST( I2C_TIMEOUT );
 
+    palSetPadMode( GPIOB, 6, PAL_MODE_STM32_ALTERNATE_OPENDRAIN );
+    palSetPadMode( GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN );
     while ( 1 )
     {
         i2cStart( &I2CD1, &i2cfg1 );
@@ -71,6 +75,8 @@ void startI2cSlave( void )
 void stopI2cSlave( void )
 {
     i2cStop( &I2CD1 );
+    palSetPadMode( GPIOB, 6, PAL_MODE_INPUT );
+    palSetPadMode( GPIOB, 7, PAL_MODE_INPUT );
 }
 
 static void i2cRxCb( I2CDriver * i2cp )
