@@ -33,7 +33,7 @@ static uint16_t boostPwm  = 0;
 static uint16_t buckGain  = 1000; // Gain is 10%
 static uint16_t boostGain = 1000; // Gain is 10%
 static uint16_t buckSp    = ( ( 4095 * 5000 ) / ( 3 * 3300 ) );
-static uint16_t boostSp   = ( ( 4095 * 7400 ) / ( 3 * 3300 ) );
+static uint16_t boostSp   = ( ( 4095 * 7000 ) / ( 3 * 3300 ) );
 // Was 4.9V but with diode decreased on voltage drop on diode which is 0.65V.
 // So now solar setpoint is 4.2V.
 static uint16_t solarSp   = ( ( 4095 * 4200 ) / ( 3 * 3300 ) );

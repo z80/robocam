@@ -25,6 +25,7 @@ int main(void)
   initI2cSlave();
 
   initPower();
+  initOsc();
 
   powerHandler();
   return 0;

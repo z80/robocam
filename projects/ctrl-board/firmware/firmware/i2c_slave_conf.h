@@ -2,6 +2,8 @@
 #ifndef __I2C_SLAVE_CONF_H_
 #define __I2C_SLAVE_CONF_H_
 
+#define OSC_SIZE                1024
+
 #define I2C_OUT_BUFFER_SZ       16
 #define I2C_IN_BUFFER_SZ        8  // Command id as 1 byte and up to 2 two byte numbers = 5 bytes.
 #define EXEC_QUEUE_SIZE         3
@@ -22,6 +24,10 @@
 #define CMD_BUCK_FB             12
 #define CMD_BOOST_FB            13
 #define CMD_SOLAR_FB            14
+// Commands for power oscilloscope.
+#define CMD_SETUP_OSC           15 // 2 bytes period in seconds, 1 byte what to measure: current, temperature.
+#define CMD_OSC_STATUS          16 // 2 bytes number of measures in memory and 1 byte signals measured.
+#define CMD_OSC                 17 // Get value/values by index. 0 - most recent, 1 - previous, 2 - prev-previous.
 // To be continued.
 // .....
 #define CMD_PAWN_SET_IO         15
