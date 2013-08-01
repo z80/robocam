@@ -131,6 +131,9 @@ static void powerOff( void )
     while ( 1 )
     {
         chThdSleepSeconds( 1 );
+        // Exit from power off state if button is pressed.
+        if ( justPs() )
+            break;
         chMtxLock( &mutex );
             int t = timeout;
         chMtxUnlock();
