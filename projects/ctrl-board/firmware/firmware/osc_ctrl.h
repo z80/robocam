@@ -5,8 +5,8 @@
 #include "ch.h"
 
 void initOsc( void );
-void setupOsc( uint16_t period, uint8_t sigs );
-uint16_t oscMeasuresCnt( void );
+void oscSetup( uint16_t period, uint8_t sigs );
+uint16_t oscMeasuresCnt( uint8_t * sigs );
 uint16_t oscValue( uint16_t index );
 
 

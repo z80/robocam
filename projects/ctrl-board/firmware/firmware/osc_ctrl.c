@@ -26,7 +26,7 @@ void initOsc( void )
     chThdCreateStatic( waExec, sizeof(waExec), NORMALPRIO, execThread, NULL );
 }
 
-void setupOsc( uint16_t period, uint8_t sigs )
+void oscSetup( uint16_t period, uint8_t sigs )
 {
     chMtxLock( &mutex );
         measurePeriod = period;
@@ -36,10 +36,12 @@ void setupOsc( uint16_t period, uint8_t sigs )
     chMtxUnlock();
 }
 
-uint16_t oscMeasuresCnt( void )
+uint16_t oscMeasuresCnt( uint8_t * sigs )
 {
     chMtxLock( &mutex );
         uint16_t res = measuresCnt;
+        if ( sigs )
+            *sigs = signals;
     chMtxUnlock();
     return res;
 }

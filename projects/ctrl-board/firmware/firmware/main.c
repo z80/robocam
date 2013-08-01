@@ -9,6 +9,7 @@
 #include "conv_ctrl.h"
 #include "serial_ctrl.h"
 #include "i2c_slave_ctrl.h"
+#include "osc_ctrl.h"
 
 
 //*

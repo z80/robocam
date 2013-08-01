@@ -9,6 +9,7 @@
 #include "led_ctrl.h"
 #include "conv_ctrl.h"
 #include "power_ctrl.h"
+#include "osc_ctrl.h"
 
 static uint8_t outBuffer[ I2C_OUT_BUFFER_SZ ];
 static uint8_t inBuffer[ I2C_IN_BUFFER_SZ ];
@@ -113,6 +114,7 @@ static msg_t execThread( void *arg )
         sz = chIQReadTimeout( &inputQueue, buffer, I2C_IN_BUFFER_SZ, TIME_INFINITE );
 
         static uint16_t uvalue16Out;
+        static uint8_t  uvalue8Out;
         static uint16_t * puvalue16In;
         puvalue16In = (uint16_t *)(&buffer[1]);
         // Parse inBuffer
@@ -176,6 +178,23 @@ static msg_t execThread( void *arg )
             setLed( *puvalue16In );
             break;
         // Pawn commands.
+        case CMD_SETUP_OSC:
+            oscSetup( *puvalue16In, buffer[3] );
+            break;
+        case CMD_OSC_STATUS:
+            uvalue16Out = oscMeasuresCnt( &uvalue8Out );
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
+            outBuffer[3] = uvalue8Out;
+            outBuffer[0] = CMD_OSC_STATUS;
+            break;
+        case CMD_OSC:
+            uvalue16Out = oscValue( *puvalue16In );
+            outBuffer[1] = (uint8_t)(uvalue16Out & 0xFF);
+            outBuffer[2] = (uint8_t)(uvalue16Out >> 8);
+            outBuffer[0]  = CMD_OSC;
+            break;
+            /*
         case CMD_PAWN_SET_IO:
         case CMD_PAWN_IO:
         case CMD_PAWN_SET_MEM:
@@ -184,6 +203,7 @@ static msg_t execThread( void *arg )
         case CMD_PAWN_IS_RUNNING:
         case CMD_PAWN_STOP:
             break;
+            */
         }
         // Reset counting down at any I2C interaction.
         powerOffReset();
