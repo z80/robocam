@@ -60,30 +60,18 @@ function main()
         print( stri )
         t0 = os.time()
         t1 = t0
-        --send( "print( \'And damn here!\' )" )
-        --stri = string.format( "print( \'%s, %s, %s\' )", type(t0), type(t1), type(timeToGetClient) )
-        --send( stri )
         while ( t1 - t0 < timeToGetClient ) do
-            --send( 'Awesome!' )
-            t1 = os.time()
             sleep( 1000 )
-            -- If there was timer reset by client
-            -- the "client" variable is set.
-            -- Then reset timeout to shutdown.
-            -- if ( client ) then
+	    timeoutReset()
+            t1 = os.time()
+            if ( client ) then
                 t0 = t1
                 client = nil
-            -- end
-            --print( 'waiting for client command' )
+            end
         end
-        send( "print( \'Going to shutdown\' )" )
     end
     print( "Terminating" )
-    --[[
-    ps = luaprocess.create()
-    ps:start( "sudo", "halt", "-p" )
-    ps:waitForFinished()
-    ]]
+    process( "sudo halt -p" )
 end
 
 function sleep( msec )
@@ -170,6 +158,30 @@ function setLed( v )
         return true
     end
     return false
+end
+
+function timeoutReset()
+    client = true
+    enterCritical()
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_SHUTDOWN_RESET
+        t[2] = 0 
+        t[3] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+	    mcu:close()
+	    leaveCritical()
+            return false
+        end
+        mcu:close()
+	leaveCritical()
+        return true
+    end
+    leaveCritical()
+    return false
+e
 end
 
 function powerSetup( onTime, offTime )
