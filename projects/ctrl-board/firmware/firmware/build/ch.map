@@ -1572,7 +1572,7 @@ destructors     0x080000ec        0x0
                 0x20005000                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
-.debug_abbrev   0x00000000     0x595c
+.debug_abbrev   0x00000000     0x596b
  .debug_abbrev  0x00000000      0x121 build/obj/crt0.o
  .debug_abbrev  0x00000121       0x74 build/obj/vectors.o
  .debug_abbrev  0x00000195       0x41 build/obj/chcore.o
@@ -1641,13 +1641,13 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_abbrev  0x00004962       0x68 build/obj/main.o
  .debug_abbrev  0x000049ca      0x20f build/obj/led_ctrl.o
  .debug_abbrev  0x00004bd9       0xc4 build/obj/light_ctrl.o
- .debug_abbrev  0x00004c9d      0x202 build/obj/power_ctrl.o
- .debug_abbrev  0x00004e9f       0xea build/obj/moto_ctrl.o
- .debug_abbrev  0x00004f89      0x1ee build/obj/adc_ctrl.o
- .debug_abbrev  0x00005177      0x1ed build/obj/conv_ctrl.o
- .debug_abbrev  0x00005364      0x1f4 build/obj/serial_ctrl.o
- .debug_abbrev  0x00005558      0x232 build/obj/i2c_slave_ctrl.o
- .debug_abbrev  0x0000578a      0x1d2 build/obj/osc_ctrl.o
+ .debug_abbrev  0x00004c9d      0x211 build/obj/power_ctrl.o
+ .debug_abbrev  0x00004eae       0xea build/obj/moto_ctrl.o
+ .debug_abbrev  0x00004f98      0x1ee build/obj/adc_ctrl.o
+ .debug_abbrev  0x00005186      0x1ed build/obj/conv_ctrl.o
+ .debug_abbrev  0x00005373      0x1f4 build/obj/serial_ctrl.o
+ .debug_abbrev  0x00005567      0x232 build/obj/i2c_slave_ctrl.o
+ .debug_abbrev  0x00005799      0x1d2 build/obj/osc_ctrl.o
 
 .debug_info     0x00000000    0x17ac6
  .debug_info    0x00000000      0x37b build/obj/crt0.o
@@ -1726,7 +1726,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x000168a9      0xc25 build/obj/i2c_slave_ctrl.o
  .debug_info    0x000174ce      0x5f8 build/obj/osc_ctrl.o
 
-.debug_line     0x00000000     0x9adb
+.debug_line     0x00000000     0x9acc
  .debug_line    0x00000000      0x15b build/obj/crt0.o
  .debug_line    0x0000015b       0x63 build/obj/vectors.o
  .debug_line    0x000001be       0x58 build/obj/chcore.o
@@ -1795,13 +1795,13 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x0000801d       0xfb build/obj/main.o
  .debug_line    0x00008118      0x29b build/obj/led_ctrl.o
  .debug_line    0x000083b3      0x1a6 build/obj/light_ctrl.o
- .debug_line    0x00008559      0x2e8 build/obj/power_ctrl.o
- .debug_line    0x00008841      0x1c4 build/obj/moto_ctrl.o
- .debug_line    0x00008a05      0x35a build/obj/adc_ctrl.o
- .debug_line    0x00008d5f      0x42e build/obj/conv_ctrl.o
- .debug_line    0x0000918d      0x397 build/obj/serial_ctrl.o
- .debug_line    0x00009524      0x3d3 build/obj/i2c_slave_ctrl.o
- .debug_line    0x000098f7      0x1e4 build/obj/osc_ctrl.o
+ .debug_line    0x00008559      0x2d9 build/obj/power_ctrl.o
+ .debug_line    0x00008832      0x1c4 build/obj/moto_ctrl.o
+ .debug_line    0x000089f6      0x35a build/obj/adc_ctrl.o
+ .debug_line    0x00008d50      0x42e build/obj/conv_ctrl.o
+ .debug_line    0x0000917e      0x397 build/obj/serial_ctrl.o
+ .debug_line    0x00009515      0x3d3 build/obj/i2c_slave_ctrl.o
+ .debug_line    0x000098e8      0x1e4 build/obj/osc_ctrl.o
 
 .debug_loc      0x00000000     0x8063
  .debug_loc     0x00000000       0x72 build/obj/crt0.o
@@ -2225,7 +2225,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_aranges
                 0x00001000       0x40 build/obj/osc_ctrl.o
 
-.debug_ranges   0x00000000     0x1340
+.debug_ranges   0x00000000     0x1318
  .debug_ranges  0x00000000       0x58 build/obj/crt0.o
  .debug_ranges  0x00000058       0x10 build/obj/vectors.o
  .debug_ranges  0x00000068       0x10 build/obj/chcore.o
@@ -2272,13 +2272,13 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_ranges  0x00001030       0x10 build/obj/main.o
  .debug_ranges  0x00001040       0x50 build/obj/led_ctrl.o
  .debug_ranges  0x00001090       0x18 build/obj/light_ctrl.o
- .debug_ranges  0x000010a8       0xd8 build/obj/power_ctrl.o
- .debug_ranges  0x00001180       0x20 build/obj/moto_ctrl.o
- .debug_ranges  0x000011a0       0x60 build/obj/adc_ctrl.o
- .debug_ranges  0x00001200       0x78 build/obj/conv_ctrl.o
- .debug_ranges  0x00001278       0x48 build/obj/serial_ctrl.o
- .debug_ranges  0x000012c0       0x50 build/obj/i2c_slave_ctrl.o
- .debug_ranges  0x00001310       0x30 build/obj/osc_ctrl.o
+ .debug_ranges  0x000010a8       0xb0 build/obj/power_ctrl.o
+ .debug_ranges  0x00001158       0x20 build/obj/moto_ctrl.o
+ .debug_ranges  0x00001178       0x60 build/obj/adc_ctrl.o
+ .debug_ranges  0x000011d8       0x78 build/obj/conv_ctrl.o
+ .debug_ranges  0x00001250       0x48 build/obj/serial_ctrl.o
+ .debug_ranges  0x00001298       0x50 build/obj/i2c_slave_ctrl.o
+ .debug_ranges  0x000012e8       0x30 build/obj/osc_ctrl.o
 
 .debug_str      0x00000000     0x3915
  .debug_str     0x00000000      0x1f2 build/obj/crt0.o

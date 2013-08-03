@@ -30,11 +30,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   5 .bss          00001ab0  20000850  08004604  00010850  2**3
                   ALLOC
-  6 .debug_abbrev 0000595c  00000000  00000000  0001084c  2**0
+  6 .debug_abbrev 0000596b  00000000  00000000  0001084c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00017ac6  00000000  00000000  000161a8  2**0
+  7 .debug_info   00017ac6  00000000  00000000  000161b7  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00009adb  00000000  00000000  0002dc6e  2**0
+  8 .debug_line   00009acc  00000000  00000000  0002dc7d  2**0
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_loc    00008063  00000000  00000000  00037749  2**0
                   CONTENTS, READONLY, DEBUGGING
@@ -44,15 +44,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  12 .debug_aranges 00001040  00000000  00000000  000456bc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00001340  00000000  00000000  000466fc  2**0
+ 13 .debug_ranges 00001318  00000000  00000000  000466fc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    00003915  00000000  00000000  00047a3c  2**0
+ 14 .debug_str    00003915  00000000  00000000  00047a14  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000002a  00000000  00000000  0004b351  2**0
+ 15 .comment      0000002a  00000000  00000000  0004b329  2**0
                   CONTENTS, READONLY
- 16 .ARM.attributes 00000031  00000000  00000000  0004b37b  2**0
+ 16 .ARM.attributes 00000031  00000000  00000000  0004b353  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  00002b30  00000000  00000000  0004b3ac  2**2
+ 17 .debug_frame  00002b30  00000000  00000000  0004b384  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup
@@ -288,7 +288,7 @@ SYMBOL TABLE:
 08001520 g     F .text	0000005c adcStopConversion
 08000920 g     F .text	00000018 _vt_init
 08001320 g     F .text	00000030 chCoreAllocI
-080032c0 g     F .text	00000084 powerHandler
+080032c0 g     F .text	0000008c powerHandler
 08003660 g     F .text	00000020 convSetBoost
 080031b0 g     F .text	00000006 initLight
 08001370 g     F .text	0000001c _heap_init

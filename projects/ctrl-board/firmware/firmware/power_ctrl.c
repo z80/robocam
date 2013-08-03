@@ -61,6 +61,11 @@ static void setPower( bool_t en )
 void powerHandler( void )
 {
     chRegSetThreadName( "p" );
+
+    // Just after enabling don't power on immediately.
+    // Give some time to attach all wires.
+    chThdSleepMilliseconds( 5000 );
+
     // First wait for power on.
     if ( justPs() )
         powerOn();
