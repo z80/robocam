@@ -26,7 +26,15 @@ void motoSetEn( uint16_t en )
 	if ( en )
 	    palSetPad( MOTO_EN_PORT, MOTO_EN_PIN );
 	else
+	{
+	    // First clear all moto drives to prevent ppowering chip through IO pins.
+	    palClearPad( MOTO_1_PORT, MOTO_1_PIN );
+	    palClearPad( MOTO_2_PORT, MOTO_2_PIN );
+	    palClearPad( MOTO_3_PORT, MOTO_3_PIN );
+	    palClearPad( MOTO_4_PORT, MOTO_4_PIN );
+	    // Turn power off.
 	    palClearPad( MOTO_EN_PORT, MOTO_EN_PIN );
+	}
     palSetPadMode( MOTO_EN_PORT, MOTO_EN_PIN, PAL_MODE_OUTPUT_PUSHPULL );
 }
 
