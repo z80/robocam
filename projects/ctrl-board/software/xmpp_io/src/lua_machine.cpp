@@ -14,6 +14,7 @@ static int peer( lua_State * L );
 static int msleep( lua_State * L );
 static int print( lua_State * L );
 static int status( lua_State * L );
+static int process( lua_State * L );
 static int stop( lua_State * L );
 
 static int enterCritical( lua_State * L );
@@ -137,11 +138,12 @@ void LuaMachine::PD::luaLoop( TInit init )
         { 0,             0 }
     };
     luaL_register( L, 0, reg );*/
-    lua_register( L, "peer",   ::peer );
-    lua_register( L, "msleep", ::msleep );
-    lua_register( L, "print",  ::print );
-    lua_register( L, "status", ::status );
-    lua_register( L, "stop",   ::stop );
+    lua_register( L, "peer",    ::peer );
+    lua_register( L, "msleep",  ::msleep );
+    lua_register( L, "print",   ::print );
+    lua_register( L, "status",  ::status );
+    lua_register( L, "process", ::process );
+    lua_register( L, "stop",    ::stop );
 
     // For noninterruptable Lua code such as read after write I2C.
     lua_register( L, "enterCritical",   ::enterCritical );
@@ -223,6 +225,9 @@ LuaMachine::LuaMachine( QXmppPeer * parent, TInit init )
     connect( this,       SIGNAL(sigStatus(QString, QString)),
              this,       SLOT(slotStatus(QString, QString)),
              Qt::QueuedConnection );
+    connect( this,       SIGNAL(sigProcess(QString)),
+             this,       SLOT(slotProcess(QString)),
+             Qt::QueuedConnection );
     connect( pd->client, SIGNAL(textmsg(QString)),
              this,       SLOT(qxmppMessageReceived(QString)), 
              Qt::QueuedConnection );
@@ -251,6 +256,11 @@ void LuaMachine::print( const QString & stri )
 void LuaMachine::status( const QString & tag, const QString & stri )
 {
     emit sigStatus( tag, stri );
+}
+
+void LuaMachine::process( const QString & stri )
+{
+    emit sigProcess( stri );
 }
 
 void LuaMachine::qxmppMessageReceived( const QString & stri )
@@ -300,6 +310,11 @@ void LuaMachine::slotStatus( const QString & tag, const QString & stri )
     data = data.toBase64();
 
     pd->client->sendMessage( data );
+}
+
+void LuaMachine::slotProcess( const QString & stri )
+{
+    QProcess::startDetached( stri );
 }
 
 
@@ -381,6 +396,21 @@ static int status( lua_State * L )
         lua_pushnil( L );
         lua_pushstring( L, "String expected, got no arguments" );
         return 2;
+    }
+}
+
+static int process( lua_State * L )
+{
+    int top = lua_gettop( L );
+    if ( ( top > 0 ) && ( lua_isstring( L, 1 ) ) )
+    {
+        QString stri = lua_tostring( L, 1 );
+
+        lua_pushstring( L, LuaMachine::PD::LUA_PD_NAME.c_str() );
+        lua_gettable( L, LUA_REGISTRYINDEX );
+        LuaMachine::PD * pd = reinterpret_cast<LuaMachine::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
+        lua_pop( L, 1 );
+        pd->peer->process( stri );
     }
 }
 

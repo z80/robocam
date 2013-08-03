@@ -30,15 +30,19 @@ public:
 	// Send cmd to another peer.
 	void print( const QString & stri );
     void status( const QString & tag, const QString & stri );
+    // Starting another processes.
+    void process( const QString & stri );
 
 signals:
     void sigPrint( const QString & stri );
     void sigStatus( const QString & tag, const QString & stri );
+    void sigProcess( const QString & stri );
 
 private slots:
     void qxmppMessageReceived( const QString & );
     void slotPrint( const QString & stri );
     void slotStatus( const QString & tag, const QString & stri );
+    void slotProcess( const QString & stri );
 
 public:
 	class PD;
