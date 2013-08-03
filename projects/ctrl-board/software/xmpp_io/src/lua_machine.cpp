@@ -14,7 +14,6 @@ static int peer( lua_State * L );
 static int msleep( lua_State * L );
 static int print( lua_State * L );
 static int status( lua_State * L );
-static int data( lua_State * L );
 static int stop( lua_State * L );
 
 static int enterCritical( lua_State * L );
@@ -142,7 +141,6 @@ void LuaMachine::PD::luaLoop( TInit init )
     lua_register( L, "msleep", ::msleep );
     lua_register( L, "print",  ::print );
     lua_register( L, "status", ::status );
-    lua_register( L, "data",   ::data );
     lua_register( L, "stop",   ::stop );
 
     // For noninterruptable Lua code such as read after write I2C.
@@ -222,11 +220,8 @@ LuaMachine::LuaMachine( QXmppPeer * parent, TInit init )
     connect( this,       SIGNAL(sigPrint(QString)), 
              this,       SLOT(slotPrint(QString)), 
              Qt::QueuedConnection );
-    connect( this,       SIGNAL(sigStatus(QString)), 
-             this,       SLOT(slotStatus(QString)), 
-             Qt::QueuedConnection );
-    connect( this,       SIGNAL(sigData(QString)),
-             this,       SLOT(slotData(QString)),
+    connect( this,       SIGNAL(sigStatus(QString, QString)),
+             this,       SLOT(slotStatus(QString, QString)),
              Qt::QueuedConnection );
     connect( pd->client, SIGNAL(textmsg(QString)),
              this,       SLOT(qxmppMessageReceived(QString)), 
@@ -253,14 +248,9 @@ void LuaMachine::print( const QString & stri )
     emit sigPrint( stri );
 }
 
-void LuaMachine::status( const QString & stri )
+void LuaMachine::status( const QString & tag, const QString & stri )
 {
-    emit sigStatus( stri );
-}
-
-void LuaMachine::data( const QString & stri )
-{
-    emit sigData( stri );
+    emit sigStatus( tag, stri );
 }
 
 void LuaMachine::qxmppMessageReceived( const QString & stri )
@@ -296,30 +286,14 @@ void LuaMachine::slotPrint( const QString & stri )
     pd->client->sendMessage( data );
 }
 
-void LuaMachine::slotStatus( const QString & stri )
+void LuaMachine::slotStatus( const QString & tag, const QString & stri )
 {
     QByteArray data;
     QXmlStreamWriter stream( &data );
     stream.setAutoFormatting( false );
 
     stream.writeStartElement( "msg" );
-    stream.writeAttribute( "type",   "status" );
-    stream.writeCharacters( stri );
-    stream.writeEndElement();
-
-    data = data.toBase64();
-
-    pd->client->sendMessage( data );
-}
-
-void LuaMachine::slotData( const QString & stri )
-{
-    QByteArray data;
-    QXmlStreamWriter stream( &data );
-    stream.setAutoFormatting( false );
-
-    stream.writeStartElement( "msg" );
-    stream.writeAttribute( "type",   "data" );
+    stream.writeAttribute( "type",   tag );
     stream.writeCharacters( stri );
     stream.writeEndElement();
 
@@ -379,35 +353,26 @@ static int print( lua_State * L )
 
 static int status( lua_State * L )
 {
-    if ( ( lua_gettop( L ) > 0 ) && ( ( lua_isstring( L, 1 ) ) || ( lua_isnumber( L, 1 ) ) ) )
+    int top = lua_gettop( L );
+    if ( ( top > 0 ) && ( ( lua_isstring( L, 1 ) ) || ( lua_isnumber( L, 1 ) ) ) )
     {
-        QString stri = lua_tostring( L, 1 );
-        lua_pushstring( L, LuaMachine::PD::LUA_PD_NAME.c_str() );
-        lua_gettable( L, LUA_REGISTRYINDEX );
-        LuaMachine::PD * pd = reinterpret_cast<LuaMachine::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
-        lua_pop( L, 1 );
-        pd->peer->status( stri );
-        lua_pushboolean( L, 1 );
-        return 1;
-    }
-    else
-    {
-        lua_pushnil( L );
-        lua_pushstring( L, "String expected, got no arguments" );
-        return 2;
-    }
-}
+        QString tag, stri;
 
-static int data( lua_State * L )
-{
-    if ( ( lua_gettop( L ) > 0 ) && ( ( lua_isstring( L, 1 ) ) || ( lua_isnumber( L, 1 ) ) ) )
-    {
-        QString stri = lua_tostring( L, 1 );
+        if ( top > 1 )
+        {
+            tag  = lua_tostring( L, 1 );
+            stri = lua_tostring( L, 2 );
+        }
+        else
+        {
+            tag = "status";
+            stri = lua_tostring( L, 1 );
+        }
         lua_pushstring( L, LuaMachine::PD::LUA_PD_NAME.c_str() );
         lua_gettable( L, LUA_REGISTRYINDEX );
         LuaMachine::PD * pd = reinterpret_cast<LuaMachine::PD *>( const_cast<void *>( lua_topointer( L, -1 ) ) );
         lua_pop( L, 1 );
-        pd->peer->data( stri );
+        pd->peer->status( tag, stri );
         lua_pushboolean( L, 1 );
         return 1;
     }
