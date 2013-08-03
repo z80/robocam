@@ -167,7 +167,11 @@ void convSetBuckEn( uint16_t en )
         }
         else
         {
-            buckSpSave = buckSp;
+            // It is significant that only meaningful setpoint should be saved.
+            // Otherwise turning off power twice would cause 0 setpoint
+            // in active state.
+            if ( buckSp > 0 )
+                buckSpSave = buckSp;
             buckSp = 0;
         }
     chSysUnlock();

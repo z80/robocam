@@ -92,10 +92,6 @@ inline uint8_t justPs( void )
 
 static void powerOn( void )
 {
-    // The very first power on hangs Raspberry Pi up if I2C cable is connected.
-    // Trying to overcome this problem
-    chThdSleepMilliseconds( 5000 );
-
     // Power on.
     setPower( 1 );
     // Wait for next power off.
