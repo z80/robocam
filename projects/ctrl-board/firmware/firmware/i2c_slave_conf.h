@@ -2,7 +2,7 @@
 #ifndef __I2C_SLAVE_CONF_H_
 #define __I2C_SLAVE_CONF_H_
 
-#define OSC_SIZE                2048
+#define OSC_SIZE                1440
 
 #define I2C_OUT_BUFFER_SZ       16
 #define I2C_IN_BUFFER_SZ        8  // Command id as 1 byte and up to 2 two byte numbers = 5 bytes.

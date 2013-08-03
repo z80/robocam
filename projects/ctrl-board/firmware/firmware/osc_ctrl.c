@@ -14,7 +14,7 @@ static msg_t execThread( void *arg );
 static uint8_t  signals = (SIG_CURR | SIG_TEMP);
 static uint16_t index       = 0;
 static uint16_t measuresCnt = 0;
-static uint16_t measurePeriod = 60;
+static uint16_t measurePeriod = 180; // One measure per 3 minutes. It makes 1440 measures per day.
 
 uint16_t measures[ OSC_SIZE ];
 

@@ -761,7 +761,7 @@ destructors     0x080000ec        0x0
  *(SORT(.fini_array.*))
                 0x080000ec                PROVIDE (__fini_array_end, .)
 
-.text           0x080000f0     0x44b4
+.text           0x080000f0     0x44c4
  *(.text.startup.*)
  *(.text)
  *(.text.*)
@@ -1299,118 +1299,118 @@ destructors     0x080000ec        0x0
                 0x08003b90       0x30 build/obj/osc_ctrl.o
                 0x08003b90                oscMeasuresCnt
  .text.oscValue
-                0x08003bc0       0x40 build/obj/osc_ctrl.o
+                0x08003bc0       0x50 build/obj/osc_ctrl.o
                 0x08003bc0                oscValue
  *(.rodata)
  *(.rodata.*)
  .rodata.str1.4
-                0x08003c00        0xd build/obj/chsys.o
+                0x08003c10        0xd build/obj/chsys.o
                                  0x10 (size before relaxing)
- *fill*         0x08003c0d        0x3 00
+ *fill*         0x08003c1d        0x3 00
  .rodata.str1.4
-                0x08003c10       0x56 build/obj/chdebug.o
+                0x08003c20       0x56 build/obj/chdebug.o
                                  0x58 (size before relaxing)
- *fill*         0x08003c66        0xa 00
+ *fill*         0x08003c76        0xa 00
  .rodata.str1.4
-                0x08003c70       0x31 build/obj/chvt.o
+                0x08003c80       0x31 build/obj/chvt.o
                                  0x34 (size before relaxing)
- *fill*         0x08003ca1        0xf 00
+ *fill*         0x08003cb1        0xf 00
  .rodata.str1.4
-                0x08003cb0       0x23 build/obj/chschd.o
+                0x08003cc0       0x23 build/obj/chschd.o
                                  0x24 (size before relaxing)
- *fill*         0x08003cd3        0xd 00
+ *fill*         0x08003ce3        0xd 00
  .rodata.str1.4
-                0x08003ce0       0x94 build/obj/chthreads.o
- *fill*         0x08003d74        0xc 00
+                0x08003cf0       0x94 build/obj/chthreads.o
+ *fill*         0x08003d84        0xc 00
  .rodata.str1.4
-                0x08003d80       0xab build/obj/chmtx.o
+                0x08003d90       0xab build/obj/chmtx.o
                                  0xac (size before relaxing)
- *fill*         0x08003e2b        0x5 00
+ *fill*         0x08003e3b        0x5 00
  .rodata.str1.4
-                0x08003e30       0x90 build/obj/chevents.o
+                0x08003e40       0x90 build/obj/chevents.o
  .rodata.str1.4
-                0x08003ec0       0x29 build/obj/chqueues.o
+                0x08003ed0       0x29 build/obj/chqueues.o
                                  0x2c (size before relaxing)
- *fill*         0x08003ee9        0x7 00
+ *fill*         0x08003ef9        0x7 00
  .rodata.str1.4
-                0x08003ef0      0x10e build/obj/adc.o
+                0x08003f00      0x10e build/obj/adc.o
                                 0x110 (size before relaxing)
- *fill*         0x08003ffe        0x2 00
+ *fill*         0x0800400e        0x2 00
  .rodata.str1.4
-                0x08004000       0xea build/obj/i2c.o
+                0x08004010       0xea build/obj/i2c.o
                                  0xec (size before relaxing)
- *fill*         0x080040ea        0x6 00
+ *fill*         0x080040fa        0x6 00
  .rodata.str1.4
-                0x080040f0       0xb0 build/obj/pwm.o
+                0x08004100       0xb0 build/obj/pwm.o
  .rodata.str1.4
-                0x080041a0       0x5f build/obj/serial.o
+                0x080041b0       0x5f build/obj/serial.o
                                  0x60 (size before relaxing)
- *fill*         0x080041ff        0x1 00
- .rodata.vmt    0x08004200       0x24 build/obj/serial.o
- *fill*         0x08004224        0xc 00
+ *fill*         0x0800420f        0x1 00
+ .rodata.vmt    0x08004210       0x24 build/obj/serial.o
+ *fill*         0x08004234        0xc 00
  .rodata.str1.4
-                0x08004230       0x31 build/obj/stm32_dma.o
+                0x08004240       0x31 build/obj/stm32_dma.o
                                  0x34 (size before relaxing)
- *fill*         0x08004261        0xf 00
+ *fill*         0x08004271        0xf 00
  .rodata._stm32_dma_streams
-                0x08004270       0x54 build/obj/stm32_dma.o
-                0x08004270                _stm32_dma_streams
- *fill*         0x080042c4        0xc 00
+                0x08004280       0x54 build/obj/stm32_dma.o
+                0x08004280                _stm32_dma_streams
+ *fill*         0x080042d4        0xc 00
  .rodata.str1.4
-                0x080042d0       0x14 build/obj/adc_lld.o
- *fill*         0x080042e4        0xc 00
+                0x080042e0       0x14 build/obj/adc_lld.o
+ *fill*         0x080042f4        0xc 00
  .rodata.str1.4
-                0x080042f0      0x170 build/obj/i2c_lld.o
+                0x08004300      0x170 build/obj/i2c_lld.o
  .rodata.str1.4
-                0x08004460       0x14 build/obj/pwm_lld.o
- *fill*         0x08004474        0xc 00
+                0x08004470       0x14 build/obj/pwm_lld.o
+ *fill*         0x08004484        0xc 00
  .rodata.cfgtab.6079
-                0x08004480       0x14 build/obj/pal_lld.o
- *fill*         0x08004494        0xc 00
+                0x08004490       0x14 build/obj/pal_lld.o
+ *fill*         0x080044a4        0xc 00
  .rodata.pal_default_config
-                0x080044a0       0x3c build/obj/board.o
-                0x080044a0                pal_default_config
- *fill*         0x080044dc        0x4 00
+                0x080044b0       0x3c build/obj/board.o
+                0x080044b0                pal_default_config
+ *fill*         0x080044ec        0x4 00
  .rodata.str1.4
-                0x080044e0        0x4 build/obj/led_ctrl.o
- *fill*         0x080044e4        0xc 00
+                0x080044f0        0x4 build/obj/led_ctrl.o
+ *fill*         0x080044f4        0xc 00
  .rodata.str1.4
-                0x080044f0        0x2 build/obj/power_ctrl.o
+                0x08004500        0x2 build/obj/power_ctrl.o
                                   0x4 (size before relaxing)
- *fill*         0x080044f2        0xe 00
+ *fill*         0x08004502        0xe 00
  .rodata.grpTemperature
-                0x08004500       0x2c build/obj/conv_ctrl.o
- *fill*         0x0800452c        0x4 00
+                0x08004510       0x2c build/obj/conv_ctrl.o
+ *fill*         0x0800453c        0x4 00
  .rodata.adcGroup
-                0x08004530       0x2c build/obj/conv_ctrl.o
- *fill*         0x0800455c        0x4 00
+                0x08004540       0x2c build/obj/conv_ctrl.o
+ *fill*         0x0800456c        0x4 00
  .rodata.grpCurrent
-                0x08004560       0x2c build/obj/conv_ctrl.o
- *fill*         0x0800458c        0x4 00
- .rodata.i2cfg1
-                0x08004590        0xc build/obj/i2c_slave_ctrl.o
+                0x08004570       0x2c build/obj/conv_ctrl.o
  *fill*         0x0800459c        0x4 00
+ .rodata.i2cfg1
+                0x080045a0        0xc build/obj/i2c_slave_ctrl.o
+ *fill*         0x080045ac        0x4 00
  .rodata.str1.4
-                0x080045a0        0x4 build/obj/i2c_slave_ctrl.o
+                0x080045b0        0x4 build/obj/i2c_slave_ctrl.o
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.gcc*)
 
-.vfp11_veneer   0x080045a4        0x0
+.vfp11_veneer   0x080045b4        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x080045a4        0x0
+.v4_bx          0x080045b4        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM.exidx      0x080045a4        0x0
-                0x080045a4                PROVIDE (__exidx_start, .)
+.ARM.exidx      0x080045b4        0x0
+                0x080045b4                PROVIDE (__exidx_start, .)
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x080045a4                PROVIDE (__exidx_end, .)
+                0x080045b4                PROVIDE (__exidx_end, .)
 
 .eh_frame_hdr
  *(.eh_frame_hdr)
@@ -1418,11 +1418,11 @@ destructors     0x080000ec        0x0
 .eh_frame
  *(.eh_frame)
 
-.textalign      0x080045a4        0x4
-                0x080045a8                . = ALIGN (0x8)
- *fill*         0x080045a4        0x4 00
-                0x080045a8                _etext = .
-                0x080045a8                _textdata = _etext
+.textalign      0x080045b4        0x4
+                0x080045b8                . = ALIGN (0x8)
+ *fill*         0x080045b4        0x4 00
+                0x080045b8                _etext = .
+                0x080045b8                _textdata = _etext
 
 .stacks         0x20000000      0x800
                 0x20000000                . = ALIGN (0x8)
@@ -1439,7 +1439,7 @@ destructors     0x080000ec        0x0
                 0x20000800                __process_stack_end__ = .
                 0x20000800                __main_thread_stack_end__ = .
 
-.data           0x20000800       0x4c load address 0x080045a8
+.data           0x20000800       0x4c load address 0x080045b8
                 0x20000800                . = ALIGN (0x4)
                 0x20000800                PROVIDE (_data, .)
  *(.data)
@@ -1468,7 +1468,7 @@ destructors     0x080000ec        0x0
                 0x2000084c                . = ALIGN (0x4)
                 0x2000084c                PROVIDE (_edata, .)
 
-.bss            0x20000850     0x1f70 load address 0x080045f4
+.bss            0x20000850     0x1ab0 load address 0x08004604
                 0x20000850                . = ALIGN (0x4)
                 0x20000850                PROVIDE (_bss_start, .)
  *(.bss)
@@ -1553,22 +1553,22 @@ destructors     0x080000ec        0x0
                 0x2000167e        0x2 build/obj/osc_ctrl.o
  .bss.index     0x20001680        0x2 build/obj/osc_ctrl.o
  *fill*         0x20001682        0x2 00
- .bss.measures  0x20001684     0x1000 build/obj/osc_ctrl.o
+ .bss.measures  0x20001684      0xb40 build/obj/osc_ctrl.o
                 0x20001684                measures
- .bss.cnt.6135  0x20002684        0x2 build/obj/osc_ctrl.o
- *fill*         0x20002686        0x2 00
+ .bss.cnt.6135  0x200021c4        0x2 build/obj/osc_ctrl.o
+ *fill*         0x200021c6        0x2 00
  .bss.period.6137
-                0x20002688        0x4 build/obj/osc_ctrl.o
- .bss.ind.6134  0x2000268c        0x2 build/obj/osc_ctrl.o
- *fill*         0x2000268e        0x2 00
- .bss.waExec    0x20002690      0x130 build/obj/osc_ctrl.o
-                0x200027c0                . = ALIGN (0x4)
+                0x200021c8        0x4 build/obj/osc_ctrl.o
+ .bss.ind.6134  0x200021cc        0x2 build/obj/osc_ctrl.o
+ *fill*         0x200021ce        0x2 00
+ .bss.waExec    0x200021d0      0x130 build/obj/osc_ctrl.o
+                0x20002300                . = ALIGN (0x4)
  *(COMMON)
-                0x200027c0                . = ALIGN (0x4)
-                0x200027c0                PROVIDE (_bss_end, .)
-                0x200027c0                PROVIDE (end, .)
-                0x200027c0                _end = .
-                0x200027c0                __heap_base__ = _end
+                0x20002300                . = ALIGN (0x4)
+                0x20002300                PROVIDE (_bss_end, .)
+                0x20002300                PROVIDE (end, .)
+                0x20002300                _end = .
+                0x20002300                __heap_base__ = _end
                 0x20005000                __heap_end__ = __ram_end__
 OUTPUT(build/ch.elf elf32-littlearm)
 
