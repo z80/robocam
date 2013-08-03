@@ -52,17 +52,7 @@
      <string>File</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuDevice">
-    <property name="title">
-     <string>Device</string>
-    </property>
-    <addaction name="forward"/>
-    <addaction name="backward"/>
-    <addaction name="left"/>
-    <addaction name="right"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuDevice"/>
   </widget>
   <widget class="QDockWidget" name="cmdDw">
    <property name="features">
@@ -152,7 +142,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>38</y>
        <width>60</width>
        <height>27</height>
       </rect>
@@ -165,10 +155,13 @@
      </property>
     </widget>
     <widget class="QPushButton" name="fwdBtn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>208</x>
-       <y>10</y>
+       <y>12</y>
        <width>70</width>
        <height>27</height>
       </rect>
@@ -178,6 +171,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="bwdBtn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>208</x>
@@ -190,114 +186,36 @@
       <string>Backward</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="ccwBtn">
-     <property name="geometry">
-      <rect>
-       <x>127</x>
-       <y>10</y>
-       <width>80</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CCW</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="cwBtn">
-     <property name="geometry">
-      <rect>
-       <x>280</x>
-       <y>10</y>
-       <width>80</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CW</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="leftFwdBtn">
-     <property name="geometry">
-      <rect>
-       <x>127</x>
-       <y>40</y>
-       <width>80</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Left fwd</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="leftBwdBtn">
-     <property name="geometry">
-      <rect>
-       <x>127</x>
-       <y>70</y>
-       <width>80</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Left bwd</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="rightFwdBtn">
-     <property name="geometry">
-      <rect>
-       <x>280</x>
-       <y>40</y>
-       <width>80</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Right fwd</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="rightBwdBtn">
-     <property name="geometry">
-      <rect>
-       <x>280</x>
-       <y>70</y>
-       <width>80</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Right bwd</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="keyboardBtn">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>70</y>
-       <width>60</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Keyboard</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="oscBtn">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>100</y>
-       <width>60</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Osc</string>
-     </property>
-     <property name="checkable">
+    <widget class="QPushButton" name="leftBtn">
+     <property name="enabled">
       <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>127</x>
+       <y>40</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Left</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="rightBtn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>279</x>
+       <y>40</y>
+       <width>80</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Right</string>
      </property>
     </widget>
    </widget>
@@ -313,6 +231,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="queryStatus"/>
+   <addaction name="queryOsc"/>
    <addaction name="clearLog"/>
    <addaction name="showFullLog"/>
    <addaction name="separator"/>
@@ -414,50 +333,6 @@
     <string>Show log</string>
    </property>
   </action>
-  <action name="forward">
-   <property name="text">
-    <string>Forward</string>
-   </property>
-   <property name="shortcut">
-    <string>Up</string>
-   </property>
-   <property name="autoRepeat">
-    <bool>false</bool>
-   </property>
-  </action>
-  <action name="backward">
-   <property name="text">
-    <string>Backward</string>
-   </property>
-   <property name="shortcut">
-    <string>Down</string>
-   </property>
-   <property name="autoRepeat">
-    <bool>false</bool>
-   </property>
-  </action>
-  <action name="left">
-   <property name="text">
-    <string>Left</string>
-   </property>
-   <property name="shortcut">
-    <string>Left</string>
-   </property>
-   <property name="autoRepeat">
-    <bool>false</bool>
-   </property>
-  </action>
-  <action name="right">
-   <property name="text">
-    <string>Right</string>
-   </property>
-   <property name="shortcut">
-    <string>Right</string>
-   </property>
-   <property name="autoRepeat">
-    <bool>false</bool>
-   </property>
-  </action>
   <action name="queryStatus">
    <property name="text">
     <string>Status</string>
@@ -472,6 +347,14 @@
    </property>
    <property name="toolTip">
     <string>Clear log</string>
+   </property>
+  </action>
+  <action name="queryOsc">
+   <property name="text">
+    <string>Osc</string>
+   </property>
+   <property name="toolTip">
+    <string>Query oscilloscopic measures</string>
    </property>
   </action>
  </widget>

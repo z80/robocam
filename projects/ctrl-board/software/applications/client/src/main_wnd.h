@@ -26,11 +26,18 @@ private slots:
 
     // Controls
     void slotStatus();
+    void slotOsc();
     void slotShutdown();
+    void slotLight();
+    void slotMotoEn();
     void slotForward();
     void slotBackward();
     void slotLeft();
     void slotRight();
+    void slotStop();
+protected:
+    void keyPressEvent( QKeyEvent * event );
+    void keyReleaseEvent( QKeyEvent * event );
 private:
 	void log( const std::string & stri );
 

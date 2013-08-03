@@ -25,11 +25,21 @@ MainWnd::MainWnd( QWidget * parent )
 
     QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
     QObject::connect( ui.queryStatus, SIGNAL(triggered()), this, SLOT(slotStatus()) );
+    QObject::connect( ui.queryOsc,    SIGNAL(triggered()), this, SLOT(slotOsc()) );
     QObject::connect( ui.shutdown,    SIGNAL(triggered()), this, SLOT(slotShutdown()) );
-    QObject::connect( ui.forward,     SIGNAL(changed()),   this, SLOT(slotForward()) );
-    QObject::connect( ui.backward,    SIGNAL(changed()),   this, SLOT(slotBackward()) );
-    QObject::connect( ui.left,        SIGNAL(changed()),   this, SLOT(slotLeft()) );
-    QObject::connect( ui.right,       SIGNAL(changed()),   this, SLOT(slotRight()) );
+
+    QObject::connect( ui.lightBtn,    SIGNAL(clicked()),   this, SLOT(slotLight()) );
+    QObject::connect( ui.motoEnBtn,   SIGNAL(clicked()),   this, SLOT(slotMotoEn()) );
+
+    QObject::connect( ui.fwdBtn,      SIGNAL(pressed()),   this, SLOT(slotForward()) );
+    QObject::connect( ui.bwdBtn,      SIGNAL(pressed()),   this, SLOT(slotBackward()) );
+    QObject::connect( ui.leftBtn,     SIGNAL(pressed()),   this, SLOT(slotLeft()) );
+    QObject::connect( ui.rightBtn,    SIGNAL(pressed()),   this, SLOT(slotRight()) );
+
+    QObject::connect( ui.fwdBtn,      SIGNAL(released()),  this, SLOT(slotStop()) );
+    QObject::connect( ui.bwdBtn,      SIGNAL(released()),  this, SLOT(slotStop()) );
+    QObject::connect( ui.leftBtn,     SIGNAL(released()),  this, SLOT(slotStop()) );
+    QObject::connect( ui.rightBtn,    SIGNAL(released()),  this, SLOT(slotStop()) );
 
 
     QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
@@ -99,44 +109,106 @@ void MainWnd::slotStatus()
     slotSend( "sendStatus()" );
 }
 
+void MainWnd::slotOsc()
+{
+    slotSend( "sendOsc()" );
+}
+
 void MainWnd::slotShutdown()
 {
     slotSend( "shutdown()" );
 }
 
+void MainWnd::slotLight()
+{
+    bool en = ui.lightBtn->isChecked();
+    QString stri;
+    if ( en )
+        stri = "setLight( true )";
+    else
+        stri = "setLight( false )";
+    slotSend( stri );
+}
+
+void MainWnd::slotMotoEn()
+{
+    QString stri;
+    bool en = ui.motoEnBtn->isChecked();
+    if ( en )
+    {
+        stri = "setMotoEn( true )";
+        grabKeyboard();
+    }
+    else
+    {
+        stri = "setMotoEn( false )";
+        releaseKeyboard();
+    }
+    ui.fwdBtn->setEnabled( en );
+    ui.bwdBtn->setEnabled( en );
+    ui.leftBtn->setEnabled( en );
+    ui.rightBtn->setEnabled( en );
+
+    slotSend( stri );
+}
+
 void MainWnd::slotForward()
 {
-    if( ui.forward->isChecked() )
-        slotSend( "motoForward()" );
-    else
-        slotSend( "motoStop()" );
+    slotSend( "motoForward()" );
 }
 
 void MainWnd::slotBackward()
 {
-    if( ui.backward->isChecked() )
-        slotSend( "motoBackward()" );
-    else
-        slotSend( "motoStop()" );
+    slotSend( "motoBackward()" );
 }
 
 void MainWnd::slotLeft()
 {
-    if( ui.left->isChecked() )
-        slotSend( "motoLeft()" );
-    else
-        slotSend( "motoStop()" );
+    slotSend( "motoLeft()" );
 }
 
 void MainWnd::slotRight()
 {
-    if( ui.right->isChecked() )
-        slotSend( "motoRight()" );
-    else
-        slotSend( "motoStop()" );
+    slotSend( "motoRight()" );
 }
 
+void MainWnd::slotStop()
+{
+    slotSend( "motoStop()" );
+}
 
+void MainWnd::keyPressEvent( QKeyEvent * event )
+{
+    switch(  event->key() )
+    {
+    case Qt::Key_W:
+        slotForward();
+        break;
+    case Qt::Key_S:
+        slotBackward();
+        break;
+    case Qt::Key_A:
+        slotLeft();
+        break;
+    case Qt::Key_D:
+        slotRight();
+        break;
+    }
+}
+
+void MainWnd::keyReleaseEvent( QKeyEvent * event )
+{
+    switch(  event->key() )
+    {
+    case Qt::Key_W:
+    case Qt::Key_S:
+    case Qt::Key_A:
+    case Qt::Key_D:
+        slotStop();
+        break;
+    }
+
+}
 
 void MainWnd::log( const std::string & stri )
 {

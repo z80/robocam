@@ -249,6 +249,25 @@ function motoStop()
     setMoto( false, false, false, false )
 end
 
+function motoForward()
+    setMoto( true, false, true, false )
+end
+
+function motoBackward()
+    setMoto( false, true, false, true )
+end
+
+function motoLeft()
+    setMoto( false, false, true, false )
+end
+
+function motoRight()
+    setMoto( true, false, false, false )
+end
+
+
+
+
 print( "host.lua loaded!!!" )
 main()
 
