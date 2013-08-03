@@ -20,6 +20,10 @@ local CMD_SET_MOTO_EN     = 8
 local CMD_SET_MOTO        = 9
 local CMD_SET_LIGHT       = 10
 local CMD_SET_LED         = 11
+local CMD_SETUP_OSC       = 15 -- 2 bytes period in seconds, 1 byte what to measure: current, temperature.
+local CMD_OSC_STATUS      = 16 -- 2 bytes number of measures in memory and 1 byte signals measured.
+local CMD_OSC             = 17 -- Get value/values by index. 0 - most recent, 1 - previous, 2 - prev-previous.
+
 
 function sendStatus()
     status(  )
@@ -276,6 +280,58 @@ end
 function motoRight()
     setMoto( true, false, false, false )
 end
+
+--local CMD_SETUP_OSC       = 15 -- 2 bytes period in seconds, 1 byte what to measure: current, temperature.
+--local CMD_OSC_STATUS      = 16 -- 2 bytes number of measures in memory and 1 byte signals measured.
+--local CMD_OSC             = 17 -- Get value/values by index. 0 - most recent, 1 - previous, 2 - prev-previous.
+
+function oscStatus()
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_OSC_STATUS
+        t[2] = 0
+        t[3] = 0
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        sleep( TRY_DELAY )
+        res = mcu:read( I2C_ADDR, 4 )
+        if ( not res ) then
+            return false
+        end
+	local cnt = res[2] + res[3] * 256 
+        status_table.oscCnt = cnt
+        mcu:close()
+        return cnt
+    end
+    return false
+end
+
+function oscValue( index )
+    local res = mcu:open()
+    if ( res ) then
+        local t = {}
+        t[1] = CMD_OSC
+        t[2] = bit.band( index, 255 )
+        t[3] = bit.rshift( index, 8 )
+        res = mcu:write( I2C_ADDR, t )
+        if ( not res ) then
+            return false
+        end
+        sleep( TRY_DELAY )
+        res = mcu:read( I2C_ADDR, 4 )
+        if ( not res ) then
+            return false
+        end
+	local val = res[2] + res[3] * 256 
+        mcu:close()
+        return val
+    end
+    return false
+end
+
 
 
 
