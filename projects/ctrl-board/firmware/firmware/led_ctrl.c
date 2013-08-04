@@ -19,13 +19,13 @@ static msg_t Leds( void *arg )
     while ( 1 )
     {
         applyLed( 0 );
-        chThdSleepMilliseconds( 100 );
+        chThdSleepMilliseconds( 20 );
 
         applyLed( 3 );
-        chThdSleepMilliseconds( 100 );
+        chThdSleepMilliseconds( 20 );
 
         applyLed( leds );
-        chThdSleepMilliseconds( 800 );
+        chThdSleepMilliseconds( 4960 );
 
     }
     return 0;
