@@ -36,7 +36,7 @@ end
 
 function main()
     local client = nil
-    local timeoutToConnect = 20
+    local timeoutToConnect = 60
     local timeToGetClient  = 180
     local triesLeft = 3
     local connected
@@ -49,6 +49,7 @@ function main()
             t1 = os.time()
             sleep( 1000 )
             connected = isConnected()
+	    timeoutReset()
             if ( connected ) then
                 break
             end
@@ -60,7 +61,7 @@ function main()
     end
     -- Connection with server established.
     if ( connected ) then
-        local stri = "Online"
+        local stri = "Host is online"
         print( stri )
         t0 = os.time()
         t1 = t0
@@ -74,7 +75,7 @@ function main()
             end
         end
     end
-    print( "Terminating" )
+    print( "Terminating host" )
     process( "sudo halt -p" )
 end
 
