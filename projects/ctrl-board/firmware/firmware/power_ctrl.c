@@ -15,9 +15,9 @@
 #define JUST_PS_PIN        15
 
 static Mutex mutex;
-static int idleTime      = ( 3 * 60 * 60 );
-static int activeTime    = ( 90 );
-static int timeout       = ( 90 );
+static int idleTime      = ( 12 * 60 * 60 );
+static int activeTime    = ( 3 * 60 );
+static int timeout       = ( 3 * 60 );
 
 inline uint8_t justPs( void );
 static void    powerOn( void );
