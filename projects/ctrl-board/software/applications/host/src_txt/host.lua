@@ -186,7 +186,6 @@ function timeoutReset()
     end
     leaveCritical()
     return false
-e
 end
 
 function powerSetup( onTime, offTime )
