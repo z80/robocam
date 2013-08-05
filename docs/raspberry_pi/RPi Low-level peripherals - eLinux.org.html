@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="client-nojs">
+<head>
+<meta charset="UTF-8" /><script type="text/javascript">var NREUMQ=NREUMQ||[];NREUMQ.push(["mark","firstbyte",new Date().getTime()]);</script>
+<title>RPi Low-level peripherals - eLinux.org</title>
+<meta name="generator" content="MediaWiki 1.22alpha" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="eLinux.org (en)" />
+<link rel="EditURI" type="application/rsd+xml" href="http://elinux.org/api.php?action=rsd" />
+<link rel="copyright" href="http://creativecommons.org/licenses/by-sa/3.0/" />
+<link rel="alternate" type="application/atom+xml" title="eLinux.org Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom" />
+<link rel="stylesheet" href="http://elinux.org/load.php?debug=false&amp;lang=en&amp;modules=ext.rtlcite%7Cmediawiki.legacy.commonPrint%2Cshared%7Cskins.vector&amp;only=styles&amp;skin=vector&amp;*" />
+<meta name="ResourceLoaderDynamicStyles" content="" />
+<style>a:lang(ar),a:lang(ckb),a:lang(fa),a:lang(kk-arab),a:lang(mzn),a:lang(ps),a:lang(ur){text-decoration:none}
+/* cache key: elinux:resourceloader:filter:minify-css:7:2e4e16141a9e7454837948088d3654b0 */</style>
+
+<script src="http://elinux.org/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=vector&amp;*"></script>
+<script>if(window.mw){
+mw.config.set({"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"RPi_Low-level_peripherals","wgTitle":"RPi Low-level peripherals","wgCurRevisionId":276998,"wgArticleId":15890,"wgIsArticle":true,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["RaspberryPi"],"wgBreakFrames":false,"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgMonthNamesShort":["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"wgRelevantPageName":"RPi_Low-level_peripherals","wgRestrictionEdit":[],"wgRestrictionMove":[],"wgWikiEditorEnabledModules":{"toolbar":true,"dialogs":true,"hidesig":true,"templateEditor":false,"templates":false,"preview":true,"previewDialog":false,"publish":true,"toc":false}});
+}</script><script>if(window.mw){
+mw.loader.implement("user.options",function(){mw.user.options.set({"ccmeonemails":0,"cols":80,"date":"default","diffonly":0,"disablemail":0,"disablesuggest":0,"editfont":"default","editondblclick":0,"editsection":1,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":0,"extendwatchlist":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"imagesize":2,"justify":0,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nocache":0,"noconvertlink":0,"norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"rcdays":7,"rclimit":50,"rememberpassword":0,"rows":25,"searchlimit":20,"showhiddencats":0,"showjumplinks":1,"shownumberswatching":1,"showtoc":1,"showtoolbar":1,"skin":"vector","stubthreshold":0,"thumbsize":2,"underline":2,"uselivepreview":0,"usenewrc":0,"watchcreations":0,"watchdefault":0,"watchdeletion":0,"watchlistdays":3,"watchlisthideanons":0,"watchlisthidebots":0,
+"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"wllimit":250,"useeditwarning":1,"usebetatoolbar":1,"usebetatoolbar-cgd":1,"wikieditor-preview":1,"wikieditor-publish":1,"variant":"en","language":"en","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":false,"searchNs15":false,"searchNs500":false,"searchNs501":false,"searchNs502":false,"searchNs503":false});},{},{});mw.loader.implement("user.tokens",function(){mw.user.tokens.set({"editToken":"+\\","patrolToken":false,"watchToken":false});},{},{});
+/* cache key: elinux:resourceloader:filter:minify-js:7:42ce76e792fe5b955223bf3ab1f0100b */
+}</script>
+<script>if(window.mw){
+mw.loader.load(["mediawiki.page.startup","mediawiki.legacy.wikibits","mediawiki.legacy.ajax"]);
+}</script>
+<style type="text/css">/*<![CDATA[*/
+.source-basic4gl {line-height: normal;}
+.source-basic4gl li, .source-basic4gl pre {
+	line-height: normal; border: 0px none white;
+}
+/**
+ * GeSHi Dynamically Generated Stylesheet
+ * --------------------------------------
+ * Dynamically generated stylesheet for basic4gl
+ * CSS class: source-basic4gl, CSS id: 
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ * --------------------------------------
+ */
+.basic4gl.source-basic4gl .de1, .basic4gl.source-basic4gl .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:none; vertical-align:top;font-family: monospace, monospace;}
+.basic4gl.source-basic4gl  {font-family:monospace;}
+.basic4gl.source-basic4gl .imp {font-weight: bold; color: red;}
+.basic4gl.source-basic4gl li, .basic4gl.source-basic4gl .li1 {font-weight: normal; vertical-align:top;}
+.basic4gl.source-basic4gl .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.basic4gl.source-basic4gl .li2 {font-weight: bold; vertical-align:top;}
+.basic4gl.source-basic4gl .kw1 {color: #000080; font-weight: bold;}
+.basic4gl.source-basic4gl .kw2 {color: #FF0000;}
+.basic4gl.source-basic4gl .kw3 {color: #0000FF;}
+.basic4gl.source-basic4gl .co1 {color: #657CC4; font-style: italic;}
+.basic4gl.source-basic4gl .br0 {color: #000080;}
+.basic4gl.source-basic4gl .sy0 {color: #0000FF;}
+.basic4gl.source-basic4gl .st0 {color: #008000;}
+.basic4gl.source-basic4gl .nu0 {color: #000080; font-weight: bold;}
+.basic4gl.source-basic4gl .ln-xtra, .basic4gl.source-basic4gl li.ln-xtra, .basic4gl.source-basic4gl div.ln-xtra {background-color: #ffc;}
+.basic4gl.source-basic4gl span.xtra { display:block; }
+
+/*]]>*/
+</style><!--[if lt IE 7]><style type="text/css">body{behavior:url("/skins/vector/csshover.min.htc")}</style><![endif]--></head>
+<body class="mediawiki ltr sitedir-ltr ns-0 ns-subject page-RPi_Low-level_peripherals skin-vector action-view vector-animateLayout">
+		<div id="mw-page-base" class="noprint"></div>
+		<div id="mw-head-base" class="noprint"></div>
+		<div id="content" class="mw-body" role="main">
+			<a id="top"></a>
+			<div id="mw-js-message" style="display:none;"></div>
+						<div id="siteNotice"><script>document.write("\u003Cdiv id=\"localNotice\" lang=\"en\" dir=\"ltr\"\u003E\u003Cdiv style=\"margin:0; margin-top:10px; margin-right:10px; border:1px solid #dfdfdf; padding:0 1em 1em 1em; background-color:#ffffcc; align:right;\"\u003E\n\u003Cp\u003E\u003Cb\u003EPlease note that User Registration has been temporarily disabled due to a recent increase in automated registrations.  If anyone needs an account, please request one here: \u003Ca href=\"/Special:RequestAccount\" title=\"Special:RequestAccount\"\u003E RequestAccount\u003C/a\u003E. Thanks for your patience!--\u003Ca href=\"/User:Wmat\" title=\"User:Wmat\"\u003EWmat\u003C/a\u003E (\u003Ca href=\"/User_talk:Wmat\" title=\"User talk:Wmat\"\u003Etalk\u003C/a\u003E) 04:16, 27 November 2012 (UTC)\u003Cbr /\u003E\u003C/b\u003E\n\u003Cspan style=\"color:#FF0000;\"\u003E\u003Cb\u003EPlease email \u003Ca href=\"/User:Wmat\" title=\"User:Wmat\"\u003EUser:Wmat\u003C/a\u003E if you experience any issues with the Request Account form.\u003C/b\u003E\u003C/span\u003E\n\u003C/p\u003E\n\u003C/div\u003E\n\u003C/div\u003E");</script></div>
+						<h1 id="firstHeading" class="firstHeading" lang="en"><span dir="auto">RPi Low-level peripherals</span></h1>
+			<div id="bodyContent">
+								<div id="siteSub">From eLinux.org</div>
+								<div id="contentSub"></div>
+																<div id="jump-to-nav" class="mw-jump">
+					Jump to:					<a href="#mw-navigation">navigation</a>, 					<a href="#p-search">search</a>
+				</div>
+								<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><p><br />
+</p>
+<table cellspacing="0" cellpadding="0" style="clear: right; margin-bottom: .5em; float: right; padding: .5em 0 .8em 1.4em; background: none; width: auto;">
+<tr>
+<td> <table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Introduction"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#General_Purpose_Input.2FOutput_.28GPIO.29"><span class="tocnumber">2</span> <span class="toctext">General Purpose Input/Output (GPIO)</span></a>
+<ul>
+<li class="toclevel-2 tocsection-3"><a href="#Referring_to_pins_on_the_Expansion_header"><span class="tocnumber">2.1</span> <span class="toctext">Referring to pins on the Expansion header</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="#Power_pins"><span class="tocnumber">2.2</span> <span class="toctext">Power pins</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="#GPIO_hardware_hacking"><span class="tocnumber">2.3</span> <span class="toctext">GPIO hardware hacking</span></a></li>
+<li class="toclevel-2 tocsection-6"><a href="#P2_header"><span class="tocnumber">2.4</span> <span class="toctext">P2 header</span></a></li>
+<li class="toclevel-2 tocsection-7"><a href="#P3_header"><span class="tocnumber">2.5</span> <span class="toctext">P3 header</span></a></li>
+<li class="toclevel-2 tocsection-8"><a href="#P5_header"><span class="tocnumber">2.6</span> <span class="toctext">P5 header</span></a></li>
+<li class="toclevel-2 tocsection-9"><a href="#P6_header"><span class="tocnumber">2.7</span> <span class="toctext">P6 header</span></a></li>
+<li class="toclevel-2 tocsection-10"><a href="#Driver_support"><span class="tocnumber">2.8</span> <span class="toctext">Driver support</span></a></li>
+<li class="toclevel-2 tocsection-11"><a href="#Graphical_User_Interfaces"><span class="tocnumber">2.9</span> <span class="toctext">Graphical User Interfaces</span></a>
+<ul>
+<li class="toclevel-3 tocsection-12"><a href="#WebIOPi"><span class="tocnumber">2.9.1</span> <span class="toctext">WebIOPi</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-13"><a href="#GPIO_Code_examples"><span class="tocnumber">3</span> <span class="toctext">GPIO Code examples</span></a>
+<ul>
+<li class="toclevel-2 tocsection-14"><a href="#C"><span class="tocnumber">3.1</span> <span class="toctext">C</span></a>
+<ul>
+<li class="toclevel-3 tocsection-15"><a href="#C_2"><span class="tocnumber">3.1.1</span> <span class="toctext">C</span></a>
+<ul>
+<li class="toclevel-4 tocsection-16"><a href="#GPIO_Pull_Up.2FPull_Down_Register_Example"><span class="tocnumber">3.1.1.1</span> <span class="toctext">GPIO Pull Up/Pull Down Register Example</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3 tocsection-17"><a href="#C_.2B_wiringPi"><span class="tocnumber">3.1.2</span> <span class="toctext">C + wiringPi</span></a></li>
+<li class="toclevel-3 tocsection-18"><a href="#C_.2B_sysfs"><span class="tocnumber">3.1.3</span> <span class="toctext">C + sysfs</span></a></li>
+<li class="toclevel-3 tocsection-19"><a href="#C_3"><span class="tocnumber">3.1.4</span> <span class="toctext">C</span></a></li>
+<li class="toclevel-3 tocsection-20"><a href="#C.23"><span class="tocnumber">3.1.5</span> <span class="toctext">C#</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-21"><a href="#Ruby"><span class="tocnumber">3.2</span> <span class="toctext">Ruby</span></a></li>
+<li class="toclevel-2 tocsection-22"><a href="#Perl"><span class="tocnumber">3.3</span> <span class="toctext">Perl</span></a></li>
+<li class="toclevel-2 tocsection-23"><a href="#Python"><span class="tocnumber">3.4</span> <span class="toctext">Python</span></a></li>
+<li class="toclevel-2 tocsection-24"><a href="#Scratch"><span class="tocnumber">3.5</span> <span class="toctext">Scratch</span></a>
+<ul>
+<li class="toclevel-3 tocsection-25"><a href="#Scratch_using_the_ScratchGPIO"><span class="tocnumber">3.5.1</span> <span class="toctext">Scratch using the ScratchGPIO</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-26"><a href="#Java"><span class="tocnumber">3.6</span> <span class="toctext">Java</span></a>
+<ul>
+<li class="toclevel-3 tocsection-27"><a href="#Java_using_the_Pi4J_Library"><span class="tocnumber">3.6.1</span> <span class="toctext">Java using the Pi4J Library</span></a></li>
+<li class="toclevel-3 tocsection-28"><a href="#Java_2"><span class="tocnumber">3.6.2</span> <span class="toctext">Java</span></a></li>
+<li class="toclevel-3 tocsection-29"><a href="#Java_Webapp_GPIO_web_control_via_http"><span class="tocnumber">3.6.3</span> <span class="toctext">Java Webapp GPIO web control via http</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-30"><a href="#Bash_shell_script.2C_using_sysfs.2C_part_of_the_raspbian_operating_system"><span class="tocnumber">3.7</span> <span class="toctext">Bash shell script, using sysfs, part of the raspbian operating system</span></a></li>
+<li class="toclevel-2 tocsection-31"><a href="#Shell_script_-_take_2"><span class="tocnumber">3.8</span> <span class="toctext">Shell script - take 2</span></a></li>
+<li class="toclevel-2 tocsection-32"><a href="#Lazarus_.2F_Free_Pascal"><span class="tocnumber">3.9</span> <span class="toctext">Lazarus / Free Pascal</span></a></li>
+<li class="toclevel-2 tocsection-33"><a href="#BASIC"><span class="tocnumber">3.10</span> <span class="toctext">BASIC</span></a>
+<ul>
+<li class="toclevel-3 tocsection-34"><a href="#BASIC_-_Return_to_BASIC"><span class="tocnumber">3.10.1</span> <span class="toctext">BASIC - Return to BASIC</span></a></li>
+<li class="toclevel-3 tocsection-35"><a href="#BASIC_2"><span class="tocnumber">3.10.2</span> <span class="toctext">BASIC</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-36"><a href="#SPI"><span class="tocnumber">4</span> <span class="toctext">SPI</span></a></li>
+<li class="toclevel-1 tocsection-37"><a href="#MIPI_CSI-2"><span class="tocnumber">5</span> <span class="toctext">MIPI CSI-2</span></a></li>
+<li class="toclevel-1 tocsection-38"><a href="#DSI"><span class="tocnumber">6</span> <span class="toctext">DSI</span></a></li>
+<li class="toclevel-1 tocsection-39"><a href="#CEC"><span class="tocnumber">7</span> <span class="toctext">CEC</span></a></li>
+<li class="toclevel-1 tocsection-40"><a href="#References"><span class="tocnumber">8</span> <span class="toctext">References</span></a></li>
+</ul>
+</td></tr></table>
+</td></tr></table>
+<p>Back to the <a href="/R-Pi_Hub" title="R-Pi Hub" class="mw-redirect">Hub</a>.
+</p><p><br />
+<b>Hardware &amp; Peripherals:</b>
+</p><p><i><a href="/RPi_Hardware" title="RPi Hardware">Hardware</a> and <a href="/RPi_HardwareHistory" title="RPi HardwareHistory">Hardware History</a>.</i>
+</p><p><i><strong class="selflink">Low-level Peripherals</strong> and <a href="/RPi_Expansion_Boards" title="RPi Expansion Boards">Expansion Boards</a>.</i>
+</p><p><i><a href="/RPi_Screens" title="RPi Screens">Screens</a>, <a href="/RPi_Cases" title="RPi Cases">Cases</a> and <a href="/RPi_VerifiedPeripherals" title="RPi VerifiedPeripherals">Other Peripherals</a>.</i>
+</p>
+<div style="clear:both;"></div>
+<p><br />
+</p>
+<h2><span class="mw-headline" id="Introduction">Introduction</span></h2>
+<p>In addition to the familiar USB, Ethernet and HDMI ports, the R-Pi offers lower-level interfaces intended to connect more directly with chips and subsystem modules. These GPIO (general purpose I/O) signals on the 2x13 header pins include SPI, I2C, serial UART, 3V3 and 5V power. These interfaces are not "plug and play" and require care to avoid miswiring. The pins use a 3V3 logic level and are not tolerant of 5V levels, such as you might find on a 5V powered Arduino. CSI (camera serial interface) can be used to connect the 5 MP camera available. Not yet software-enabled is the flex cable connectors with DSI (display serial interface) and a serial link inside the HDMI connector called CEC. (consumer electronics control)
+</p>
+<h2><span class="mw-headline" id="General_Purpose_Input.2FOutput_.28GPIO.29">General Purpose Input/Output (GPIO)</span></h2>
+<div class="thumb tright"><div class="thumbinner" style="width:256px;"><a href="/File:GPIOs.png" class="image"><img alt="" src="/images/2/2a/GPIOs.png" width="254" height="581" class="thumbimage" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/File:GPIOs.png" class="internal" title="Enlarge"><img src="/skins/common/images/magnify-clip.png" width="15" height="11" alt="" /></a></div>The layout of the Raspberry Pi P1 pin-header seen from the top, containing pins useable for general purpose I/O. Colour coded to the table. Three pins changed between PCB Rev.1 and Rev.2 <a rel="nofollow" class="external text" href="https://sites.google.com/site/burngatehouse/home/drawings/GPIOs2.gif">Source</a></div></div></div>
+<p>General Purpose Input/Output (a.k.a. GPIO) is a generic pin on a chip whose behavior (including whether it is an input or output pin) can be controlled (programmed) through software.
+</p><p>The Raspberry Pi allows peripherals and expansion boards (such as the <a href="/Rpi_Gertboard" title="Rpi Gertboard" class="mw-redirect">Rpi Gertboard</a>) to access the CPU by exposing the inputs and outputs.
+</p><p>For further general information about GPIOs, see: <a rel="nofollow" class="external text" href="http://en.wikipedia.org/wiki/GPIO">the wikipedia article</a>.<br />
+For further specific information about the Raspberry Pi's BCM2835 GPIOs, see: <a href="/RPi_BCM2835_GPIOs" title="RPi BCM2835 GPIOs">this wiki article</a>.<br />
+Sample circuits for interfacing the GPIOs with other electronics are shown on the <a href="/RPi_GPIO_Interface_Circuits" title="RPi GPIO Interface Circuits">RPi_GPIO_Interface_Circuits</a> page.
+</p><p>The production Raspberry Pi board has a 26-pin 2.54&#160;mm (100&#160;mil)<sup id="cite_ref-1" class="reference"><a href="#cite_note-1">[1]</a></sup> expansion header, marked as P1, arranged in a 2x13 strip. They provide 8 GPIO pins plus access to I²C, SPI, UART), as well as +3.3&#160;V, +5&#160;V and GND supply lines. Pin one is the pin in the first column and on the bottom row. <sup id="cite_ref-2" class="reference"><a href="#cite_note-2">[2]</a></sup>
+</p><p><a href="/File:RPi_P1_header.png" class="image"><img alt="RPi P1 header.png" src="/images/6/61/RPi_P1_header.png" width="450" height="167" /></a>
+</p><p><b>GPIO voltage levels are 3.3&#160;V and are not 5&#160;V tolerant. There is no over-voltage protection on the board</b> - the intention is that people interested in serious interfacing will use an external board with buffers, level conversion and analog I/O rather than soldering directly onto the main board.
+</p><p>All the GPIO pins can be reconfigured to provide alternate functions, SPI, <a rel="nofollow" class="external text" href="http://en.wikipedia.org/wiki/Pulse-width_modulation">PWM</a>, I²C and so. At reset only pins GPIO 14 &amp; 15 are assigned to the alternate function UART, these two can be switched back to GPIO to provide a total of 17 GPIO pins<sup id="cite_ref-3" class="reference"><a href="#cite_note-3">[3]</a></sup>. Each of their functions and full details of how to access are detailed in the chipset datasheet <sup id="cite_ref-4" class="reference"><a href="#cite_note-4">[4]</a></sup>.
+</p><p>Each GPIO can interrupt, high/low/rise/fall/change.<sup id="cite_ref-5" class="reference"><a href="#cite_note-5">[5]</a></sup><sup id="cite_ref-6" class="reference"><a href="#cite_note-6">[6]</a></sup> There is currently no support for GPIO interrupts in the official kernel, however a patch exists, requiring compilation of modified source tree.<sup id="cite_ref-7" class="reference"><a href="#cite_note-7">[7]</a></sup> The 'Raspbian "wheezy"' <sup id="cite_ref-8" class="reference"><a href="#cite_note-8">[8]</a></sup> version that is currently recommended for starters already includes GPIO interrupts.
+</p><p>GPIO input hysteresis (Schmitt trigger) can be on or off, output slew rate can be fast or limited, and source and sink current is configurable from 2&#160;mA up to 16&#160;mA. Note that chipset GPIO pins 0-27 are in the same block and these properties are set per block, not per pin. See <a rel="nofollow" class="external text" href="http://www.scribd.com/doc/101830961/GPIO-Pads-Control2">GPIO Datasheet Addendum - GPIO Pads Control</a>. Particular attention should be applied to the note regarding SSO (Simultaneous Switching Outputs): to avoid interference, driving currents should be kept as low as possible.
+</p><p>The available <a href="/RPi_BCM2835_GPIOs" title="RPi BCM2835 GPIOs">alternative functions</a> and their corresponding pins are detailed below. These numbers are in reference to the chipset documentation and may not match the numbers exposed in Linux. Only fully usable functions are detailed, for some alternative functions not all the necessary pins are available for the funtionality to be actually used.
+</p><p>There is also some information on the <a href="/RPi_Tutorial_Easy_GPIO_Hardware_%26_Software" title="RPi Tutorial Easy GPIO Hardware &amp; Software">Tutorial on Easy GPIO Hardware &amp; Software</a>.
+</p><p>Kernel boot messages go to the UART at 115200&#160;bit/s - there are more details on the <a href="/RPi_Serial_Connection" title="RPi Serial Connection">serial port</a> page.
+</p><p><b>R-Pi PCB Revision 2 UPDATE:</b> According to Eben at <a rel="nofollow" class="external autonumber" href="http://www.raspberrypi.org/archives/1929#comment-31646">[1]</a> the R-Pi Rev.2 board being rolled out starting in September 2012 adds 4 more GPIO on a new connector called P5, and changes some of the existing P1 GPIO pinouts. On Rev2, GPIO_GEN2 [BCM2835/GPIO27] is routed to P1 pin 13, and changes what was SCL0/SDA0 to SCL1/SDA1: SCL1 [BCM2835/GPIO3] is routed to P1 pin 5, SDA1 [BCM2835/GPIO2] is routed to P1 pin 3. Also the power and ground connections previously marked "Do Not Connect" on P1 will remain as connected, specifically: P1-04:+5V0, P1-09:GND, P1-14:GND, P1-17:+3V3, P1-20:GND, P1-25:GND. According to this comment <a rel="nofollow" class="external autonumber" href="http://www.raspberrypi.org/archives/2081#comment-33577">[2]</a> (and confirmed in this post <a rel="nofollow" class="external autonumber" href="http://www.raspberrypi.org/archives/2233">[3]</a>) the P1 pinout is not expected to change in future beyond the current Rev.2 layout. 
+</p><p><b>P1 Header Pinout, top row:</b>
+</p>
+<table border="1" style="text-align:center;">
+<tr>
+<td> <b>Pin Number</b> </td>
+<td> <b>Pin Name Rev1</b> </td>
+<td> <b>Pin Name Rev2</b> </td>
+<td> <b>Hardware Notes</b> </td>
+<td> <b>Alt 0 Function</b> </td>
+<td> <b>Other Alternative Functions</b>
+</td></tr>
+<tr>
+<td> P1-02 </td>
+<td bgcolor="red" colspan="2"> <span style="color:white">5V0</span> </td>
+<td> Supply through input poly fuse
+</td></tr>
+<tr>
+<td> P1-04 </td>
+<td bgcolor="red" colspan="2"> <span style="color:white">5V0</span> </td>
+<td> Supply through input poly fuse
+</td></tr>
+<tr>
+<td> P1-06 </td>
+<td bgcolor="black" colspan="2"> <span style="color:white">GND</span>
+</td></tr>
+
+<tr>
+<td> P1-08 </td>
+<td bgcolor="lime" colspan="2"> GPIO 14 </td>
+<td> Boot to Alt 0 -&gt; </td>
+<td bgcolor="yellow"> UART0_TXD </td>
+<td> ALT5 = UART1_TXD
+</td></tr>
+<tr>
+<td> P1-10 </td>
+<td bgcolor="lime" colspan="2"> GPIO 15 </td>
+<td> Boot to Alt 0 -&gt; </td>
+<td bgcolor="yellow"> UART0_RXD </td>
+<td> ALT5 = UART1_RXD
+</td></tr>
+<tr>
+<td> P1-12 </td>
+<td bgcolor="lime" colspan="2"> GPIO 18  </td>
+<td> </td>
+<td> PCM_CLK </td>
+<td> ALT4 = SPI1_CE0_N ALT5 = PWM0
+</td></tr>
+<tr>
+<td> P1-14 </td>
+<td bgcolor="black" colspan="2"> <span style="color:white">GND</span>
+</td></tr>
+<tr>
+<td> P1-16 </td>
+<td bgcolor="lime" colspan="2"> GPIO23 </td>
+<td> </td>
+<td> </td>
+<td> ALT3 = SD1_CMD ALT4 = ARM_RTCK
+</td></tr>
+<tr>
+<td> P1-18 </td>
+<td bgcolor="lime" colspan="2"> GPIO24 </td>
+<td> </td>
+<td> </td>
+<td> ALT3 = SD1_DAT0 ALT4 = ARM_TDO
+</td></tr>
+<tr>
+<td> P1-20 </td>
+<td bgcolor="black" colspan="2"> <span style="color:white">GND</span>
+</td></tr>
+<tr>
+<td> P1-22 </td>
+<td bgcolor="lime" colspan="2"> GPIO25 </td>
+<td> </td>
+<td> </td>
+<td> ALT3 = SD1_DAT1 ALT4 = ARM_TCK
+</td></tr>
+<tr>
+<td> P1-24 </td>
+<td bgcolor="lime" colspan="2"> GPIO08 </td>
+<td> </td>
+<td bgcolor="purple"> <span style="color:white">SPI0_CE0_N</span> </td>
+<td>
+</td></tr>
+<tr>
+<td> P1-26 </td>
+<td bgcolor="lime" colspan="2"> GPIO07 </td>
+<td> </td>
+<td bgcolor="purple"> <span style="color:white">SPI0_CE1_N</span> </td>
+<td>
+</td></tr></table>
+<p><br />
+<b>P1 Header Pinout, bottom row:</b>
+</p>
+<table border="1" style="text-align:center;">
+<tr>
+<td> <b>Pin Number</b> </td>
+<td> <b>Pin Name Rev1</b> </td>
+<td> <b>Pin Name Rev2</b> </td>
+<td> <b>Hardware Notes</b> </td>
+<td> <b>Alt 0 Function</b> </td>
+<td> <b>Other Alternative Functions</b>
+</td></tr>
+<tr>
+<td> P1-01 </td>
+<td bgcolor="orange" colspan="2"> 3.3&#160;V  </td>
+<td> 50&#160;mA max (01 &amp; 17)
+</td></tr>
+<tr>
+<td> P1-03 </td>
+<td bgcolor="lime"> GPIO 0 </td>
+<td bgcolor="lime"> <b>GPIO 2</b></td>
+<td> 1K8 pull up resistor </td>
+<td bgcolor="cyan"> I2C0_SDA / <b>I2C1_SDA</b> </td>
+<td>
+</td></tr>
+<tr>
+<td> P1-05 </td>
+<td bgcolor="lime"> GPIO 1 </td>
+<td bgcolor="lime"> <b>GPIO 3</b></td>
+<td> 1K8 pull up resistor </td>
+<td bgcolor="cyan"> I2C0_SCL / <b>I2C1_SCL</b> </td>
+<td>
+</td></tr>
+<tr>
+<td> P1-07 </td>
+<td bgcolor="lime" colspan="2"> GPIO 4 </td>
+<td> </td>
+<td> GPCLK0 </td>
+<td> ALT5 = ARM_TDI
+</td></tr>
+<tr>
+<td> P1-09 </td>
+<td bgcolor="black" colspan="2"> <span style="color:white">GND</span>
+</td></tr>
+<tr>
+<td> P1-11 </td>
+<td bgcolor="lime" colspan="2"> GPIO17 </td>
+<td> </td>
+<td> </td>
+<td> ALT3 = UART0_RTS ALT4 = SPI1_CE1_N ALT5 = UART1_RTS
+</td></tr>
+<tr>
+<td> P1-13 </td>
+<td bgcolor="lime"> GPIO21 </td>
+<td bgcolor="lime"> <b>GPIO27</b> </td>
+<td> </td>
+<td> PCM_DOUT / <b>reserved</b> </td>
+<td> ALT4 = SPI1_SCLK ALT5 = GPCLK1 / <b>ALT3 = SD1_DAT3 ALT4 = ARM_TMS</b>
+</td></tr>
+<tr>
+<td> P1-15 </td>
+<td bgcolor="lime" colspan="2"> GPIO22 </td>
+<td> </td>
+<td> </td>
+<td> ALT3 = SD1_CLK ALT4 = ARM_TRST
+</td></tr>
+<tr>
+<td> P1-17 </td>
+<td bgcolor="orange" colspan="2"> 3.3&#160;V </td>
+<td> 50&#160;mA max (01 &amp; 17)
+</td></tr>
+<tr>
+<td> P1-19 </td>
+<td bgcolor="lime" colspan="2"> GPIO10 </td>
+<td> </td>
+<td bgcolor="purple"> <span style="color:white">SPI0_MOSI</span> </td>
+<td>
+</td></tr>
+<tr>
+<td> P1-21 </td>
+<td bgcolor="lime" colspan="2"> GPIO9 </td>
+<td> </td>
+<td bgcolor="purple"> <span style="color:white">SPI0_MISO</span> </td>
+<td>
+</td></tr>
+<tr>
+<td> P1-23 </td>
+<td bgcolor="lime" colspan="2"> GPIO11 </td>
+<td> </td>
+<td bgcolor="purple"> <span style="color:white">SPI0_SCLK</span> </td>
+<td>
+</td></tr>
+<tr>
+<td> P1-25 </td>
+<td bgcolor="black" colspan="2"> <span style="color:white">GND</span>
+</td></tr></table>
+<p><br />
+</p>
+<table border="1">
+<tr>
+<th> Colour legend
+</th></tr>
+<tr>
+<td bgcolor="red"> <span style="color:white">+5&#160;V</span>
+</td></tr>
+<tr>
+<td bgcolor="orange"> +3.3&#160;V
+</td></tr>
+<tr>
+<td bgcolor="black"> <span style="color:white">Ground, 0V</span>
+</td></tr>
+<tr>
+<td bgcolor="yellow"> UART
+</td></tr>
+<tr>
+<td bgcolor="lime"> GPIO
+</td></tr>
+<tr>
+<td bgcolor="purple"> <span style="color:white">SPI</span>
+</td></tr>
+<tr>
+<td bgcolor="cyan"> I²C
+</td></tr></table>
+<p>KiCad symbol: <a href="/File:Conn-raspberry.lib" title="File:Conn-raspberry.lib">File:Conn-raspberry.lib</a>
+</p><p><sup id="cite_ref-9" class="reference"><a href="#cite_note-9">[9]</a></sup>
+</p><p>Pin 3 (SDA0) and Pin 5 (SCL0) are preset to be used as an I²C interface. So there are 1.8&#160;kilohm pulls up resistors on the board for these pins.<sup id="cite_ref-10" class="reference"><a href="#cite_note-10">[10]</a></sup>
+</p><p>Pin 12 supports <a rel="nofollow" class="external text" href="http://en.wikipedia.org/wiki/Pulse-width_modulation">PWM</a> .
+</p><p>It is also possible to reconfigure GPIO connector pins P1-7, 15, 16, 18, 22 (chipset GPIOs 4 and 22 to 25) to provide an ARM JTAG interface.<sup id="cite_ref-11" class="reference"><a href="#cite_note-11">[11]</a></sup> However ARM_TMS isn't available on the GPIO connector (chipset pin 12 or 27 is needed).  Chipset pin 27 is available on S5, the CSI camera interface however.
+</p><p>It is also possible to reconfigure GPIO connector pins P1-12 and 13 (chipset GPIO 18 and 21) to provide an I2S (a hardware modification may be required<sup id="cite_ref-I2S_12-0" class="reference"><a href="#cite_note-I2S-12">[12]</a></sup>) or PCM interface.<sup id="cite_ref-13" class="reference"><a href="#cite_note-13">[13]</a></sup> However, PCM_FS and PCM_DIN (chipset pins 19 and 20) are needed for I2S or PCM.
+</p><p>A second I²C interface (GPIO02_ALT0 is SDA1 and GPIO03_ALT0 is SCL1) and two further GPIOs (GPIO05_ALT0 is GPCLK1, and GPIO27) are available on S5, the CSI camera interface.
+</p>
+<h3><span class="mw-headline" id="Referring_to_pins_on_the_Expansion_header">Referring to pins on the Expansion header</span></h3>
+<p>The header is referred to as "The GPIO Connector (P1)".  To avoid nomenclature confusion between Broadcom signal names on the SoC and pin names on the expansion header, the following naming is highly recommended.
+</p>
+<ul><li> The expansion header is referred to as "Expansion Header" or "GPIO Connector (P1)"
+</li><li> Pins on the GPIO connector (P1) are referred to as P1-01, etc.
+</li><li> Names GPIO0, GPIO1, GPIOx-ALTy, etc. refer to the signal names on the SoC as enumerated in the Broadcom datasheet, where "x" matches BCM2835 number (without leading zero) and "y" is the alternate number column 0 to 5 on page 102-103 of the Broadcom document. For example, depending on what you are describing, use either "GPIO7" to refer to a row of the table, and "GPIO7-ALT0" would refer to a specific cell of the table.
+</li><li> When refering to signal names, you should modify the Broadcom name slightly to minimize confusion. The Broadcom SPI bus pin names are fine, such as "SPI0_*" and "SPI1_*", but they didn't do the same on the I²C and UART pins.  Instead of using "SDA0" and "SCL0", you should use "I2C0_SDA" and "I2C0_SCL"; and instead of "TX" or "TXD" and "RX" or "RXD", you should use "UART0_TXD" and "UART0_RXD".
+</li></ul>
+<h3><span class="mw-headline" id="Power_pins">Power pins</span></h3>
+<p>The maximum permitted current draw from the 3.3&#160;V pins is 50&#160;mA.
+</p><p>Maximum permitted current draw from the 5&#160;V pin is the USB input current (usually 1&#160;A) minus any current draw from the rest of the board.<sup id="cite_ref-14" class="reference"><a href="#cite_note-14">[14]</a></sup>
+</p>
+<ul><li>Model A: 1000&#160;mA - 500&#160;mA -&gt; max current draw: 500&#160;mA
+</li><li>Model B: 1000&#160;mA - 700&#160;mA -&gt; max current draw: 300&#160;mA
+</li></ul>
+<p>Be very careful with the 5&#160;V pins P1-02 and P1-04, because if you short 5&#160;V to any other P1 pin you may permanently damage your RasPi.  Before probing P1, it's a good idea to strip short pieces of insulation off a wire and push them over the 5&#160;V pins so you don't accidentally short them with a probe.
+</p>
+<h3><span class="mw-headline" id="GPIO_hardware_hacking">GPIO hardware hacking</span></h3>
+The complete list of <a href="/RPi_BCM2835_GPIOs" title="RPi BCM2835 GPIOs">chipset GPIO pins</a> which are available on the GPIO connector is: <blockquote><a href="/RPi_BCM2835_GPIOs#GPIO0" title="RPi BCM2835 GPIOs">0</a>, <a href="/RPi_BCM2835_GPIOs#GPIO1" title="RPi BCM2835 GPIOs">1</a>, <a href="/RPi_BCM2835_GPIOs#GPIO4" title="RPi BCM2835 GPIOs">4</a>, <a href="/RPi_BCM2835_GPIOs#GPIO7" title="RPi BCM2835 GPIOs">7</a>, <a href="/RPi_BCM2835_GPIOs#GPIO8" title="RPi BCM2835 GPIOs">8</a>, <a href="/RPi_BCM2835_GPIOs#GPIO9" title="RPi BCM2835 GPIOs">9</a>, <a href="/RPi_BCM2835_GPIOs#GPIO10" title="RPi BCM2835 GPIOs">10</a>, <a href="/RPi_BCM2835_GPIOs#GPIO11" title="RPi BCM2835 GPIOs">11</a>, <a href="/RPi_BCM2835_GPIOs#GPIO14" title="RPi BCM2835 GPIOs">14</a>, <a href="/RPi_BCM2835_GPIOs#GPIO15" title="RPi BCM2835 GPIOs">15</a>, <a href="/RPi_BCM2835_GPIOs#GPIO17" title="RPi BCM2835 GPIOs">17</a>, <a href="/RPi_BCM2835_GPIOs#GPIO18" title="RPi BCM2835 GPIOs">18</a>, <a href="/RPi_BCM2835_GPIOs#GPIO21" title="RPi BCM2835 GPIOs">21</a>, <a href="/RPi_BCM2835_GPIOs#GPIO22" title="RPi BCM2835 GPIOs">22</a>, <a href="/RPi_BCM2835_GPIOs#GPIO23" title="RPi BCM2835 GPIOs">23</a>, <a href="/RPi_BCM2835_GPIOs#GPIO24" title="RPi BCM2835 GPIOs">24</a>, <a href="/RPi_BCM2835_GPIOs#GPIO25" title="RPi BCM2835 GPIOs">25</a></blockquote>
+<p>(on the Revision2.0 RaspberryPis, this list changes to: <a href="/RPi_BCM2835_GPIOs#GPIO2" title="RPi BCM2835 GPIOs">2</a>, <a href="/RPi_BCM2835_GPIOs#GPIO3" title="RPi BCM2835 GPIOs">3</a>, <a href="/RPi_BCM2835_GPIOs#GPIO4" title="RPi BCM2835 GPIOs">4</a>, <a href="/RPi_BCM2835_GPIOs#GPIO7" title="RPi BCM2835 GPIOs">7</a>, <a href="/RPi_BCM2835_GPIOs#GPIO8" title="RPi BCM2835 GPIOs">8</a>, <a href="/RPi_BCM2835_GPIOs#GPIO9" title="RPi BCM2835 GPIOs">9</a>, <a href="/RPi_BCM2835_GPIOs#GPIO10" title="RPi BCM2835 GPIOs">10</a>, <a href="/RPi_BCM2835_GPIOs#GPIO11" title="RPi BCM2835 GPIOs">11</a>, <a href="/RPi_BCM2835_GPIOs#GPIO14" title="RPi BCM2835 GPIOs">14</a>, <a href="/RPi_BCM2835_GPIOs#GPIO15" title="RPi BCM2835 GPIOs">15</a>, <a href="/RPi_BCM2835_GPIOs#GPIO17" title="RPi BCM2835 GPIOs">17</a>, <a href="/RPi_BCM2835_GPIOs#GPIO18" title="RPi BCM2835 GPIOs">18</a>, <a href="/RPi_BCM2835_GPIOs#GPIO22" title="RPi BCM2835 GPIOs">22</a>, <a href="/RPi_BCM2835_GPIOs#GPIO23" title="RPi BCM2835 GPIOs">23</a>, <a href="/RPi_BCM2835_GPIOs#GPIO24" title="RPi BCM2835 GPIOs">24</a>, <a href="/RPi_BCM2835_GPIOs#GPIO25" title="RPi BCM2835 GPIOs">25</a>, <a href="/RPi_BCM2835_GPIOs#GPIO27" title="RPi BCM2835 GPIOs">27</a>, with <a href="/RPi_BCM2835_GPIOs#GPIO28" title="RPi BCM2835 GPIOs">28</a>, <a href="/RPi_BCM2835_GPIOs#GPIO29" title="RPi BCM2835 GPIOs">29</a>, <a href="/RPi_BCM2835_GPIOs#GPIO30" title="RPi BCM2835 GPIOs">30</a>, <a href="/RPi_BCM2835_GPIOs#GPIO31" title="RPi BCM2835 GPIOs">31</a> additionally available on the <a href="#P5_header">P5 header</a>)
+</p><p>As noted above, P1-03 and P1-05 (SDA0 and SCL0 / SDA1 and SCL1) have 1.8&#160;kilohm pull-up resistors to 3.3&#160;V.
+</p><p>If 17 GPIOs aren't sufficient for your project, there are a few other signals potentially available, with varying levels of software and hardware (soldering iron) hackery skills:
+</p><p>GPIO02, 03, 05 and 27 are available on S5 (the CSI interface) when a camera peripheral is not connected to that socket, and are configured by default to provide the functions SDA1, SCL1, CAM_CLK and CAM_GPIO respectively.  SDA1 and SCL1 have 1K6 pull-up resistors to 3.3&#160;V.
+</p><p>GPIO06 is LAN_RUN and is available on pad 12 of the footprint for IC3 on the Model A. On Model B, it is in use for the Ethernet function.
+</p><p>There are a few other chipset GPIO pins accessible on the PCB but are in use:
+</p>
+<ul><li> GPIO16 drives status LED D5 (usually SD card access indicator)
+</li><li> GPIO28-31 are used by the board ID and are connected to resistors R3 to R10 (only on Rev1.0 boards).
+</li><li> GPIO40 and 45 are used by analogue audio and support <a rel="nofollow" class="external text" href="http://en.wikipedia.org/wiki/Pulse-width_modulation">PWM</a>. They connect to the analogue audio circuitry via R21 and R27 respectively.
+</li><li> GPIO46 is HDMI hotplug detect (goes to pin 6 of IC1).
+</li><li> GPIO47 to 53 are used by the SD card interface.  In particular, GPIO47 is SD card detect (this would seem to be a good candidate for re-use).  GPIO47 is connected to the SD card interface card detect switch; GPIO48 to 53 are connected to the SD card interface via resistors R45 to R50.
+</li></ul>
+<h3><span class="mw-headline" id="P2_header">P2 header</span></h3>
+<p>The P2 header is the VideoCore JTAG and used only during the production of the board. It cannot be used as the ARM JTAG <sup id="cite_ref-15" class="reference"><a href="#cite_note-15">[15]</a></sup>. This connector is unpopulated in Rev 2.0 boards. 
+</p><p><a href="/File:RPi_P2_header.png" class="image"><img alt="RPi P2 header.png" src="/images/5/53/RPi_P2_header.png" width="126" height="285" /></a>
+</p><p>Useful P2 pins:
+</p>
+<ul><li> Pin 1 - 3.3V (same as P1-01, 50 mA max current draw across both of them)
+</li><li> Pin 7 - GND
+</li><li> Pin 8 - GND
+</li></ul>
+<h3><span class="mw-headline" id="P3_header">P3 header</span></h3>
+<p>The P3 header, unpopulated, is the LAN9512 JTAG <sup id="cite_ref-16" class="reference"><a href="#cite_note-16">[16]</a></sup>.
+</p><p><a href="/File:RPi_P3_header.png" class="image"><img alt="RPi P3 header.png" src="/images/b/b5/RPi_P3_header.png" width="116" height="255" /></a>
+</p><p>Useful P3 pins:
+</p>
+<ul><li> Pin 7 - GND
+</li></ul>
+<h3><span class="mw-headline" id="P5_header">P5 header</span></h3>
+<p>The P5 header was added with the release of the Revision 2.0 PCB design.
+</p><p><a href="/File:RPi_P5_header.png" class="image"><img alt="RPi P5 header.png" src="/images/c/c4/RPi_P5_header.png" width="248" height="188" /></a>
+</p><p><b>P5 Header Pinout (seen from the back of the board), top row:</b>
+</p>
+<table border="1" style="text-align:center;">
+<tr>
+<td> <b>Pin Number</b> </td>
+<td> <b>Pin Name Rev2</b> </td>
+<td> <b>Hardware Notes</b> </td>
+<td> <b>Alt 0 Function</b> </td>
+<td> <b>Other Alternative Functions</b>
+</td></tr>
+<tr>
+<td> P5-01 </td>
+<td bgcolor="red"> <span style="color:white">5V0</span> </td>
+<td> Supply through input poly fuse
+</td></tr>
+<tr>
+<td> P5-03 </td>
+<td bgcolor="lime"> GPIO28 </td>
+<td> </td>
+<td bgcolor="cyan"> I2C0_SDA </td>
+<td> ALT2 = PCM_CLK
+</td></tr>
+<tr>
+<td> P5-05 </td>
+<td bgcolor="lime"> GPIO30 </td>
+<td> </td>
+<td> </td>
+<td> ALT2 = PCM_DIN ALT3 = UART0_CTS ALT5 = UART1_CTS
+</td></tr>
+<tr>
+<td> P5-07 </td>
+<td bgcolor="black"> <span style="color:white">GND</span>
+</td></tr></table>
+<p><b>P5 Header Pinout (seen from the back of the board), bottom row:</b>
+</p>
+<table border="1" style="text-align:center;">
+<tr>
+<td> <b>Pin Number</b> </td>
+<td> <b>Pin Name Rev2</b> </td>
+<td> <b>Hardware Notes</b> </td>
+<td> <b>Alt 0 Function</b> </td>
+<td> <b>Other Alternative Functions</b>
+</td></tr>
+<tr>
+<td> P5-02 </td>
+<td bgcolor="orange"> 3.3&#160;V </td>
+<td> 50&#160;mA max (combined with P1)
+</td></tr>
+<tr>
+<td> P5-04 </td>
+<td bgcolor="lime"> GPIO29 </td>
+<td> </td>
+<td bgcolor="cyan"> I2C0_SCL </td>
+<td> ALT2 = PCM_FS
+</td></tr>
+<tr>
+<td> P5-06 </td>
+<td bgcolor="lime"> GPIO31 </td>
+<td> </td>
+<td> </td>
+<td> ALT2 = PCM_DOUT ALT3 = UART0_RTS ALT5 = UART1_RTS
+</td></tr>
+<tr>
+<td> P5-08 </td>
+<td bgcolor="black"> <span style="color:white">GND</span>
+</td></tr></table>
+<div class="thumb tleft"><div class="thumbinner" style="width:152px;"><a href="/File:Male-slanted2small.jpg" class="image"><img alt="" src="/images/thumb/7/72/Male-slanted2small.jpg/150px-Male-slanted2small.jpg" width="150" height="134" class="thumbimage" srcset="/images/thumb/7/72/Male-slanted2small.jpg/225px-Male-slanted2small.jpg 1.5x, /images/thumb/7/72/Male-slanted2small.jpg/300px-Male-slanted2small.jpg 2x" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/File:Male-slanted2small.jpg" class="internal" title="Enlarge"><img src="/skins/common/images/magnify-clip.png" width="15" height="11" alt="" /></a></div>Slanted P5 header</div></div></div>
+<p>Note that the connector is intended to be mounted on the <b>bottom</b> of the PCB, so that for those who put the connector on the top side, the pin numbers are swapped. Pin 1 and pin 2 are swapped, pin 3 and 4, etc. 
+</p><p>Some people have come to the conclusion that the best way (for them) to attach this header is on top, <a rel="nofollow" class="external text" href="http://raspi.tv/2013/the-leaning-header-of-pi5a-how-best-to-solder-a-header-on-p5">at a slant away from the P1 header.</a>
+</p><p>The new header can provide a second I2C channel (SDA + SCL) and handshake lines for the existing UART (TxD and RxD), or it can be used for an I2S (audio codec chip) interface using the PCM signals CLK, FS (Frame Sync), Din and Dout.
+</p><p>Note that the connector is placed JUST off-grid with respect to the P1 connector.
+</p>
+<h3><span class="mw-headline" id="P6_header">P6 header</span></h3>
+<p>The P6 header was added with the release of the Revision 2.0 PCB design.
+</p><p><a href="/File:RPi_P6_header.png" class="image"><img alt="RPi P6 header.png" src="/images/4/48/RPi_P6_header.png" width="151" height="123" /></a>
+</p><p><b>P6 Pinout:</b>
+</p>
+<table border="1" style="text-align:center;">
+<tr>
+<td> <b>Pin Number</b> </td>
+<td> <b>Pin Name Rev2</b> </td>
+<td> <b>Hardware Notes</b>
+</td></tr>
+<tr>
+<td> P6-01 </td>
+<td> RUN </td>
+<td> Short to ground to reset the BCM2835
+</td></tr>
+<tr>
+<td> P6-02 </td>
+<td bgcolor="black"> <span style="color:white">GND</span>
+</td></tr></table>
+<p><a rel="nofollow" class="external text" href="http://raspi.tv/2012/making-a-reset-switch-for-your-rev-2-raspberry-pi">A reset button can be attached to the P6 header</a>, with which the Pi can be reset.
+Momentarily shorting the two pins of P6 together will cause a soft reset of the CPU (which can also 'wake' the Pi from halt/shutdown state).
+</p>
+<h3><span class="mw-headline" id="Driver_support">Driver support</span></h3>
+<p>The Foundation will not include a GPIO driver in the initial release, standard Linux GPIO drivers should work with minimal modification.<sup id="cite_ref-17" class="reference"><a href="#cite_note-17">[17]</a></sup>
+</p><p>The community implemented SPI and I²C drivers <sup id="cite_ref-18" class="reference"><a href="#cite_note-18">[18]</a></sup>, which will be integrated with the new Linux pinctrl concept in a later version of the kernel. (On Oct. 14 2012, it was already included in the latest raspbian image.) A first compiled version as Linux modules is available to install on the 19/04/2012 Debian image, including 1-wire support<sup id="cite_ref-19" class="reference"><a href="#cite_note-19">[19]</a></sup>. The I²C and SPI driver uses the hardware modules of the microcontroller and interrupts for low CPU usage, the 1-wire support uses bitbanging on the GPIO ports, which results in higher CPU usage.
+</p><p>GordonH<sup id="cite_ref-20" class="reference"><a href="#cite_note-20">[20]</a></sup> wrote a (mostly) Arduino compatible/style <a rel="nofollow" class="external text" href="https://projects.drogon.net/raspberry-pi/wiringpi/">WiringPi library</a> in C for controlling the GPIO pins.
+</p><p>A useful tutorial on setting up I²C driver support can be found at <a rel="nofollow" class="external text" href="http://www.robot-electronics.co.uk/htm/raspberry_pi_examples.htm">Robot Electronics</a> - look for the downloadable document rpi_i2c_setup.doc
+</p>
+<h3><span class="mw-headline" id="Graphical_User_Interfaces">Graphical User Interfaces</span></h3>
+<h4><span class="mw-headline" id="WebIOPi">WebIOPi</span></h4>
+<p><a rel="nofollow" class="external text" href="http://code.google.com/p/webiopi/">WebIOPi</a> allows you to control each GPIO with a simple web interface that you can use with any browser. Available in PHP and Python, they both require root access, but Python version serves HTTP itself. You can setup each GPIO as input or output and change their states (LOW/HIGH). WebIOPi is fully customizable, so you can use it for home remote control. It also work over Internet. UART/SPI/I2C support will be added later. If you need some computing for your GPIO go to code examples below.
+</p>
+<h2><span class="mw-headline" id="GPIO_Code_examples">GPIO Code examples</span></h2>
+<h3><span class="mw-headline" id="C">C</span></h3>
+<p>Examples in different C-Languages.
+</p>
+<h4><span class="mw-headline" id="C_2">C</span></h4>
+<p><a rel="nofollow" class="external text" href="http://www.raspberrypi.org/forum/educational-applications/gertboard/page-4/#p31555">Gert van Loo &amp; Dom, has provided</a> some tested code which accesses the GPIO pins through direct GPIO register manipulation in C-code.
+(Thanks to Dom for doing the difficult work of finding and testing the mapping.)
+Example GPIO code:
+</p>
+<pre>
+//
+//  How to access GPIO registers from C-code on the Raspberry-Pi
+//  Example program
+//  15-January-2012
+//  Dom and Gert
+//  Revised: 15-Feb-2013
+
+
+// Access from ARM Running Linux
+
+#define BCM2708_PERI_BASE        0x20000000
+#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
+
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;unistd.h&gt;
+
+#define PAGE_SIZE (4*1024)
+#define BLOCK_SIZE (4*1024)
+
+int  mem_fd;
+void *gpio_map;
+
+// I/O access
+volatile unsigned *gpio;
+
+
+// GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
+#define INP_GPIO(g) *(gpio+((g)/10)) &amp;= ~(7&lt;&lt;(((g)%10)*3))
+#define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1&lt;&lt;(((g)%10)*3))
+#define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)&lt;=3?(a)+4:(a)==4?3:2)&lt;&lt;(((g)%10)*3))
+
+#define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
+#define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
+
+void setup_io();
+
+int main(int argc, char **argv)
+{
+  int g,rep;
+
+  // Set up gpi pointer for direct register access
+  setup_io();
+
+  // Switch GPIO 7..11 to output mode
+
+ /************************************************************************\
+  * You are about to change the GPIO settings of your computer.          *
+  * Mess this up and it will stop working!                               *
+  * It might be a good idea to 'sync' before running this program        *
+  * so at least you still have your code changes written to the SD-card! *
+ \************************************************************************/
+
+  // Set GPIO pins 7-11 to output
+  for (g=7; g&lt;=11; g++)
+  {
+    INP_GPIO(g); // must use INP_GPIO before we can use OUT_GPIO
+    OUT_GPIO(g);
+  }
+
+  for (rep=0; rep&lt;10; rep++)
+  {
+     for (g=7; g&lt;=11; g++)
+     {
+       GPIO_SET = 1&lt;&lt;g;
+       sleep(1);
+     }
+     for (g=7; g&lt;=11; g++)
+     {
+       GPIO_CLR = 1&lt;&lt;g;
+       sleep(1);
+     }
+  }
+
+  return 0;
+
+} // main
+
+
+//
+// Set up a memory regions to access GPIO
+//
+void setup_io()
+{
+   /* open /dev/mem */
+   if ((mem_fd = open(&quot;/dev/mem&quot;, O_RDWR|O_SYNC) ) &lt; 0) {
+      printf(&quot;can't open /dev/mem \n&quot;);
+      exit(-1);
+   }
+
+   /* mmap GPIO */
+   gpio_map = mmap(
+      NULL,             //Any adddress in our space will do
+      BLOCK_SIZE,       //Map length
+      PROT_READ|PROT_WRITE,// Enable reading &amp; writting to mapped memory
+      MAP_SHARED,       //Shared with other processes
+      mem_fd,           //File to map
+      GPIO_BASE         //Offset to GPIO peripheral
+   );
+
+   close(mem_fd); //No need to keep mem_fd open after mmap
+
+   if (gpio_map == MAP_FAILED) {
+      printf(&quot;mmap error&#160;%d\n&quot;, (int)gpio_map);//errno also set!
+      exit(-1);
+   }
+
+   // Always use volatile pointer!
+   gpio = (volatile unsigned *)gpio_map;
+
+
+} // setup_io
+
+</pre>
+<h5><span class="mw-headline" id="GPIO_Pull_Up.2FPull_Down_Register_Example">GPIO Pull Up/Pull Down Register Example</span></h5>
+<pre>
+   // enable pull-up on GPIO24&amp;25
+   GPIO_PULL = 2;
+   short_wait();
+   // clock on GPIO 24 &amp; 25 (bit 24 &amp; 25 set)
+   GPIO_PULLCLK0 = 0x03000000;
+   short_wait();
+   GPIO_PULL = 0;
+   GPIO_PULLCLK0 = 0;
+</pre>
+<h4><span class="mw-headline" id="C_.2B_wiringPi">C + wiringPi</span></h4>
+<p>Get and install wiringPi: <a rel="nofollow" class="external free" href="https://projects.drogon.net/raspberry-pi/wiringpi/download-and-install/">https://projects.drogon.net/raspberry-pi/wiringpi/download-and-install/</a>
+</p><p>Save this, and compile with:
+</p>
+<pre>
+  gcc -o blink blink.c -lwiringPi
+</pre>
+<p>and run with:
+</p>
+<pre>
+  sudo ./blink
+</pre>
+<pre>
+/*
+ * blink.c:
+ *      blinks the first LED
+ *      Gordon Henderson, projects@drogon.net
+ */
+
+#include &lt;stdio.h&gt;
+#include &lt;wiringPi.h&gt;
+
+int main (void)
+{
+  printf (&quot;Raspberry Pi blink\n&quot;)&#160;;
+
+  if (wiringPiSetup () == -1)
+    return 1&#160;;
+
+  pinMode (0, OUTPUT)&#160;;         // aka BCM_GPIO pin 17
+
+  for (;;)
+  {
+    digitalWrite (0, 1)&#160;;       // On
+    delay (500)&#160;;               // mS
+    digitalWrite (0, 0)&#160;;       // Off
+    delay (500)&#160;;
+  }
+  return 0&#160;;
+}
+</pre>
+<h4><span class="mw-headline" id="C_.2B_sysfs">C + sysfs</span></h4>
+<p>The following example requires no special libraries, it uses the available sysfs interface.
+</p>
+<pre>
+/* blink.c
+ *
+ * Raspberry Pi GPIO example using sysfs interface.
+ * Guillermo A. Amaral B. &lt;g@maral.me&gt;
+ *
+ * This file blinks GPIO 4 (P1-07) while reading GPIO 24 (P1_18).
+ */
+
+#include &lt;sys/stat.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+#define IN  0
+#define OUT 1
+
+#define LOW  0
+#define HIGH 1
+
+#define PIN  24 /* P1-18 */
+#define POUT 4  /* P1-07 */
+
+static int
+GPIOExport(int pin)
+{
+#define BUFFER_MAX 3
+	char buffer[BUFFER_MAX];
+	ssize_t bytes_written;
+	int fd;
+
+	fd = open(&quot;/sys/class/gpio/export&quot;, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, &quot;Failed to open export for writing!\n&quot;);
+		return(-1);
+	}
+
+	bytes_written = snprintf(buffer, BUFFER_MAX, &quot;%d&quot;, pin);
+	write(fd, buffer, bytes_written);
+	close(fd);
+	return(0);
+}
+
+static int
+GPIOUnexport(int pin)
+{
+	char buffer[BUFFER_MAX];
+	ssize_t bytes_written;
+	int fd;
+
+	fd = open(&quot;/sys/class/gpio/unexport&quot;, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, &quot;Failed to open unexport for writing!\n&quot;);
+		return(-1);
+	}
+
+	bytes_written = snprintf(buffer, BUFFER_MAX, &quot;%d&quot;, pin);
+	write(fd, buffer, bytes_written);
+	close(fd);
+	return(0);
+}
+
+static int
+GPIODirection(int pin, int dir)
+{
+	static const char s_directions_str[]  = &quot;in\0out&quot;;
+
+#define DIRECTION_MAX 35
+	char path[DIRECTION_MAX];
+	int fd;
+
+	snprintf(path, DIRECTION_MAX, &quot;/sys/class/gpio/gpio%d/direction&quot;, pin);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, &quot;Failed to open gpio direction for writing!\n&quot;);
+		return(-1);
+	}
+
+	if (-1 == write(fd, &amp;s_directions_str[IN == dir&#160;? 0&#160;: 3], IN == dir&#160;? 2&#160;: 3)) {
+		fprintf(stderr, &quot;Failed to set direction!\n&quot;);
+		return(-1);
+	}
+
+	close(fd);
+	return(0);
+}
+
+static int
+GPIORead(int pin)
+{
+#define VALUE_MAX 30
+	char path[VALUE_MAX];
+	char value_str[3];
+	int fd;
+
+	snprintf(path, VALUE_MAX, &quot;/sys/class/gpio/gpio%d/value&quot;, pin);
+	fd = open(path, O_RDONLY);
+	if (-1 == fd) {
+		fprintf(stderr, &quot;Failed to open gpio value for reading!\n&quot;);
+		return(-1);
+	}
+
+	if (-1 == read(fd, value_str, 3)) {
+		fprintf(stderr, &quot;Failed to read value!\n&quot;);
+		return(-1);
+	}
+
+	close(fd);
+
+	return(atoi(value_str));
+}
+
+static int
+GPIOWrite(int pin, int value)
+{
+	static const char s_values_str[] = &quot;01&quot;;
+
+	char path[VALUE_MAX];
+	int fd;
+
+	snprintf(path, VALUE_MAX, &quot;/sys/class/gpio/gpio%d/value&quot;, pin);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, &quot;Failed to open gpio value for writing!\n&quot;);
+		return(-1);
+	}
+
+	if (1&#160;!= write(fd, &amp;s_values_str[LOW == value&#160;? 0&#160;: 1], 1)) {
+		fprintf(stderr, &quot;Failed to write value!\n&quot;);
+		return(-1);
+	}
+
+	close(fd);
+	return(0);
+}
+
+int
+main(int argc, char *argv[])
+{
+	int repeat = 10;
+
+	/*
+	 * Enable GPIO pins
+	 */
+	if (-1 == GPIOExport(POUT) || -1 == GPIOExport(PIN))
+		return(1);
+
+	/*
+	 * Set GPIO directions
+	 */
+	if (-1 == GPIODirection(POUT, OUT) || -1 == GPIODirection(PIN, IN))
+		return(2);
+
+	do {
+		/*
+		 * Write GPIO value
+		 */
+		if (-1 == GPIOWrite(POUT, repeat&#160;% 2))
+			return(3);
+
+		/*
+		 * Read GPIO value
+		 */
+		printf(&quot;I'm reading&#160;%d in GPIO&#160;%d\n&quot;, GPIORead(PIN), PIN);
+
+		usleep(500 * 1000);
+	}
+	while (repeat--);
+
+	/*
+	 * Disable GPIO pins
+	 */
+	if (-1 == GPIOUnexport(POUT) || -1 == GPIOUnexport(PIN))
+		return(4);
+
+	return(0);
+}
+</pre>
+<h4><span class="mw-headline" id="C_3">C</span></h4>
+<p>This must be done as root. To change to the root user:
+</p>
+<pre>sudo -i</pre>
+<p>You must also get and install the bcm2835 library, which supports
+GPIO and SPI interfaces. Details and downloads 
+from  <a rel="nofollow" class="external free" href="http://www.open.com.au/mikem/bcm2835">http://www.open.com.au/mikem/bcm2835</a>
+</p>
+<pre>
+
+// blink.c
+//
+// Example program for bcm2835 library
+// Blinks a pin on an off every 0.5 secs
+//
+// After installing bcm2835, you can build this 
+// with something like:
+// gcc -o blink -l rt blink.c -l bcm2835
+// sudo ./blink
+//
+// Or you can test it before installing with:
+// gcc -o blink -l rt -I ../../src ../../src/bcm2835.c blink.c
+// sudo ./blink
+//
+// Author: Mike McCauley (mikem@open.com.au)
+// Copyright (C) 2011 Mike McCauley
+// $Id: RF22.h,v 1.21 2012/05/30 01:51:25 mikem Exp $
+
+#include &lt;bcm2835.h&gt;
+
+// Blinks on RPi pin GPIO 11
+#define PIN RPI_GPIO_P1_11
+
+int main(int argc, char **argv)
+{
+    // If you call this, it will not actually access the GPIO
+    // Use for testing
+//    bcm2835_set_debug(1);
+
+    if (!bcm2835_init())
+	return 1;
+
+    // Set the pin to be an output
+    bcm2835_gpio_fsel(PIN, BCM2835_GPIO_FSEL_OUTP);
+
+    // Blink
+    while (1)
+    {
+	// Turn it on
+	bcm2835_gpio_write(PIN, HIGH);
+	
+	// wait a bit
+	delay(500);
+	
+	// turn it off
+	bcm2835_gpio_write(PIN, LOW);
+	
+	// wait a bit
+	delay(500);
+    }
+
+    return 0;
+}
+</pre>
+<h4><span class="mw-headline" id="C.23">C#</span></h4>
+<p>RaspberryPiDotNet library is available at <a rel="nofollow" class="external free" href="https://github.com/cypherkey/RaspberryPi.Net/">https://github.com/cypherkey/RaspberryPi.Net/</a>.
+The library includes a GPIOFile and GPIOMem class. The GPIOMem requires compiling Mike McCauley's bcm2835 library above in to a shared object.
+</p>
+<pre>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RaspberryPiDotNet;
+using System.Threading;
+
+namespace RaspPi
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Access the GPIO pin using a static method
+            GPIOFile.Write(GPIO.GPIOPins.GPIO00, true);
+
+            // Create a new GPIO object
+            GPIOMem gpio = new GPIOMem(GPIO.GPIOPins.GPIO01);
+            gpio.Write(false);
+        }
+    }
+}
+</pre>
+<p><br />
+</p>
+<h3><span class="mw-headline" id="Ruby">Ruby</span></h3>
+<p>This example uses the WiringPi Ruby Gem: <a rel="nofollow" class="external free" href="http://pi.gadgetoid.co.uk/post/015-wiringpi-now-with-serial">http://pi.gadgetoid.co.uk/post/015-wiringpi-now-with-serial</a> which you can install on your Pi with "gem install wiringpi"
+</p>
+<pre>
+MY_PIN = 1
+
+require 'wiringpi'
+io = WiringPi::GPIO.new
+io.mode(MY_PIN,OUTPUT)
+io.write(MY_PIN,HIGH)
+io.read(MY_PIN)
+</pre>
+<p>Alternatively the Pi Piper Gem (<a rel="nofollow" class="external free" href="https://github.com/jwhitehorn/pi_piper">https://github.com/jwhitehorn/pi_piper</a>) allows for event driven programming:
+</p>
+<pre>
+require 'pi_piper'
+include PiPiper
+
+watch&#160;:pin =&gt; 23 do
+  puts &quot;Pin changed from #{last_value} to #{value}&quot;
+end
+
+PiPiper.wait
+</pre>
+<p><br />
+</p>
+<h3><span class="mw-headline" id="Perl">Perl</span></h3>
+<p>This must be done as root. To change to the root user:
+</p>
+<pre>sudo su -</pre>
+<p>Supports GPIO and SPI interfaces.
+You must also get and install the bcm2835 library. Details and downloads 
+from  <a rel="nofollow" class="external free" href="http://www.open.com.au/mikem/bcm2835">http://www.open.com.au/mikem/bcm2835</a>
+You must then get and install the Device::BCM2835 perl library from CPAN 
+<a rel="nofollow" class="external free" href="http://search.cpan.org/~mikem/Device-BCM2835-1.0/lib/Device/BCM2835.pm">http://search.cpan.org/~mikem/Device-BCM2835-1.0/lib/Device/BCM2835.pm</a>
+</p>
+<pre>
+use Device::BCM2835;
+use strict;
+
+# call set_debug(1) to do a non-destructive test on non-RPi hardware
+#Device::BCM2835::set_debug(1);
+Device::BCM2835::init() 
+ || die &quot;Could not init library&quot;;
+
+# Blink pin 11:
+# Set RPi pin 11 to be an output
+Device::BCM2835::gpio_fsel(&amp;Device::BCM2835::RPI_GPIO_P1_11, 
+                            &amp;Device::BCM2835::BCM2835_GPIO_FSEL_OUTP);
+
+while (1)
+{
+    # Turn it on
+    Device::BCM2835::gpio_write(&amp;Device::BCM2835::RPI_GPIO_P1_11, 1);
+    Device::BCM2835::delay(500); # Milliseconds
+    # Turn it off
+    Device::BCM2835::gpio_write(&amp;Device::BCM2835::RPI_GPIO_P1_11, 0);
+    Device::BCM2835::delay(500); # Milliseconds
+}
+
+
+</pre>
+<h3><span class="mw-headline" id="Python">Python</span></h3>
+<p>The RPi.GPIO module is installed by default in Raspbian. 
+Any Python script that controls GPIO must be run as root.
+</p>
+<pre>import RPi.GPIO as GPIO
+
+# use P1 header pin numbering convention
+GPIO.setmode(GPIO.BOARD)
+
+# Set up the GPIO channels - one input and one output
+GPIO.setup(11, GPIO.IN)
+GPIO.setup(12, GPIO.OUT)
+
+# Input from pin 11
+input_value = GPIO.input(11)
+
+# Output to pin 12
+GPIO.output(12, GPIO.HIGH)
+
+# The same script as above but using BCM GPIO 00..nn numbers
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.IN)
+GPIO.setup(18, GPIO.OUT)
+input_value = GPIO.input(17)
+GPIO.output(18, GPIO.HIGH)</pre>
+<p>More documentation is available at <a rel="nofollow" class="external free" href="http://code.google.com/p/raspberry-gpio-python/wiki/Main">http://code.google.com/p/raspberry-gpio-python/wiki/Main</a>
+</p><p>Also available is RPIO at <a rel="nofollow" class="external free" href="https://pypi.python.org/pypi/RPIO">https://pypi.python.org/pypi/RPIO</a>
+RPIO extends RPi.GPIO with TCP socket interrupts, command line tools and more.
+</p>
+<h3><span class="mw-headline" id="Scratch">Scratch</span></h3>
+<h4><span class="mw-headline" id="Scratch_using_the_ScratchGPIO">Scratch using the ScratchGPIO</span></h4>
+<div class="floatleft"><a href="/File:Blink11.gif" class="image"><img alt="Blink11.gif" src="/images/c/c9/Blink11.gif" width="147" height="150" /></a></div>Scratch can be used to control the GPIO pins using a background Python handler available from 
+<p><a rel="nofollow" class="external free" href="http://cymplecy.wordpress.com/2013/04/22/scratch-gpio-version-2-introduction-for-beginners/">http://cymplecy.wordpress.com/2013/04/22/scratch-gpio-version-2-introduction-for-beginners/</a>
+</p><p><br style="clear: both" />
+</p>
+<h3><span class="mw-headline" id="Java">Java</span></h3>
+<h4><span class="mw-headline" id="Java_using_the_Pi4J_Library">Java using the Pi4J Library</span></h4>
+<p>This uses the Java library available at <a rel="nofollow" class="external free" href="http://www.pi4j.com/">http://www.pi4j.com/</a>. 
+(Any Java application that controls GPIO must be run as root.)
+</p><p>Please note that the Pi4J library uses the WiringPi GPIO pin numbering scheme <sup id="cite_ref-21" class="reference"><a href="#cite_note-21">[21]</a></sup> <sup id="cite_ref-22" class="reference"><a href="#cite_note-22">[22]</a></sup>.  Please see the usage documentation for more details: <a rel="nofollow" class="external free" href="http://pi4j.com/usage.html">http://pi4j.com/usage.html</a>  
+</p>
+<pre>
+
+public static void main(String[] args) {
+
+    // create gpio controller
+    GpioController gpio = GpioFactory.getInstance();
+        
+    // provision gpio pin #01 as an output pin and turn off
+    GpioPinDigitalOutput outputPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, &quot;MyLED&quot;, PinState.LOW);
+    
+    // turn output to LOW/OFF state
+    outputPin.low();
+
+    // turn output to HIGH/ON state
+    outputPin.high();
+
+
+    // provision gpio pin #02 as an input pin with its internal pull down resistor enabled
+    GpioPinDigitalInput inputPin = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, &quot;MyButton&quot;, PinPullResistance.PULL_DOWN);
+
+    // get input state from pin 2
+    boolean input_value = inputPin.isHigh();
+}
+</pre>
+<p>More complete and detailed examples are included on the Pi4J website at <a rel="nofollow" class="external free" href="http://www.pi4j.com/">http://www.pi4j.com/</a>. 
+</p><p>The Pi4J library includes support for:
+</p>
+<ul><li> GPIO Control
+</li><li> GPIO Listeners
+</li><li> Serial Communication
+</li><li> I2C Communication
+</li><li> SPI Communication
+</li></ul>
+<h4><span class="mw-headline" id="Java_2">Java</span></h4>
+<p>This uses the Java library available at <a rel="nofollow" class="external free" href="https://github.com/jkransen/framboos">https://github.com/jkransen/framboos</a>. It does not depend on (or use) the wiringPi driver, but uses the same numbering scheme. Instead it uses the default driver under /sys/class/gpio that ships with the distro, so it works out of the box. Any Java application that controls GPIO must be run as root.
+</p>
+<pre>
+public static void main(String[] args) {
+  // reading from an in pin
+  InPin button = new InPin(8);
+  boolean isButtonPressed = button.getValue();
+  button.close();
+
+  // writing to an out pin
+  OutPin led = new Outpin(0);
+  led.setValue(true);
+  led.setValue(false);
+  led.close();
+}
+</pre>
+<h4><span class="mw-headline" id="Java_Webapp_GPIO_web_control_via_http">Java Webapp GPIO web control via http</span></h4>
+<p>This uses the Java Webapp available at <a rel="nofollow" class="external free" href="https://bitbucket.org/sbub/raspberry-pi-gpio-web-control/overview">https://bitbucket.org/sbub/raspberry-pi-gpio-web-control/overview</a>. You can control your GPIO over the internet. Any Java application that controls GPIO must be run as root.
+</p>
+<pre>
+
+host:~ sb$ curl 'http://raspberrypi:8080/handle?g0=1&amp;g1=0'
+{&quot;g1&quot;:0,&quot;g0&quot;:1}
+
+</pre>
+<h3><span class="mw-headline" id="Bash_shell_script.2C_using_sysfs.2C_part_of_the_raspbian_operating_system">Bash shell script, using sysfs, part of the raspbian operating system</span></h3>
+<p>The export and unexport of pins must be done as root. 
+To change to the root user see below:  To change back, the word exit must be entered.
+</p>
+<pre>sudo -i</pre>
+<p>Export creates a new folder for the exported pin, and creates files for each of its control functions (i.e. active_low, direction, edge, power, subsystem, uevent, and value). Upon creation, the control files can be read by all users (not just root), but can only be written to by user root, the file's owner. Nevertheless, once created, it is possible to allow users other than root, to also write inputs to the control files, by changing the ownership or permissions of these files. Changes to the file's ownership or permissions must initially be done as root, as their owner and group is set to root upon creation. Typically you might change the owner to be the (non root) user controlling the GPIO, or you might add write permission, and change the group ownership to one of which the user controlling the GPIO is a member. By such means, using only packages provided in the recommended rasbian distribution, it is possible for Python CGI scripts, which are typically run as user nobody, to be used for control of the GPIO over the internet from a browser at a remote location.
+</p>
+<pre>
+#!/bin/sh
+
+# GPIO numbers should be from this list
+# 0, 1, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18, 21, 22, 23, 24, 25
+
+# Note that the GPIO numbers that you program here refer to the pins
+# of the BCM2835 and *not* the numbers on the pin header. 
+# So, if you want to activate GPIO7 on the header you should be 
+# using GPIO4 in this script. Likewise if you want to activate GPIO0
+# on the header you should be using GPIO17 here.
+
+# Set up GPIO 4 and set to output
+echo &quot;4&quot; &gt; /sys/class/gpio/export
+echo &quot;out&quot; &gt; /sys/class/gpio/gpio4/direction
+
+# Set up GPIO 7 and set to input
+echo &quot;7&quot; &gt; /sys/class/gpio/export
+echo &quot;in&quot; &gt; /sys/class/gpio/gpio7/direction
+
+# Write output
+echo &quot;1&quot; &gt; /sys/class/gpio/gpio4/value
+
+# Read from input
+cat /sys/class/gpio/gpio7/value 
+
+# Clean up
+echo &quot;4&quot; &gt; /sys/class/gpio/unexport
+echo &quot;7&quot; &gt; /sys/class/gpio/unexport
+</pre>
+<h3><span class="mw-headline" id="Shell_script_-_take_2">Shell script - take 2</span></h3>
+<p>You need the wiringPi library from
+<a rel="nofollow" class="external free" href="https://projects.drogon.net/raspberry-pi/wiringpi/download-and-install/">https://projects.drogon.net/raspberry-pi/wiringpi/download-and-install/</a>. Once installed, there is a new command <b>gpio</b> which can be used
+as a <b>non-root</b> user to control the GPIO pins.
+</p>
+The man page <pre>man gpio</pre> has full details, but briefly:
+<pre>
+  gpio -g mode 17 out
+  gpio -g mode 18 pwm
+
+  gpio -g write 17 1
+  gpio -g pwm 18 512
+</pre>
+<p>The <b>-g</b> flag tells the <b>gpio</b> program to use the BCM GPIO pin numbering
+scheme (otherwise it will use the wiringPi numbering scheme by default).
+</p><p>The gpio command can also control the internal pull-up and pull-down
+resistors:
+</p>
+<pre>
+  gpio -g mode 17 up
+</pre>
+<p>This sets the pull-up resistor - however any change of mode, even
+setting a pin that's already set as an input to an input will remove
+the pull-up/pull-down resistors, so they may need to be reset.
+</p><p>Additionally, it can export/un-export the GPIO devices for use by
+other non-root programms - e.g. Python scripts. (Although you
+may need to drop the calls to GPIO.Setup() in the Python scripts, and
+do the setup separately in a little shell script, or call the <b>gpio</b> program
+from inside Python).
+</p>
+<pre>
+  gpio export 17 out
+  gpio export 18 in
+</pre>
+<p>These exports GPIO-17 and sets it to output, and exports GPIO-18
+and sets it to input. 
+</p><p>And when done:
+</p>
+<pre>
+  gpio unexport 17
+</pre>
+<p>The export/unexport commands always use the BCM GPIO pin numbers regardless of the
+presence of the <b>-g</b> flag or not.
+</p><p>If you want to use the internal pull-up/down's with the /sys/class/gpio mechanisms,
+then you can set them after exporting them. So:
+</p>
+<pre>
+  gpio -g export 4 in
+  gpio -g mode 4 up
+</pre>
+<p>You can then use GPIO-4 as an input in your Python, Shell, Java, etc. programs without the use
+of an external resistor to pull the pin high. (If that's what you were after - for example, a simple push
+button switch taking the pin to ground.)
+</p><p>A fully working example of a shell script using the GPIO pins
+can be found at <a rel="nofollow" class="external free" href="http://project-downloads.drogon.net/files/gpioExamples/tuxx.sh">http://project-downloads.drogon.net/files/gpioExamples/tuxx.sh</a>.
+</p><p><br />
+</p>
+<h3><span class="mw-headline" id="Lazarus_.2F_Free_Pascal">Lazarus / Free Pascal</span></h3>
+<div class="thumb tright"><div class="thumbinner" style="width:256px;"><a href="/File:RPI_GPIO_testprogram_with_lazarus.png" class="image"><img alt="" src="/images/thumb/6/63/RPI_GPIO_testprogram_with_lazarus.png/254px-RPI_GPIO_testprogram_with_lazarus.png" width="254" height="203" class="thumbimage" srcset="/images/thumb/6/63/RPI_GPIO_testprogram_with_lazarus.png/381px-RPI_GPIO_testprogram_with_lazarus.png 1.5x, /images/thumb/6/63/RPI_GPIO_testprogram_with_lazarus.png/508px-RPI_GPIO_testprogram_with_lazarus.png 2x" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/File:RPI_GPIO_testprogram_with_lazarus.png" class="internal" title="Enlarge"><img src="/skins/common/images/magnify-clip.png" width="15" height="11" alt="" /></a></div>A simple app for controlling GPIO pin 17 with Lazarus</div></div></div>
+<p>The GPIO pins are accessible from <a href="/Lazarus_on_RPi" title="Lazarus on RPi">Lazarus</a> without any third-party software. This is performed by means of  the <a rel="nofollow" class="external text" href="http://www.freepascal.org/docs-html/rtl/baseunix/index.html">BaseUnix</a> unit that is part of every distribution of Lazarus and Free Pascal or by invoking Unix shell commands with <b>fpsystem</b>. The following example uses GPIO pin 17 as output port. It is assumed that you created a form with a TToggleBox named GPIO17ToggleBox and for logging purposes a TMemo with name LogMemo (optional). The program has to be executed with root privileges.
+</p><p><i>Unit for controlling the GPIO port:</i>
+</p>
+<pre>
+unit Unit1;
+
+{Demo application for GPIO on Raspberry Pi}
+{Inspired by the Python input/output demo application by Gareth Halfacree}
+{written for the Raspberry Pi User Guide, ISBN 978-1-118-46446-5}
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Unix, BaseUnix;
+
+type
+
+  { TForm1 }
+
+  TForm1 = class(TForm)
+    LogMemo: TMemo;
+    GPIO17ToggleBox: TToggleBox;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure GPIO17ToggleBoxChange(Sender: TObject);
+  private
+    { private declarations }
+  public
+    { public declarations }
+  end;
+
+const
+  PIN_17: PChar = '17';
+  PIN_ON: PChar = '1';
+  PIN_OFF: PChar = '0';
+  OUT_DIRECTION: PChar = 'out';
+
+var
+  Form1: TForm1;
+  gReturnCode: longint; {stores the result of the IO operation}
+
+implementation
+
+{$R *.lfm}
+
+{ TForm1 }
+
+procedure TForm1.FormActivate(Sender: TObject);
+var
+  fileDesc: integer;
+begin
+  { Prepare SoC pin 17 (pin 11 on GPIO port) for access: }
+  try
+    fileDesc&#160;:= fpopen('/sys/class/gpio/export', O_WrOnly);
+    gReturnCode&#160;:= fpwrite(fileDesc, PIN_17[0], 2);
+    LogMemo.Lines.Add(IntToStr(gReturnCode));
+  finally
+    gReturnCode&#160;:= fpclose(fileDesc);
+    LogMemo.Lines.Add(IntToStr(gReturnCode));
+  end;
+  { Set SoC pin 17 as output: }
+  try
+    fileDesc&#160;:= fpopen('/sys/class/gpio/gpio17/direction', O_WrOnly);
+    gReturnCode&#160;:= fpwrite(fileDesc, OUT_DIRECTION[0], 3);
+    LogMemo.Lines.Add(IntToStr(gReturnCode));
+  finally
+    gReturnCode&#160;:= fpclose(fileDesc);
+    LogMemo.Lines.Add(IntToStr(gReturnCode));
+  end;
+end;
+
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  fileDesc: integer;
+begin
+  { Free SoC pin 17: }
+  try
+    fileDesc&#160;:= fpopen('/sys/class/gpio/unexport', O_WrOnly);
+    gReturnCode&#160;:= fpwrite(fileDesc, PIN_17[0], 2);
+    LogMemo.Lines.Add(IntToStr(gReturnCode));
+  finally
+    gReturnCode&#160;:= fpclose(fileDesc);
+    LogMemo.Lines.Add(IntToStr(gReturnCode));
+  end;
+end;
+
+procedure TForm1.GPIO17ToggleBoxChange(Sender: TObject);
+var
+  fileDesc: integer;
+begin
+  if GPIO17ToggleBox.Checked then
+  begin
+    { Swith SoC pin 17 on: }
+    try
+      fileDesc&#160;:= fpopen('/sys/class/gpio/gpio17/value', O_WrOnly);
+      gReturnCode&#160;:= fpwrite(fileDesc, PIN_ON[0], 1);
+      LogMemo.Lines.Add(IntToStr(gReturnCode));
+    finally
+      gReturnCode&#160;:= fpclose(fileDesc);
+      LogMemo.Lines.Add(IntToStr(gReturnCode));
+    end;
+  end
+  else
+  begin
+    { Switch SoC pin 17 off: }
+    try
+      fileDesc&#160;:= fpopen('/sys/class/gpio/gpio17/value', O_WrOnly);
+      gReturnCode&#160;:= fpwrite(fileDesc, PIN_OFF[0], 1);
+      LogMemo.Lines.Add(IntToStr(gReturnCode));
+    finally
+      gReturnCode&#160;:= fpclose(fileDesc);
+      LogMemo.Lines.Add(IntToStr(gReturnCode));
+    end;
+  end;
+end;
+
+end.
+</pre>
+<p><i>Main program:</i>
+</p>
+<pre>
+program io_test;
+
+{$mode objfpc}{$H+}
+
+uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Interfaces, // this includes the LCL widgetset
+  Forms, Unit1
+  { you can add units after this };
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.
+</pre>
+<p>Alternative ways to access the GPIO port with Lazarus / Free Pascal is by using <a rel="nofollow" class="external text" href="http://www.lazarus.freepascal.org/index.php/topic,17404.0.html">Lazarus wrapper unit for Gordon Henderson's wiringPi C library</a> or <a rel="nofollow" class="external text" href="http://wiki.lazarus.freepascal.org/Lazarus_on_Raspberry_Pi#2._Hardware_access_via_encapsulated_shell_calls">encapsulated shell calls</a>.
+</p><p>The <a rel="nofollow" class="external text" href="http://wiki.freepascal.org/Lazarus_on_Raspberry_Pi">Lazarus wiki</a> describes a <a rel="nofollow" class="external text" href="http://wiki.freepascal.org/Lazarus_on_Raspberry_Pi#Reading_the_status_of_a_port">demo program</a> that can read the status of a GPIO pin.
+</p>
+<h3><span class="mw-headline" id="BASIC">BASIC</span></h3>
+<h4><span class="mw-headline" id="BASIC_-_Return_to_BASIC">BASIC - Return to BASIC</span></h4>
+<p><b>RTB</b> or Return to Basic can be found here: <a rel="nofollow" class="external free" href="https://projects.drogon.net/return-to-basic/">https://projects.drogon.net/return-to-basic/</a>
+</p><p>It's a new BASIC featuring modern looping constructs, switch statements, named procedures and functions as well as graphics (caresian and turtle), file handling and more. It also supports the Pi's on-board GPIO without needing to be run as root. (You don't need any special setup routines either)
+</p><p>Sample blink program:
+</p>
+<pre>
+// blink.rtb:
+//    Blink program in Return to Basic
+//    Gordon Henderson, projects@drogon.net
+//
+PinMode (0, 1) // Output
+CYCLE 
+  DigitalWrite (0, 1) // Pin 0 ON
+  WAIT (0.5) // 0.5 seconds
+  DigitalWrite (0, 0)
+  WAIT (0.5)
+REPEAT 
+END 
+</pre>
+<h4><span class="mw-headline" id="BASIC_2">BASIC</span></h4>
+<p><b>Bywater BASIC Interpreter</b>
+</p><p>The Bywater BASIC Interpreter (bwBASIC) implements a large superset of the ANSI Standard for Minimal BASIC (X3.60-1978) and a significant subset of the ANSI Standard for Full BASIC (X3.113-1987) in C. It also offers shell programming facilities as an extension of BASIC. bwBASIC seeks to be as portable as possible. 
+You can download it at.
+<a rel="nofollow" class="external free" href="http://packages.debian.org/stable/interpreters/bwbasic">http://packages.debian.org/stable/interpreters/bwbasic</a>
+</p><p><b>BASIC programming of the I/O</b>
+</p><p><b>Setting up a GPIO pin to be used for inputs or for outputs.</b>
+</p><p>We cannot load the control words directly into the  32 bit ARM registers with 32 bit addresses, as bwBASIC has no POKE and PEEK commands and other versions of BASIC (as far as I know) only handle 8 bit registers with 16 bit addresses with these commands. So we need to export the GPIO pins, so that they exist in a file structure which we can access from basic with the OPEN command.(ref 2)
+</p><p>We need to do this in Linux root.
+We need to run BASIC in the root too. First we go to the root, then we load bwbasic into root.
+</p>
+<pre>
+sudo -1
+sudo bwbasic
+</pre>
+<p>REM Now to export the no4 GPIO pin for example, using a Shell command.
+</p>
+<pre>echo “4” &gt;  /sys/class/gpio/export</pre>
+<p>Whilst bwbasic can accommodate shell commands, and we can store a set of these commands (eg. to export a number of GPIO pins at the outset) as numbered statements in a file that can be loaded with the basic command LOAD “filename” and RUN (ref 2), the shell commands have to run as a separate file, as they cannot be run from within, as part of a basic programme.
+</p><p><b>Now we can access the file containing the pin direction setting from BASIC</b>
+</p><p>We can set GPIO pin 4 to input or to output by OPENing its pin direction file for output and writing “in” or “out” with a PRINT# command. (ref 2 )
+</p>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr"><div class="basic4gl source-basic4gl"><pre class="de1"><span class="nu0">10</span> OPEN ”O”,#<span class="nu0">1</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio4<span class="sy0">/</span>direction”,<span class="nu0">2</span>
+<span class="nu0">20</span> <span class="kw2">PRINT</span> #<span class="nu0">1</span>,”out”
+<span class="nu0">30</span> CLOSE #<span class="nu0">1</span></pre></div></div>
+<p>REM closes the open direction file, whereupon the system performs the action of setting the direction to “out”. NB the system only carries out the action as the file is closed.(ref 3)
+</p><p><b>We are now able to control the output of the gpio 4 pin from BASIC</b>
+</p><p>We can set the GPIO 4 pin to 1 or to 0 by OPENing its pin value file for output and writing “1” or “0” with a PRINT# command.
+</p>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr"><div class="basic4gl source-basic4gl"><pre class="de1"><span class="nu0">40</span> OPEN ”O”,#<span class="nu0">4</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio4<span class="sy0">/</span>value”,<span class="nu0">1</span>
+<span class="nu0">50</span> <span class="kw2">PRINT</span> #<span class="nu0">4</span>,”<span class="nu0">1</span>”
+<span class="nu0">60</span> CLOSE #<span class="nu0">4</span></pre></div></div>
+<p>REM turns on the output of GPIO pin 4.
+</p><p>REM similarly we can turn off the output of GPIO pin 4.
+OPEN ”O”,#4, “/sys/devices/virtual/gpio/gpio4/value”,1
+PRINT #4,”0”
+CLOSE #4.
+</p><p><b>Example of an (unstructured) BASIC programme</b> 
+</p><p>To read the state of a switch and control the power to two LEDs connected to GPIO pins 8,7 and 4 respectively.
+</p><p>Programme to set 2 pins as outputs and 1 pin as input and to read the input turning on two different combinations of the two outputs (ie output 0,1 or 1,0) depending on the state of the input (1 or 0).
+</p>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr"><div class="basic4gl source-basic4gl"><pre class="de1">sudo –i
+sudo bwbasic
+LOAD “export.bas”
+LIST
+REM a set of Shell statements <span class="kw3">to</span> export the three GPIO pins.
+<span class="nu0">10</span> echo “<span class="nu0">4</span>” <span class="sy0">&gt;</span> <span class="sy0">/</span>sys<span class="sy0">/</span>class<span class="sy0">/</span>gpio<span class="sy0">/</span>export
+<span class="nu0">20</span> echo “<span class="nu0">7</span>” <span class="sy0">&gt;</span> <span class="sy0">/</span>sys<span class="sy0">/</span>class<span class="sy0">/</span>gpio<span class="sy0">/</span>export
+<span class="nu0">30</span> echo “<span class="nu0">8</span>” <span class="sy0">&gt;</span> <span class="sy0">/</span>sys<span class="sy0">/</span>class<span class="sy0">/</span>gpio<span class="sy0">/</span>export
+<span class="kw3">RUN</span></pre></div></div>
+<p>NEW REM clears the export.bas programme from memory
+</p>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr"><div class="basic4gl source-basic4gl"><pre class="de1">.
+LOAD “demo1.bas”
+LIST
+<span class="nu0">10</span> OPEN ”O”,#<span class="nu0">1</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio4<span class="sy0">/</span>direction”,<span class="nu0">2</span> 
+<span class="nu0">20</span> OPEN ”O”,#<span class="nu0">2</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio7<span class="sy0">/</span>direction”,<span class="nu0">2</span> 
+<span class="nu0">30</span> OPEN ”O”,#<span class="nu0">3</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio8<span class="sy0">/</span>direction”,<span class="nu0">2</span>
+REM opens the three pin direction files
+<span class="nu0">40</span> <span class="kw2">PRINT</span> #<span class="nu0">1</span>, “out”
+<span class="nu0">50</span> <span class="kw2">PRINT</span> #<span class="nu0">2</span>, “out”
+<span class="nu0">60</span> <span class="kw2">PRINT</span> #<span class="nu0">3</span>, “in”
+REM sets GPIO pins <span class="nu0">4</span> <span class="kw3">and</span> <span class="nu0">7</span> <span class="kw3">as</span> outputs <span class="kw3">and</span> GPIO pin <span class="nu0">8</span> <span class="kw3">as</span> <span class="kw3">input</span>.
+<span class="nu0">70</span> CLOSE #<span class="nu0">1</span>
+<span class="nu0">80</span> CLOSE #<span class="nu0">2</span>
+<span class="nu0">90</span> CLOSE #<span class="nu0">3</span>
+REM closes all open files, allowing the system <span class="kw3">to</span> perform the direction settings.
+<span class="nu0">100</span> OPEN ”I”,#<span class="nu0">8</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio8<span class="sy0">/</span>value”,<span class="nu0">1</span>
+REM opens the GPIO pin <span class="nu0">8</span> value file
+<span class="nu0">110</span> <span class="kw3">INPUT</span> #<span class="nu0">8</span>,x
+REM reads the value of the <span class="kw3">input</span> pin <span class="kw3">and</span> stores the value in numerical variable x
+<span class="nu0">120</span> CLOSE #<span class="nu0">8</span>
+REM closes the open file, allowing the system <span class="kw3">to</span> <span class="kw3">read</span> the value of the <span class="kw3">input</span> pin <span class="kw3">and</span> store the value in numerical variable x.
+<span class="nu0">130</span> OPEN “O”,#<span class="nu0">1</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio4<span class="sy0">/</span>value”,<span class="nu0">1</span>
+<span class="nu0">140</span> OPEN “O”,#<span class="nu0">2</span>, “<span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>gpio<span class="sy0">/</span>gpio7<span class="sy0">/</span>value”,<span class="nu0">1</span>
+REM opens the GPIO pins <span class="nu0">4</span> <span class="kw3">and</span> value files ready <span class="kw3">for</span> outputting 1s <span class="kw3">and</span> 0s.
+<span class="nu0">150</span> <span class="kw3">IF</span> x<span class="sy0">&lt;</span><span class="nu0">1</span> <span class="kw3">THEN</span> <span class="kw3">GOTO</span> <span class="nu0">160</span> <span class="kw3">ELSE</span> <span class="kw3">GOTO</span> <span class="nu0">190</span>
+REM tests the state of the switch <span class="br0">&#40;</span><span class="nu0">1</span> or0<span class="br0">&#41;</span> <span class="kw3">and</span> directs the program <span class="kw3">to</span> generate the appropriate outputs
+<span class="nu0">160</span> <span class="kw2">PRINT</span> #<span class="nu0">1</span>,”<span class="nu0">1</span>”
+<span class="nu0">170</span> <span class="kw2">PRINT</span> #<span class="nu0">2</span>,”<span class="nu0">0</span>”
+<span class="nu0">180</span> <span class="kw3">GOTO</span> <span class="nu0">210</span>
+<span class="nu0">190</span>  <span class="kw2">PRINT</span>#<span class="nu0">1</span>,<span class="st0">&quot;0&quot;</span>
+<span class="nu0">200</span> <span class="kw2">PRINT</span> #<span class="nu0">2</span>,<span class="st0">&quot;1&quot;</span>
+<span class="nu0">210</span> CLOSE #<span class="nu0">1</span>
+<span class="nu0">220</span> CLOSE #<span class="nu0">2</span>
+REM Closes the files <span class="kw3">and</span> allows the outputs <span class="kw3">to</span> light the LED
+<span class="nu0">230</span> <span class="kw3">END</span>.</pre></div></div>
+<p>When all is done, we should unexport the GPIO pins, to leave the R-Pi as we found it.(Ref 1.)
+</p>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr"><div class="basic4gl source-basic4gl"><pre class="de1">NEW
+LOAD “unexport.bas”
+LIST
+REM a set of Shell statements <span class="kw3">to</span> unexport the three GPIO pins.
+<span class="nu0">10</span> echo “<span class="nu0">4</span>” <span class="sy0">&gt;</span> <span class="sy0">/</span>sys<span class="sy0">/</span>class<span class="sy0">/</span>gpio<span class="sy0">/</span>unexport
+<span class="nu0">20</span> echo “<span class="nu0">7</span>” <span class="sy0">&gt;</span> <span class="sy0">/</span>sys<span class="sy0">/</span>class<span class="sy0">/</span>gpio<span class="sy0">/</span>unexport
+<span class="nu0">30</span> echo “<span class="nu0">8</span>” <span class="sy0">&gt;</span> <span class="sy0">/</span>sys<span class="sy0">/</span>class<span class="sy0">/</span>gpio<span class="sy0">/</span>unexport
+<span class="kw3">RUN</span></pre></div></div>
+<p>A simple circuit to provide the switched input and the two LED outputs.
+</p><p>Ancient Mariner. Dec. 2012
+</p><p>References.
+</p><p>1. This paper RPi Low-level peripherals.
+</p><p>2. Ed Beynon.  <a rel="nofollow" class="external free" href="http://www.ybw.com/forums/showthread.php?t=331320&amp;page=5">http://www.ybw.com/forums/showthread.php?t=331320&amp;page=5</a>
+</p><p>3. Arthur Kaletzky. Private communication. 25/10/2012
+</p><p>4. bwbasic manual.<br />
+</p><p>For the two original documents this example has been copied from see:<br />
+<a href="/images/d/df/GPIO_Driving_Example_%28BASIC%29_.doc" class="internal" title="GPIO Driving Example (BASIC) .doc"> GPIO_Driving_Example_(BASIC)_.doc</a>
+</p><p><a href="/images/6/64/Raspberry_Pi_I-O_viii.doc" class="internal" title="Raspberry Pi I-O viii.doc"> Raspberry_Pi_I-O_viii.doc</a>
+</p>
+<h2><span class="mw-headline" id="SPI">SPI</span></h2>
+<p>There is one SPI bus brought out to the header: <a href="/RPi_SPI" title="RPi SPI">RPi_SPI</a>
+</p>
+<h2><span class="mw-headline" id="MIPI_CSI-2">MIPI CSI-2</span></h2>
+<p>On the production board<sup id="cite_ref-23" class="reference"><a href="#cite_note-23">[23]</a></sup>, the Raspberry Pi Foundation design brings out the MIPI CSI-2 (Camera Serial Interface<sup id="cite_ref-24" class="reference"><a href="#cite_note-24">[24]</a></sup>) to a 15-way flat flex connector S5, between the Ethernet and HDMI connectors. A compatible camera<sup id="cite_ref-25" class="reference"><a href="#cite_note-25">[25]</a></sup> with 5 Megapixels and 1080p video resolution was released in May 2013.
+</p>
+<h2><span class="mw-headline" id="DSI">DSI</span></h2>
+<p>On the production board, the Raspberry Pi Foundation design brings out the DSI (Display Serial Interface<sup id="cite_ref-26" class="reference"><a href="#cite_note-26">[26]</a></sup>) to a 15-way flat flex connector labelled S2, next to Raspberry Pi logo. It has two data lanes and a clock lane, to drive a possible future LCD screen device. Some smart phone screens use DSI<sup id="cite_ref-27" class="reference"><a href="#cite_note-27">[27]</a></sup>.
+</p>
+<h2><span class="mw-headline" id="CEC">CEC</span></h2>
+<p><a href="/CEC_(Consumer_Electronics_Control)_over_HDMI" title="CEC (Consumer Electronics Control) over HDMI">HDMI-CEC (Consumer Electronics Control for HDMI)</a> is supported by hardware but some driver work will be needed and currently isn't exposed into Linux userland.
+Eben notes that he has seen CEC demos on the Broadcom SoC they are using. 
+</p><p>libCEC with Raspberry Pi support has been included in OpenELEC and will be included in Raspbmc RC4.<sup id="cite_ref-28" class="reference"><a href="#cite_note-28">[28]</a></sup>
+</p><p>For more information about HDMI-CEC and what you could do with it on the Raspberry Pi please see the <a href="/CEC_(Consumer_Electronics_Control)_over_HDMI" title="CEC (Consumer Electronics Control) over HDMI">CEC (Consumer Electronics Control) over HDMI</a> article.
+</p>
+<h2><span class="mw-headline" id="References">References</span></h2>
+<ol class="references">
+<li id="cite_note-1"><span class="mw-cite-backlink"><a href="#cite_ref-1">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum/features-and-requests/easy-gpio-hardware-software/page-3/#p31907">http://www.raspberrypi.org/forum/features-and-requests/easy-gpio-hardware-software/page-3/#p31907</a></span>
+</li>
+<li id="cite_note-2"><span class="mw-cite-backlink"><a href="#cite_ref-2">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/archives/384">http://www.raspberrypi.org/archives/384</a></span>
+</li>
+<li id="cite_note-3"><span class="mw-cite-backlink"><a href="#cite_ref-3">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/archives/384">http://www.raspberrypi.org/archives/384</a></span>
+</li>
+<li id="cite_note-4"><span class="mw-cite-backlink"><a href="#cite_ref-4">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/wp-content/uploads/2012/02/BCM2835-ARM-Peripherals.pdf">http://www.raspberrypi.org/wp-content/uploads/2012/02/BCM2835-ARM-Peripherals.pdf</a></span>
+</li>
+<li id="cite_note-5"><span class="mw-cite-backlink"><a href="#cite_ref-5">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/archives/384#comment-5217">http://www.raspberrypi.org/archives/384#comment-5217</a></span>
+</li>
+<li id="cite_note-6"><span class="mw-cite-backlink"><a href="#cite_ref-6">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/wp-content/uploads/2012/02/BCM2835-ARM-Peripherals.pdf">http://www.raspberrypi.org/wp-content/uploads/2012/02/BCM2835-ARM-Peripherals.pdf</a></span>
+</li>
+<li id="cite_note-7"><span class="mw-cite-backlink"><a href="#cite_ref-7">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/phpBB3/viewtopic.php?f=44&amp;t=7509">http://www.raspberrypi.org/phpBB3/viewtopic.php?f=44&amp;t=7509</a></span>
+</li>
+<li id="cite_note-8"><span class="mw-cite-backlink"><a href="#cite_ref-8">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/downloads">http://www.raspberrypi.org/downloads</a></span>
+</li>
+<li id="cite_note-9"><span class="mw-cite-backlink"><a href="#cite_ref-9">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum/projects-and-collaboration-general/gpio-header-pinout-clarification/page-2">http://www.raspberrypi.org/forum/projects-and-collaboration-general/gpio-header-pinout-clarification/page-2</a></span>
+</li>
+<li id="cite_note-10"><span class="mw-cite-backlink"><a href="#cite_ref-10">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum/features-and-requests/easy-gpio-hardware-software/page-6/#p56480">http://www.raspberrypi.org/forum/features-and-requests/easy-gpio-hardware-software/page-6/#p56480</a></span>
+</li>
+<li id="cite_note-11"><span class="mw-cite-backlink"><a href="#cite_ref-11">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1288.1">http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1288.1</a></span>
+</li>
+<li id="cite_note-I2S-12"><span class="mw-cite-backlink"><a href="#cite_ref-I2S_12-0">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external text" href="http://www.raspberrypi.org/forum/features-and-requests/sad-about-removal-of-i2s-why-was-this-change-made">Forum:Sad about removal of I2S. Why was this change made?</a></span>
+</li>
+<li id="cite_note-13"><span class="mw-cite-backlink"><a href="#cite_ref-13">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1288.2">http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1288.2</a></span>
+</li>
+<li id="cite_note-14"><span class="mw-cite-backlink"><a href="#cite_ref-14">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1536#postid-21841">http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1536#postid-21841</a></span>
+</li>
+<li id="cite_note-15"><span class="mw-cite-backlink"><a href="#cite_ref-15">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/phpBB3/viewtopic.php?f=24&amp;t=5894">http://www.raspberrypi.org/phpBB3/viewtopic.php?f=24&amp;t=5894</a></span>
+</li>
+<li id="cite_note-16"><span class="mw-cite-backlink"><a href="#cite_ref-16">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/phpBB3/viewtopic.php?f=24&amp;t=5894">http://www.raspberrypi.org/phpBB3/viewtopic.php?f=24&amp;t=5894</a></span>
+</li>
+<li id="cite_note-17"><span class="mw-cite-backlink"><a href="#cite_ref-17">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1278.0">http://www.raspberrypi.org/forum?mingleforumaction=viewtopic&amp;t=1278.0</a></span>
+</li>
+<li id="cite_note-18"><span class="mw-cite-backlink"><a href="#cite_ref-18">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.bootc.net/projects/raspberry-pi-kernel/">http://www.bootc.net/projects/raspberry-pi-kernel/</a></span>
+</li>
+<li id="cite_note-19"><span class="mw-cite-backlink"><a href="#cite_ref-19">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/phpBB3/viewtopic.php?p=86172#p86172">http://www.raspberrypi.org/phpBB3/viewtopic.php?p=86172#p86172</a></span>
+</li>
+<li id="cite_note-20"><span class="mw-cite-backlink"><a href="#cite_ref-20">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/forum/general-discussion/wiring-for-the-raspberry-pis-gpio">http://www.raspberrypi.org/forum/general-discussion/wiring-for-the-raspberry-pis-gpio</a></span>
+</li>
+<li id="cite_note-21"><span class="mw-cite-backlink"><a href="#cite_ref-21">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://pi4j.com/usage.html#Pin_Numbering">http://pi4j.com/usage.html#Pin_Numbering</a></span>
+</li>
+<li id="cite_note-22"><span class="mw-cite-backlink"><a href="#cite_ref-22">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="https://projects.drogon.net/raspberry-pi/wiringpi/pins/">https://projects.drogon.net/raspberry-pi/wiringpi/pins/</a></span>
+</li>
+<li id="cite_note-23"><span class="mw-cite-backlink"><a href="#cite_ref-23">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.raspberrypi.org/wp-content/uploads/2012/04/Raspberry-Pi-Schematics-R1.0.pdf">http://www.raspberrypi.org/wp-content/uploads/2012/04/Raspberry-Pi-Schematics-R1.0.pdf</a></span>
+</li>
+<li id="cite_note-24"><span class="mw-cite-backlink"><a href="#cite_ref-24">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.mipi.org/specifications/camera-interface">http://www.mipi.org/specifications/camera-interface</a></span>
+</li>
+<li id="cite_note-25"><span class="mw-cite-backlink"><a href="#cite_ref-25">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://elinux.org/Rpi_Camera_Module">http://elinux.org/Rpi_Camera_Module</a></span>
+</li>
+<li id="cite_note-26"><span class="mw-cite-backlink"><a href="#cite_ref-26">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://www.mipi.org/specifications/display-interface">http://www.mipi.org/specifications/display-interface</a></span>
+</li>
+<li id="cite_note-27"><span class="mw-cite-backlink"><a href="#cite_ref-27">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://en.wikipedia.org/wiki/Display_Serial_Interface">http://en.wikipedia.org/wiki/Display_Serial_Interface</a></span>
+</li>
+<li id="cite_note-28"><span class="mw-cite-backlink"><a href="#cite_ref-28">↑</a></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://blog.pulse-eight.com/2012/08/01/libcec-1-8-0-a-firmware-upgrade-and-raspberry-pi-support/">http://blog.pulse-eight.com/2012/08/01/libcec-1-8-0-a-firmware-upgrade-and-raspberry-pi-support/</a></span>
+</li>
+</ol>
+<p><br />
+
+</p>
+<table class="navbox" cellspacing="0" style=";width:100%">
+
+<tr>
+<td style="padding:2px;">
+<table cellspacing="0" class="nowraplinks" style="width:100%;background:transparent;color:inherit;;">
+
+<tr>
+<th style="background:#00CC00;;" colspan="3" class="navbox-title"> <div style="float:left; width:6em;text-align:left;"> <span class="noprint plainlinks navbar" style=""><span style="white-space:nowrap;word-spacing:-.12em;"><a href="/Template:Raspberry_Pi" title="Template:Raspberry Pi"><span style="background:#00CC00;;;border:none;" title="View this template">v</span></a><span style="background:#00CC00;;;border:none;">&#32;<b>&#183;</b>&#32;</span><a href="/Template_talk:Raspberry_Pi" title="Template talk:Raspberry Pi"><span style="background:#00CC00;;;border:none;" title="Discuss this template">d</span></a><span style="background:#00CC00;;;border:none;">&#32;<b>&#183;</b>&#32;</span><a rel="nofollow" class="external text" href="http://elinux.org/index.php?title=Template:Raspberry_Pi&amp;action=edit"><span style="background:#00CC00;;;border:none;" title="Edit this template">e</span></a></span></span>
+ </div><div style="float:right;width:6em;">&#160;</div> <span style="font-size:110%;"> <a href="/R-Pi_Hub" title="R-Pi Hub" class="mw-redirect"><span style="color:#FFFFFF">Raspberry Pi</span></a></span>
+</th></tr>
+<tr style="height:2px;">
+<td>
+</td></tr>
+<tr>
+<td class="navbox-group" style="background:#00CC00;;background:#AA0033;"> <b><span style="color:#FFFFFF">Startup</span></b>
+</td>
+<td style="text-align:left;border-left:2px solid #fdfdfd; width:100%;padding:0px;background:#FFE0FF;;;" class="navbox-list navbox-odd"> <div style="padding:0em 0.25em"><a href="/RPi_Buying_Guide" title="RPi Buying Guide">Buying Guide</a> - <a href="/RPi_Easy_SD_Card_Setup" title="RPi Easy SD Card Setup">SD Card Setup</a> - <a href="/RPi_Hardware_Basic_Setup" title="RPi Hardware Basic Setup">Basic Setup</a> - <a href="/RPi_Advanced_Setup" title="RPi Advanced Setup">Advanced Setup</a> - <a href="/RPi_Beginners" title="RPi Beginners">Beginners Guide</a> - <a href="/R-Pi_Troubleshooting" title="R-Pi Troubleshooting">Troubleshooting</a></div>
+</td>
+<td style="width:0%;padding:0px 0px 0px 2px;" rowspan="9"> <a href="/File:RpiFront.jpg" class="image"><img alt="RpiFront.jpg" src="/images/thumb/9/96/RpiFront.jpg/167px-RpiFront.jpg" width="167" height="119" srcset="/images/thumb/9/96/RpiFront.jpg/251px-RpiFront.jpg 1.5x, /images/thumb/9/96/RpiFront.jpg/334px-RpiFront.jpg 2x" /></a>
+</td></tr>
+<tr style="height:2px">
+<td>
+</td></tr>
+<tr>
+<td class="navbox-group" style="background:#00CC00;;background:#AA0033;"> <b><span style="color:#FFFFFF">Hardware</span></b>
+</td>
+<td style="text-align:left;border-left:2px solid #fdfdfd; width:100%;padding:0px;background:#FFE0FF;;;" class="navbox-list navbox-even"> <div style="padding:0em 0.25em"><a href="/RPi_Hardware" title="RPi Hardware">Hardware</a> - <a href="/RPi_HardwareHistory" title="RPi HardwareHistory">Hardware History</a> - <strong class="selflink">Low-level peripherals</strong> - <a href="/RPi_Expansion_Boards" title="RPi Expansion Boards">Expansion Boards</a></div>
+</td></tr>
+<tr style="height:2px">
+<td>
+</td></tr>
+<tr>
+<td class="navbox-group" style="background:#00CC00;;background:#AA0033;"> <b><span style="color:#FFFFFF">Peripherals</span></b>
+</td>
+<td style="text-align:left;border-left:2px solid #fdfdfd; width:100%;padding:0px;background:#FFE0FF;;;" class="navbox-list navbox-odd"> <div style="padding:0em 0.25em"><a href="/RPi_Screens" title="RPi Screens">Screens</a> - <a href="/RPi_Cases" title="RPi Cases">Cases</a> - <a href="/RPi_VerifiedPeripherals" title="RPi VerifiedPeripherals">Other Peripherals</a></div>
+</td></tr>
+<tr style="height:2px">
+<td>
+</td></tr>
+<tr>
+<td class="navbox-group" style="background:#00CC00;;background:#AA0033;"> <b><span style="color:#FFFFFF">Software</span></b>
+</td>
+<td style="text-align:left;border-left:2px solid #fdfdfd; width:100%;padding:0px;background:#FFE0FF;;;" class="navbox-list navbox-even"> <div style="padding:0em 0.25em"><a href="/RPi_Software" title="RPi Software">Software</a> - <a href="/RPi_Distributions" title="RPi Distributions">Distributions</a> - <a href="/RPi_Kernel_Compilation" title="RPi Kernel Compilation">Kernel</a> - <a href="/RPi_Performance" title="RPi Performance">Performance</a> -  <a href="/RPi_Programming" title="RPi Programming">Programming</a> - <a href="/RPi_VideoCore_APIs" title="RPi VideoCore APIs">VideoCore APIs</a> - <a href="/RPi_Utilities" title="RPi Utilities">Utilities</a></div>
+</td></tr>
+<tr style="height:2px">
+<td>
+</td></tr>
+<tr>
+<td class="navbox-group" style="background:#00CC00;;background:#AA0033;"> <b><span style="color:#FFFFFF">Projects</span></b>
+</td>
+<td style="text-align:left;border-left:2px solid #fdfdfd; width:100%;padding:0px;background:#FFE0FF;;;" class="navbox-list navbox-odd"> <div style="padding:0em 0.25em"><a href="/RPi_Tutorials" title="RPi Tutorials">Tutorials</a> - <a href="/RPi_Guides" title="RPi Guides">Guides</a> - <a href="/RPi_Projects" title="RPi Projects">Projects</a> - <a href="/RPi_Tasks" title="RPi Tasks">Tasks</a> - <a href="/RPi_DatasheetCategories" title="RPi DatasheetCategories">DataSheets</a> - <a href="/RPi_Education" title="RPi Education">Education</a> - <a href="/RPi_Community" title="RPi Community">Communities</a></div>
+</td></tr></table>
+</td></tr></table>
+
+<!-- 
+NewPP limit report
+Preprocessor visited node count: 1537/1000000
+Preprocessor generated node count: 10331/1000000
+Post‐expand include size: 17480/2097152 bytes
+Template argument size: 4936/2097152 bytes
+Highest expansion depth: 8/40
+Expensive parser function count: 0/100
+-->
+
+<!-- Saved in parser cache with key elinux:pcache:idhash:15890-0!*!0!!en!2!* and timestamp 20130804203215 -->
+</div>								<div class="printfooter">
+				Retrieved from "<a href="http://elinux.org/index.php?title=RPi_Low-level_peripherals&amp;oldid=276998">http://elinux.org/index.php?title=RPi_Low-level_peripherals&amp;oldid=276998</a>"				</div>
+												<div id='catlinks' class='catlinks'><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/Special:Categories" title="Special:Categories">Category</a>: <ul><li><a href="/Category:RaspberryPi" title="Category:RaspberryPi">RaspberryPi</a></li></ul></div></div>												<div class="visualClear"></div>
+							</div>
+		</div>
+		<div id="mw-navigation">
+			<h2>Navigation menu</h2>
+			<div id="mw-head">
+				<div id="p-personal" role="navigation" class="">
+	<h3>Personal tools</h3>
+	<ul>
+<li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=RPi+Low-level+peripherals" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in / create account</a></li>	</ul>
+</div>
+				<div id="left-navigation">
+					<div id="p-namespaces" role="navigation" class="vectorTabs">
+	<h3>Namespaces</h3>
+	<ul>
+					<li  id="ca-nstab-main" class="selected"><span><a href="/RPi_Low-level_peripherals"  title="View the content page [c]" accesskey="c">Page</a></span></li>
+					<li  id="ca-talk"><span><a href="/Talk:RPi_Low-level_peripherals"  title="Discussion about the content page [t]" accesskey="t">Discussion</a></span></li>
+			</ul>
+</div>
+<div id="p-variants" role="navigation" class="vectorMenu emptyPortlet">
+	<h3 id="mw-vector-current-variant">
+		</h3>
+	<h3><span>Variants</span><a href="#"></a></h3>
+	<div class="menu">
+		<ul>
+					</ul>
+	</div>
+</div>
+				</div>
+				<div id="right-navigation">
+					<div id="p-views" role="navigation" class="vectorTabs">
+	<h3>Views</h3>
+	<ul>
+					<li id="ca-view" class="selected"><span><a href="/RPi_Low-level_peripherals" >Read</a></span></li>
+					<li id="ca-viewsource"><span><a href="/index.php?title=RPi_Low-level_peripherals&amp;action=edit"  title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></span></li>
+					<li id="ca-history" class="collapsible"><span><a href="/index.php?title=RPi_Low-level_peripherals&amp;action=history"  title="Past revisions of this page [h]" accesskey="h">View history</a></span></li>
+			</ul>
+</div>
+<div id="p-cactions" role="navigation" class="vectorMenu emptyPortlet">
+	<h3><span>Actions</span><a href="#"></a></h3>
+	<div class="menu">
+		<ul>
+					</ul>
+	</div>
+</div>
+<div id="p-search" role="search">
+	<h3><label for="searchInput">Search</label></h3>
+	<form action="/index.php" id="searchform">
+				<div>
+			<input type="search" name="search" placeholder="Search" title="Search eLinux.org [f]" accesskey="f" id="searchInput" />			<input type="submit" name="go" value="Go" title="Go to a page with this exact name if exists" id="searchGoButton" class="searchButton" />			<input type="submit" name="fulltext" value="Search" title="Search the pages for this text" id="mw-searchButton" class="searchButton" />					<input type='hidden' name="title" value="Special:Search"/>
+		</div>
+	</form>
+</div>
+				</div>
+			</div>
+			<div id="mw-panel">
+					<div id="p-logo" role="banner"><a style="background-image: url(/images/6/68/Logo_clear.png);" href="/Main_Page"  title="Visit the main page"></a></div>
+				<div class="portal" role="navigation" id='p-Navigation'>
+	<h3>Navigation</h3>
+	<div class="body">
+		<ul>
+			<li id="n-mainpage"><a href="/Main_Page" title="Visit the main page [z]" accesskey="z">Main Page</a></li>
+			<li id="n-portal"><a href="/eLinux.org:Community_portal" title="About the project, what you can do, where to find things">Community portal</a></li>
+			<li id="n-currentevents"><a href="/eLinux.org:Current_events" title="Find background information on current events">Current events</a></li>
+			<li id="n-recentchanges"><a href="/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li>
+			<li id="n-help"><a href="/Help:Contents" title="The place to find out">Help</a></li>
+			<li id="n-Volunteering"><a href="/Sitesupport-url">Volunteering</a></li>
+			<li id="n-Popular-Pages"><a href="/Special:PopularPages">Popular Pages</a></li>
+			<li id="n-Who.27s-Online"><a href="/Special:WhosOnline">Who's Online</a></li>
+		</ul>
+	</div>
+</div>
+<div class="portal" role="navigation" id='p-tb'>
+	<h3>Toolbox</h3>
+	<div class="body">
+		<ul>
+			<li id="t-whatlinkshere"><a href="/Special:WhatLinksHere/RPi_Low-level_peripherals" title="A list of all wiki pages that link here [j]" accesskey="j">What links here</a></li>
+			<li id="t-recentchangeslinked"><a href="/Special:RecentChangesLinked/RPi_Low-level_peripherals" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li>
+			<li id="t-specialpages"><a href="/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q">Special pages</a></li>
+			<li id="t-print"><a href="/index.php?title=RPi_Low-level_peripherals&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>
+			<li id="t-permalink"><a href="/index.php?title=RPi_Low-level_peripherals&amp;oldid=276998" title="Permanent link to this revision of the page">Permanent link</a></li>
+			<li id="t-info"><a href="/index.php?title=RPi_Low-level_peripherals&amp;action=info">Page information</a></li>
+		</ul>
+	</div>
+</div>
+			</div>
+		</div>
+		<div id="footer" role="contentinfo">
+							<ul id="footer-info">
+											<li id="footer-info-lastmod"> This page was last modified on 4 August 2013, at 20:15.</li>
+											<li id="footer-info-viewcount">This page has been accessed 1,124,257 times.</li>
+											<li id="footer-info-copyright">Content is available under <a class="external" rel="nofollow" href="http://creativecommons.org/licenses/by-sa/3.0/">a Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</li>
+									</ul>
+							<ul id="footer-places">
+											<li id="footer-places-privacy"><a href="/eLinux.org:Privacy_policy" title="eLinux.org:Privacy policy">Privacy policy</a></li>
+											<li id="footer-places-about"><a href="/eLinux.org:About" title="eLinux.org:About">About eLinux.org</a></li>
+											<li id="footer-places-disclaimer"><a href="/eLinux.org:General_disclaimer" title="eLinux.org:General disclaimer">Disclaimers</a></li>
+									</ul>
+										<ul id="footer-icons" class="noprint">
+					<li id="footer-copyrightico">
+						<a href="http://creativecommons.org/licenses/by-sa/3.0/"><img src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" alt="a Creative Commons Attribution-ShareAlike 3.0 Unported License" width="88" height="31" /></a>
+					</li>
+					<li id="footer-poweredbyico">
+						<a href="//www.mediawiki.org/"><img src="/skins/common/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" width="88" height="31" /></a>
+					</li>
+				</ul>
+						<div style="clear:both"></div>
+		</div>
+		<script>/*<![CDATA[*/window.jQuery && jQuery.ready();/*]]>*/</script><script>if(window.mw){
+mw.loader.state({"site":"loading","user":"ready","user.groups":"ready"});
+}</script>
+<script>if(window.mw){
+mw.loader.load(["mediawiki.action.view.postEdit","mediawiki.user","mediawiki.page.ready","mediawiki.searchSuggest","mediawiki.hidpi","skins.vector.js"],null,true);
+}</script>
+<script>if(window.mw){
+mw.loader.state({"site":"ready"});
+}</script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-119847-6");
+pageTracker._trackPageview();
+</script><!-- Served in 0.184 secs. -->
+	<script type="text/javascript">if(!NREUMQ.f){NREUMQ.f=function(){NREUMQ.push(["load",new Date().getTime()]);var e=document.createElement("script");e.type="text/javascript";e.src=(("http:"===document.location.protocol)?"http:":"https:")+"//"+"rpm-images.newrelic.com/42/eum/rum.js";document.body.appendChild(e);if(NREUMQ.a)NREUMQ.a();};NREUMQ.a=window.onload;window.onload=NREUMQ.f;};NREUMQ.push(["nrfj","beacon-1.newrelic.com","d0863ed20c","1648593","ZwQGZkEAWUBZU0ZQWV5OMUBaTl5dXFVKF0ZYEQ==",0,211,new Date().getTime(),"","","","",""]);</script>
+</body>
+</html>
