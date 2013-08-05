@@ -334,6 +334,9 @@ function oscValue( index )
     return false
 end
 
+function sendOsc()
+    status( "Now it\'s empty..." )
+end
 
 
 
