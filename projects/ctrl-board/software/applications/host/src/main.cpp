@@ -36,6 +36,7 @@ int main( int argc, char ** argv )
     peer->connect( selfJid, password, host, port, tls );
 
     QXmppMsgPipe * pipe = new QXmppMsgPipe( peer, 1 );
+    pipe->setInPipe();
 
     QXmppVideo   * video = new QXmppVideo( peer );
     video->setTarget( destJid );

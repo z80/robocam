@@ -1,5 +1,6 @@
 
 #include "main_wnd.h"
+#include "pipe_setup.h"
 #include <QtXml>
 
 #include "lua.hpp"
@@ -28,6 +29,7 @@ MainWnd::MainWnd( QWidget * parent )
     QObject::connect( ui.queryStatus, SIGNAL(triggered()), this, SLOT(slotStatus()) );
     QObject::connect( ui.queryOsc,    SIGNAL(triggered()), this, SLOT(slotOsc()) );
     QObject::connect( ui.shutdown,    SIGNAL(triggered()), this, SLOT(slotShutdown()) );
+    QObject::connect( ui.setupPipe,   SIGNAL(triggered()), this, SLOT(slotSetupPipe()) );
 
     QObject::connect( ui.lightBtn,    SIGNAL(clicked()),   this, SLOT(slotLight()) );
     QObject::connect( ui.motoEnBtn,   SIGNAL(clicked()),   this, SLOT(slotMotoEn()) );
@@ -68,7 +70,10 @@ MainWnd::MainWnd( QWidget * parent )
     m_peer->setTarget( destJid, updateDest );
     m_video->setTarget( destJid );
     m_peer->connect( selfJid, password, host, port, tls );
+    m_jidDest = destJid;
 
+    m_pipe = new QXmppMsgPipe( m_peer, 1 );
+    m_pipe->setOutPipe( m_jidDest, 1234, 22, "localhost" );
 
     m_dontSleepTimer = new QTimer( this );
     m_dontSleepTimer->setInterval( 15000 );
@@ -128,6 +133,20 @@ void MainWnd::slotDontSleepTimeout()
 {
     if ( m_peer->isConnected() )
         slotSend( "timeoutReset()" );
+}
+
+void MainWnd::slotSetupPipe()
+{
+    PipeSetup ps( this );
+    int res = ps.exec();
+    if ( res == QDialog::Accepted )
+    {
+        int localPort, 
+            remotePort;
+        QString remoteHost;
+        ps.pipe( localPort, remotePort, remoteHost );
+        m_pipe->setOutPipe( m_jidDest, localPort, remotePort, remoteHost );
+    }
 }
 
 void MainWnd::slotStatus()

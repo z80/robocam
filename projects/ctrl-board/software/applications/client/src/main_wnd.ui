@@ -210,6 +210,8 @@
    <addaction name="showFullLog"/>
    <addaction name="separator"/>
    <addaction name="shutdown"/>
+   <addaction name="separator"/>
+   <addaction name="setupPipe"/>
   </widget>
   <widget class="QDockWidget" name="statusDw">
    <property name="features">
@@ -322,6 +324,14 @@
    </property>
    <property name="toolTip">
     <string>Send Don't sleep periodically to prevent robot hybernation.</string>
+   </property>
+  </action>
+  <action name="setupPipe">
+   <property name="text">
+    <string>Setup pipe</string>
+   </property>
+   <property name="toolTip">
+    <string>Setup pile to remote host</string>
    </property>
   </action>
  </widget>

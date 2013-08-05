@@ -5,6 +5,7 @@
 #include <QtGui>
 #include "xmpp_io.h"
 #include "xmpp_video.h"
+#include "xmpp_msg_pipe.h"
 #include "lua_machine.h"
 #include "ui_main_wnd.h"
 
@@ -25,6 +26,7 @@ private slots:
     void slotClearLog();
     void slotDontSleep();
     void slotDontSleepTimeout();
+    void slotSetupPipe();
 
     // Controls
     void slotStatus();
@@ -44,9 +46,12 @@ private:
 	void log( const std::string & stri );
 
     Ui_MainWnd  ui;
-	QXmppPeer * m_peer;
-    QXmppVideo * m_video;
-    QTimer     * m_dontSleepTimer;
+	QXmppPeer    * m_peer;
+    QXmppVideo   * m_video;
+    QXmppMsgPipe * m_pipe;
+    QString        m_jidDest;
+
+    QTimer       * m_dontSleepTimer;
 
 	static const std::string CONFIG_FILE;
 	static const int         LOG_MAX;
