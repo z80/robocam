@@ -22,6 +22,7 @@ MainWnd::MainWnd( QWidget * parent )
     connect( ui.console, SIGNAL(line_validate(const QString &)), this, SLOT(slotSend(const QString &)), Qt::QueuedConnection );
 
     QObject::connect( ui.clearLog,    SIGNAL(triggered()), this, SLOT(slotClearLog()) );
+    QObject::connect( ui.dontSleep,   SIGNAL(triggered()), this, SLOT(slotDontSleep()) );
 
     QObject::connect( ui.showFullLog, SIGNAL(triggered()), this, SLOT(slotShowFullLog()) );
     QObject::connect( ui.queryStatus, SIGNAL(triggered()), this, SLOT(slotStatus()) );
@@ -67,6 +68,12 @@ MainWnd::MainWnd( QWidget * parent )
     m_peer->setTarget( destJid, updateDest );
     m_video->setTarget( destJid );
     m_peer->connect( selfJid, password, host, port, tls );
+
+
+    m_dontSleepTimer = new QTimer( this );
+    m_dontSleepTimer->setInterval( 15000 );
+    QObject::connect( m_dontSleepTimer, SIGNAL(timeout()), 
+                      this,             SLOT(slotDontSleepTimeout()) );
 }
 
 MainWnd::~MainWnd()
@@ -78,6 +85,11 @@ MainWnd::~MainWnd()
 void MainWnd::slotLog( const QString & stri )
 {
     ui.log->append( stri );
+    if ( stri == "Host is online" )
+    {
+        ui.dontSleep->setChecked( true );
+        slotDontSleep();
+    }
 }
 
 void MainWnd::slotShowFullLog()
@@ -102,6 +114,20 @@ void MainWnd::slotDisconnected()
 void MainWnd::slotClearLog()
 {
     ui.log->clear();
+}
+
+void MainWnd::slotDontSleep()
+{
+    if ( ui.dontSleep->isChecked() )
+        m_dontSleepTimer->start();
+    else
+        m_dontSleepTimer->stop();
+}
+
+void MainWnd::slotDontSleepTimeout()
+{
+    if ( m_peer->isConnected() )
+        slotSend( "timeoutReset()" );
 }
 
 void MainWnd::slotStatus()

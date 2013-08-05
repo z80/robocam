@@ -23,6 +23,8 @@ private slots:
     void slotConnected();
     void slotDisconnected();
     void slotClearLog();
+    void slotDontSleep();
+    void slotDontSleepTimeout();
 
     // Controls
     void slotStatus();
@@ -44,6 +46,7 @@ private:
     Ui_MainWnd  ui;
 	QXmppPeer * m_peer;
     QXmppVideo * m_video;
+    QTimer     * m_dontSleepTimer;
 
 	static const std::string CONFIG_FILE;
 	static const int         LOG_MAX;

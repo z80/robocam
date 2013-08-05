@@ -21,16 +21,7 @@
     <property name="spacing">
      <number>1</number>
     </property>
-    <property name="leftMargin">
-     <number>1</number>
-    </property>
-    <property name="topMargin">
-     <number>1</number>
-    </property>
-    <property name="rightMargin">
-     <number>1</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>1</number>
     </property>
     <item>
@@ -44,7 +35,7 @@
      <x>0</x>
      <y>0</y>
      <width>794</width>
-     <height>29</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -69,16 +60,7 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -93,16 +75,7 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
        </layout>
@@ -231,6 +204,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="queryStatus"/>
+   <addaction name="dontSleep"/>
    <addaction name="queryOsc"/>
    <addaction name="clearLog"/>
    <addaction name="showFullLog"/>
@@ -252,16 +226,7 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -285,16 +250,7 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -355,6 +311,17 @@
    </property>
    <property name="toolTip">
     <string>Query oscilloscopic measures</string>
+   </property>
+  </action>
+  <action name="dontSleep">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Don`t sleep</string>
+   </property>
+   <property name="toolTip">
+    <string>Send Don't sleep periodically to prevent robot hybernation.</string>
    </property>
   </action>
  </widget>
