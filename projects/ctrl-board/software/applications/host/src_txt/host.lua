@@ -49,7 +49,7 @@ function main()
             t1 = os.time()
             sleep( 1000 )
             connected = isConnected()
-	    timeoutReset()
+	        timeoutReset()
             if ( connected ) then
                 break
             end
@@ -67,7 +67,9 @@ function main()
         t1 = t0
         while ( t1 - t0 < timeToGetClient ) do
             sleep( 1000 )
-	    timeoutReset()
+            -- Here should be no timeoutReset().
+            -- It should be called remotely.
+	        -- timeoutReset()
             t1 = os.time()
             if ( client ) then
                 t0 = t1
