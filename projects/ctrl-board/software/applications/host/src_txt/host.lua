@@ -276,11 +276,11 @@ function motoBackward()
 end
 
 function motoLeft()
-    setMoto( false, false, true, false )
+    setMoto( true, false, false, false )
 end
 
 function motoRight()
-    setMoto( true, false, false, false )
+    setMoto( false, false, true, false )
 end
 
 --local CMD_SETUP_OSC       = 15 -- 2 bytes period in seconds, 1 byte what to measure: current, temperature.
