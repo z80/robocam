@@ -418,6 +418,7 @@ static int process( lua_State * L )
         lua_pop( L, 1 );
         pd->peer->process( stri );
     }
+    return 0;
 }
 
 static int stop( lua_State * L )
