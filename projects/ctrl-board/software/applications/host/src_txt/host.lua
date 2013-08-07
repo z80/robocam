@@ -35,7 +35,7 @@ function sendStatus()
 end
 
 function main()
-    local client = nil
+    dontSleep = true
     local timeoutToConnect = 60
     local timeToGetClient  = 180
     local triesLeft = 3
@@ -49,7 +49,7 @@ function main()
             t1 = os.time()
             sleep( 1000 )
             connected = isConnected()
-	        timeoutReset()
+	    timeoutReset()
             if ( connected ) then
                 break
             end
@@ -71,9 +71,9 @@ function main()
             -- It should be called remotely.
 	        -- timeoutReset()
             t1 = os.time()
-            if ( client ) then
+            if ( dontSleep ) then
                 t0 = t1
-                client = nil
+                dontSleep = nil
             end
         end
     end
@@ -168,7 +168,7 @@ function setLed( v )
 end
 
 function timeoutReset()
-    client = true
+    dontSleep = true
     enterCritical()
     local res = mcu:open()
     if ( res ) then
