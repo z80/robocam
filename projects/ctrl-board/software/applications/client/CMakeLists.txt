@@ -53,5 +53,4 @@ endif ( WIN32 )
 add_executable( ${PROJ_NAME} ${BUILD_TYPE} ${src} )
 target_link_libraries( ${PROJ_NAME} qxmpp xmpp_io liblua-5.1.5 qtlua ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${QT_LIBRARIES} )
 install( TARGETS ${PROJ_NAME} DESTINATION "." )
-install( DIRECTORY "./src_ini/" DESTINATION "." )
 

@@ -7,7 +7,7 @@
 #include "boost/bind.hpp"
 #include "boost/bind/placeholders.hpp"
 
-const std::string MainWnd::CONFIG_FILE = "./client.ini";
+const QString     MainWnd::CONFIG_FILE = ":client.ini";
 const int         MainWnd::LOG_MAX       = 256;
 const int         MainWnd::MOTO_TIME_MAX = 1000;
 const int         MainWnd::MOTO1         = 1;
@@ -57,7 +57,7 @@ MainWnd::MainWnd( QWidget * parent )
     ui.view->setVideo( m_video );
     this->setCentralWidget( ui.view );
 
-    QSettings ini( CONFIG_FILE.c_str(), QSettings::IniFormat );
+    QSettings ini( CONFIG_FILE, QSettings::IniFormat );
     ini.beginGroup( "main" );
     QString selfJid  = ini.value( "selfJid",    "client@xmpp" ).toString();
     QString destJid  = ini.value( "destJid",    "host@xmpp" ).toString();

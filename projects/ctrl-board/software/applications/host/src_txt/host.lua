@@ -76,6 +76,8 @@ function main()
                 dontSleep = nil
             end
         end
+    else
+        print( "Failed to get connected" )
     end
     print( "Terminating host" )
     process( "sudo halt -p" )

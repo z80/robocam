@@ -282,34 +282,40 @@ void LuaMachine::qxmppMessageReceived( const QString & stri )
 
 void LuaMachine::slotPrint( const QString & stri )
 {
-    QByteArray data;
-    QXmlStreamWriter stream( &data );
-    stream.setAutoFormatting( false );
+    if ( pd->client->isConnected() )
+    {
+        QByteArray data;
+        QXmlStreamWriter stream( &data );
+        stream.setAutoFormatting( false );
 
-    stream.writeStartElement( "msg" );
-    stream.writeAttribute( "type",   "print" );
-    stream.writeCharacters( stri );
-    stream.writeEndElement();
+        stream.writeStartElement( "msg" );
+        stream.writeAttribute( "type",   "print" );
+        stream.writeCharacters( stri );
+        stream.writeEndElement();
 
-    data = data.toBase64();
+        data = data.toBase64();
 
-    pd->client->sendMessage( data );
+        pd->client->sendMessage( data );
+    }
 }
 
 void LuaMachine::slotStatus( const QString & tag, const QString & stri )
 {
-    QByteArray data;
-    QXmlStreamWriter stream( &data );
-    stream.setAutoFormatting( false );
+    if ( pd->client->isConnected() )
+    {
+        QByteArray data;
+        QXmlStreamWriter stream( &data );
+        stream.setAutoFormatting( false );
 
-    stream.writeStartElement( "msg" );
-    stream.writeAttribute( "type",   tag );
-    stream.writeCharacters( stri );
-    stream.writeEndElement();
+        stream.writeStartElement( "msg" );
+        stream.writeAttribute( "type",   tag );
+        stream.writeCharacters( stri );
+        stream.writeEndElement();
 
-    data = data.toBase64();
+        data = data.toBase64();
 
-    pd->client->sendMessage( data );
+        pd->client->sendMessage( data );
+    }
 }
 
 void LuaMachine::slotProcess( const QString & stri )

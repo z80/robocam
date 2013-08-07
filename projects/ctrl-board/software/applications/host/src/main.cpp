@@ -21,7 +21,7 @@ QXmppPeer * peer;
 int main( int argc, char ** argv )
 {
     QCoreApplication a( argc, argv );
-    QSettings ini( "host.ini", QSettings::IniFormat );
+    QSettings ini( "./host.ini", QSettings::IniFormat );
     ini.beginGroup( "main" );
     QString selfJid  = ini.value( "selfJid",    "host@xmpp" ).toString();
     QString destJid  = ini.value( "destJid",    "client@xmpp" ).toString();
@@ -33,7 +33,7 @@ int main( int argc, char ** argv )
 
     peer = new QXmppPeer();
     peer->setTarget( destJid, updateDest );
-    peer->connect( selfJid, password, host, port, tls );
+
 
     QXmppMsgPipe * pipe = new QXmppMsgPipe( peer, 1 );
     pipe->setInPipe();
@@ -42,6 +42,9 @@ int main( int argc, char ** argv )
     video->setTarget( destJid );
 
     LuaMachine  * lua = new LuaMachine( peer, boost::bind( init, _1 ) );
+
+    peer->connect( selfJid, password, host, port, tls );
+
 
     int res = a.exec();
     return res;

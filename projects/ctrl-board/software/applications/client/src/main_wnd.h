@@ -53,7 +53,7 @@ private:
 
     QTimer       * m_dontSleepTimer;
 
-	static const std::string CONFIG_FILE;
+    static const QString     CONFIG_FILE;
 	static const int         LOG_MAX;
 	static const int         MOTO_TIME_MAX; // Due to big ping in the case of fast movements
 	                                          // it is necessary to be ablt
