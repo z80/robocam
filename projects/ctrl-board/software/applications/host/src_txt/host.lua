@@ -46,7 +46,7 @@ function main()
     while ( timeToConnect > 0 ) do
         sleep( 1000 )
         connected = isConnected()
-        timeReset()
+        timeoutReset()
         if ( connected ) then
             break
         end
