@@ -97,7 +97,7 @@ function setMotoEn( en )
     if ( res ) then
         local t = {}
         t[1] = CMD_SET_MOTO_EN
-        t[2] = 1
+        t[2] = en and 1 or 0
         t[3] = 0
         res = mcu:write( I2C_ADDR, t )
         if ( not res ) then
