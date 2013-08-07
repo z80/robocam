@@ -8,7 +8,7 @@
 #include "boost/bind/placeholders.hpp"
 
 const std::string MainWnd::CONFIG_FILE = "./client.ini";
-const int         MainWnd::LOG_MAX     = 256;
+const int         MainWnd::LOG_MAX       = 256;
 const int         MainWnd::MOTO_TIME_MAX = 1000;
 const int         MainWnd::MOTO1         = 1;
 const int         MainWnd::MOTO2         = 2;
@@ -199,22 +199,26 @@ void MainWnd::slotMotoEn()
 
 void MainWnd::slotForward()
 {
-    slotSend( "motoForward()" );
+    if ( ui.motoEnBtn->isChecked() )
+        slotSend( "motoForward()" );
 }
 
 void MainWnd::slotBackward()
 {
-    slotSend( "motoBackward()" );
+    if ( ui.motoEnBtn->isChecked() )
+        slotSend( "motoBackward()" );
 }
 
 void MainWnd::slotLeft()
 {
-    slotSend( "motoLeft()" );
+    if ( ui.motoEnBtn->isChecked() )
+        slotSend( "motoLeft()" );
 }
 
 void MainWnd::slotRight()
 {
-    slotSend( "motoRight()" );
+    if ( ui.motoEnBtn->isChecked() )
+        slotSend( "motoRight()" );
 }
 
 void MainWnd::slotStop()
