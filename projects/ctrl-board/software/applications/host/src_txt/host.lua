@@ -36,43 +36,34 @@ end
 
 function main()
     dontSleep = true
-    local timeoutToConnect = 60
+    local timeToConnect = 180
     local timeToGetClient  = 180
-    local triesLeft = 3
     local connected
     initMcu()
     -- Connection to XMPP servers
-    for ttt = 1, triesLeft do
-        local t0 = os.time()
-        local t1 = t0
-        while ( t1 - t0 < timeoutToConnect ) do
-            t1 = os.time()
-            sleep( 1000 )
-            connected = isConnected()
-	    timeoutReset()
-            if ( connected ) then
-                break
-            end
-            print( 'waiting for connection.' )
-        end
+    local t0 = os.time()
+    local t1 = t0
+    while ( timeToConnect > 0 ) do
+        sleep( 1000 )
+        connected = isConnected()
+        timeReset()
         if ( connected ) then
             break
         end
+	timeToConnect = timeToConnect - 1
     end
     -- Connection with server established.
     if ( connected ) then
         local stri = "Host is online"
         print( stri )
-        t0 = os.time()
-        t1 = t0
-        while ( t1 - t0 < timeToGetClient ) do
+        t = timeToGetClient
+        while ( t > 0 ) do
             sleep( 1000 )
             -- Here should be no timeoutReset().
             -- It should be called remotely.
 	        -- timeoutReset()
-            t1 = os.time()
             if ( dontSleep ) then
-                t0 = t1
+                t = timeToGetClient
                 dontSleep = nil
             end
         end
