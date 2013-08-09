@@ -4,6 +4,7 @@
 #include "pawn_config.h"
 
 #include "led_ctrl.h"
+#include "stm32f10x_flash.h"
 
 //#include "i2c_ctrl.h"
 
@@ -151,10 +152,31 @@ void pawnSetMem( uint8_t cnt, uint16_t at, uint8_t * vals )
         g_pawn.memblock[at+i] = vals[i];
 }
 
-void pawnWriteFlash( uint8_t block )
+uint16_t pawnWriteFlash( uint8_t block )
 {
+    FLASH_Unlock();
+    FLASH_Status st = FLASH_ErasePage( block + PAWN_FLASH_START );
+    if ( st != FLASH_COMPLETE )
+    {
+        FLASH_Lock();
+	return st;
+    }
+    uint32_t * memD   = (uint32_t *)( g_pawn.memblock );
+    uint32_t   flashD = 0x800000 + PAWN_FLASH_BLOCK_SZ * ( block + PAWN_FLASH_START );
+    uint32_t   i;
+    for ( i=0; i<PAWN_MEM_SIZE; i+=4 )
+    {
+        st = FLASH_ProgramWord( flashD+i, memD[i] );
+	if ( st != FLASH_COMPLETE )
+	{
+	    FLASH_Lock();
+	    return 10+st;
+	}
+    }
     // to be done.
     (void)block;
+    FLASH_Lock();
+    return 0;
 }
 
 void pawnRun( void )
