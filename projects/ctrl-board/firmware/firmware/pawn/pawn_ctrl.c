@@ -13,8 +13,8 @@ typedef struct
     AMX amx;
     char isRunning;
     int result, error;
-    unsigned char memblock[ PAWN_MEM_SIZE ];
-    uint8_t       ioblock[ PAWN_IO_SIZE ];
+    uint32_t    memblock[ PAWN_MEM_SIZE ];
+    uint8_t     ioblock[ PAWN_IO_SIZE ];
 } Pawn;
 
 Pawn g_pawn;
@@ -46,7 +46,9 @@ static void pawnExec( Pawn * pawn )
     unsigned char * tmp = (unsigned char *)&pawn->amx;
     for ( i=0; i<sizeof( pawn->amx ); i++ )
         tmp[i] = 0;
-    pawn->result = amx_Init( &pawn->amx, pawn->memblock );
+    pawn->amx->data = pawn->memblock;
+    uint8_t * rom = PAWN_FLASH_START + PAWN_PAGE_SIZE * PAWN_START_PAGE;
+    pawn->result = amx_Init( &pawn->amx, rom );
     if ( pawn->result != AMX_ERR_NONE )
         return;
 
@@ -54,12 +56,11 @@ static void pawnExec( Pawn * pawn )
     chSysLock();
         pawn->isRunning = 1;
     chSysUnlock();
+
     pawn->error = amx_Exec( &pawn->amx, &ret, AMX_EXEC_MAIN );
     pawn->result = ret;
     amx_Cleanup( &pawn->amx );
-    tmp = (unsigned char *)&pawn->amx;
-    for ( i=0; i<sizeof( pawn->amx ); i++ )
-        tmp[i] = 0;
+
     chSysLock();
         pawn->isRunning = 0;
     chSysUnlock();
@@ -119,7 +120,7 @@ static cell n_setLeds( AMX * amx, const cell * params )
 
 
 
-static WORKING_AREA( waExec, 1024 );
+static WORKING_AREA( waExec, PAWN_THREAD_STACK_DEPTH );
 static msg_t execThread( void *arg );
 static BinarySemaphore semaphore;
 
@@ -152,29 +153,28 @@ void pawnSetMem( uint8_t cnt, uint16_t at, uint8_t * vals )
         g_pawn.memblock[at+i] = vals[i];
 }
 
-uint16_t pawnWriteFlash( uint8_t block )
+uint16_t pawnWriteFlash( uint8_t page )
 {
     FLASH_Unlock();
-    FLASH_Status st = FLASH_ErasePage( block + PAWN_FLASH_START );
+    uint32_t flashD = PAWN_FLASH_START + PAWN_PAGE_SIZE * ( page + PAWN_START_PAGE );
+    FLASH_Status st = FLASH_ErasePage( flashD );
     if ( st != FLASH_COMPLETE )
     {
         FLASH_Lock();
-	return st;
+        return st;
     }
     uint32_t * memD   = (uint32_t *)( g_pawn.memblock );
-    uint32_t   flashD = 0x800000 + PAWN_FLASH_BLOCK_SZ * ( block + PAWN_FLASH_START );
     uint32_t   i;
     for ( i=0; i<PAWN_MEM_SIZE; i+=4 )
     {
         st = FLASH_ProgramWord( flashD+i, memD[i] );
-	if ( st != FLASH_COMPLETE )
-	{
-	    FLASH_Lock();
-	    return 10+st;
-	}
+        if ( st != FLASH_COMPLETE )
+        {
+	        FLASH_Lock();
+	        return 10+st;
+	    }
     }
     // to be done.
-    (void)block;
     FLASH_Lock();
     return 0;
 }
