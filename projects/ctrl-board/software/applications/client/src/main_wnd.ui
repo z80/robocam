@@ -379,7 +379,7 @@
     <string>Setup pile to remote host</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
  </widget>
