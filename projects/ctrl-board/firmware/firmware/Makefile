@@ -94,7 +94,8 @@ CSRC = $(PORTSRC) \
        conv_ctrl.c \
        serial_ctrl.c \
        i2c_slave_ctrl.c \
-       osc_ctrl.c
+       osc_ctrl.c \
+       conf_ctrl.c
        #pawn/amx.c \
        #pawn/amxcore.c \
        #pawn/pawn_ctrl.c
