@@ -45,8 +45,7 @@ uint8_t saveConf( uint32_t * datad, int cnt )
             return 2;
         }
     }
-    uint8_t * datab = (uint8_t *)datad;
-    uint32_t crc = (uint32_t)crc8( datab, 4*cnt );
+    uint32_t crc = (uint32_t)crc8( (uint8_t *)datad, 4*cnt );
     st = FLASH_ProgramWord( flashD+4*i, crc );
     FLASH_Lock();
     if ( st != FLASH_COMPLETE )
@@ -57,7 +56,7 @@ uint8_t saveConf( uint32_t * datad, int cnt )
 uint32_t * loadConf( int cnt )
 {
     uint32_t * flash = ( uint32_t * )( CONF_FLASH_START + CONF_PAGE_INDEX * CONF_PAGE_SIZE );
-    uint8_t dataCrc = crc8( flash, cnt * 4 );
+    uint8_t dataCrc = crc8( (uint8_t *)flash, cnt * 4 );
     uint8_t readCrc = (uint8_t)flash[cnt];
     if ( dataCrc != readCrc )
         return 0;
@@ -66,9 +65,9 @@ uint32_t * loadConf( int cnt )
 
 static uint8_t crc8( uint8_t * data, int cnt )
 {
-    const BYTE poly = 0x8C;
+    const uint8_t poly = 0x8C;
     int i, j;
-    BYTE val = 0;
+    uint8_t val = 0;
     for ( i=0; i<cnt; i++ )
     {
         val ^= data[i];
