@@ -4,8 +4,8 @@
 #include "hal.h"
 
 #define PWM_CLOCK_FREQ     8000000  // 8MHz clock
-#define PWM_PERIOD         60       // 150kHz
-#define BOOST_MAX_FILL     9000
+#define PWM_PERIOD         30       // 300kHz
+#define BOOST_MAX_FILL     7000
 
 #define CONV_PORT          GPIOA
 #define CONV_BOOST_PIN     1

@@ -120,8 +120,8 @@ static msg_t execThread( void *arg )
         // Parse inBuffer
         switch ( buffer[0] )
         {
-        case CMD_SET_POWER_TIMES:
-            powerConfig( puvalue16In[0], puvalue16In[1] );
+        case CMD_SET_POWER_TIMEOUT:
+            setPowerTimeout( puvalue16In[0] );
             break;
         case CMD_POWER_RESET:
             powerOffReset();
