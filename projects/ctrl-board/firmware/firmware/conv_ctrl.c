@@ -87,7 +87,10 @@ static adcsample_t adcSamples[ ADC_NUM_CHANNELS * ADC_BUF_DEPTH ];
 // ADC_SAMPLE_55P5
 // ADC_SAMPLE_71P5
 // ADC_SAMPLE_239P5
-#define ADC_SAMPLING  ADC_SAMPLE_13P5
+
+// At 16MHz 3 signals would be measured with frequency 16000 / ( 28.5 * 3 ) = 187kHz.
+// But ADC definitely shouldn't be faster then PWM.
+#define ADC_SAMPLING  ADC_SAMPLE_28P5
 
 static const ADCConversionGroup adcGroup =
 {
