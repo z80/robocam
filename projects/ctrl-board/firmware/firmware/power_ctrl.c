@@ -188,6 +188,13 @@ static void rtcCb( RTCDriver * rtcp, rtcevent_t event )
     case RTC_EVENT_OVERFLOW:
         break;
     case RTC_EVENT_SECOND:
+        // Check if one wants to power it on immediately.
+        if ( justPs() )
+        {
+            // Command to turn power on.
+            chBSemSignalI( &rtcSem );
+            return;
+        }
         chSysLockFromIsr();
             rtcGetTimeI( &RTCD1, &t );
         chSysUnlockFromIsr();
