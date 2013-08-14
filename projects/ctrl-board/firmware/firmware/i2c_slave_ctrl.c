@@ -135,10 +135,10 @@ static msg_t execThread( void *arg )
             powerOffReset();
             break;
         case CMD_SET_SECONDS_PER_DAY:
-            setSecondsPerDay( buffer[1] + (buffer[2] >> 8) + (buffer[3] >> 16) + (buffer[4] >> 24) );
+            setSecondsPerDay( buffer[1] + (buffer[2] << 8) + (buffer[3] << 16) + (buffer[4] << 24) );
             break;
         case CMD_SET_CURRENT_TIME:
-            setCurrentTime( buffer[1] + (buffer[2] >> 8) + (buffer[3] >> 16) + (buffer[4] >> 24) );
+            setCurrentTime( buffer[1] + (buffer[2] << 8) + (buffer[3] << 16) + (buffer[4] << 24) );
             break;
         case CMD_CURRENT_TIME:
             uvalue32Out = currentTime();

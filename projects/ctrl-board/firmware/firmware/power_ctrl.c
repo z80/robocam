@@ -111,8 +111,6 @@ void initPower( void )
     // Initializing real time clock.
     chBSemInit( &rtcSem, TRUE );
 
-    chBSemSignal( &rtcSem );
-
     // Some initial setup for wakeups.
     wakeups[0] = 10 * 60 * 60;
     wakeups[1] = 14 * 60 * 60;
@@ -123,10 +121,9 @@ void initPower( void )
     rtcSetCallback( &RTCD1, rtcCb );
 
     // Reset RTC time.
-    RTCTime t;
-    t.tv_sec  = 0;
-    t.tv_msec = 0;
-    rtcSetTime( &RTCD1, &t );
+    rtcTime.tv_sec  = 0;
+    rtcTime.tv_msec = 0;
+    rtcSetTime( &RTCD1, &rtcTime );
 
     // Starting power converters.
     convStart();
