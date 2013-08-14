@@ -85,14 +85,17 @@ static void i2cRxCb( I2CDriver * i2cp )
     (void)i2cp;
     // Command processing.
     chSysLockFromIsr();
-    static uint32_t i;
-    static msg_t res;
-    for ( i=0; i<I2C_IN_BUFFER_SZ; i++ )
-    {
-        res = chIQPutI( &inputQueue, inBuffer[i] );
-        if ( res != Q_OK )
-            break;
-    }
+        // Make CPU know command is not processed yet.
+        outBuffer[0] = 0;
+        // Send command to processing thread.
+        static uint32_t i;
+        static msg_t res;
+        for ( i=0; i<I2C_IN_BUFFER_SZ; i++ )
+        {
+            res = chIQPutI( &inputQueue, inBuffer[i] );
+            if ( res != Q_OK )
+                break;
+        }
     chSysUnlockFromIsr();
 }
 
@@ -128,6 +131,18 @@ static msg_t execThread( void *arg )
             break;
         case CMD_SHUTDOWN_RESET:
             powerOffReset();
+            break;
+        case CMD_SET_SECONDS_PER_DAY:
+            setSecondsPerDay( buffer[1] + (buffer[2] >> 8) + (buffer[3] >> 16) + (buffer[4] >> 24) );
+            break;
+        case CMD_SET_CURRENT_TIME:
+            setCurrentTime( buffer[1] + (buffer[2] >> 8) + (buffer[3] >> 16) + (buffer[4] >> 24) );
+            break;
+        case CMD_SET_WAKEUPS_CNT:
+            setWakeupsCnt( buffer[1] );
+            break;
+        case CMD_SET_WAKEUP:
+            setWakeup( buffer[1], buffer[2] + (buffer[3] >> 8) + (buffer[4] >> 16) + (buffer[5] >> 24) );
             break;
         case CMD_TEMP:
             uvalue16Out = adcTemperature();

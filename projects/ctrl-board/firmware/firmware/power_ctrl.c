@@ -100,8 +100,9 @@ void powerHandler( void )
                     break;
             }
         }
-        // Power off.
-        setPower( 0 );
+        if ( !justPs() )
+            // Power off.
+            setPower( 0 );
     }
 }
 
@@ -109,6 +110,8 @@ void initPower( void )
 {
     // Initializing real time clock.
     chBSemInit( &rtcSem, TRUE );
+
+    chBSemSignal( &rtcSem );
 
     // Some initial setup for wakeups.
     wakeups[0] = 10 * 60 * 60;
@@ -192,7 +195,9 @@ static void rtcCb( RTCDriver * rtcp, rtcevent_t event )
         if ( justPs() )
         {
             // Command to turn power on.
-            chBSemSignalI( &rtcSem );
+            chSysLockFromIsr();
+                chBSemSignalI( &rtcSem );
+            chSysUnlockFromIsr();
             return;
         }
         chSysLockFromIsr();
