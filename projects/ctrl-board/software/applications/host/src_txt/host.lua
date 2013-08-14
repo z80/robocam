@@ -258,7 +258,7 @@ function currentTime()
             return false
         end
         sleep( TRY_DELAY )
-        res = mcu:read( I2C_ADDR, 3 )
+        res = mcu:read( I2C_ADDR, 5 )
         if ( not res ) then
             return false
         end

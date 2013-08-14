@@ -116,8 +116,10 @@ static msg_t execThread( void *arg )
         static uint8_t buffer[ I2C_IN_BUFFER_SZ ];
         sz = chIQReadTimeout( &inputQueue, buffer, I2C_IN_BUFFER_SZ, TIME_INFINITE );
 
+        static uint32_t uvalue32Out;
         static uint16_t uvalue16Out;
         static uint8_t  uvalue8Out;
+
         static uint16_t * puvalue16In;
         puvalue16In = (uint16_t *)(&buffer[1]);
         // Parse inBuffer
@@ -137,6 +139,14 @@ static msg_t execThread( void *arg )
             break;
         case CMD_SET_CURRENT_TIME:
             setCurrentTime( buffer[1] + (buffer[2] >> 8) + (buffer[3] >> 16) + (buffer[4] >> 24) );
+            break;
+        case CMD_CURRENT_TIME:
+            uvalue32Out = currentTime();
+            outBuffer[1] = uvalue32Out & 255;
+            outBuffer[2] = (uvalue32Out >> 8) & 255;
+            outBuffer[3] = (uvalue32Out >> 16) & 255;
+            outBuffer[4] = (uvalue32Out >> 24) & 255;
+            outBuffer[0] = CMD_CURRENT_TIME;
             break;
         case CMD_SET_WAKEUPS_CNT:
             setWakeupsCnt( buffer[1] );
