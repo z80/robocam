@@ -34,6 +34,10 @@ public:
     QXmppServer server;
     QXmppLogger logger;
     QString     domain;
+    QString     clientHost,
+                serverHost;
+    int         clientPort,
+                serverPort;
     QHash<QString, QString> clientList;
 };
 
@@ -67,7 +71,13 @@ bool HostQxmpp::PD::parseConfig( const std::string & fileName )
             
             bool host = sect.get<bool>( "host", false );
             if ( host )
+            {
                 domain = QString::fromStdString( sect.get<std::string>( "domain", "qxmpp" ) );
+                clientHost = QString::fromStdString( sect.get<std::string>( "clientHost", "" ) );
+                clientPort = QString::fromStdString( sect.get<std::string>( "clientPort", "-1" ) ).toInt();
+                serverHost = QString::fromStdString( sect.get<std::string>( "serverHost", "" ) );
+                serverPort = QString::fromStdString( sect.get<std::string>( "serverPort", "-1" ) ).toInt();
+            }
             else
             {
                 QString login    = QString::fromStdString( sect.get<std::string>( "login", "login" ) );
@@ -103,8 +113,30 @@ bool HostQxmpp::listen( const std::string & configFile )
     pd->logger.setLoggingType( QXmppLogger::StdoutLogging );
     pd->server.setLogger( &(pd->logger) );
     pd->server.setPasswordChecker( pd );
-    pd->server.listenForClients();
-    pd->server.listenForServers();
+
+    QHostAddress clientHost;
+    if ( pd->clientHost.size() > 0 )
+        clientHost = pd->clientHost;
+    else
+        clientHost = QHostAddress::Any;
+    int clientPort;
+    if ( pd->clientPort > 0 )
+        clientPort = pd->clientPort;
+    else
+        clientPort = 5222;
+    pd->server.listenForClients( clientHost, clientPort );
+
+    QHostAddress serverHost;
+    if ( pd->serverHost.size() > 0 )
+        serverHost = pd->serverHost;
+    else
+        serverHost = QHostAddress::Any;
+    int serverPort;
+    if ( pd->serverPort > 0 )
+        serverPort = pd->serverPort;
+    else
+        serverPort = 5269;
+    pd->server.listenForServers( serverHost, serverPort );
     return true;
 }
 
