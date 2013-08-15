@@ -32,25 +32,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   7 .debug_info   00018782  00000000  00000000  0001658a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000a12a  00000000  00000000  0002ed0c  2**0
+  8 .debug_line   0000a134  00000000  00000000  0002ed0c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00008a44  00000000  00000000  00038e36  2**0
+  9 .debug_loc    00008a5a  00000000  00000000  00038e40  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_pubnames 00001cda  00000000  00000000  0004187a  2**0
+ 10 .debug_pubnames 00001cda  00000000  00000000  0004189a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_pubtypes 000045e6  00000000  00000000  00043554  2**0
+ 11 .debug_pubtypes 000045e6  00000000  00000000  00043574  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_aranges 00001128  00000000  00000000  00047b3a  2**0
+ 12 .debug_aranges 00001128  00000000  00000000  00047b5a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00001428  00000000  00000000  00048c62  2**0
+ 13 .debug_ranges 00001428  00000000  00000000  00048c82  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    00003b80  00000000  00000000  0004a08a  2**0
+ 14 .debug_str    00003b80  00000000  00000000  0004a0aa  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000002a  00000000  00000000  0004dc0a  2**0
+ 15 .comment      0000002a  00000000  00000000  0004dc2a  2**0
                   CONTENTS, READONLY
- 16 .ARM.attributes 00000031  00000000  00000000  0004dc34  2**0
+ 16 .ARM.attributes 00000031  00000000  00000000  0004dc54  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  00002d90  00000000  00000000  0004dc68  2**2
+ 17 .debug_frame  00002d90  00000000  00000000  0004dc88  2**2
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup
@@ -154,7 +154,7 @@ SYMBOL TABLE:
 200011ac l     O .bss	00000008 t.6283
 00000000 l    df *ABS*	00000000 moto_ctrl.c
 00000000 l    df *ABS*	00000000 conv_ctrl.c
-080039f0 l     F .text	00000114 contAdcReadyCb
+080039f0 l     F .text	0000011c contAdcReadyCb
 08004cf0 l     O .text	0000002c grpTemperature
 20000810 l     O .data	00000002 boostSp
 08004d20 l     O .text	0000002c adcGroup

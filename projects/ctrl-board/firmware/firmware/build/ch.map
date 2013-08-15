@@ -1802,7 +1802,7 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_info    0x00017ec7      0x5f8 build/obj/osc_ctrl.o
  .debug_info    0x000184bf      0x2c3 build/obj/conf_ctrl.o
 
-.debug_line     0x00000000     0xa12a
+.debug_line     0x00000000     0xa134
  .debug_line    0x00000000      0x15b build/obj/crt0.o
  .debug_line    0x0000015b       0x63 build/obj/vectors.o
  .debug_line    0x000001be       0x58 build/obj/chcore.o
@@ -1874,13 +1874,13 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_line    0x000088af      0x3d0 build/obj/power_ctrl.o
  .debug_line    0x00008c7f      0x1cf build/obj/moto_ctrl.o
  .debug_line    0x00008e4e      0x35a build/obj/adc_ctrl.o
- .debug_line    0x000091a8      0x42e build/obj/conv_ctrl.o
- .debug_line    0x000095d6      0x397 build/obj/serial_ctrl.o
- .debug_line    0x0000996d      0x408 build/obj/i2c_slave_ctrl.o
- .debug_line    0x00009d75      0x1e4 build/obj/osc_ctrl.o
- .debug_line    0x00009f59      0x1d1 build/obj/conf_ctrl.o
+ .debug_line    0x000091a8      0x438 build/obj/conv_ctrl.o
+ .debug_line    0x000095e0      0x397 build/obj/serial_ctrl.o
+ .debug_line    0x00009977      0x408 build/obj/i2c_slave_ctrl.o
+ .debug_line    0x00009d7f      0x1e4 build/obj/osc_ctrl.o
+ .debug_line    0x00009f63      0x1d1 build/obj/conf_ctrl.o
 
-.debug_loc      0x00000000     0x8a44
+.debug_loc      0x00000000     0x8a5a
  .debug_loc     0x00000000       0x72 build/obj/crt0.o
  .debug_loc     0x00000072      0x10f build/obj/chcore_v7m.o
  .debug_loc     0x00000181      0x10a build/obj/nvic.o
@@ -1929,11 +1929,11 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_loc     0x0000788c      0x2bb build/obj/power_ctrl.o
  .debug_loc     0x00007b47       0x5c build/obj/moto_ctrl.o
  .debug_loc     0x00007ba3      0x226 build/obj/adc_ctrl.o
- .debug_loc     0x00007dc9      0x281 build/obj/conv_ctrl.o
- .debug_loc     0x0000804a      0x2cf build/obj/serial_ctrl.o
- .debug_loc     0x00008319       0xde build/obj/i2c_slave_ctrl.o
- .debug_loc     0x000083f7      0x116 build/obj/osc_ctrl.o
- .debug_loc     0x0000850d      0x537 build/obj/conf_ctrl.o
+ .debug_loc     0x00007dc9      0x297 build/obj/conv_ctrl.o
+ .debug_loc     0x00008060      0x2cf build/obj/serial_ctrl.o
+ .debug_loc     0x0000832f       0xde build/obj/i2c_slave_ctrl.o
+ .debug_loc     0x0000840d      0x116 build/obj/osc_ctrl.o
+ .debug_loc     0x00008523      0x537 build/obj/conf_ctrl.o
 
 .debug_pubnames
                 0x00000000     0x1cda

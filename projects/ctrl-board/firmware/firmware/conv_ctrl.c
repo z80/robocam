@@ -4,7 +4,7 @@
 #include "hal.h"
 
 #define PWM_CLOCK_FREQ     8000000  // 8MHz clock
-#define PWM_PERIOD         30       // 300kHz
+#define PWM_PERIOD         40       // 200kHz
 #define BOOST_MAX_FILL     7000
 
 #define CONV_PORT          GPIOA
@@ -74,7 +74,10 @@ static void contAdcReadyCb( ADCDriver * adcp, adcsample_t * buffer, size_t n )
         }
     }
     else
+    {
+        boostPwm = 0;
     	pwmEnableChannelI(&CONV_PWM, PWM_BOOST_CHAN, PWM_PERCENTAGE_TO_WIDTH( &CONV_PWM, 0 ) );
+    }
 };
 
 static adcsample_t adcSamples[ ADC_NUM_CHANNELS * ADC_BUF_DEPTH ];
