@@ -3,7 +3,7 @@
 #include "ui_capture_wgt.h"
 #include "xmpp_video.h"
 #include "brightness_wgt.h"
-
+#include "res_dlg.h"
 
 
 class CInitResource
@@ -73,11 +73,12 @@ CaptureWgt::CaptureWgt( QWidget * parent )
     pd = new PD();
     pd->ui.setupUi( this );
 
-    pd->video = 0;
+    pd->video    = 0;
     pd->imgScale = 1.0;
-    pd->flipX = false;
-    pd->flipY = false;
-    pd->fps   = 2.0;
+    pd->flipX    = false;
+    pd->flipY    = false;
+    pd->fps      = 2.0;
+    pd->imgSize  = QSize( 80, 60 );
     pd->ui.brightnessDw->setVisible( false );
     pd->brightness = new BrightnessWgt( this );
     pd->ui.brightnessDw->setWidget( pd->brightness );
@@ -85,7 +86,9 @@ CaptureWgt::CaptureWgt( QWidget * parent )
              this,           SLOT(slotBrightnessChanged(const QPointF &)) );
     connect( pd->ui.brightnessRange, SIGNAL(triggered()), 
              this,                   SLOT(slotBrightness()) );
-    connect( pd->ui.settings, SIGNAL(triggered()), 
+    connect( pd->ui.resolution, SIGNAL(triggered()),
+             this,              SLOT(slotResolution()) );
+    connect( pd->ui.settings, SIGNAL(triggered()),
              this,            SLOT(slotSettings()) );
 
     Ui_CaptureWgt & ui = pd->ui;
@@ -155,6 +158,17 @@ void CaptureWgt::slotCapture()
         pd->video->invokeCall();
     else
         pd->video->invokeEndCall();
+}
+
+void CaptureWgt::slotResolution()
+{
+    ResDlg res;
+    res.setRes( pd->video->res() );
+    if ( res.exec() )
+    {
+        pd->imgSize = res.res();
+        pd->video->invokeSetRes( pd->imgSize );
+    }
 }
 
 void CaptureWgt::slotSettings()

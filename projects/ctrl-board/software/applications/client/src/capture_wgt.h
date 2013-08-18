@@ -22,6 +22,7 @@ protected:
     void showEvent( QShowEvent * w );
 public slots:
     void slotCapture();
+    void slotResolution();
     void slotSettings();
 
     void slotSavePixmap();

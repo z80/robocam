@@ -27,6 +27,7 @@ public:
     QString          jid;
     bool             acceptCall;
     qreal            fps;
+    QSize            res;
     bool             outgoingCall,
                      sendReturnFrames;
 };
@@ -105,6 +106,7 @@ QXmppVideo::QXmppVideo( QXmppClient * parent )
     pd->acceptCall       = true;
     pd->call             = 0;
     pd->fps              = 2.0;
+    pd->res              = QSize( 160, 120 );
     pd->outgoingCall     = false;
     pd->sendReturnFrames = false;
 
@@ -156,6 +158,11 @@ void QXmppVideo::frame( QImage & image )
 qreal QXmppVideo::fps() const
 {
     return pd->fps;
+}
+
+QSize QXmppVideo::res() const
+{
+    return pd->res;
 }
 
 void QXmppVideo::imageToVideoFrame( const QImage & image, QXmppVideoFrame & frame )
@@ -292,6 +299,12 @@ void QXmppVideo::xmppMessageReceived( const QXmppMessage & msg )
             pd->fps = root.attribute( "arg0" ).toDouble();
             QTimer::singleShot( 0, this, SLOT(setFps()) );
         }
+        else if ( func == "setRes" )
+        {
+            pd->res.setWidth( root.attribute( "width" ).toInt() );
+            pd->res.setHeight( root.attribute( "height" ).toInt() );
+            QTimer::singleShot( 0, this, SLOT(setRes()) );
+        }
     }
 }
 
@@ -377,6 +390,17 @@ void QXmppVideo::setFps()
     QTimer::setInterval( static_cast<int>( 1000.0/pd->fps ) );
 }
 
+void QXmppVideo::setRes()
+{
+    if ( pd->call )
+    {
+        QXmppVideoFormat videoFormat = pd->call->videoChannel()->encoderFormat();
+
+        videoFormat.setFrameSize( pd->res );
+        pd->call->videoChannel()->setEncoderFormat( videoFormat );
+    }
+}
+
 void QXmppVideo::invokeCall()
 {
     pd->outgoingCall = false;
@@ -426,6 +450,27 @@ void QXmppVideo::invokeSetFps( qreal fps )
 
     pd->fps = fps;
     setFps();
+}
+
+void QXmppVideo::invokeSetRes( const QSize & sz )
+{
+    QByteArray data;
+    QXmlStreamWriter stream( &data );
+    stream.setAutoFormatting( false );
+
+    stream.writeStartElement( "rpc" );
+    stream.writeAttribute( "func",   "setRes" );
+    stream.writeAttribute( "width",  QString( "%1" ).arg( sz.width() ) );
+    stream.writeAttribute( "height", QString( "%1" ).arg( sz.height() ) );
+    stream.writeEndElement();
+
+    data = data.toBase64();
+
+    pd->client->sendMessage( pd->jid, data );
+
+    pd->res = sz;
+    setFps();
+
 }
 
 void QXmppVideo::xmppAudioModeChanged(QIODevice::OpenMode mode)
@@ -594,11 +639,11 @@ void QXmppVideo::xmppVideoModeChanged(QIODevice::OpenMode mode)
         // }
 
         videoFormat.setFrameRate( static_cast<int>( 1000.0/pd->fps ) );
-        int w = pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH );
-        w = ( w > 0 ) ? w : 320;
-        int h = pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT );
-        h = ( h > 0 ) ? h : 240;
-        videoFormat.setFrameSize(QSize( w, h ) );
+        // int w = pd->webcam.get( CV_CAP_PROP_FRAME_WIDTH );
+        // w = ( w > 0 ) ? w : 320;
+        // int h = pd->webcam.get( CV_CAP_PROP_FRAME_HEIGHT );
+        // h = ( h > 0 ) ? h : 240;
+        videoFormat.setFrameSize( pd->res );
 
         // QXmpp allow the following pixel formats for video encoding:
         //

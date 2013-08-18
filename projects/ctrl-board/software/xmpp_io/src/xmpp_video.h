@@ -22,14 +22,17 @@ public:
     void frame( QImage & image );
 
     qreal fps() const;
+    QSize res() const;
 public slots:
     void call();
     void endCall();
     void setFps();
+    void setRes();
 
     void invokeCall();
     void invokeEndCall();
     void invokeSetFps( qreal fps );
+    void invokeSetRes( const QSize & sz );
 
 signals:
     void frameReady();
